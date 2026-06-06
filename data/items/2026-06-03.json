@@ -1,8 +1,26 @@
 {
   "date": "2026-06-03",
-  "generated_at": "2026-06-06T22:58:09.134408+00:00",
-  "count": 14,
+  "generated_at": "2026-06-06T23:18:47.311358+00:00",
+  "count": 15,
   "items": [
+    {
+      "title": "CM Entrevista: “Você não toma mais decisões sozinho”",
+      "link": "https://consumidormoderno.com.br/cm-entrevista-voce-nao-toma-mais-decisoes-sozinho/",
+      "source": "Consumidor Moderno",
+      "lang": "pt",
+      "region": "BR",
+      "category": "posicionamento",
+      "kind": "noticia",
+      "published": "2026-06-03",
+      "raw_summary": "Para Ricardo Cappra, algoritmos e Inteligência Artificial já fazem parte do processo cognitivo humano e estão transformando a experiência de consumo. O post CM Entrevista: “Você não toma mais decisões sozinho” apareceu primeiro em Consumidor Moderno .",
+      "title_pt": "",
+      "summary_pt": "Para Ricardo Cappra, algoritmos e Inteligência Artificial já fazem parte do processo cognitivo humano e estão transformando a experiência de consumo. O post CM Entrevista: “Você não toma mais decisões sozinho” apareceu primeiro em Consumidor Moderno .",
+      "angle_pt": "",
+      "authors": "",
+      "score": 6,
+      "fetched_at": "2026-06-06T23:16:37.047731+00:00",
+      "id": "297467c6b6ba1688"
+    },
     {
       "title": "Da Ypê à Crystal: o que os recalls revelam sobre confiança, atendimento e experiência do consumidor",
       "link": "https://consumidormoderno.com.br/recall-agua-crystal-direitos-consumidor-confianca-marcas/",
@@ -18,26 +36,8 @@
       "angle_pt": "",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-06T22:56:19.526425+00:00",
+      "fetched_at": "2026-06-06T23:16:37.047633+00:00",
       "id": "242a6186061471b6"
-    },
-    {
-      "title": "CM Entrevista: “Você não toma mais decisões sozinho”",
-      "link": "https://consumidormoderno.com.br/cm-entrevista-voce-nao-toma-mais-decisoes-sozinho/",
-      "source": "Consumidor Moderno",
-      "lang": "pt",
-      "region": "BR",
-      "category": "posicionamento",
-      "kind": "noticia",
-      "published": "2026-06-03",
-      "raw_summary": "Para Ricardo Cappra, algoritmos e Inteligência Artificial já fazem parte do processo cognitivo humano e estão transformando a experiência de consumo. O post CM Entrevista: “Você não toma mais decisões sozinho” apareceu primeiro em Consumidor Moderno .",
-      "title_pt": "",
-      "summary_pt": "Para Ricardo Cappra, algoritmos e Inteligência Artificial já fazem parte do processo cognitivo humano e estão transformando a experiência de consumo. O post CM Entrevista: “Você não toma mais decisões sozinho” apareceu primeiro em Consumidor Moderno .",
-      "angle_pt": "",
-      "authors": "",
-      "score": 5,
-      "fetched_at": "2026-06-06T22:56:19.526553+00:00",
-      "id": "297467c6b6ba1688"
     },
     {
       "title": "Argos reimagines household items as toys for latest campaign",
@@ -54,7 +54,7 @@
       "angle_pt": "",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-06T22:56:35.720637+00:00",
+      "fetched_at": "2026-06-06T23:16:40.639152+00:00",
       "id": "a64e362029c17ceb"
     },
     {
@@ -72,7 +72,7 @@
       "angle_pt": "",
       "authors": "",
       "score": 4,
-      "fetched_at": "2026-06-06T22:56:19.526592+00:00",
+      "fetched_at": "2026-06-06T23:16:37.047766+00:00",
       "id": "0e90758677c85287"
     },
     {
@@ -90,7 +90,7 @@
       "angle_pt": "",
       "authors": "",
       "score": 3,
-      "fetched_at": "2026-06-06T22:56:19.526473+00:00",
+      "fetched_at": "2026-06-06T23:16:37.047661+00:00",
       "id": "5806dc9249d70e13"
     },
     {
@@ -108,8 +108,26 @@
       "angle_pt": "",
       "authors": "",
       "score": 3,
-      "fetched_at": "2026-06-06T22:56:19.526509+00:00",
+      "fetched_at": "2026-06-06T23:16:37.047691+00:00",
       "id": "4cce4f0e9dde7aa6"
+    },
+    {
+      "title": "Liane Siebenhaar und Giuseppe Fiordispina abgelöst: Das sind die neuen Juryvorsitzenden beim Effie Germany",
+      "link": "https://www.horizont.net/agenturen/nachrichten/liane-siebenhaar-und-giuseppe-fiordispina-abgeloest-das-sind-die-neuen-juryvorsitzenden-beim-effie-germany-234588?utm_source=rss&utm_medium=referral&utm_campaign=news&utm_term=",
+      "source": "Horizont (DE)",
+      "lang": "de",
+      "region": "eu",
+      "category": "branding",
+      "kind": "noticia",
+      "published": "2026-06-03",
+      "raw_summary": "Die Effie Jury bekommt in diesem Jahr zwei neue Vorsitzende: Alma Lipa, Chief Digital Marketing Officer bei L’Oréal, und Magnus Höltke, Group Strategy Director bei der Jung von Matt Group, bilden das neue Führungsduo. Die beiden lösen Liane Siebenhaar und Giuseppe Fiordispina ab.",
+      "title_pt": "Liane Siebenhaar e Giuseppe Fiordispina substituídos: Estes são os novos presidentes do júri da Effie Alemanha",
+      "summary_pt": "O Júri Effie tem dois novos presidentes este ano: Alma Lipa, Diretora de Marketing Digital da L’Oréal, e Magnus Höltke, Diretor de Estratégia de Grupo do Grupo Jung von Matt, formam a nova dupla de liderança. Os dois substituem Liane Siebenhaar e Giuseppe Fiordispina.",
+      "angle_pt": "",
+      "authors": "",
+      "score": 3,
+      "fetched_at": "2026-06-06T23:16:43.222533+00:00",
+      "id": "e85ef33c9bc9a426"
     },
     {
       "title": "Verint e Calabrio unem forças para expandir o CX",
@@ -126,7 +144,7 @@
       "angle_pt": "",
       "authors": "",
       "score": 2,
-      "fetched_at": "2026-06-06T22:56:19.526390+00:00",
+      "fetched_at": "2026-06-06T23:16:37.047598+00:00",
       "id": "1c2bdbada9668c3a"
     },
     {
@@ -144,7 +162,7 @@
       "angle_pt": "",
       "authors": "",
       "score": 2,
-      "fetched_at": "2026-06-06T22:56:22.313996+00:00",
+      "fetched_at": "2026-06-06T23:16:38.935011+00:00",
       "id": "bed20e6af36b8cc8"
     },
     {
@@ -162,7 +180,7 @@
       "angle_pt": "",
       "authors": "",
       "score": 2,
-      "fetched_at": "2026-06-06T22:56:23.235965+00:00",
+      "fetched_at": "2026-06-06T23:16:39.523218+00:00",
       "id": "c47af2f3d9583380"
     },
     {
@@ -180,7 +198,7 @@
       "angle_pt": "",
       "authors": "",
       "score": 2,
-      "fetched_at": "2026-06-06T22:56:35.720604+00:00",
+      "fetched_at": "2026-06-06T23:16:40.639122+00:00",
       "id": "4a05185501ecfb7e"
     },
     {
@@ -194,11 +212,11 @@
       "published": "2026-06-03",
       "raw_summary": "Der Nachmittag des ersten Kongresstags war inhaltlich dem Spannungsfeld Social Media gewidmet. Diskutiert wurden Chancen und Risiken der Plattformen. Für den überraschendsten Moment des Panels sorgte aber Eckart von Hirschhausen: Der TV-Star kam spontan aus dem Publikum auf die Bühne - mit einem sehr persönlichen Anliegen.",
       "title_pt": "Congresso HORIZONT 2026: Como as redes sociais estão se tornando um motor de crescimento e desinformação",
-      "summary_pt": "A tarde do primeiro dia do congresso foi dedicada ao tema das redes sociais. As oportunidades e riscos das plataformas foram discutidos. Mas Eckart von Hirschhausen proporcionou o momento mais surpreendente do painel: a estrela de TV subiu espontaneamente ao palco vinda da plateia - com um pedido muito pessoal.",
+      "summary_pt": "A tarde do primeiro dia do congresso foi dedicada ao tema redes sociais. As oportunidades e riscos das plataformas foram discutidos. Mas Eckart von Hirschhausen proporcionou o momento mais surpreendente do painel: a estrela de TV subiu espontaneamente ao palco vinda da plateia - com um pedido muito pessoal.",
       "angle_pt": "",
       "authors": "",
       "score": 2,
-      "fetched_at": "2026-06-06T22:56:37.553666+00:00",
+      "fetched_at": "2026-06-06T23:16:43.222371+00:00",
       "id": "d8520533b3ffcbf0"
     },
     {
@@ -212,30 +230,30 @@
       "published": "2026-06-03",
       "raw_summary": "Bei der Schwarz Gruppe dreht sich derzeit fast alles um Eigenmarken. Nachdem die Discount-Tochter Lidl kürzlich ihren Non-Food-Brands am PoS mehr Präsenz verschaffte und nun auch Kaufland die Lidl-Eigenmarken übernommen hat, sorgt nun ein Social-Media-Stunt für Aufmerksamkeit. Bemerkenswert ist dabei der Agenturpartner.",
       "title_pt": "Agência Edeka trapaceia: Lidl traz Jung de Matt - e anuncia suas próprias marcas com “Jump of the Year”.",
-      "summary_pt": "No Grupo Schwarz, hoje quase tudo gira em torno de marcas próprias. Depois que a subsidiária de descontos Lidl recentemente deu mais presença às suas marcas não alimentares no PoS e a Kaufland agora também assumiu as marcas próprias do Lidl, um golpe nas redes sociais está agora atraindo a atenção. A agência parceira é…",
+      "summary_pt": "No Grupo Schwarz, quase tudo gira atualmente em torno de marcas próprias. Depois que a subsidiária de descontos Lidl recentemente deu mais presença às suas marcas não alimentares no PoS e a Kaufland agora também assumiu as marcas próprias do Lidl, um golpe nas redes sociais está agora atraindo a atenção. A agência parc…",
       "angle_pt": "",
       "authors": "",
       "score": 2,
-      "fetched_at": "2026-06-06T22:56:37.553772+00:00",
+      "fetched_at": "2026-06-06T23:16:43.222464+00:00",
       "id": "aedb19ca0e244b85"
     },
     {
-      "title": "Liane Siebenhaar und Giuseppe Fiordispina abgelöst: Das sind die neuen Juryvorsitzenden beim Effie Germany",
-      "link": "https://www.horizont.net/agenturen/nachrichten/liane-siebenhaar-und-giuseppe-fiordispina-abgeloest-das-sind-die-neuen-juryvorsitzenden-beim-effie-germany-234588?utm_source=rss&utm_medium=referral&utm_campaign=news&utm_term=",
+      "title": "HORIZONT Kongress 2026: Das sind die Erfolgsfaktoren für KI-Transformation (auch) im Marketing",
+      "link": "https://www.horizont.net/marketing/nachrichten/horizont-kongress-das-sind-die-erfolgsfaktoren-fuer-ki-transformation-auch-im-marketing-234597?utm_source=rss&utm_medium=referral&utm_campaign=news&utm_term=",
       "source": "Horizont (DE)",
       "lang": "de",
       "region": "eu",
       "category": "branding",
       "kind": "noticia",
       "published": "2026-06-03",
-      "raw_summary": "Die Effie Jury bekommt in diesem Jahr zwei neue Vorsitzende: Alma Lipa, Chief Digital Marketing Officer bei L’Oréal, und Magnus Höltke, Group Strategy Director bei der Jung von Matt Group, bilden das neue Führungsduo. Die beiden lösen Liane Siebenhaar und Giuseppe Fiordispina ab.",
-      "title_pt": "Liane Siebenhaar e Giuseppe Fiordispina substituídos: Estes são os novos presidentes do júri da Effie Alemanha",
-      "summary_pt": "O Júri Effie tem dois novos presidentes este ano: Alma Lipa, Diretora de Marketing Digital da L’Oréal, e Magnus Höltke, Diretor de Estratégia de Grupo do Grupo Jung von Matt, formam a nova dupla de liderança. Os dois substituem Liane Siebenhaar e Giuseppe Fiordispina.",
+      "raw_summary": "Bis zu 70 Prozent aller Marketingaktivitäten könnten durch KI transformiert werden, mit enormen Profit-Erfolgen, sagt McKinsey-Berater Jesko Perrey. Doch in der Praxis sei es noch nicht so weit. Wie Marketer den Hebel jetzt umlegen können.",
+      "title_pt": "Congresso HORIZONT 2026: Estes são os fatores de sucesso para a transformação da IA ​​(também) em marketing",
+      "summary_pt": "Até 70% de todas as atividades de marketing poderiam ser transformadas pela IA, com enorme sucesso nos lucros, afirma Jesko Perrey, consultor da McKinsey. Mas na prática ainda não está tão longe. Como os profissionais de marketing podem virar a alavanca agora.",
       "angle_pt": "",
       "authors": "",
       "score": 2,
-      "fetched_at": "2026-06-06T22:56:37.553849+00:00",
-      "id": "e85ef33c9bc9a426"
+      "fetched_at": "2026-06-06T23:16:43.222307+00:00",
+      "id": "f2ea0654b323dd5c"
     },
     {
       "title": "Inside the BFI’s new online video archive",
@@ -252,7 +270,7 @@
       "angle_pt": "",
       "authors": "",
       "score": 1,
-      "fetched_at": "2026-06-06T22:56:35.720672+00:00",
+      "fetched_at": "2026-06-06T23:16:40.639182+00:00",
       "id": "644f2ac82619d1b7"
     }
   ]
