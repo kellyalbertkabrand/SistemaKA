@@ -1,8 +1,7 @@
 name: Coleta diária (SistemaKA)
 
-# O que este robô faz: todo dia coleta as notícias e SALVA no repositório.
-# Quem publica o site é o Netlify (conectado ao repositório), que reconstrói
-# o painel automaticamente sempre que esta coleta salva novidades.
+# Todo dia: coleta as notícias, salva no repositório e (se houver credencial)
+# republica o painel no Netlify automaticamente.
 #
 # Quando roda:
 #  - schedule: todo dia (07:30 e 13:30 no horário de Brasília)
@@ -23,6 +22,8 @@ concurrency:
 jobs:
   coletar:
     runs-on: ubuntu-latest
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,17 +34,21 @@ jobs:
           python-version: "3.12"
           cache: pip
 
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Instalar dependências
         run: pip install -r requirements.txt
 
-      - name: Coletar notícias do dia
+      - name: Coletar notícias do dia + gerar painel
         env:
-          # Opcional: defina o segredo ANTHROPIC_API_KEY para resumos com IA.
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SISTEMAKA_REPO: ${{ github.repository }}
         run: python -m sistemaka run
 
-      - name: Salvar histórico (dispara a republicação no Netlify)
+      - name: Salvar histórico no repositório
         run: |
           git config user.name "SistemaKA Bot"
           git config user.email "actions@github.com"
@@ -54,3 +59,12 @@ jobs:
             git commit -m "chore: histórico de coleta ($(date -u +%Y-%m-%d))"
             git push
           fi
+
+      - name: Republicar no Netlify (se a credencial estiver configurada)
+        if: ${{ env.NETLIFY_AUTH_TOKEN != '' }}
+        run: |
+          npx -y netlify-cli@17 deploy \
+            --dir=public \
+            --site=08fc9134-351a-4237-9891-fd4dea56d013 \
+            --prod \
+            --message "Coleta de $(date -u +%Y-%m-%d)"
