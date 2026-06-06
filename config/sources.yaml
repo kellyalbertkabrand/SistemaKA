@@ -84,6 +84,19 @@ rss_feeds:
   - { url: "https://lbbonline.com/news/rss",                name: "Little Black Book",     lang: en, region: eu, category: campanha }
   - { url: "https://www.horizont.net/news/feed/",          name: "Horizont (DE)",         lang: de, region: eu, category: branding }
 
+  # ---------------- CONSULTORIAS DE BRANDING (mundo) ----------------
+  - { url: "https://interbrand.com/feed/",                  name: "Interbrand",            lang: en, region: us, category: branding }
+  - { url: "https://landor.com/feed/",                      name: "Landor",                lang: en, region: eu, category: branding }
+  - { url: "https://www.prophet.com/feed/",                 name: "Prophet",               lang: en, region: us, category: posicionamento }
+  - { url: "https://www.wolffolins.com/feed/",              name: "Wolff Olins",           lang: en, region: eu, category: branding }
+  - { url: "https://lippincott.com/feed/",                  name: "Lippincott",            lang: en, region: us, category: posicionamento }
+  - { url: "https://www.siegelgale.com/feed/",             name: "Siegel+Gale",           lang: en, region: us, category: posicionamento }
+  - { url: "https://www.futurebrand.com/feed",            name: "FutureBrand",           lang: en, region: eu, category: branding }
+  - { url: "https://www.wearecollins.com/feed/",          name: "COLLINS",               lang: en, region: us, category: branding }
+  - { url: "https://www.designstudio.com/feed/",          name: "DesignStudio",          lang: en, region: eu, category: posicionamento }
+  - { url: "https://www.pentagram.com/feed",             name: "Pentagram",             lang: en, region: eu, category: branding }
+  - { url: "https://saffron-consultants.com/feed/",       name: "Saffron",               lang: en, region: eu, category: branding }
+
 # -----------------------------------------------------------------------------
 # Fontes acadêmicas (artigos / papers). Crossref cobre periódicos de várias
 # editoras; arXiv cobre preprints (mais voltado a IA/computação).
