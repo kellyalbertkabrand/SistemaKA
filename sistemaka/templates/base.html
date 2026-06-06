@@ -40,5 +40,25 @@
     <p>Atualizado em {{ generated_at }} · Coletado automaticamente pelo SistemaKA.
        Os textos linkam sempre para a fonte original.</p>
   </footer>
+
+  <script>
+  // No iPhone/iPad, abre as matérias direto no Google Chrome (se instalado).
+  (function () {
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (!isIOS) return;
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a[data-ext]');
+      if (!a) return;
+      var url = a.getAttribute('href') || '';
+      if (!/^https?:\/\//.test(url)) return;
+      e.preventDefault();
+      var chromeUrl = url.replace(/^https:\/\//, 'googlechromes://')
+                         .replace(/^http:\/\//, 'googlechrome://');
+      window.location.href = chromeUrl;
+      // Se o Chrome não estiver instalado, abre normalmente após um instante.
+      setTimeout(function () { if (!document.hidden) window.location.href = url; }, 1200);
+    }, false);
+  })();
+  </script>
 </body>
 </html>
