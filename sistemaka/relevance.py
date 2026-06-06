@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import re
+from datetime import datetime, timezone
 from urllib.parse import urlparse
 
 from .models import Item
@@ -16,8 +17,15 @@ def _normalize(text: str) -> str:
 
 
 def is_valid(item: Item) -> bool:
-    """Item só vale se tiver fonte real (link de matéria) e data completa."""
+    """Item só vale se tiver fonte real (link de matéria) e data PLAUSÍVEL."""
     if not item.has_full_date:
+        return False
+    try:
+        d = datetime.fromisoformat(item.published).date()
+    except ValueError:
+        return False
+    today = datetime.now(timezone.utc).date()
+    if d > today or d.year < 2005:  # datas no futuro ou absurdas → fora
         return False
     link = item.link or ""
     if not link.startswith(("http://", "https://")):

@@ -1,0 +1,24 @@
+name: Deploy agora (one-time)
+
+# Republica o painel no Netlify a partir dos dados já existentes no repositório
+# (não recoleta). Dispara sozinho quando este arquivo muda.
+on:
+  push:
+    paths:
+      - '.github/workflows/deploy-now.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Publicar no Netlify
+        run: |
+          npx -y @netlify/mcp@latest \
+            --site-id 08fc9134-351a-4237-9891-fd4dea56d013 \
+            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..5nrnxrepHhMHdGWX.OHJUtnSoZh_7W4Dah-znr88hv68ZtXnmQMYaXRjfdvDMSb5jcbZRO5b-Wb6uMSKGstc1ZRJOjs65jaOIT4Uu2h9ri-PtANZgWeDAS-Dsh5RXe7UOzpEl7H96fxkIe0HKiUOi4ErKzNEUdJ1orUBJ0KTX9TCjkbKNP2LKrTe4Z36rixhMggpN46259JXNyKmM638hM3Q5B2c06zLnIgXCO9E3gDhP12iEC_R_tTbpZGX08mVc5-sNVew5jlqiPyozhszigzEdxKNBZVINQYfs6RfjoVfCtjzkzBOx_gWlrEFAMJDXcGYKn25ZNkeFEDiQN7D3BM4mZiE69ns2IF4QVvg8Vd7YpWUR0QUvarx8zBXQNoF_DelHpFPlcxV0F3827xPcJte5.eMzuq4ir8bdsZesYaNvzyw"
