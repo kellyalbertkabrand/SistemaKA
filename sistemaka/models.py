@@ -17,7 +17,7 @@ CATEGORY_LABELS = {
     "posicionamento": "Posicionamento & Reposicionamento",
     "semiotica": "Semiótica de Marca",
     "neuromarketing": "Neuromarketing",
-    "polemica": "Polêmicas & Marca Pessoal",
+    "polemica": "Polêmicas de Marca",
     "academico": "Acadêmico",
 }
 

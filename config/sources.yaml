@@ -85,9 +85,9 @@ google_news_topics:
     query_pt: 'neuromarketing marca consumidor'
     query_en: 'neuromarketing brand consumer behavior'
   - category: polemica
-    label: "Polêmicas & Marca Pessoal"
-    query_pt: '"marca pessoal" polêmica OR reputação OR cancelamento OR crise de imagem'
-    query_en: '"personal brand" controversy OR reputation OR backlash celebrity'
+    label: "Polêmicas de Marca"
+    query_pt: 'polêmica marca OR boicote OR cancelamento OR "crise de imagem" OR campanha polêmica'
+    query_en: 'brand controversy OR backlash OR boycott OR "brand crisis" OR ad controversy'
 
 # -----------------------------------------------------------------------------
 # Feeds RSS diretos de publicações de referência. Se algum feed mudar de URL
@@ -184,6 +184,13 @@ keywords:
   - advertising
   - marketing
   - marketing digital
+  - polêmica
+  - boicote
+  - cancelamento
+  - crise de imagem
+  - controversy
+  - backlash
+  - boycott
   - inteligência artificial
   - generative ai
   - ia generativa
