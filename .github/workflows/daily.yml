@@ -1,7 +1,11 @@
 name: Coleta diária (SistemaKA)
 
+# O que este robô faz: todo dia coleta as notícias e SALVA no repositório.
+# Quem publica o site é o Netlify (conectado ao repositório), que reconstrói
+# o painel automaticamente sempre que esta coleta salva novidades.
+#
 # Quando roda:
-#  - schedule: todo dia automaticamente (07:30 e 13:30 no horário de Brasília)
+#  - schedule: todo dia (07:30 e 13:30 no horário de Brasília)
 #  - workflow_dispatch: quando você clica em "Atualizar agora" / "Run workflow"
 on:
   schedule:
@@ -9,16 +13,15 @@ on:
     - cron: "30 16 * * *"   # 16:30 UTC = 13:30 Brasília
   workflow_dispatch: {}
 
-# Permissão para salvar o histórico de coleta de volta no repositório.
 permissions:
   contents: write
 
 concurrency:
-  group: sistemaka-deploy
+  group: sistemaka-coleta
   cancel-in-progress: false
 
 jobs:
-  coletar-e-publicar:
+  coletar:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -30,24 +33,17 @@ jobs:
           python-version: "3.12"
           cache: pip
 
-      - name: Configurar Node (para o deploy no Netlify)
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
       - name: Instalar dependências
         run: pip install -r requirements.txt
 
-      - name: Coletar notícias + gerar o painel
+      - name: Coletar notícias do dia
         env:
-          # Resumos com IA: defina o segredo ANTHROPIC_API_KEY no repositório
-          # (Settings → Secrets and variables → Actions). Sem ele, o sistema
-          # usa o trecho original da fonte.
+          # Opcional: defina o segredo ANTHROPIC_API_KEY para resumos com IA.
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SISTEMAKA_REPO: ${{ github.repository }}
         run: python -m sistemaka run
 
-      - name: Salvar histórico no repositório
+      - name: Salvar histórico (dispara a republicação no Netlify)
         run: |
           git config user.name "SistemaKA Bot"
           git config user.email "actions@github.com"
@@ -58,13 +54,3 @@ jobs:
             git commit -m "chore: histórico de coleta ($(date -u +%Y-%m-%d))"
             git push
           fi
-
-      - name: Publicar no Netlify
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-        run: |
-          npx -y netlify-cli@17 deploy \
-            --dir=public \
-            --site=08fc9134-351a-4237-9891-fd4dea56d013 \
-            --prod \
-            --message "Coleta de $(date -u +%Y-%m-%d)"
