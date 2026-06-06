@@ -49,8 +49,6 @@ def score(item: Item, keywords: list[str]) -> int:
             points += 1
         if nk in title:
             points += 1  # título pesa o dobro
-    if item.kind == "academico":
-        points += 1
     return points
 
 
@@ -82,8 +80,8 @@ def rank_and_filter(items: list[Item], cfg: dict) -> list[Item]:
     kept: list[Item] = []
     for item in unique:
         s = score(item, keywords)
-        if s <= 0 and item.kind != "academico":
-            continue
+        if s <= 0:
+            continue  # sem nenhuma palavra-chave relevante → fora (vale p/ acadêmico também)
         item.score = s
         kept.append(item)
 

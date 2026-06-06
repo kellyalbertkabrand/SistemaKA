@@ -113,9 +113,9 @@ academic:
     - { query: "neuromarketing brand consumer",    category: neuromarketing }
     - { query: "artificial intelligence branding", category: branding_ia }
   crossref_window_days: 30   # papers acadêmicos saem em ritmo mais lento
-  arxiv_queries:
-    - { query: "branding artificial intelligence marketing", category: branding_ia }
-    - { query: "neuromarketing consumer neuroscience",       category: neuromarketing }
+  # arXiv desativado: é repositório de computação/física e trazia papers de IA
+  # sem relação com branding (ruído). O acadêmico relevante vem do Crossref.
+  arxiv_queries: []
 
 # -----------------------------------------------------------------------------
 # Palavras-chave usadas para pontuar a relevância de cada item. Quanto mais
