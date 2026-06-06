@@ -1,0 +1,73 @@
+name: Coleta diária (SistemaKA)
+
+# Quando roda:
+#  - schedule: todo dia automaticamente (07:30 e 13:30 no horário de Brasília)
+#  - workflow_dispatch: quando você clica em "Atualizar agora" / "Run workflow"
+on:
+  schedule:
+    - cron: "30 10 * * *"   # 10:30 UTC = 07:30 Brasília
+    - cron: "30 16 * * *"   # 16:30 UTC = 13:30 Brasília
+  workflow_dispatch: {}
+
+# Permissões: escrever no repo (salvar histórico) e publicar no Pages.
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# Evita execuções concorrentes atropelando o deploy.
+concurrency:
+  group: sistemaka-pages
+  cancel-in-progress: false
+
+jobs:
+  coletar-e-publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Coletar notícias + gerar o painel
+        env:
+          # Resumos com IA: defina o segredo ANTHROPIC_API_KEY no repositório
+          # (Settings → Secrets and variables → Actions). Sem ele, o sistema
+          # usa o trecho original da fonte.
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SISTEMAKA_REPO: ${{ github.repository }}
+        run: python -m sistemaka run
+
+      - name: Salvar histórico no repositório
+        run: |
+          git config user.name "SistemaKA Bot"
+          git config user.email "actions@github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "Sem novidades no histórico."
+          else
+            git commit -m "chore: histórico de coleta ($(date -u +%Y-%m-%d))"
+            git push
+          fi
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Empacotar o site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Publicar no GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,24 @@
+{% macro render_groups(groups) %}
+  {% for category, items in groups %}
+  <div class="group" id="cat-{{ category }}">
+    <h2 class="group-title">{{ items[0].category_label }} <span class="count">{{ items|length }}</span></h2>
+    {% for item in items %}
+    <article class="item">
+      <div class="item-tags">
+        <span class="tag tag-{{ item.kind }}">{{ item.kind_label }}</span>
+        <span class="tag tag-lang">{{ item.lang_label }}</span>
+        <span class="tag tag-region">{{ item.region_label }}</span>
+        {% if item.published %}<span class="tag tag-date">{{ item.published }}</span>{% endif %}
+      </div>
+      <h3 class="item-title"><a href="{{ item.link }}" target="_blank" rel="noopener">{{ item.title }}</a></h3>
+      <p class="item-summary">{{ item.summary_pt }}</p>
+      {% if item.angle_pt %}<p class="item-angle">💡 {{ item.angle_pt }}</p>{% endif %}
+      <p class="item-meta">
+        {% if item.authors %}{{ item.authors }} · {% endif %}{{ item.source }}
+        · <a href="{{ item.link }}" target="_blank" rel="noopener">ver fonte ↗</a>
+      </p>
+    </article>
+    {% endfor %}
+  </div>
+  {% endfor %}
+{% endmacro %}

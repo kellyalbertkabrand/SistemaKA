@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% import "_items.html" as macros %}
+{% block content %}
+  <div class="page-head">
+    <p class="eyebrow">Radar diário · Branding & IA</p>
+    <h1>{{ day|br_date }}</h1>
+    <p class="lead">
+      {{ total }} itens selecionados hoje · notícias e artigos do Brasil e do mundo,
+      em português e inglês, sobre branding, IA, campanhas, posicionamento,
+      semiótica e neuromarketing.
+    </p>
+    {% if not has_ai %}
+    <p class="notice">⚙️ Modo sem IA: os resumos abaixo usam o trecho original da
+      fonte. Configure a chave da Claude para tradução e síntese automática.</p>
+    {% endif %}
+  </div>
+
+  {% if groups %}
+    {{ macros.render_groups(groups) }}
+  {% else %}
+    <p class="empty">Ainda não há itens para hoje. A primeira coleta vai preencher
+      esta página automaticamente.</p>
+  {% endif %}
+{% endblock %}

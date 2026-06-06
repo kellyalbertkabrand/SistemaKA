@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% import "_items.html" as macros %}
+{% block title %}{{ month|br_month }} · {{ site_title }}{% endblock %}
+{% block content %}
+  <div class="page-head">
+    <p class="eyebrow"><a href="{{ rel }}arquivo.html">← Arquivo</a></p>
+    <h1>Resumo mensal · {{ month|br_month }}</h1>
+    <p class="lead">{{ total }} itens reunidos no mês, em {{ days_count }} dias de coleta.</p>
+  </div>
+
+  {% if monthly_summary %}
+  <div class="card monthly">
+    <h2>Panorama do mês</h2>
+    <div class="monthly-body">{{ monthly_summary|safe }}</div>
+  </div>
+  {% endif %}
+
+  <div class="card stats">
+    <h3>Por categoria</h3>
+    <ul class="statlist">
+      {% for label, n in category_counts %}
+      <li><span>{{ label }}</span><strong>{{ n }}</strong></li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  {% if groups %}
+    {{ macros.render_groups(groups) }}
+  {% endif %}
+{% endblock %}

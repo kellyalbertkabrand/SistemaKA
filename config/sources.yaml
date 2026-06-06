@@ -1,0 +1,108 @@
+# =============================================================================
+# SistemaKA — Configuração de fontes
+# -----------------------------------------------------------------------------
+# Este arquivo controla TUDO que o sistema busca. Você pode editar à vontade:
+# adicionar temas, feeds, palavras-chave, sem mexer no código.
+# =============================================================================
+
+# Janela (em dias) para considerar uma notícia "recente". Itens mais antigos
+# que isso são descartados na coleta diária.
+window_days: 2
+
+# Quantos itens, no máximo, entram no relatório de cada dia (após ranquear).
+max_items_per_day: 40
+
+# -----------------------------------------------------------------------------
+# Google News — buscas por idioma/região (trazem o link real do veículo).
+# locales = onde/como buscar | topics = o que buscar.
+# -----------------------------------------------------------------------------
+google_news_locales:
+  - { name: "Brasil",  hl: "pt-BR", gl: "BR", ceid: "BR:pt-419", lang: pt, region: BR }
+  - { name: "Mundo",   hl: "en-US", gl: "US", ceid: "US:en",     lang: en, region: world }
+
+google_news_topics:
+  - category: branding_ia
+    label: "Branding & IA"
+    query_pt: 'branding "inteligência artificial" marca'
+    query_en: 'branding "artificial intelligence" brand'
+  - category: branding
+    label: "Branding"
+    query_pt: 'branding "estratégia de marca"'
+    query_en: 'branding "brand strategy"'
+  - category: campanha
+    label: "Campanhas & Ideias"
+    query_pt: 'campanha publicitária marca conceito criativo'
+    query_en: 'advertising campaign brand creative idea'
+  - category: posicionamento
+    label: "Posicionamento & Reposicionamento"
+    query_pt: 'posicionamento de marca OR reposicionamento de marca'
+    query_en: 'brand positioning OR repositioning OR rebranding'
+  - category: semiotica
+    label: "Semiótica de Marca"
+    query_pt: 'semiótica marca branding'
+    query_en: 'semiotics branding brand'
+  - category: neuromarketing
+    label: "Neuromarketing"
+    query_pt: 'neuromarketing marca consumidor'
+    query_en: 'neuromarketing brand consumer behavior'
+
+# -----------------------------------------------------------------------------
+# Feeds RSS diretos de publicações de referência. Se algum feed mudar de URL
+# ou sair do ar, o sistema apenas ignora aquele feed e segue em frente.
+# -----------------------------------------------------------------------------
+rss_feeds:
+  - { url: "https://www.brandingmag.com/feed/",                 name: "Brandingmag",        lang: en, region: world, category: branding }
+  - { url: "https://www.marketingweek.com/feed/",               name: "Marketing Week",     lang: en, region: world, category: branding }
+  - { url: "https://www.thedrum.com/rss.xml",                   name: "The Drum",           lang: en, region: world, category: campanha }
+  - { url: "https://www.adweek.com/feed/",                      name: "Adweek",             lang: en, region: world, category: campanha }
+  - { url: "https://www.adage.com/section/news/rss.xml",        name: "Ad Age",             lang: en, region: world, category: campanha }
+  - { url: "https://www.warc.com/rss/news",                     name: "WARC",               lang: en, region: world, category: branding }
+  - { url: "https://www.mundodomarketing.com.br/feed/",         name: "Mundo do Marketing", lang: pt, region: BR,    category: branding }
+  - { url: "https://www.meioemensagem.com.br/feed",            name: "Meio & Mensagem",    lang: pt, region: BR,    category: campanha }
+  - { url: "https://www.b9.com.br/feed/",                       name: "B9",                 lang: pt, region: BR,    category: branding }
+  - { url: "https://propmark.com.br/feed/",                     name: "Propmark",           lang: pt, region: BR,    category: campanha }
+
+# -----------------------------------------------------------------------------
+# Fontes acadêmicas (artigos / papers). Crossref cobre periódicos de várias
+# editoras; arXiv cobre preprints (mais voltado a IA/computação).
+# -----------------------------------------------------------------------------
+academic:
+  crossref_queries:
+    - { query: "brand positioning",                category: posicionamento }
+    - { query: "brand repositioning rebranding",   category: posicionamento }
+    - { query: "brand semiotics meaning",          category: semiotica }
+    - { query: "neuromarketing brand consumer",    category: neuromarketing }
+    - { query: "artificial intelligence branding", category: branding_ia }
+  crossref_window_days: 30   # papers acadêmicos saem em ritmo mais lento
+  arxiv_queries:
+    - { query: "branding artificial intelligence marketing", category: branding_ia }
+    - { query: "neuromarketing consumer neuroscience",       category: neuromarketing }
+
+# -----------------------------------------------------------------------------
+# Palavras-chave usadas para pontuar a relevância de cada item. Quanto mais
+# termos aparecerem no título/resumo, mais alto o item fica no ranking.
+# -----------------------------------------------------------------------------
+keywords:
+  - branding
+  - marca
+  - brand
+  - rebranding
+  - posicionamento
+  - positioning
+  - reposicionamento
+  - repositioning
+  - campanha
+  - campaign
+  - semiótica
+  - semiotics
+  - neuromarketing
+  - identidade visual
+  - brand identity
+  - inteligência artificial
+  - artificial intelligence
+  - " ia "
+  - " ai "
+  - consumidor
+  - consumer
+  - publicidade
+  - advertising

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ site_title }}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ rel }}styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ rel }}index.html">
+      <span class="brand-mark">KA</span>
+      <span class="brand-text">{{ site_title }}</span>
+    </a>
+    <nav class="topnav">
+      <a href="{{ rel }}index.html">Hoje</a>
+      <a href="{{ rel }}arquivo.html">Arquivo</a>
+      <a class="btn-update" href="{{ update_url }}" target="_blank" rel="noopener"
+         title="Abre o GitHub Actions; clique em 'Run workflow' para coletar agora">↻ Atualizar agora</a>
+    </nav>
+  </header>
+
+  <main class="layout">
+    <section class="content">
+      {% block content %}{% endblock %}
+    </section>
+    <aside class="sidebar">
+      {% block sidebar %}
+      <div class="card">
+        <h3>Dias recentes</h3>
+        <ul class="daylist">
+          {% for d in recent_days %}
+          <li><a href="{{ rel }}dia/{{ d }}.html">{{ d|br_date }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Meses</h3>
+        <ul class="daylist">
+          {% for m in months %}
+          <li><a href="{{ rel }}mes/{{ m }}.html">{{ m|br_month }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endblock %}
+    </aside>
+  </main>
+
+  <footer class="footer">
+    <p>Atualizado em {{ generated_at }} · Coletado automaticamente pelo SistemaKA.
+       Os textos linkam sempre para a fonte original.</p>
+  </footer>
+</body>
+</html>

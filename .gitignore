@@ -1,0 +1,10 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Site gerado: é reconstruído e publicado pelo GitHub Pages a cada execução.
+/public/
+
+# O histórico em /data/ É versionado de propósito (memória do sistema).

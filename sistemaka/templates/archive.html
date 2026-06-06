@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Arquivo · {{ site_title }}{% endblock %}
+{% block content %}
+  <div class="page-head">
+    <p class="eyebrow">Histórico completo</p>
+    <h1>Arquivo</h1>
+    <p class="lead">Todos os dias e meses já coletados.</p>
+  </div>
+
+  <div class="card">
+    <h2>Meses</h2>
+    <ul class="archive-grid">
+      {% for m, n in months %}
+      <li><a href="{{ rel }}mes/{{ m }}.html">{{ m|br_month }}<span>{{ n }} itens</span></a></li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Dias</h2>
+    <ul class="archive-grid">
+      {% for d, n in days %}
+      <li><a href="{{ rel }}dia/{{ d }}.html">{{ d|br_date }}<span>{{ n }} itens</span></a></li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}
+{% block sidebar %}{% endblock %}

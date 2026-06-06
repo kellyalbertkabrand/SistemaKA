@@ -1,0 +1,7 @@
+# Dependências do SistemaKA — agregador diário de notícias de branding & IA
+feedparser>=6.0.11
+requests>=2.31.0
+PyYAML>=6.0.1
+Jinja2>=3.1.3
+# Opcional: usado apenas quando há ANTHROPIC_API_KEY para gerar resumos com IA.
+anthropic>=0.40.0
