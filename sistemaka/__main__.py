@@ -1,9 +1,10 @@
 """Interface de linha de comando do SistemaKA.
 
 Uso:
-    python -m sistemaka run      # coleta o dia + gera o site (uso diário)
-    python -m sistemaka build    # só reconstrói o site a partir do histórico
-    python -m sistemaka demo     # cria dados de exemplo (sem internet) + site
+    python -m sistemaka run            # coleta o dia + gera o site (padrão)
+    python -m sistemaka run --days 7   # coleta os últimos 7 dias (backfill)
+    python -m sistemaka build          # só reconstrói o site a partir do histórico
+    python -m sistemaka demo           # dados de exemplo (sem internet) + site
 """
 
 from __future__ import annotations
@@ -24,13 +25,15 @@ def _setup_logging() -> None:
 def main(argv: list[str] | None = None) -> int:
     _setup_logging()
     parser = argparse.ArgumentParser(prog="sistemaka", description="Radar de Branding & IA")
-    parser.add_argument("command", choices=["run", "build", "demo"], help="ação a executar")
+    parser.add_argument("command", choices=["run", "build", "demo"])
+    parser.add_argument("--days", type=int, default=None,
+                        help="janela de coleta em dias (sobrepõe o config)")
     args = parser.parse_args(argv)
 
     from . import pipeline
 
     if args.command == "run":
-        pipeline.run_daily()
+        pipeline.run_daily(window=args.days)
     elif args.command == "build":
         pipeline.rebuild_site()
     elif args.command == "demo":

@@ -44,10 +44,26 @@ class Item:
     kind: str = "noticia"           # "noticia" ou "academico"
     published: str = ""             # data ISO (YYYY-MM-DD) da publicação
     raw_summary: str = ""           # trecho/descrição original da fonte
+    title_pt: str = ""              # título traduzido para português (se aplicável)
     summary_pt: str = ""            # essência resumida em português
     angle_pt: str = ""              # gancho de conteúdo para o trabalho da Kelly
     authors: str = ""               # autores (artigos acadêmicos)
+    score: int = 0                  # relevância (preenchido no ranqueamento)
     fetched_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+    @property
+    def has_full_date(self) -> bool:
+        """True se 'published' for uma data completa AAAA-MM-DD."""
+        return bool(re.fullmatch(r"\d{4}-\d{2}-\d{2}", self.published or ""))
+
+    @property
+    def display_title(self) -> str:
+        """Título a exibir: o traduzido quando houver, senão o original."""
+        return self.title_pt or self.title
+
+    @property
+    def needs_translation(self) -> bool:
+        return self.lang != "pt"
 
     @property
     def id(self) -> str:

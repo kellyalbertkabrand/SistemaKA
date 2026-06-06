@@ -27,6 +27,14 @@
     <aside class="sidebar">
       {% block sidebar %}
       <div class="card">
+        <h3>Buscar por data</h3>
+        <form class="datepick" onsubmit="event.preventDefault(); var v=this.d.value; if(v) location.href='{{ rel }}dia/'+v+'.html';">
+          <input type="date" name="d" min="{{ date_min }}" max="{{ date_max }}" value="{{ date_max }}">
+          <button type="submit">Ver dia</button>
+        </form>
+        <p class="hint">Escolha qualquer data para ver exatamente o que foi publicado nela.</p>
+      </div>
+      <div class="card">
         <h3>Dias recentes</h3>
         <ul class="daylist">
           {% for d in recent_days %}

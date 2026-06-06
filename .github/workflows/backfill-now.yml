@@ -1,0 +1,55 @@
+name: Backfill + deploy (one-time)
+
+# Recoleta os últimos dias com as novas regras (data real, fonte válida,
+# tradução), salva o histórico e republica o painel no Netlify. Dispara sozinho
+# quando este arquivo muda.
+on:
+  push:
+    paths:
+      - '.github/workflows/backfill-now.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Limpar dados antigos e recoletar últimos 7 dias
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SISTEMAKA_REPO: ${{ github.repository }}
+        run: |
+          rm -f data/items/*.json
+          python -m sistemaka run --days 7
+
+      - name: Salvar histórico no repositório
+        run: |
+          git config user.name "SistemaKA Bot"
+          git config user.email "actions@github.com"
+          git add data
+          git commit -m "data: backfill (data real + fonte + tradução)" || echo "sem mudanças"
+          git push || echo "nada a enviar"
+
+      - name: Publicar no Netlify
+        run: |
+          npx -y @netlify/mcp@latest \
+            --site-id 08fc9134-351a-4237-9891-fd4dea56d013 \
+            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..wxsy8hCortZUZ8Px.PBfOmRRj0paSbK0L5ISMqHzbkiQ48sz9kgS-CaMIS7xaD_XL7kaH9dzQrF3adTjk0lbHlj7Pv7XyKgp5lkwBYajbTCLPmSPZEOHvs0rQKlbVJYvO0mkI-E-D6P95t5A24P_NkArrdduN5TMxsNV0weDohSSIP3lg3Q-6KfLQMxLY7eFSp1rXUMqmCgNmQZhjI-m3O2o3RnQ5876qEmtXOXubvgJOhta3aKqIrO7aakps5aASTQqhcLF-E2ezm57n5-habzLF6ZCQVfj-XEnXi-ogHnXQzHZs4VnbGlmJdgVw7dhZk4TzS3ut8Imoe6dxUkSyrTMDG0H-W4OK8aQFEZyFUCG1DWMZrLb5Le8Q14yqNNv1QgifVDRzUxErSNFLrVN40ZLd.Bpf2VuwzYYEfYaiGWSiiPg"

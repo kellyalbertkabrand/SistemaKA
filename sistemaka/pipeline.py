@@ -1,4 +1,4 @@
-"""Orquestração: coletar → ranquear → resumir → salvar → gerar site."""
+"""Orquestração: coletar → validar/ranquear → traduzir/resumir → salvar → site."""
 
 from __future__ import annotations
 
@@ -13,22 +13,22 @@ from .summarize import summarize_items
 log = logging.getLogger("sistemaka.pipeline")
 
 
-def run_daily() -> str:
-    """Executa a coleta do dia e reconstrói o site. Retorna a data processada."""
+def run_daily(window: int | None = None) -> list[str]:
+    """Coleta (janela em dias), arquiva por data de publicação e gera o site."""
     cfg = config.load_config()
-    day = store.today_str()
+    max_per_day = int(cfg.get("max_items_per_day", 40))
 
-    log.info("=== SistemaKA · coleta de %s ===", day)
-    raw = fetch_all(cfg)
+    log.info("=== SistemaKA · coleta (janela=%s dias) ===", window or cfg.get("window_days", 2))
+    raw = fetch_all(cfg, window=window)
     selected = rank_and_filter(raw, cfg)
     summarize_items(selected)
-    store.save_day(day, selected)
+    days = store.save_items_by_published(selected, max_per_day)
 
     build_site()
-    log.info("=== Concluído: %d itens em %s ===", len(selected), day)
-    return day
+    log.info("=== Concluído: %d itens em %d dia(s): %s ===",
+             len(selected), len(days), ", ".join(days) or "—")
+    return days
 
 
 def rebuild_site() -> None:
-    """Reconstrói o site a partir do histórico já salvo (sem coletar)."""
     build_site()

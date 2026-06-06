@@ -129,6 +129,22 @@ a { color: inherit; }
 .archive-grid a:hover { border-color: var(--accent); }
 .archive-grid span { font-size: 12px; color: var(--muted); font-weight: 400; }
 
+.tag-trad { background: rgba(120,200,120,.18); color: #aee8ae; }
+.item-original { margin: -4px 0 8px; font-size: 13px; color: var(--muted); }
+.item-original em { font-style: italic; }
+
+.datepick { display: flex; gap: 8px; }
+.datepick input[type="date"] {
+  flex: 1; background: var(--panel-2); color: var(--text);
+  border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; font-size: 14px;
+}
+.datepick button {
+  background: var(--accent); color: #fff; border: none; border-radius: 8px;
+  padding: 7px 12px; font-weight: 700; cursor: pointer;
+}
+.datepick button:hover { filter: brightness(1.08); }
+.hint { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+
 .empty { color: var(--muted); padding: 30px 0; }
 .footer { max-width: var(--max); margin: 0 auto; padding: 24px;
   color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); }

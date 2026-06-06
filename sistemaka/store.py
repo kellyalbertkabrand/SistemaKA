@@ -1,9 +1,15 @@
-"""Persistência do arquivo histórico (data/items/AAAA-MM-DD.json)."""
+"""Persistência do arquivo histórico (data/items/AAAA-MM-DD.json).
+
+Os itens são arquivados pela DATA REAL de publicação — então a página de um dia
+mostra exatamente o que foi publicado naquele dia.
+"""
 
 from __future__ import annotations
 
 import json
 import logging
+import re
+from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -11,6 +17,8 @@ from . import config
 from .models import Item
 
 log = logging.getLogger("sistemaka.store")
+
+DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
 
 
 def _day_path(day: str) -> Path:
@@ -21,15 +29,14 @@ def today_str() -> str:
     return datetime.now(timezone.utc).date().isoformat()
 
 
-def save_day(day: str, items: list[Item]) -> Path:
-    """Mescla os itens novos com o que já houver no dia (dedupe por id)."""
+def save_day(day: str, items: list[Item], max_per_day: int = 60) -> Path:
+    """Mescla os itens no arquivo do dia (dedupe por id, ordena por relevância)."""
     config.DATA_DIR.mkdir(parents=True, exist_ok=True)
-    existing = load_day(day)
-    by_id = {item.id: item for item in existing}
+    by_id = {it.id: it for it in load_day(day)}
     for item in items:
-        by_id[item.id] = item  # novos sobrescrevem (resumos atualizados)
-    merged = list(by_id.values())
-    merged.sort(key=lambda it: (it.category, it.title.lower()))
+        by_id[item.id] = item
+    merged = sorted(by_id.values(), key=lambda it: (it.score, it.published), reverse=True)
+    merged = merged[:max_per_day]
 
     path = _day_path(day)
     with open(path, "w", encoding="utf-8") as fh:
@@ -38,8 +45,19 @@ def save_day(day: str, items: list[Item]) -> Path:
              "count": len(merged), "items": [it.to_dict() for it in merged]},
             fh, ensure_ascii=False, indent=2,
         )
-    log.info("Salvo %s (%d itens)", path, len(merged))
     return path
+
+
+def save_items_by_published(items: list[Item], max_per_day: int = 60) -> list[str]:
+    """Distribui os itens pelos arquivos da sua data de publicação."""
+    by_day: dict[str, list[Item]] = defaultdict(list)
+    for item in items:
+        if item.has_full_date:
+            by_day[item.published].append(item)
+    for day, day_items in by_day.items():
+        path = save_day(day, day_items, max_per_day)
+        log.info("Salvo %s (%d novos)", path, len(day_items))
+    return sorted(by_day.keys(), reverse=True)
 
 
 def load_day(day: str) -> list[Item]:
@@ -52,15 +70,13 @@ def load_day(day: str) -> list[Item]:
 
 
 def all_days() -> list[str]:
-    """Lista de datas (mais recente primeiro) presentes no histórico."""
     if not config.DATA_DIR.exists():
         return []
-    days = [p.stem for p in config.DATA_DIR.glob("*.json")]
+    days = [p.stem for p in config.DATA_DIR.glob("*.json") if DATE_RE.fullmatch(p.stem)]
     return sorted(days, reverse=True)
 
 
 def load_month(year_month: str) -> list[Item]:
-    """Carrega todos os itens de um mês 'AAAA-MM'."""
     items: list[Item] = []
     for day in all_days():
         if day.startswith(year_month):

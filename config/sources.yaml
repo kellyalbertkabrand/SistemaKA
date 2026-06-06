@@ -11,6 +11,8 @@ window_days: 2
 
 # Quantos itens, no máximo, entram no relatório de cada dia (após ranquear).
 max_items_per_day: 40
+# Teto total de itens processados por coleta (limita o trabalho de tradução).
+max_total_items: 90
 
 # -----------------------------------------------------------------------------
 # Google News — buscas por idioma/região (trazem o link real do veículo).

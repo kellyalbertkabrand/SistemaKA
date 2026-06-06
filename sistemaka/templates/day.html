@@ -5,11 +5,13 @@
   <div class="page-head">
     <p class="eyebrow"><a href="{{ rel }}arquivo.html">← Arquivo</a></p>
     <h1>{{ day|br_date }}</h1>
-    <p class="lead">{{ total }} itens coletados neste dia.</p>
+    <p class="lead">{{ total }} matéria(s) publicada(s) neste dia.</p>
   </div>
   {% if groups %}
     {{ macros.render_groups(groups) }}
   {% else %}
-    <p class="empty">Nenhum item registrado neste dia.</p>
+    <p class="empty">📭 Nenhuma matéria com fonte confirmada foi publicada em
+      {{ day|br_date }}. (Quando não há nada confiável no dia, o sistema não
+      inventa — mostra esta mensagem.)</p>
   {% endif %}
 {% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Página não encontrada · {{ site_title }}{% endblock %}
+{% block content %}
+  <div class="page-head">
+    <p class="eyebrow">404</p>
+    <h1>Sem matérias para esta data</h1>
+    <p class="lead">Esta data está fora do período disponível ou o endereço não existe.
+      Use o seletor de data ao lado, ou volte para a página inicial.</p>
+    <p><a class="btn-update" href="{{ rel }}index.html">← Voltar ao radar de hoje</a></p>
+  </div>
+{% endblock %}

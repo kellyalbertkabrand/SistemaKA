@@ -7,15 +7,19 @@
       <div class="item-tags">
         <span class="tag tag-{{ item.kind }}">{{ item.kind_label }}</span>
         <span class="tag tag-lang">{{ item.lang_label }}</span>
+        {% if item.needs_translation %}<span class="tag tag-trad">traduzido</span>{% endif %}
         <span class="tag tag-region">{{ item.region_label }}</span>
-        {% if item.published %}<span class="tag tag-date">{{ item.published }}</span>{% endif %}
+        {% if item.published %}<span class="tag tag-date">{{ item.published|br_date }}</span>{% endif %}
       </div>
-      <h3 class="item-title"><a href="{{ item.link }}" target="_blank" rel="noopener">{{ item.title }}</a></h3>
+      <h3 class="item-title"><a href="{{ item.link }}" target="_blank" rel="noopener">{{ item.display_title }}</a></h3>
+      {% if item.needs_translation and item.title_pt and item.title_pt != item.title %}
+      <p class="item-original">Título original: <em>{{ item.title }}</em></p>
+      {% endif %}
       <p class="item-summary">{{ item.summary_pt }}</p>
       {% if item.angle_pt %}<p class="item-angle">💡 {{ item.angle_pt }}</p>{% endif %}
       <p class="item-meta">
         {% if item.authors %}{{ item.authors }} · {% endif %}{{ item.source }}
-        · <a href="{{ item.link }}" target="_blank" rel="noopener">ver fonte ↗</a>
+        · <a href="{{ item.link }}" target="_blank" rel="noopener">ver matéria na fonte ↗</a>
       </p>
     </article>
     {% endfor %}
