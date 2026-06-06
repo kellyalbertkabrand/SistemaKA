@@ -11,6 +11,7 @@ from typing import Any
 # Rótulos amigáveis (em português) para cada categoria temática.
 CATEGORY_LABELS = {
     "branding_ia": "Branding & IA",
+    "marketing_ia": "Marketing & IA",
     "branding": "Branding",
     "campanha": "Campanhas & Ideias",
     "posicionamento": "Posicionamento & Reposicionamento",

@@ -25,8 +25,12 @@ google_news_locales:
 google_news_topics:
   - category: branding_ia
     label: "Branding & IA"
-    query_pt: 'branding "inteligência artificial" marca'
-    query_en: 'branding "artificial intelligence" brand'
+    query_pt: 'branding "inteligência artificial" OR IA marca'
+    query_en: 'branding "artificial intelligence" OR AI brand'
+  - category: marketing_ia
+    label: "Marketing & IA"
+    query_pt: 'marketing "inteligência artificial" OR "IA"'
+    query_en: 'marketing "artificial intelligence" OR "AI"'
   - category: branding
     label: "Branding"
     query_pt: 'branding "estratégia de marca"'
@@ -141,3 +145,8 @@ keywords:
   - consumer
   - publicidade
   - advertising
+  - marketing
+  - marketing digital
+  - inteligência artificial
+  - generative ai
+  - ia generativa
