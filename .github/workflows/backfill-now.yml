@@ -1,7 +1,7 @@
 name: Backfill + deploy (one-time)
 
-# Recoleta os últimos dias (mescla com o que já existe, sem apagar), salva o
-# histórico e republica o painel. Dispara sozinho quando este arquivo muda.
+# Recoleta os últimos dias usando o mapa ampliado de portais (BR/EUA/Europa),
+# mescla por data de publicação e republica. Dispara quando este arquivo muda.
 on:
   push:
     paths:
@@ -31,22 +31,22 @@ jobs:
       - name: Instalar dependências
         run: pip install -r requirements.txt
 
-      - name: Recoletar últimos 8 dias (mescla por data de publicação)
+      - name: Coletar últimos 4 dias com os novos portais
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SISTEMAKA_REPO: ${{ github.repository }}
-        run: python -m sistemaka run --days 8
+        run: python -m sistemaka run --days 4
 
       - name: Salvar histórico no repositório
         run: |
           git config user.name "SistemaKA Bot"
           git config user.email "actions@github.com"
           git add data
-          git commit -m "data: backfill 8 dias (01-06/06)" || echo "sem mudanças"
+          git commit -m "data: coleta com mapa ampliado de portais (BR/EUA/Europa)" || echo "sem mudanças"
           git push || echo "nada a enviar"
 
       - name: Publicar no Netlify
         run: |
           npx -y @netlify/mcp@latest \
             --site-id 08fc9134-351a-4237-9891-fd4dea56d013 \
-            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..pe8WGB3nFGOqr93W.ipKy6pBYNmLktvxUiVOxb3N4IvOPetW079HlG4oKcbTx0FUSN9CajbwEqYZ1paWO_HzFmBfnSWvRETIDZ8fpx9z5CFAh2kNm0Z9-AAz3S5PqnXMLhbIAr8usH5XjreYoEhsKC4pSB3dmbLbjDB2EjwS6E51FiEGhPEeC072FzSR9aFDrb-3a0mm_oODWvP8vHiCEfGgxZ0j-R9OQ24ok9CzrDgwN7sWlo8DPK1jpMAcXVG74eXwpoFyxixQlUEtn72_3bwPYTrtMVLioXxW_rl2EzZyxmuQqiAJed_LtJyckoijgQVk1K9dV7Q4mNJkIhjM30zz_Ptdvy8rDYM8zgvzNvMkmCaKpU4wI4g73LolPnTp2wi0xZPLjSyWv1X9akYZr8j0t.QJy9n2mYa0MUzVWVB_YsHQ"
+            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..FGiNGAQXs9swq-aM.noZdCvjWFUk1l8fm2-wa-NYxgc6yxOTRMZy0SG-tpZo-JdRuEzswwfEqE8_OS7NPx26Fam55JGAx30hcpFYRr83XivL2J7ycwxaTFqJ6sKE9x6_DcakbSMnOYofZzWPHbCRWkX8K69dnbBz8shxS2-JtKUMX_qy-zUYr00x7dllcs481uTeCihbC8K_Pg_OgGOGVVF421LtugYbboJhEhmkCUBUWW8K_mWjKlKOKeX0COPDi4ok-vqpKsT2BzNFI-gEEjHTrMOP6hx6DfiNNe_P4GX6TYw6WEptDY6m54B4F2lgLjdm_F-m8_3y7Z6olV5l3vqTVj8-wyH3_sYGNTGWckyB3nQyGLZvHfCx9iXLlLSsfKoe1i3HZhNDtVypqeN63dC3x.wTawm5z0X8tFHleri5Aynw"

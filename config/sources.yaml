@@ -53,16 +53,36 @@ google_news_topics:
 # ou sair do ar, o sistema apenas ignora aquele feed e segue em frente.
 # -----------------------------------------------------------------------------
 rss_feeds:
-  - { url: "https://www.brandingmag.com/feed/",                 name: "Brandingmag",        lang: en, region: world, category: branding }
-  - { url: "https://www.marketingweek.com/feed/",               name: "Marketing Week",     lang: en, region: world, category: branding }
-  - { url: "https://www.thedrum.com/rss.xml",                   name: "The Drum",           lang: en, region: world, category: campanha }
-  - { url: "https://www.adweek.com/feed/",                      name: "Adweek",             lang: en, region: world, category: campanha }
-  - { url: "https://www.adage.com/section/news/rss.xml",        name: "Ad Age",             lang: en, region: world, category: campanha }
-  - { url: "https://www.warc.com/rss/news",                     name: "WARC",               lang: en, region: world, category: branding }
-  - { url: "https://www.mundodomarketing.com.br/feed/",         name: "Mundo do Marketing", lang: pt, region: BR,    category: branding }
-  - { url: "https://www.meioemensagem.com.br/feed",            name: "Meio & Mensagem",    lang: pt, region: BR,    category: campanha }
-  - { url: "https://www.b9.com.br/feed/",                       name: "B9",                 lang: pt, region: BR,    category: branding }
-  - { url: "https://propmark.com.br/feed/",                     name: "Propmark",           lang: pt, region: BR,    category: campanha }
+  # ---------------- BRASIL ----------------
+  - { url: "https://www.meioemensagem.com.br/feed",            name: "Meio & Mensagem",       lang: pt, region: BR, category: campanha }
+  - { url: "https://www.b9.com.br/feed/",                      name: "B9",                    lang: pt, region: BR, category: branding }
+  - { url: "https://propmark.com.br/feed/",                    name: "Propmark",              lang: pt, region: BR, category: campanha }
+  - { url: "https://adnews.com.br/feed/",                      name: "Adnews",                lang: pt, region: BR, category: campanha }
+  - { url: "https://www.mundodomarketing.com.br/feed/",        name: "Mundo do Marketing",    lang: pt, region: BR, category: branding }
+  - { url: "https://mercadoeconsumo.com.br/feed/",            name: "Mercado&Consumo",       lang: pt, region: BR, category: posicionamento }
+  - { url: "https://www.consumidormoderno.com.br/feed/",       name: "Consumidor Moderno",    lang: pt, region: BR, category: posicionamento }
+  - { url: "https://exame.com/marketing/feed/",               name: "Exame · Marketing",     lang: pt, region: BR, category: branding }
+  - { url: "https://www.consumidik.com.br/feed/",             name: "Consumidik",            lang: pt, region: BR, category: branding }
+
+  # ---------------- EUA ----------------
+  - { url: "https://www.adweek.com/feed/",                     name: "Adweek",                lang: en, region: us, category: campanha }
+  - { url: "https://adage.com/section/news/rss.xml",           name: "Ad Age",                lang: en, region: us, category: campanha }
+  - { url: "https://www.brandingmag.com/feed/",               name: "Brandingmag",           lang: en, region: us, category: branding }
+  - { url: "https://www.brandingstrategyinsider.com/feed",     name: "Branding Strategy Insider", lang: en, region: us, category: posicionamento }
+  - { url: "https://www.thebrandingjournal.com/feed/",        name: "The Branding Journal",  lang: en, region: us, category: branding }
+  - { url: "https://www.underconsideration.com/brandnew/atom.xml", name: "Brand New (rebranding)", lang: en, region: us, category: posicionamento }
+  - { url: "https://www.marketingdive.com/feeds/news/",        name: "Marketing Dive",        lang: en, region: us, category: branding }
+  - { url: "https://www.fastcompany.com/section/co-design/rss", name: "Fast Company · Design", lang: en, region: us, category: branding }
+
+  # ---------------- EUROPA ----------------
+  - { url: "https://www.marketingweek.com/feed/",             name: "Marketing Week",        lang: en, region: eu, category: posicionamento }
+  - { url: "https://www.thedrum.com/rss.xml",                 name: "The Drum",              lang: en, region: eu, category: campanha }
+  - { url: "https://www.campaignlive.co.uk/rss",             name: "Campaign (UK)",         lang: en, region: eu, category: campanha }
+  - { url: "https://www.creativereview.co.uk/feed/",         name: "Creative Review",       lang: en, region: eu, category: branding }
+  - { url: "https://www.designweek.co.uk/feed/",            name: "Design Week (rebranding)", lang: en, region: eu, category: posicionamento }
+  - { url: "https://www.warc.com/rss/news",                  name: "WARC",                  lang: en, region: eu, category: branding }
+  - { url: "https://lbbonline.com/news/rss",                name: "Little Black Book",     lang: en, region: eu, category: campanha }
+  - { url: "https://www.horizont.net/news/feed/",          name: "Horizont (DE)",         lang: de, region: eu, category: branding }
 
 # -----------------------------------------------------------------------------
 # Fontes acadêmicas (artigos / papers). Crossref cobre periódicos de várias

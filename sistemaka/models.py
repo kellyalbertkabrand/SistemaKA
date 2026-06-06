@@ -85,7 +85,8 @@ class Item:
 
     @property
     def region_label(self) -> str:
-        return {"BR": "Brasil", "world": "Mundo"}.get(self.region, self.region)
+        return {"BR": "Brasil", "us": "EUA", "eu": "Europa", "world": "Mundo"}.get(
+            self.region, self.region)
 
     def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
