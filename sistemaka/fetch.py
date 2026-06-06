@@ -30,7 +30,9 @@ USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 )
-TIMEOUT = 25
+TIMEOUT = 20
+RESOLVE_TIMEOUT = 8          # resolução de link tem que ser rápida
+MAX_ENTRIES_PER_QUERY = 12   # limita o trabalho por busca
 
 
 # ---------------------------------------------------------------------------
@@ -90,7 +92,7 @@ def resolve_source_url(google_link: str, session: requests.Session) -> str:
         return ""
     try:
         resp = session.get(
-            google_link, timeout=TIMEOUT, allow_redirects=True,
+            google_link, timeout=RESOLVE_TIMEOUT, allow_redirects=True,
             headers={"User-Agent": USER_AGENT},
         )
         if _is_real_source(resp.url):
@@ -114,10 +116,20 @@ def resolve_source_url(google_link: str, session: requests.Session) -> str:
 # Google News
 # ---------------------------------------------------------------------------
 
+def _matches_keywords(text: str, norm_keywords: list[str]) -> bool:
+    """Filtro barato de relevância (antes de gastar rede resolvendo o link)."""
+    if not norm_keywords:
+        return True
+    hay = " " + re.sub(r"[^\w\s]", " ", text.lower()) + " "
+    return any(kw in hay for kw in norm_keywords)
+
+
 def fetch_google_news(cfg: dict, session: requests.Session, window: int) -> list[Item]:
     items: list[Item] = []
     locales = cfg.get("google_news_locales", [])
     topics = cfg.get("google_news_topics", [])
+    norm_keywords = [re.sub(r"[^\w\s]", " ", k.lower()).strip()
+                     for k in cfg.get("keywords", []) if k.strip()]
 
     for locale in locales:
         lang = locale.get("lang", "pt")
@@ -133,10 +145,15 @@ def fetch_google_news(cfg: dict, session: requests.Session, window: int) -> list
                 f"&hl={locale['hl']}&gl={locale['gl']}&ceid={locale['ceid']}"
             )
             feed = _safe_parse(url, session)
-            for entry in feed.entries[:20]:
+            for entry in feed.entries[:MAX_ENTRIES_PER_QUERY]:
                 published = _entry_date(entry)
                 if not published:
                     continue  # sem data confiável → fora
+                title = _strip_html(entry.get("title", ""))
+                summary = _strip_html(entry.get("summary", ""))
+                # Pré-filtro de relevância ANTES de resolver o link (economiza rede).
+                if not _matches_keywords(f"{title} {summary}", norm_keywords):
+                    continue
                 link = resolve_source_url(entry.get("link", ""), session)
                 if not _is_real_source(link):
                     continue  # sem fonte real → fora
@@ -145,7 +162,7 @@ def fetch_google_news(cfg: dict, session: requests.Session, window: int) -> list
                 if src and getattr(src, "title", None):
                     source_name = src.title
                 items.append(Item(
-                    title=_strip_html(entry.get("title", "")),
+                    title=title,
                     link=link,
                     source=source_name or _domain(link) or "Google News",
                     lang=lang,
@@ -153,7 +170,7 @@ def fetch_google_news(cfg: dict, session: requests.Session, window: int) -> list
                     category=topic.get("category", "branding"),
                     kind="noticia",
                     published=published,
-                    raw_summary=_strip_html(entry.get("summary", "")),
+                    raw_summary=summary,
                 ))
             time.sleep(0.4)
     log.info("Google News: %d itens com fonte real", len(items))
