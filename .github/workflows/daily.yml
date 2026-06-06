@@ -9,23 +9,17 @@ on:
     - cron: "30 16 * * *"   # 16:30 UTC = 13:30 Brasília
   workflow_dispatch: {}
 
-# Permissões: escrever no repo (salvar histórico) e publicar no Pages.
+# Permissão para salvar o histórico de coleta de volta no repositório.
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
-# Evita execuções concorrentes atropelando o deploy.
 concurrency:
-  group: sistemaka-pages
+  group: sistemaka-deploy
   cancel-in-progress: false
 
 jobs:
   coletar-e-publicar:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,6 +29,11 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+
+      - name: Configurar Node (para o deploy no Netlify)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
       - name: Instalar dependências
         run: pip install -r requirements.txt
@@ -60,16 +59,12 @@ jobs:
             git push
           fi
 
-      - name: Configurar GitHub Pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-
-      - name: Empacotar o site
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: public
-
-      - name: Publicar no GitHub Pages
-        id: deploy
-        uses: actions/deploy-pages@v4
+      - name: Publicar no Netlify
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: |
+          npx -y netlify-cli@17 deploy \
+            --dir=public \
+            --site=08fc9134-351a-4237-9891-fd4dea56d013 \
+            --prod \
+            --message "Coleta de $(date -u +%Y-%m-%d)"

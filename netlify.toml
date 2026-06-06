@@ -1,0 +1,11 @@
+# Configuração do Netlify para o SistemaKA
+# Publica o painel já gerado na pasta /public.
+# Se você conectar este repositório ao Netlify, ele reconstrói sozinho a cada
+# atualização dos dados (push), rodando o comando abaixo.
+[build]
+  command = "pip install -r requirements.txt && python -m sistemaka build"
+  publish = "public"
+
+[build.environment]
+  PYTHON_VERSION = "3.12"
+  SISTEMAKA_REPO = "kellyalbertkabrand/SistemaKA"
