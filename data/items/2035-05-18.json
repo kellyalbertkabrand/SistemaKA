@@ -1,0 +1,43 @@
+{
+  "date": "2035-05-18",
+  "generated_at": "2026-06-06T21:07:52.779196+00:00",
+  "count": 2,
+  "items": [
+    {
+      "title": "Title Pending 94702",
+      "link": "https://doi.org/10.21825/ewopinpractice.94702",
+      "source": "EWOP in Practice",
+      "lang": "en",
+      "region": "world",
+      "category": "branding_ia",
+      "kind": "academico",
+      "published": "2035-05-18",
+      "raw_summary": "",
+      "title_pt": "Título pendente 94702",
+      "summary_pt": "Título pendente 94702",
+      "angle_pt": "",
+      "authors": "",
+      "score": 1,
+      "fetched_at": "2026-06-06T21:06:32.861339+00:00",
+      "id": "b7ce32971cebdc87"
+    },
+    {
+      "title": "Title Pending 94703",
+      "link": "https://doi.org/10.21825/ewopinpractice.94703",
+      "source": "EWOP in Practice",
+      "lang": "en",
+      "region": "world",
+      "category": "branding_ia",
+      "kind": "academico",
+      "published": "2035-05-18",
+      "raw_summary": "",
+      "title_pt": "Título pendente 94703",
+      "summary_pt": "Título pendente 94703",
+      "angle_pt": "",
+      "authors": "",
+      "score": 1,
+      "fetched_at": "2026-06-06T21:06:32.861366+00:00",
+      "id": "d6032eadfc7d6bef"
+    }
+  ]
+}
