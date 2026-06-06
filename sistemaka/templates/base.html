@@ -15,8 +15,6 @@
     <nav class="topnav">
       <a href="{{ rel }}index.html">Hoje</a>
       <a href="{{ rel }}arquivo.html">Arquivo</a>
-      <a class="btn-update" href="{{ update_url }}" target="_blank" rel="noopener"
-         title="Abre o GitHub Actions; clique em 'Run workflow' para coletar agora">↻ Atualizar agora</a>
     </nav>
   </header>
 
@@ -33,22 +31,6 @@
           <button type="submit">Ver dia</button>
         </form>
         <p class="hint">Escolha qualquer data para ver exatamente o que foi publicado nela.</p>
-      </div>
-      <div class="card">
-        <h3>Dias recentes</h3>
-        <ul class="daylist">
-          {% for d in recent_days %}
-          <li><a href="{{ rel }}dia/{{ d }}.html">{{ d|br_date }}</a></li>
-          {% endfor %}
-        </ul>
-      </div>
-      <div class="card">
-        <h3>Meses</h3>
-        <ul class="daylist">
-          {% for m in months %}
-          <li><a href="{{ rel }}mes/{{ m }}.html">{{ m|br_month }}</a></li>
-          {% endfor %}
-        </ul>
       </div>
       {% endblock %}
     </aside>
