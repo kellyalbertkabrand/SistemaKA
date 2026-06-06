@@ -17,6 +17,7 @@ CATEGORY_LABELS = {
     "posicionamento": "Posicionamento & Reposicionamento",
     "semiotica": "Semiótica de Marca",
     "neuromarketing": "Neuromarketing",
+    "polemica": "Polêmicas & Marca Pessoal",
     "academico": "Acadêmico",
 }
 
@@ -48,6 +49,7 @@ class Item:
     title_pt: str = ""              # título traduzido para português (se aplicável)
     summary_pt: str = ""            # essência resumida em português
     angle_pt: str = ""              # gancho de conteúdo para o trabalho da Kelly
+    link_kelly: str = ""            # "como linkar ao seu conteúdo/produto"
     authors: str = ""               # autores (artigos acadêmicos)
     score: int = 0                  # relevância (preenchido no ranqueamento)
     fetched_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())

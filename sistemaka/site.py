@@ -17,7 +17,7 @@ log = logging.getLogger("sistemaka.site")
 
 CATEGORY_ORDER = [
     "branding_ia", "marketing_ia", "branding", "campanha",
-    "posicionamento", "semiotica", "neuromarketing", "academico",
+    "posicionamento", "semiotica", "neuromarketing", "polemica", "academico",
 ]
 MESES_PT = [
     "", "janeiro", "fevereiro", "março", "abril", "maio", "junho",

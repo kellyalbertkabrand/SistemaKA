@@ -17,6 +17,7 @@
       {% endif %}
       <p class="item-summary">{{ item.summary_pt }}</p>
       {% if item.angle_pt %}<p class="item-angle">💡 {{ item.angle_pt }}</p>{% endif %}
+      {% if item.link_kelly %}<p class="item-kelly">🔗 <strong>Kelly,</strong> {{ item.link_kelly }}</p>{% endif %}
       <p class="item-meta">
         {% if item.authors %}{{ item.authors }} · {% endif %}{{ item.source }}
         · <a href="{{ item.link }}" data-ext target="_blank" rel="noopener">ver matéria na fonte ↗</a>

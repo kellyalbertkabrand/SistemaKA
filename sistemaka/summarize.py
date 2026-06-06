@@ -1,11 +1,13 @@
-"""Tradução e resumo em português.
+"""Tradução, resumo e gancho de conteúdo em português.
 
-Toda matéria em outra língua recebe TÍTULO traduzido e resumo em português.
+Para cada matéria gera:
+- título traduzido (se estrangeira) e resumo da essência em português;
+- "gancho" de conteúdo;
+- "link_kelly": como aquela matéria pode ser ligada ao negócio da Kelly
+  (KA · Inteligência para Marcas) e aos seus produtos.
 
-- Com a chave da Claude (ANTHROPIC_API_KEY): tradução + síntese da essência +
-  um gancho de conteúdo para o trabalho da Kelly (qualidade alta).
-- Sem a chave: tradução automática gratuita (Google Translate via
-  deep-translator) do título e do trecho. Funciona sem nenhuma configuração.
+Com a chave da Claude (ANTHROPIC_API_KEY) tudo isso sai sob medida e inteligente.
+Sem a chave: tradução automática gratuita + rodapé por categoria (genérico).
 """
 
 from __future__ import annotations
@@ -19,26 +21,55 @@ from .models import Item
 
 log = logging.getLogger("sistemaka.summarize")
 
-SYSTEM_PROMPT = (
-    "Você é um editor brasileiro especialista em branding, publicidade, semiótica "
-    "e neuromarketing. Para cada item, escreva em PORTUGUÊS do Brasil: (1) 'titulo' "
-    "— o título traduzido para o português (se já estiver em português, repita-o); "
-    "(2) 'resumo' — 1 a 2 frases com a essência do conteúdo; (3) 'gancho' — 1 frase "
-    "curta sobre por que isso é útil para quem trabalha com campanha/ideia, "
-    "posicionamento e reposicionamento de marca, semiótica e neuromarketing. Seja "
-    "fiel, sem inventar. Responda SOMENTE com um array JSON, na mesma ordem dos "
-    'itens: [{"i":0,"titulo":"...","resumo":"...","gancho":"..."}].'
-)
 BATCH_SIZE = 8
+
+# Rodapé genérico por categoria (usado quando NÃO há IA). Liga ao trabalho da KA.
+FALLBACK_LINK = {
+    "branding_ia": "IA aplicada a marcas — conecta com seus robôs GPT e o Programa Posicione-se.",
+    "marketing_ia": "IA no marketing — gancho para mostrar como você usa IA a favor das marcas.",
+    "branding": "Construção/gestão de marca — material para o Programa Posicione-se.",
+    "campanha": "Referência de campanha/ideia para usar em mentorias e conteúdo.",
+    "posicionamento": "Posicionamento/reposicionamento — o coração do seu Programa Posicione-se.",
+    "semiotica": "Semiótica de marca — embasa seu conteúdo sobre significado e identidade.",
+    "neuromarketing": "Neuromarketing — dado para sustentar decisões de marca no seu conteúdo.",
+    "polemica": "Marca pessoal/reputação — ótimo post de engajamento ligando ao seu método.",
+    "academico": "Base acadêmica para dar autoridade ao seu conteúdo de marca.",
+}
+
+
+def _business_block() -> str:
+    b = config.load_config().get("business", {}) or {}
+    produtos = "; ".join(b.get("produtos", []) or [])
+    return (
+        f"NEGÓCIO DA KELLY: {b.get('nome','')}. {b.get('descricao','')} "
+        f"Produtos: {produtos}. Público: {b.get('publico','')}"
+    )
+
+
+def _system_prompt() -> str:
+    return (
+        "Você é editor(a) e estrategista de conteúdo da Kelly Albert (branding). "
+        + _business_block() +
+        " Para cada item escreva em PORTUGUÊS do Brasil: (1) 'titulo' — título "
+        "traduzido (se já estiver em PT, repita); (2) 'resumo' — 1-2 frases com a "
+        "essência; (3) 'gancho' — 1 frase de por que é útil para conteúdo de "
+        "branding/posicionamento/semiótica/neuromarketing; (4) 'link' — 1 frase "
+        "começando com 'Dá pra linkar ao seu conteúdo:' explicando, de forma "
+        "concreta, como ESTA matéria conecta com o negócio/produtos da Kelly "
+        "(ex.: Posicione-se, marca pessoal, IA para marcas). Seja fiel, sem "
+        "inventar. Responda SOMENTE um array JSON na ordem dos itens: "
+        '[{"i":0,"titulo":"...","resumo":"...","gancho":"...","link":"..."}].'
+    )
 
 
 def summarize_items(items: list[Item]) -> list[Item]:
     if config.anthropic_api_key():
         _with_claude(items)
     else:
-        log.info("Sem ANTHROPIC_API_KEY — usando tradução automática gratuita.")
+        log.info("Sem ANTHROPIC_API_KEY — tradução automática + rodapé por categoria.")
         for item in items:
             _translate_fallback(item)
+            item.link_kelly = FALLBACK_LINK.get(item.category, FALLBACK_LINK["branding"])
     return items
 
 
@@ -48,33 +79,36 @@ def _with_claude(items: list[Item]) -> None:
     try:
         import anthropic
     except ImportError:
-        log.warning("Pacote 'anthropic' ausente — caindo na tradução automática.")
+        log.warning("Pacote 'anthropic' ausente — caindo no modo gratuito.")
         for item in items:
             _translate_fallback(item)
+            item.link_kelly = FALLBACK_LINK.get(item.category, FALLBACK_LINK["branding"])
         return
 
     client = anthropic.Anthropic(api_key=config.anthropic_api_key())
     model = config.anthropic_model()
-    log.info("Resumindo/traduzindo %d itens com IA (%s).", len(items), model)
+    system = _system_prompt()
+    log.info("Resumindo/traduzindo/linkando %d itens com IA (%s).", len(items), model)
 
     for start in range(0, len(items), BATCH_SIZE):
         batch = items[start:start + BATCH_SIZE]
         try:
-            _claude_batch(client, model, batch)
+            _claude_batch(client, model, system, batch)
         except Exception as exc:  # noqa: BLE001
-            log.warning("Lote de IA falhou (%s) — tradução automática no lote.", exc)
+            log.warning("Lote de IA falhou (%s) — modo gratuito no lote.", exc)
             for item in batch:
                 _translate_fallback(item)
+                item.link_kelly = FALLBACK_LINK.get(item.category, FALLBACK_LINK["branding"])
 
 
-def _claude_batch(client, model: str, batch: list[Item]) -> None:
+def _claude_batch(client, model: str, system: str, batch: list[Item]) -> None:
     payload = [
-        {"i": idx, "titulo": it.title, "idioma": it.lang,
+        {"i": idx, "titulo": it.title, "idioma": it.lang, "categoria": it.category,
          "trecho": (it.raw_summary or "")[:800]}
         for idx, it in enumerate(batch)
     ]
     message = client.messages.create(
-        model=model, max_tokens=2000, system=SYSTEM_PROMPT,
+        model=model, max_tokens=2500, system=system,
         messages=[{"role": "user",
                    "content": "Itens:\n" + json.dumps(payload, ensure_ascii=False)}],
     )
@@ -86,10 +120,12 @@ def _claude_batch(client, model: str, batch: list[Item]) -> None:
         if entry and entry.get("resumo"):
             item.summary_pt = (entry.get("resumo") or "").strip()
             item.angle_pt = (entry.get("gancho") or "").strip()
+            item.link_kelly = (entry.get("link") or "").strip()
             if item.needs_translation:
                 item.title_pt = (entry.get("titulo") or "").strip()
         else:
             _translate_fallback(item)
+            item.link_kelly = FALLBACK_LINK.get(item.category, FALLBACK_LINK["branding"])
 
 
 def _extract_json(text: str):

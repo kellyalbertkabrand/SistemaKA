@@ -76,12 +76,16 @@ def rank_and_filter(items: list[Item], cfg: dict) -> list[Item]:
     if dropped:
         log.info("Descartados por falta de fonte/data: %d", dropped)
 
+    business_terms = (cfg.get("business", {}) or {}).get("termos_prioritarios", []) or []
+
     unique = dedupe(valid)
     kept: list[Item] = []
     for item in unique:
         s = score(item, keywords)
         if s <= 0:
             continue  # sem nenhuma palavra-chave relevante → fora (vale p/ acadêmico também)
+        # Prioriza o que conversa diretamente com o negócio da Kelly.
+        s += 2 * score(item, business_terms)
         item.score = s
         kept.append(item)
 

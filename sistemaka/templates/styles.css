@@ -95,6 +95,10 @@ a { color: inherit; }
   margin: 0 0 8px; padding: 8px 12px; font-size: 14px;
   background: var(--panel-2); border-radius: 10px; color: #ffd9ce;
 }
+.item-kelly {
+  margin: 0 0 8px; padding: 8px 12px; font-size: 14px; border-radius: 10px;
+  background: rgba(79,156,255,.12); border: 1px solid rgba(79,156,255,.28); color: #cfe0ff;
+}
 .item-meta { margin: 0; font-size: 13px; color: var(--muted); }
 .item-meta a { color: var(--accent-2); text-decoration: none; }
 

@@ -15,6 +15,39 @@ max_items_per_day: 40
 max_total_items: 90
 
 # -----------------------------------------------------------------------------
+# PERFIL DO NEGÓCIO (Kelly Albert / KA · Inteligência para Marcas)
+# Usado para (a) priorizar matérias relevantes ao negócio e (b) gerar o rodapé
+# "como linkar ao seu conteúdo" em cada matéria.
+# -----------------------------------------------------------------------------
+business:
+  nome: "KA · Inteligência para Marcas — Kelly Albert"
+  descricao: >
+    Consultoria de branding estratégico: posicionamento e reposicionamento de
+    marca, identidade verbal e visual, marca pessoal e comunicação estratégica.
+    Metodologia "Posicione-se" (identidade + plano de comunicação + Brand Book +
+    robôs GPT personalizados = IA aplicada a marcas). Kelly Albert, estrategista
+    de marcas há 20+ anos, cases com McDonald's, Sebrae e Atacadão. Também
+    trabalha com semiótica e neuromarketing aplicados à marca.
+  produtos:
+    - "Programa Posicione-se (posicionamento e reposicionamento de marca)"
+    - "Identidade verbal e visual + Brand Book"
+    - "Robôs GPT personalizados para marcas (IA aplicada ao branding)"
+    - "Mentoria/consultoria de marca pessoal e gestão de marca"
+  publico: "Empresas e profissionais que querem posicionar/reposicionar a marca; donos de marca pessoal."
+  termos_prioritarios:
+    - posicionamento
+    - reposicionamento
+    - marca pessoal
+    - identidade de marca
+    - branding
+    - rebranding
+    - propósito de marca
+    - semiótica
+    - neuromarketing
+    - inteligência artificial
+    - marca
+
+# -----------------------------------------------------------------------------
 # Google News — buscas por idioma/região (trazem o link real do veículo).
 # locales = onde/como buscar | topics = o que buscar.
 # -----------------------------------------------------------------------------
@@ -51,6 +84,10 @@ google_news_topics:
     label: "Neuromarketing"
     query_pt: 'neuromarketing marca consumidor'
     query_en: 'neuromarketing brand consumer behavior'
+  - category: polemica
+    label: "Polêmicas & Marca Pessoal"
+    query_pt: '"marca pessoal" polêmica OR reputação OR cancelamento OR crise de imagem'
+    query_en: '"personal brand" controversy OR reputation OR backlash celebrity'
 
 # -----------------------------------------------------------------------------
 # Feeds RSS diretos de publicações de referência. Se algum feed mudar de URL
