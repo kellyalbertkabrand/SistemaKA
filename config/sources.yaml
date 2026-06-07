@@ -20,19 +20,19 @@ max_total_items: 90
 # "como linkar ao seu conteúdo" em cada matéria.
 # -----------------------------------------------------------------------------
 business:
-  nome: "KA · Inteligência para Marcas — Kelly Albert"
+  nome: "Kelly Albert — branding com essência de marca"
   descricao: >
-    Consultoria de branding estratégico: posicionamento e reposicionamento de
-    marca, identidade verbal e visual, marca pessoal e comunicação estratégica.
-    Metodologia "Posicione-se" (identidade + plano de comunicação + Brand Book +
-    robôs GPT personalizados = IA aplicada a marcas). Kelly Albert, estrategista
-    de marcas há 20+ anos, cases com McDonald's, Sebrae e Atacadão. Também
-    trabalha com semiótica e neuromarketing aplicados à marca.
+    Consultoria e formação em branding com foco na ESSÊNCIA da marca:
+    posicionamento e reposicionamento, identidade verbal e visual e marca
+    pessoal. Kelly Albert, estrategista de marcas. Trabalha também com semiótica
+    e neuromarketing aplicados à marca. (Perfil a ser refinado com a leitura do
+    site quando o repositório for liberado.)
   produtos:
-    - { nome: "Livro", url: "https://kellyalbert.com.br/livro/", sobre: "livro sobre branding e posicionamento de marca" }
-    - { nome: "Mentoria", url: "https://kellyalbert.com.br/mentoria/", sobre: "mentoria de marca, posicionamento e marca pessoal" }
-    - { nome: "Direção de Marca", url: "https://kellyalbert.com.br/direcao/", sobre: "direção estratégica/criativa de marca para empresas" }
-    - { nome: "Programa Posicione-se", url: "https://kellyalbert.com.br/programa/", sobre: "programa completo: identidade verbal e visual, plano de comunicação, Brand Book e robôs GPT" }
+    - { nome: "Livro", url: "https://kellyalbert.com.br/livro/", sobre: "livro sobre marca/branding" }
+    - { nome: "Mentoria", url: "https://kellyalbert.com.br/mentoria/", sobre: "mentoria de marca e posicionamento" }
+    - { nome: "Direção de Marca", url: "https://kellyalbert.com.br/direcao/", sobre: "direção estratégica de marca" }
+    - { nome: "Programa Marca com Essência", url: "https://kellyalbert.com.br/programa/", sobre: "programa de branding com base na essência da marca" }
+    - { nome: "Método", url: "https://kellyalbert.com.br/", sobre: "método próprio de marca (Marca com Essência)" }
   publico: "Empresas e profissionais que querem posicionar/reposicionar a marca; donos de marca pessoal."
   termos_prioritarios:
     - posicionamento

@@ -25,14 +25,14 @@ BATCH_SIZE = 8
 
 # Rodapé genérico por categoria (usado quando NÃO há IA). Liga ao trabalho da KA.
 FALLBACK_LINK = {
-    "branding_ia": "IA aplicada a marca — Direção de Marca e os robôs GPT do Programa Posicione-se.",
-    "marketing_ia": "IA no marketing — Direção de Marca / Programa Posicione-se.",
+    "branding_ia": "IA aplicada a marca — gancho para a Direção de Marca e o Programa Marca com Essência.",
+    "marketing_ia": "IA no marketing — Direção de Marca / Programa Marca com Essência.",
     "branding": "Construção de marca — tema do Livro e da Mentoria.",
-    "campanha": "Case de campanha — referência para a Direção de Marca e mentorias.",
-    "posicionamento": "Posicionamento/reposicionamento — o coração do Programa Posicione-se.",
+    "campanha": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
+    "posicionamento": "Posicionamento/reposicionamento — coração do Programa Marca com Essência.",
     "semiotica": "Semiótica de marca — base do Livro e da Mentoria.",
     "neuromarketing": "Neuromarketing — embasa o Livro e a Mentoria.",
-    "polemica": "Marca/reputação — gancho para a Mentoria e o Programa Posicione-se.",
+    "polemica": "Marca/reputação — gancho para a Mentoria e o Programa Marca com Essência.",
     "academico": "Autoridade acadêmica — material de apoio para o Livro e a Mentoria.",
 }
 
@@ -61,7 +61,7 @@ def _system_prompt() -> str:
         "branding/posicionamento/semiótica/neuromarketing; (4) 'link' — 1 frase "
         "começando com 'Dá pra linkar:' dizendo como ESTA matéria conecta com UM "
         "produto específico da Kelly, citando-o pelo nome (Livro, Mentoria, "
-        "Direção de Marca ou Programa Posicione-se). Seja fiel, sem "
+        "Direção de Marca ou Programa Marca com Essência). Seja fiel, sem "
         "inventar. Responda SOMENTE um array JSON na ordem dos itens: "
         '[{"i":0,"titulo":"...","resumo":"...","gancho":"...","link":"..."}].'
     )
