@@ -169,6 +169,60 @@ def _matches_keywords(text: str, norm_keywords: list[str]) -> bool:
     return any(kw in hay for kw in norm_keywords)
 
 
+def _norm(s: str) -> str:
+    return re.sub(r"[^\w\s]", " ", (s or "").lower())
+
+
+def _weak_summary(summary: str, title: str) -> bool:
+    """True quando o resumo é fraco (vazio, curto ou ~igual ao título)."""
+    s = _norm(summary).split()
+    t = set(_norm(title).split())
+    if len(s) < 12:
+        return True
+    # se quase todas as palavras do resumo já estão no título → é só o título
+    overlap = sum(1 for w in s if w in t)
+    return overlap / max(len(s), 1) > 0.8
+
+
+def _fetch_description(url: str, session: requests.Session) -> str:
+    """Abre a matéria e extrai a descrição real (o que o artigo diz).
+
+    Tenta og:description / meta description e, por fim, o 1º parágrafo do corpo.
+    """
+    try:
+        r = session.get(url, timeout=RESOLVE_TIMEOUT, headers={"User-Agent": USER_AGENT})
+        html = r.text or ""
+    except Exception as exc:  # noqa: BLE001
+        log.debug("descrição falhou %s: %s", url, exc)
+        return ""
+    patterns = [
+        r'<meta[^>]+property=["\']og:description["\'][^>]+content=["\']([^"\']+)["\']',
+        r'<meta[^>]+name=["\']description["\'][^>]+content=["\']([^"\']+)["\']',
+        r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:description["\']',
+        r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+name=["\']description["\']',
+    ]
+    for pat in patterns:
+        m = re.search(pat, html, re.I)
+        if m:
+            d = _strip_html(unescape(m.group(1)))
+            if len(d) > 50:
+                return d
+    # fallback: primeiro parágrafo razoável do corpo
+    for m in re.finditer(r"<p[^>]*>(.*?)</p>", html, re.I | re.S):
+        d = _strip_html(m.group(1))
+        if len(d) > 80:
+            return d
+    return ""
+
+
+def _enrich_summary(item: "Item", session: requests.Session) -> None:
+    """Se o resumo for fraco, lê a descrição real da matéria na fonte."""
+    if _weak_summary(item.raw_summary, item.title):
+        desc = _fetch_description(item.link, session)
+        if desc:
+            item.raw_summary = desc
+
+
 def fetch_google_news(cfg: dict, session: requests.Session, window: int) -> list[Item]:
     items: list[Item] = []
     locales = cfg.get("google_news_locales", [])
@@ -206,7 +260,7 @@ def fetch_google_news(cfg: dict, session: requests.Session, window: int) -> list
                 src = getattr(entry, "source", None)
                 if src and getattr(src, "title", None):
                     source_name = src.title
-                items.append(Item(
+                it = Item(
                     title=title,
                     link=link,
                     source=source_name or _domain(link) or "Google News",
@@ -216,7 +270,9 @@ def fetch_google_news(cfg: dict, session: requests.Session, window: int) -> list
                     kind="noticia",
                     published=published,
                     raw_summary=summary,
-                ))
+                )
+                _enrich_summary(it, session)  # lê a descrição real se o resumo for fraco
+                items.append(it)
             time.sleep(0.4)
     log.info("Google News: %d itens com fonte real", len(items))
     return items
@@ -244,7 +300,7 @@ def fetch_rss_feeds(cfg: dict, session: requests.Session, window: int) -> list[I
             link = entry.get("link", "")
             if not _is_real_source(link):
                 continue
-            items.append(Item(
+            it = Item(
                 title=_strip_html(entry.get("title", "")),
                 link=link,
                 source=feed_cfg.get("name") or _domain(link),
@@ -254,7 +310,9 @@ def fetch_rss_feeds(cfg: dict, session: requests.Session, window: int) -> list[I
                 kind="noticia",
                 published=published,
                 raw_summary=_strip_html(entry.get("summary", "")),
-            ))
+            )
+            _enrich_summary(it, session)  # lê a descrição real se o resumo do feed for fraco
+            items.append(it)
     log.info("Feeds RSS: %d itens", len(items))
     return items
 
