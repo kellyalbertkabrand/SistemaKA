@@ -1,7 +1,7 @@
 {
   "date": "2026-06-07",
-  "generated_at": "2026-06-07T12:08:16.363842+00:00",
-  "count": 7,
+  "generated_at": "2026-06-07T14:10:10.265513+00:00",
+  "count": 9,
   "items": [
     {
       "title": "The Rise of AI in Fashion Marketing Campaigns - MensXP",
@@ -19,7 +19,7 @@
       "link_kelly": "IA aplicada a marca — gancho para a Direção de Marca e o Programa Marca com Essência.",
       "authors": "",
       "score": 9,
-      "fetched_at": "2026-06-07T12:07:22.120864+00:00",
+      "fetched_at": "2026-06-07T14:09:06.547867+00:00",
       "id": "b8ac59d51e03cab4"
     },
     {
@@ -95,7 +95,7 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T12:07:16.097467+00:00",
+      "fetched_at": "2026-06-07T14:08:59.075107+00:00",
       "id": "cca81d8fba171c92"
     },
     {
@@ -114,7 +114,7 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T12:07:16.420773+00:00",
+      "fetched_at": "2026-06-07T14:08:59.969677+00:00",
       "id": "db05db8d9ac2c547"
     },
     {
@@ -133,8 +133,46 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T12:07:29.036257+00:00",
+      "fetched_at": "2026-06-07T14:09:12.740364+00:00",
       "id": "27deefcb130d9cfb"
+    },
+    {
+      "title": "Sem marketing digital, empresas perdem espaço, clientes e credibilidade, alerta especialista - horanews.net",
+      "link": "https://horanews.net/sem-marketing-digital-empresas-perdem-espaco-clientes-e-credibilidade-alerta-especialista/",
+      "source": "horanews.net",
+      "lang": "pt",
+      "region": "BR",
+      "category": "posicionamento",
+      "kind": "noticia",
+      "published": "2026-06-07",
+      "raw_summary": "Sem marketing digital, empresas perdem espaço, clientes e credibilidade, alerta especialista horanews.net",
+      "title_pt": "",
+      "summary_pt": "Sem marketing digital, empresas perdem espaço, clientes e credibilidade, alerta especialista horanews.net",
+      "angle_pt": "",
+      "link_kelly": "Posicionamento/reposicionamento — coração do Programa Marca com Essência.",
+      "authors": "",
+      "score": 5,
+      "fetched_at": "2026-06-07T14:09:00.899144+00:00",
+      "id": "5c5558f14a7ed8b4"
+    },
+    {
+      "title": "Route AI Is Reshaping the Post-purchase Experience for Fashion Brands - WWD",
+      "link": "https://wwd.com/business-news/business-features/route-ai-post-purchase-fashion-delivery-solutions-1238981533/",
+      "source": "WWD",
+      "lang": "en",
+      "region": "world",
+      "category": "branding_ia",
+      "kind": "noticia",
+      "published": "2026-06-07",
+      "raw_summary": "Route AI Is Reshaping the Post-purchase Experience for Fashion Brands WWD",
+      "title_pt": "Route AI está remodelando a experiência pós-compra para marcas de moda - WWD",
+      "summary_pt": "Route AI está remodelando a experiência pós-compra para marcas de moda WWD",
+      "angle_pt": "",
+      "link_kelly": "IA aplicada a marca — gancho para a Direção de Marca e o Programa Marca com Essência.",
+      "authors": "",
+      "score": 5,
+      "fetched_at": "2026-06-07T14:09:05.255326+00:00",
+      "id": "790a4cc1993af865"
     }
   ]
 }
