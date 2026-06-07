@@ -1,4 +1,4 @@
-# trigger: polemicas marca + decoder
+# trigger: coleta dia 7
 name: Backfill + deploy (one-time)
 
 # Recoleta os últimos dias usando o mapa ampliado de portais (BR/EUA/Europa),
@@ -36,7 +36,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SISTEMAKA_REPO: ${{ github.repository }}
-        run: python -m sistemaka run --days 4
+        run: python -m sistemaka run --days 2
 
       - name: Salvar histórico no repositório
         run: |
