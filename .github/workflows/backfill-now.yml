@@ -1,8 +1,7 @@
-# trigger: coleta dia 7
 name: Backfill + deploy (one-time)
 
-# Recoleta os últimos dias usando o mapa ampliado de portais (BR/EUA/Europa),
-# mescla por data de publicação e republica. Dispara quando este arquivo muda.
+# Recoleta os últimos dias e publica usando a CHAVE FIXA (NETLIFY_AUTH_TOKEN).
+# Dispara quando este arquivo muda.
 on:
   push:
     paths:
@@ -14,6 +13,8 @@ permissions:
 jobs:
   backfill:
     runs-on: ubuntu-latest
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,11 +33,11 @@ jobs:
       - name: Instalar dependências
         run: pip install -r requirements.txt
 
-      - name: Coletar últimos 4 dias com os novos portais
+      - name: Coletar últimos dias
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SISTEMAKA_REPO: ${{ github.repository }}
-        run: python -m sistemaka run --days 2
+        run: python -m sistemaka run --days 3
 
       - name: Salvar histórico no repositório
         run: |
@@ -46,8 +47,14 @@ jobs:
           git commit -m "data: coleta com mapa ampliado de portais (BR/EUA/Europa)" || echo "sem mudanças"
           git push || echo "nada a enviar"
 
-      - name: Publicar no Netlify
+      - name: Publicar no Netlify (precisa do segredo NETLIFY_AUTH_TOKEN)
         run: |
-          npx -y @netlify/mcp@latest \
-            --site-id 08fc9134-351a-4237-9891-fd4dea56d013 \
-            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..vX3Ek2DjjgrvyimM.UPb3GWvxucAGkuwqWXx-t6jRnaKpI7a5IlWoyknIPJARDWL9qD3RlmLrdTBeY8lkxyDteb1yMroNUC1SEbvAWVW9bOJVpY0J2-dxNNMZLZmu2rqAJGvWfTsBr5FN18AKVYkgC1zP_AlUubLuIGajR4XGmpjguObJjIF-tvQSHlNCDoMaQb3PTjrSF5b9VfL6Tiqv-IL-i98n3Fgs_tXUIglTx0p95-K0LkEWBg9K0-t3Pw-mXk8yrB20eKIBJosGvgYqzzLa3NYgh3KuoNlnyU1A7tPbOsZT4O_gsjJAENsRan8bwhP7icwHAE7yxoh5sgA_7IY-PVf6ws-_P0H3fQFUHd-anj8BdtgRcjYrRbEfbu2ZajT_TUxZbAw7tjQD9nPQ4kw-.Hfipe55jC-qiPyZlIlw9Fw"
+          if [ -z "$NETLIFY_AUTH_TOKEN" ]; then
+            echo "::warning::Coleta salva, mas falta NETLIFY_AUTH_TOKEN para publicar."
+            exit 0
+          fi
+          npx -y netlify-cli@17 deploy \
+            --dir=public \
+            --site=08fc9134-351a-4237-9891-fd4dea56d013 \
+            --prod \
+            --message "Coleta ($(date -u +%Y-%m-%d))"

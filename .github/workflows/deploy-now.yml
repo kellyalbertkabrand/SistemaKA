@@ -1,7 +1,7 @@
 name: Deploy agora (one-time)
 
-# Republica o painel no Netlify a partir dos dados já existentes no repositório
-# (não recoleta). Dispara sozinho quando este arquivo muda.
+# Publica o painel no Netlify usando a CHAVE FIXA (segredo NETLIFY_AUTH_TOKEN),
+# sem depender de conector externo. Dispara quando este arquivo muda.
 on:
   push:
     paths:
@@ -13,12 +13,39 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Publicar no Netlify
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Gerar o painel (a partir do histórico já coletado)
+        env:
+          SISTEMAKA_REPO: ${{ github.repository }}
+        run: python -m sistemaka build
+
+      - name: Publicar no Netlify (precisa do segredo NETLIFY_AUTH_TOKEN)
         run: |
-          npx -y @netlify/mcp@latest \
-            --site-id 08fc9134-351a-4237-9891-fd4dea56d013 \
-            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..ChBM0jidUjNAP0uO.n1ocRIEiiidWbDFUjziig2XeObCYgiqdibDsCqECUo5r8ReSOiRaiGJ_WxPMsOyoXxzj_42zP3MgXq672oEC4xQawxSoJ6OduB9RJ39fTUKJIfWYNzjZTcwnuyJriObVzDgfYxCBnl924ExXK07beK4DdeTvXCH5JeBaxG_0oWreuipIrURgBmPFwQwGdtIY6Uiphbj75Ao5n0yY9EvYFznJlpWyqXWbYi_8VM_IugOwRDdxVNek_g6iQv4KD_7RrOcWq5BCD9x9a3UoOFx3SZ_hXSUlNvhvAAOoSnmJUgoSHTY4PtXkKdLbIAaX31qqVxb6Q6s8_Ryhgxbathw5Aa7EuUS2Uk2P8cL0NAQwr6EltHJxdUwi_sEv6YMqYbpPNcHdR77t.FcbZgiJPxnv-CoJ7iVKylQ"
+          if [ -z "$NETLIFY_AUTH_TOKEN" ]; then
+            echo "::warning::Falta o segredo NETLIFY_AUTH_TOKEN. Adicione em Settings → Secrets → Actions para publicar."
+            exit 0
+          fi
+          npx -y netlify-cli@17 deploy \
+            --dir=public \
+            --site=08fc9134-351a-4237-9891-fd4dea56d013 \
+            --prod \
+            --message "Publicacao manual ($(date -u +%Y-%m-%dT%H:%M))"
