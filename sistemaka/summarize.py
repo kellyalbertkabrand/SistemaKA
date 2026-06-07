@@ -62,12 +62,16 @@ def _business_block() -> str:
     prods = []
     for p in b.get("produtos", []) or []:
         if isinstance(p, dict):
-            prods.append(f"{p.get('nome')} ({p.get('sobre')}) {p.get('url')}")
+            persona = " ".join((p.get("persona") or "").split())
+            prods.append(
+                f"- {p.get('nome')} ({p.get('preco','')}, {p.get('nivel','')}): "
+                f"persona = {persona} Dor: {p.get('dor','')}"
+            )
         else:
-            prods.append(str(p))
+            prods.append(f"- {p}")
     return (
-        f"NEGÓCIO DA KELLY: {b.get('nome','')}. {b.get('descricao','')} "
-        f"PRODUTOS (nome — sobre — link): {'; '.join(prods)}. Público: {b.get('publico','')}"
+        f"NEGÓCIO DA KELLY: {b.get('nome','')}. {b.get('descricao','')}\n"
+        f"PRODUTOS E PERSONAS:\n" + "\n".join(prods) + f"\nPúblico: {b.get('publico','')}"
     )
 
 
@@ -81,12 +85,15 @@ def _system_prompt() -> str:
         "de por que é útil para conteúdo de "
         "branding/posicionamento/semiótica/neuromarketing; (4) 'link' — 1 frase "
         "começando com 'Dá pra linkar:' dizendo como ESTA matéria conecta com UM "
-        "produto específico da Kelly, citando-o pelo nome (Livro, Mentoria, "
-        "Direção de Marca ou Programa Marca com Essência); (5) 'pme' — 1 frase "
-        "prática de como o conteúdo desta matéria é útil para o PEQUENO E MÉDIO "
-        "EMPRESÁRIO (o que ele pode aprender ou aplicar). Seja fiel, sem "
-        "inventar. Responda SOMENTE um array JSON na ordem dos itens: "
-        '[{"i":0,"titulo":"...","resumo":"...","gancho":"...","link":"...","pme":"..."}].'
+        "produto/persona que ESTA matéria melhor serve, citando-o pelo nome "
+        "(Livro, Mentoria ou Programa Marca com Essência) e por quê; (5) 'pme' — "
+        "1 frase prática de como o conteúdo é útil para o pequeno/médio "
+        "empresário; (6) 'roteiro' — uma ideia curta de ROTEIRO DE VÍDEO "
+        "(abertura/gancho + ângulo) que a Kelly pode gravar a partir do tema, "
+        "conectada à persona certa. Se a matéria não servir a nenhuma persona, "
+        "devolva os campos vazios (\"\"). Seja fiel, sem inventar. Responda "
+        "SOMENTE um array JSON na ordem dos itens: "
+        '[{"i":0,"titulo":"...","resumo":"...","gancho":"...","link":"...","pme":"...","roteiro":"..."}].'
     )
 
 
@@ -150,6 +157,7 @@ def _claude_batch(client, model: str, system: str, batch: list[Item]) -> None:
             item.angle_pt = (entry.get("gancho") or "").strip()
             item.link_kelly = (entry.get("link") or "").strip()
             item.pme_pt = (entry.get("pme") or "").strip() or FALLBACK_PME.get(item.category, "")
+            item.roteiro_pt = (entry.get("roteiro") or "").strip()
             if item.needs_translation:
                 item.title_pt = (entry.get("titulo") or "").strip()
         else:

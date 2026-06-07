@@ -51,6 +51,7 @@ class Item:
     summary_pt: str = ""            # essência resumida em português
     angle_pt: str = ""              # gancho de conteúdo para o trabalho da Kelly
     pme_pt: str = ""                # por que serve para o pequeno/médio empresário
+    roteiro_pt: str = ""            # ideia de roteiro de vídeo (gerada pela IA)
     link_kelly: str = ""            # "como linkar ao seu conteúdo/produto"
     authors: str = ""               # autores (artigos acadêmicos)
     score: int = 0                  # relevância (preenchido no ranqueamento)

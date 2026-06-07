@@ -20,20 +20,43 @@ max_total_items: 90
 # "como linkar ao seu conteúdo" em cada matéria.
 # -----------------------------------------------------------------------------
 business:
-  nome: "Kelly Albert — branding com essência de marca"
+  nome: "Kelly Albert · KA — Inteligência para Marcas (método Marca com Essência©)"
   descricao: >
-    Consultoria e formação em branding com foco na ESSÊNCIA da marca:
-    posicionamento e reposicionamento, identidade verbal e visual e marca
-    pessoal. Kelly Albert, estrategista de marcas. Trabalha também com semiótica
-    e neuromarketing aplicados à marca. (Perfil a ser refinado com a leitura do
-    site quando o repositório for liberado.)
+    Marca com Essência© é o método de Kelly Albert para construir marcas a partir
+    da ESSÊNCIA — posicionamento, proposta de valor, identidade e comunicação.
+    Três formatos por nível de maturidade do cliente: Livro (faça você mesmo),
+    Mentoria (você faz com orientação) e Programa (nós fazemos por você).
   produtos:
-    - { nome: "Livro", url: "https://kellyalbert.com.br/livro/", sobre: "livro sobre marca/branding" }
-    - { nome: "Mentoria", url: "https://kellyalbert.com.br/mentoria/", sobre: "mentoria de marca e posicionamento" }
-    - { nome: "Direção de Marca", url: "https://kellyalbert.com.br/direcao/", sobre: "direção estratégica de marca" }
-    - { nome: "Programa Marca com Essência", url: "https://kellyalbert.com.br/programa/", sobre: "programa de branding com base na essência da marca" }
-    - { nome: "Método", url: "https://kellyalbert.com.br/", sobre: "método próprio de marca (Marca com Essência)" }
-  publico: "Empresas e profissionais que querem posicionar/reposicionar a marca; donos de marca pessoal."
+    - nome: "Livro Marca com Essência"
+      url: "https://kellyalbert.com.br/livro/"
+      preco: "R$ 117"
+      nivel: "Despertar — faça você mesmo"
+      persona: >
+        Empresários, profissionais liberais, especialistas e gestores começando a
+        olhar a marca de forma estratégica. Têm marca pessoal ou empresarial e
+        querem organizar posicionamento, comunicação e proposta de valor no
+        próprio ritmo, com método prático e acessível.
+      dor: "Percebo que minha marca precisa de direção e clareza; quero começar a organizar isso sozinho."
+    - nome: "Mentoria Marca com Essência"
+      url: "https://kellyalbert.com.br/mentoria/"
+      preco: "a partir de R$ 990"
+      nivel: "Autonomia — você faz com orientação"
+      persona: >
+        Empresários, profissionais liberais e gestores que já têm marca em
+        operação e querem participar ativamente da estratégia, aplicando o método
+        com acompanhamento e direcionamento.
+      dor: "Quero uma marca mais forte e estratégica, mas preciso de método, clareza e orientação."
+    - nome: "Programa Marca com Essência"
+      url: "https://kellyalbert.com.br/programa/"
+      preco: "a partir de R$ 8.000"
+      nivel: "Maturidade — nós fazemos por você"
+      persona: >
+        Empresas maduras, com história, clientes, operação estruturada e entrega
+        validada pelo mercado (não necessariamente grandes). Já passaram da fase
+        de sobrevivência e percebem que a marca precisa acompanhar a evolução do
+        negócio.
+      dor: "Minha empresa cresceu e entrega mais do que o mercado percebe; preciso organizar a marca com profundidade e apoio especializado."
+  publico: "Da marca pessoal ao negócio maduro: quem quer posicionar/reposicionar a marca a partir da essência."
   termos_prioritarios:
     - posicionamento
     - positioning
@@ -46,8 +69,14 @@ business:
     - branding
     - brand
     - rebranding
-    - marketing
+    - essência da marca
     - propósito de marca
+    - brand purpose
+    - proposta de valor
+    - storytelling de marca
+    - autoridade de marca
+    - gestão de marca
+    - marketing
     - semiótica
     - semiotics
     - neuromarketing

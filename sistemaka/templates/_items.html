@@ -17,6 +17,7 @@
       {% endif %}
       <p class="item-summary"><strong>Em resumo:</strong> {{ item.summary_pt }}</p>
       {% if item.pme_pt %}<p class="item-pme">💼 {{ item.pme_pt }}</p>{% endif %}
+      {% if item.roteiro_pt %}<p class="item-roteiro">🎬 <strong>Roteiro:</strong> {{ item.roteiro_pt }}</p>{% endif %}
       {% if item.link_kelly %}<p class="item-kelly">🔗 <strong>Kelly,</strong> {{ item.link_kelly }}</p>{% endif %}
       <p class="item-meta">
         {% if item.authors %}{{ item.authors }} · {% endif %}{{ item.source }}
