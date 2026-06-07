@@ -16,8 +16,8 @@ from .summarize import summarize_month
 log = logging.getLogger("sistemaka.site")
 
 CATEGORY_ORDER = [
-    "branding_ia", "marketing_ia", "branding", "campanha",
-    "posicionamento", "semiotica", "neuromarketing", "polemica", "academico",
+    "polemica", "branding_ia", "marketing_ia", "branding", "campanha",
+    "posicionamento", "semiotica", "neuromarketing", "academico",
 ]
 MESES_PT = [
     "", "janeiro", "fevereiro", "março", "abril", "maio", "junho",
