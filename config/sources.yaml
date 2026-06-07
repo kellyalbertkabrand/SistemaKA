@@ -103,7 +103,6 @@ rss_feeds:
   - { url: "https://mercadoeconsumo.com.br/feed/",            name: "Mercado&Consumo",       lang: pt, region: BR, category: posicionamento }
   - { url: "https://www.consumidormoderno.com.br/feed/",       name: "Consumidor Moderno",    lang: pt, region: BR, category: posicionamento }
   - { url: "https://exame.com/marketing/feed/",               name: "Exame · Marketing",     lang: pt, region: BR, category: branding }
-  - { url: "https://www.consumidik.com.br/feed/",             name: "Consumidik",            lang: pt, region: BR, category: branding }
 
   # ---------------- EUA ----------------
   - { url: "https://www.adweek.com/feed/",                     name: "Adweek",                lang: en, region: us, category: campanha }

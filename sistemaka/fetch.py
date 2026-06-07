@@ -80,8 +80,51 @@ def _is_real_source(url: str) -> bool:
     return not any(b in url for b in bad) and "google.com" not in host
 
 
+def _decode_google_news(google_link: str, session: requests.Session) -> str:
+    """Decodifica o link criptografado do Google Notícias para a URL real.
+
+    Usa o método atual (batchexecute): obtém assinatura+timestamp da página do
+    artigo e pede a URL de origem. Best-effort: '' se não conseguir.
+    """
+    from urllib.parse import urlparse, quote
+    import json as _json
+    try:
+        parts = urlparse(google_link).path.split("/")
+        if len(parts) < 2 or parts[-2] not in ("articles", "read"):
+            return ""
+        gid = parts[-1]
+        r = session.get(f"https://news.google.com/rss/articles/{gid}",
+                        timeout=RESOLVE_TIMEOUT, headers={"User-Agent": USER_AGENT})
+        sig = re.search(r'data-n-a-sg="([^"]+)"', r.text)
+        ts = re.search(r'data-n-a-ts="([^"]+)"', r.text)
+        if not (sig and ts):
+            return ""
+        inner = _json.dumps([
+            "garturlreq",
+            [["X", "X", ["X", "X"], None, None, 1, 1, "US:en", None, 1,
+              None, None, None, None, None, 0, 1],
+             "X", "X", 1, [1, 1, 1], 1, 1, None, 0, 0, None, 0],
+            gid, int(ts.group(1)), sig.group(1),
+        ])
+        freq = _json.dumps([[["Fbv4je", inner, None, "generic"]]])
+        resp = session.post(
+            "https://news.google.com/_/DotsSplashUi/data/batchexecute",
+            data="f.req=" + quote(freq), timeout=RESOLVE_TIMEOUT,
+            headers={"User-Agent": USER_AGENT,
+                     "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"},
+        )
+        m = re.search(r'garturlres\\",\\"(.+?)\\"', resp.text)
+        if not m:
+            return ""
+        real = m.group(1).encode("utf-8").decode("unicode_escape")
+        return real if _is_real_source(real) else ""
+    except Exception as exc:  # noqa: BLE001
+        log.debug("decode gnews falhou: %s", exc)
+        return ""
+
+
 def resolve_source_url(google_link: str, session: requests.Session) -> str:
-    """Resolve o redirect do Google News para o link real do veículo.
+    """Resolve o link do Google Notícias para o link real do veículo.
 
     Devolve a URL final da matéria, ou '' se não conseguir resolver para uma
     fonte real (nesse caso o item será descartado).
@@ -90,6 +133,11 @@ def resolve_source_url(google_link: str, session: requests.Session) -> str:
         return google_link
     if "news.google.com" not in google_link:
         return ""
+    # 1) Decodificador atual do Google Notícias.
+    real = _decode_google_news(google_link, session)
+    if real:
+        return real
+    # 2) Plano B: seguir o redirect e tentar extrair do HTML.
     try:
         resp = session.get(
             google_link, timeout=RESOLVE_TIMEOUT, allow_redirects=True,
@@ -97,12 +145,9 @@ def resolve_source_url(google_link: str, session: requests.Session) -> str:
         )
         if _is_real_source(resp.url):
             return resp.url
-        # Tentativas de extrair a URL real do HTML de redirecionamento.
-        html = resp.text or ""
         for pattern in (r'data-n-au="([^"]+)"',
-                        r'<a[^>]+href="(https?://[^"]+)"[^>]*>',
                         r'url=(https?://[^"&]+)'):
-            m = re.search(pattern, html)
+            m = re.search(pattern, resp.text or "")
             if m:
                 candidate = unescape(m.group(1))
                 if _is_real_source(candidate):
