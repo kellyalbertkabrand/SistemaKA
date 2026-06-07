@@ -33,8 +33,28 @@ FALLBACK_LINK = {
     "semiotica": "Semiótica de marca — base do Livro e da Mentoria.",
     "neuromarketing": "Neuromarketing — embasa o Livro e a Mentoria.",
     "polemica": "Marca/reputação — gancho para a Mentoria e o Programa Marca com Essência.",
+    "pesquisa": "Dado de pesquisa/tendência — sustenta argumentos na Mentoria e na Direção de Marca.",
     "academico": "Autoridade acadêmica — material de apoio para o Livro e a Mentoria.",
 }
+
+# Por que o conteúdo é útil para o pequeno/médio empresário (PME).
+FALLBACK_PME = {
+    "branding_ia": "PME: como usar IA para fortalecer a marca sem precisar de grande orçamento.",
+    "marketing_ia": "PME: ideias práticas de IA para o marketing do dia a dia do negócio.",
+    "branding": "PME: lições de construção de marca aplicáveis a negócios pequenos e médios.",
+    "campanha": "PME: ideias de campanha que dá para adaptar com poucos recursos.",
+    "posicionamento": "PME: como se posicionar e se diferenciar no seu mercado.",
+    "semiotica": "PME: como usar símbolos e significados para comunicar o valor da marca.",
+    "neuromarketing": "PME: gatilhos de decisão para aplicar em vendas e comunicação.",
+    "polemica": "PME: o que aprender sobre reputação e gestão de crise da marca.",
+    "pesquisa": "PME: dados de consumo/tendências para decidir com base em evidência.",
+    "academico": "PME: base sólida para decisões de marca com mais segurança.",
+}
+
+
+def _apply_fallback_notes(item: Item) -> None:
+    item.link_kelly = FALLBACK_LINK.get(item.category, FALLBACK_LINK["branding"])
+    item.pme_pt = FALLBACK_PME.get(item.category, FALLBACK_PME["branding"])
 
 
 def _business_block() -> str:
@@ -62,9 +82,11 @@ def _system_prompt() -> str:
         "branding/posicionamento/semiótica/neuromarketing; (4) 'link' — 1 frase "
         "começando com 'Dá pra linkar:' dizendo como ESTA matéria conecta com UM "
         "produto específico da Kelly, citando-o pelo nome (Livro, Mentoria, "
-        "Direção de Marca ou Programa Marca com Essência). Seja fiel, sem "
+        "Direção de Marca ou Programa Marca com Essência); (5) 'pme' — 1 frase "
+        "prática de como o conteúdo desta matéria é útil para o PEQUENO E MÉDIO "
+        "EMPRESÁRIO (o que ele pode aprender ou aplicar). Seja fiel, sem "
         "inventar. Responda SOMENTE um array JSON na ordem dos itens: "
-        '[{"i":0,"titulo":"...","resumo":"...","gancho":"...","link":"..."}].'
+        '[{"i":0,"titulo":"...","resumo":"...","gancho":"...","link":"...","pme":"..."}].'
     )
 
 
@@ -75,7 +97,7 @@ def summarize_items(items: list[Item]) -> list[Item]:
         log.info("Sem ANTHROPIC_API_KEY — tradução automática + rodapé por categoria.")
         for item in items:
             _translate_fallback(item)
-            item.link_kelly = FALLBACK_LINK.get(item.category, FALLBACK_LINK["branding"])
+            _apply_fallback_notes(item)
     return items
 
 
@@ -88,7 +110,7 @@ def _with_claude(items: list[Item]) -> None:
         log.warning("Pacote 'anthropic' ausente — caindo no modo gratuito.")
         for item in items:
             _translate_fallback(item)
-            item.link_kelly = FALLBACK_LINK.get(item.category, FALLBACK_LINK["branding"])
+            _apply_fallback_notes(item)
         return
 
     client = anthropic.Anthropic(api_key=config.anthropic_api_key())
@@ -104,7 +126,7 @@ def _with_claude(items: list[Item]) -> None:
             log.warning("Lote de IA falhou (%s) — modo gratuito no lote.", exc)
             for item in batch:
                 _translate_fallback(item)
-                item.link_kelly = FALLBACK_LINK.get(item.category, FALLBACK_LINK["branding"])
+                _apply_fallback_notes(item)
 
 
 def _claude_batch(client, model: str, system: str, batch: list[Item]) -> None:
@@ -127,11 +149,12 @@ def _claude_batch(client, model: str, system: str, batch: list[Item]) -> None:
             item.summary_pt = (entry.get("resumo") or "").strip()
             item.angle_pt = (entry.get("gancho") or "").strip()
             item.link_kelly = (entry.get("link") or "").strip()
+            item.pme_pt = (entry.get("pme") or "").strip() or FALLBACK_PME.get(item.category, "")
             if item.needs_translation:
                 item.title_pt = (entry.get("titulo") or "").strip()
         else:
             _translate_fallback(item)
-            item.link_kelly = FALLBACK_LINK.get(item.category, FALLBACK_LINK["branding"])
+            _apply_fallback_notes(item)
 
 
 def _extract_json(text: str):

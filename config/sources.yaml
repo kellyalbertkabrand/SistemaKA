@@ -58,6 +58,13 @@ business:
     - campaign
     - publicidade
     - advertising
+    - pesquisa de mercado
+    - market research
+    - consumer insights
+    - comportamento do consumidor
+    - consumer behavior
+    - tendências de consumo
+    - consumer trends
 
 # -----------------------------------------------------------------------------
 # Google News — buscas por idioma/região (trazem o link real do veículo).
@@ -100,6 +107,10 @@ google_news_topics:
     label: "Polêmicas de Marca"
     query_pt: 'marca polêmica OR publicidade polêmica OR boicote marca OR "cancelamento de marca" OR rebranding polêmico'
     query_en: '"brand" controversy OR "ad controversy" OR "brand boycott" OR "rebrand backlash"'
+  - category: pesquisa
+    label: "Pesquisas & Tendências"
+    query_pt: 'pesquisa de mercado marca OR "tendências de consumo" OR comportamento do consumidor marca'
+    query_en: 'consumer research brand OR "consumer trends" OR "market research" branding'
 
 # -----------------------------------------------------------------------------
 # Feeds RSS diretos de publicações de referência. Se algum feed mudar de URL
@@ -115,6 +126,7 @@ rss_feeds:
   - { url: "https://mercadoeconsumo.com.br/feed/",            name: "Mercado&Consumo",       lang: pt, region: BR, category: posicionamento }
   - { url: "https://www.consumidormoderno.com.br/feed/",       name: "Consumidor Moderno",    lang: pt, region: BR, category: posicionamento }
   - { url: "https://exame.com/marketing/feed/",               name: "Exame · Marketing",     lang: pt, region: BR, category: branding }
+  - { url: "https://forbes.com.br/forbes-mkt/feed/",          name: "Forbes MKT",            lang: pt, region: BR, category: branding }
 
   # ---------------- EUA ----------------
   - { url: "https://www.adweek.com/feed/",                     name: "Adweek",                lang: en, region: us, category: campanha }
@@ -149,6 +161,17 @@ rss_feeds:
   - { url: "https://www.pentagram.com/feed",             name: "Pentagram",             lang: en, region: eu, category: branding }
   - { url: "https://saffron-consultants.com/feed/",       name: "Saffron",               lang: en, region: eu, category: branding }
 
+  # ---------------- PESQUISA DE MERCADO (mundo + Brasil) ----------------
+  - { url: "https://www.kantar.com/feed",                  name: "Kantar",                lang: en, region: eu, category: pesquisa }
+  - { url: "https://www.nielsen.com/feed/",               name: "Nielsen",               lang: en, region: us, category: pesquisa }
+  - { url: "https://www.ipsos.com/en/rss.xml",            name: "Ipsos",                 lang: en, region: eu, category: pesquisa }
+  - { url: "https://www.forrester.com/blogs/feed/",       name: "Forrester",             lang: en, region: us, category: pesquisa }
+  - { url: "https://www.gartner.com/en/newsroom/rss",     name: "Gartner",               lang: en, region: us, category: pesquisa }
+  - { url: "https://www.emarketer.com/feeds/index.xml",   name: "eMarketer",             lang: en, region: us, category: pesquisa }
+  - { url: "https://www.mintel.com/feed/",                name: "Mintel",                lang: en, region: eu, category: pesquisa }
+  - { url: "https://blog.opinionbox.com/feed/",           name: "Opinion Box (BR)",      lang: pt, region: BR, category: pesquisa }
+  - { url: "https://mindminers.com/blog/feed/",           name: "MindMiners (BR)",       lang: pt, region: BR, category: pesquisa }
+
 # -----------------------------------------------------------------------------
 # Fontes acadêmicas (artigos / papers). Crossref cobre periódicos de várias
 # editoras; arXiv cobre preprints (mais voltado a IA/computação).
@@ -160,6 +183,8 @@ academic:
     - { query: "brand semiotics meaning",          category: semiotica }
     - { query: "neuromarketing brand consumer",    category: neuromarketing }
     - { query: "artificial intelligence branding", category: branding_ia }
+    - { query: "consumer behavior brand trends",   category: pesquisa }
+    - { query: "market research consumer insights", category: pesquisa }
   crossref_window_days: 30   # papers acadêmicos saem em ritmo mais lento
   # arXiv desativado: é repositório de computação/física e trazia papers de IA
   # sem relação com branding (ruído). O acadêmico relevante vem do Crossref.
@@ -205,3 +230,10 @@ keywords:
   - inteligência artificial
   - generative ai
   - ia generativa
+  - pesquisa de mercado
+  - market research
+  - consumer insights
+  - comportamento do consumidor
+  - consumer behavior
+  - tendências de consumo
+  - consumer trends

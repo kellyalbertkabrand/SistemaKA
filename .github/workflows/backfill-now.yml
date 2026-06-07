@@ -1,3 +1,4 @@
+# trigger: forbes + pesquisas + pme
 name: Backfill + deploy (one-time)
 
 # Recoleta os últimos dias LENDO a descrição real de cada matéria e publica.
@@ -49,4 +50,4 @@ jobs:
         run: |
           npx -y @netlify/mcp@latest \
             --site-id 08fc9134-351a-4237-9891-fd4dea56d013 \
-            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..E4QeWviT3ansDFTb.HlkIwypWGkYIe03CJo33emuRnP8EXpIc27xy8IL8f8P8U9xK2MqBSAhNxZvdMp7cIm8T8ewTWeIZiU3YLOUAchIzbclnAWu33s5wV9YIB2wYx_Jaav6ehP1KAkVAhiPeWiOAdvGkfBMZ0W6pw1Ms6iTeUOsk-Jrltd0Yoy0yglNrYFsj5_JbrraOLGkdgAea4bDyDdXiC-7ZCz7cV2PBFm93VeGnFhvcbg6o2ZJRgbwich9h6FeCoxK8gJhiOtHXYm0SLl0FN_vj64292w8e5DKRgIcuLIZeq9GpGvDUKd_aiiH6i8sZ7SGUGuH-J7lGcmShThgHm-xrfMxOMBIYmv07Hhum11CDz6x4OqOpAGMp1vZn7xO4mxuCC8qpmphJqi1S03Y3.c8ZHh6l30MupyfKNySKwVw"
+            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..HYQfQHEIptOwNmah._dHf_StX5donpwjsY28LLTHi5-kAIdHIHbshvMZD5qxBoomwno5w6Q2akpELiJvy4LVczPjZ2IwomxK5oqQhh5mc1U_IZxEzxKl-LNS9bXZiOzTNZoV3lEG43PtdlVCjMQLeOR1Hp9iwqqLcIaNPxiRFuWQoDCevVqhLSrb0TvwsnlpCNOzdG6-yY_e7-BP1SVW0SilF33Pc0R7Ha4r8MZLJNFpSZPb3tfPBOo2PPSJaMwsRswcjJW01Wra1RJ11PxgZzxXtNqrUoKkEhZQRRTdzQZ2UWsxgcGKmVtUXv1K1nbyHhN5EkPFyB3k3w1JOrmO6uLVlkaE6Y3iq3xGHpoOTRZ9t4_2T7BQ7YUwf3xtHwBhg8kYs4L9JzTVVd0Tyy11DV0ee.nS-hi-gZQrOjN-IA_MzuHw"
