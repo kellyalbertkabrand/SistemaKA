@@ -53,7 +53,8 @@ FALLBACK_PME = {
 
 
 def _apply_fallback_notes(item: Item) -> None:
-    item.link_kelly = FALLBACK_LINK.get(item.category, FALLBACK_LINK["branding"])
+    # Sem IA: deixamos a "persona" vazia (decidir persona exige leitura/raciocínio).
+    item.link_kelly = ""
     item.pme_pt = FALLBACK_PME.get(item.category, FALLBACK_PME["branding"])
 
 
@@ -81,20 +82,13 @@ def _system_prompt() -> str:
         + _business_block() +
         " Para cada item escreva em PORTUGUÊS do Brasil: (1) 'titulo' — título "
         "traduzido (se já estiver em PT, repita); (2) 'resumo' — 1 frase CURTA "
-        "com a essência da matéria, para triagem rápida; (3) 'gancho' — 1 frase "
-        "de por que é útil para conteúdo de "
-        "branding/posicionamento/semiótica/neuromarketing; (4) 'link' — 1 frase "
-        "começando com 'Dá pra linkar:' dizendo como ESTA matéria conecta com UM "
-        "produto/persona que ESTA matéria melhor serve, citando-o pelo nome "
-        "(Livro, Mentoria ou Programa Marca com Essência) e por quê; (5) 'pme' — "
-        "1 frase prática de como o conteúdo é útil para o pequeno/médio "
-        "empresário; (6) 'roteiro' — uma ideia CURTA de roteiro de vídeo no "
-        "formato 'Gancho: … | Ângulo: … | CTA: …' (abertura que prende, o ângulo "
-        "do conteúdo e uma chamada para a persona/produto certo), pronta para a "
-        "Kelly gravar. Se a matéria não servir a nenhuma persona, "
-        "devolva os campos vazios (\"\"). Seja fiel, sem inventar. Responda "
-        "SOMENTE um array JSON na ordem dos itens: "
-        '[{"i":0,"titulo":"...","resumo":"...","gancho":"...","link":"...","pme":"...","roteiro":"..."}].'
+        "com a essência da matéria, para triagem rápida; (3) 'persona' — diga "
+        "para QUAL persona/produto esta matéria mais interessa (Livro/Despertar, "
+        "Mentoria/Autonomia ou Programa/Maturidade) e por quê, em 1 frase; se não "
+        "interessar a nenhuma, devolva \"\"; (4) 'pme' — 1 frase prática de como o "
+        "conteúdo é útil para o pequeno/médio empresário. Seja fiel, sem inventar. "
+        "Responda SOMENTE um array JSON na ordem dos itens: "
+        '[{"i":0,"titulo":"...","resumo":"...","persona":"...","pme":"..."}].'
     )
 
 
@@ -155,10 +149,8 @@ def _claude_batch(client, model: str, system: str, batch: list[Item]) -> None:
         entry = by_index.get(idx)
         if entry and entry.get("resumo"):
             item.summary_pt = (entry.get("resumo") or "").strip()
-            item.angle_pt = (entry.get("gancho") or "").strip()
-            item.link_kelly = (entry.get("link") or "").strip()
-            item.pme_pt = (entry.get("pme") or "").strip() or FALLBACK_PME.get(item.category, "")
-            item.roteiro_pt = (entry.get("roteiro") or "").strip()
+            item.link_kelly = (entry.get("persona") or "").strip()  # "Para a persona ..."
+            item.pme_pt = (entry.get("pme") or "").strip()
             if item.needs_translation:
                 item.title_pt = (entry.get("titulo") or "").strip()
         else:
