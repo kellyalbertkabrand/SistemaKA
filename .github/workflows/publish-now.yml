@@ -1,0 +1,22 @@
+name: Publicar agora (one-time)
+
+on:
+  push:
+    paths:
+      - '.github/workflows/publish-now.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Publicar no Netlify
+        run: |
+          npx -y @netlify/mcp@latest \
+            --site-id 08fc9134-351a-4237-9891-fd4dea56d013 \
+            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..QhB78LSac_n9kMtt.-tor-Dnub-a0PIrnrhGyc1uyQljsyuWUmILQTsIKzBit96h9yi-wfjI5oe1k3NKsL8WMv-S-IaQtUFYbHVtkQKPJPye8XVvJHK43pX6_q24CKRJe4HidG6ZscAeGCRiFguDB_-KZTYAzwG1qtgnFtXk-GQVa4wKhKchzuk9PRSxfTwGdBiiHLcNtfQYDB1cMoG50z9J107JkTWNPmiPxcGjaQe6j3f9EOqhVJgMRbz1cDLZeVCNJxZKqTO1Q6ptZGW3WZYVBGaSmF8Ma_AEaqZuooh3Yw8HlHsdNdVqr5XcCnfbcRNODayDx6oFdruZQNrRt5baBe0UnGn-mDAhd9OnSEHdC3jOoi36r4MnZUlOpuwvb8ZvSiGuUclxrSa_O6jCPGf7C.F9ZTuIs-hO4HqUM_FICSYg"
