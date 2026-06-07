@@ -1,6 +1,6 @@
 {
   "date": "2026-06-05",
-  "generated_at": "2026-06-07T17:41:09.542516+00:00",
+  "generated_at": "2026-06-07T17:52:52.175512+00:00",
   "count": 40,
   "items": [
     {
@@ -220,7 +220,7 @@
       "link_kelly": "IA aplicada a marca — gancho para a Direção de Marca e o Programa Marca com Essência.",
       "authors": "",
       "score": 9,
-      "fetched_at": "2026-06-07T17:37:55.089625+00:00",
+      "fetched_at": "2026-06-07T17:49:39.360902+00:00",
       "id": "45e79f3090aa9851"
     },
     {
@@ -260,7 +260,7 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 9,
-      "fetched_at": "2026-06-07T17:39:43.507648+00:00",
+      "fetched_at": "2026-06-07T17:51:36.070239+00:00",
       "id": "85d82c325b9a3715"
     },
     {
@@ -340,7 +340,7 @@
       "link_kelly": "Construção de marca — tema do Livro e da Mentoria.",
       "authors": "",
       "score": 9,
-      "fetched_at": "2026-06-07T17:39:17.089258+00:00",
+      "fetched_at": "2026-06-07T17:50:59.992588+00:00",
       "id": "7a4a0dc388441195"
     },
     {
@@ -500,7 +500,7 @@
       "link_kelly": "Dado de pesquisa/tendência — sustenta argumentos na Mentoria e na Direção de Marca.",
       "authors": "",
       "score": 7,
-      "fetched_at": "2026-06-07T17:38:57.401046+00:00",
+      "fetched_at": "2026-06-07T17:50:26.262523+00:00",
       "id": "43ccf981c74fac55"
     },
     {
@@ -600,8 +600,48 @@
       "link_kelly": "Dado de pesquisa/tendência — sustenta argumentos na Mentoria e na Direção de Marca.",
       "authors": "",
       "score": 7,
-      "fetched_at": "2026-06-07T17:39:40.763877+00:00",
+      "fetched_at": "2026-06-07T17:51:32.079242+00:00",
       "id": "939a9399bea82237"
+    },
+    {
+      "title": "Shangri-La Jeddah Appoints Lina Khan as Director of Marketing & Communications - Biz Today",
+      "link": "https://www.biztoday.news/2026/06/05/shangri-la-jeddah-appoints-lina-khan-as-director-of-marketing-communications/",
+      "source": "Biz Today",
+      "lang": "en",
+      "region": "world",
+      "category": "branding",
+      "kind": "noticia",
+      "published": "2026-06-05",
+      "raw_summary": "By Rafiq Vayani JEDDAH: Shangri-La Jeddah is pleased to announce the appointment of Lina Khan as Director of Marketing & Communications. In her new role, Lina will lead the hotel’s marketing, communications, public relations, and brand strategy, supporting Shangri-La Jeddah’s continued growth as one of Jeddah’s leading luxury destinations. Originally from Jeddah, Lina brings a …",
+      "title_pt": "Shangri-La Jeddah nomeia Lina Khan como Diretora de Marketing e Comunicações - Biz Today",
+      "summary_pt": "Por Rafiq Vayani JEDDAH: Shangri-La Jeddah tem o prazer de anunciar a nomeação de Lina Khan como Diretora de Marketing e Comunicações.",
+      "angle_pt": "",
+      "pme_pt": "PME: lições de construção de marca aplicáveis a negócios pequenos e médios.",
+      "link_kelly": "Construção de marca — tema do Livro e da Mentoria.",
+      "authors": "",
+      "score": 7,
+      "fetched_at": "2026-06-07T17:51:00.306848+00:00",
+      "id": "589fc97bc1ff837a"
+    },
+    {
+      "title": "EstrelaBet transforms fan superstition into entertainment in the \"Operation Zica Neles\" campaign for the 2026 World Cup - BNLData",
+      "link": "https://bnldata.com.br/en/estrelabet-transforma-supersticao-do-torcedor-em-entretenimento-na-campanha-operacao-zica-neles-para-a-copa-do-mundo-2026/",
+      "source": "BNLData",
+      "lang": "en",
+      "region": "world",
+      "category": "campanha",
+      "kind": "noticia",
+      "published": "2026-06-05",
+      "raw_summary": "With characters inspired by Brazilian diversity and created using Artificial Intelligence, and a mega-promotion worth up to R$10 million, the gaming tech company is betting on humor to dominate digital attention during the World Cup.",
+      "title_pt": "EstrelaBet transforma superstição de torcedores em entretenimento na campanha “Operação Zica Neles” para a Copa do Mundo de 2026 – BNLData",
+      "summary_pt": "Com personagens inspirados na diversidade brasileira e criados com Inteligência Artificial, e uma megapromoção de até R$ 10 milhões, a empresa de tecnologia de games aposta no…",
+      "angle_pt": "",
+      "pme_pt": "PME: ideias de campanha que dá para adaptar com poucos recursos.",
+      "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
+      "authors": "",
+      "score": 7,
+      "fetched_at": "2026-06-07T17:51:11.475086+00:00",
+      "id": "44a0ecf0c3e3153b"
     },
     {
       "title": "“A Vida É Doce” com a RAR Açúcar - Briefing: o meu marketing",
@@ -640,7 +680,7 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T17:39:43.507917+00:00",
+      "fetched_at": "2026-06-07T17:51:36.070543+00:00",
       "id": "8ec19c3fe8eb0229"
     },
     {
@@ -660,7 +700,7 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T17:39:47.465321+00:00",
+      "fetched_at": "2026-06-07T17:51:37.981637+00:00",
       "id": "ded5d8286aff7caa"
     },
     {
@@ -700,7 +740,7 @@
       "link_kelly": "IA aplicada a marca — gancho para a Direção de Marca e o Programa Marca com Essência.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T17:37:55.712831+00:00",
+      "fetched_at": "2026-06-07T17:49:42.713237+00:00",
       "id": "c5bfeb04a9c483e2"
     },
     {
@@ -760,48 +800,8 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T17:39:43.507734+00:00",
+      "fetched_at": "2026-06-07T17:51:36.070325+00:00",
       "id": "9d4af100dbb8c5c5"
-    },
-    {
-      "title": "‘Na CTV, campanhas precisam ser pensadas para o meio’, avalia diretor sênior de vendas Latam da Samsung Ads",
-      "link": "https://propmark.com.br/midia/na-ctv-campanhas-precisam-ser-pensadas-para-o-meio-avalia-diretor-senior-de-vendas-latam-da-samsung-ads/",
-      "source": "Propmark",
-      "lang": "pt",
-      "region": "BR",
-      "category": "campanha",
-      "kind": "noticia",
-      "published": "2026-06-05",
-      "raw_summary": "José Melchert comenta estudo da Samsung Ads, feito em parceria com Offerwise e Amplified Intelligence, que aponta a Smart TV como principal meio de consumo de conteúdo para 90% dos brasileiros",
-      "title_pt": "",
-      "summary_pt": "José Melchert comenta estudo da Samsung Ads, feito em parceria com Offerwise e Amplified Intelligence, que aponta a Smart TV como principal meio de consumo de conteúdo para 90% dos brasileiros",
-      "angle_pt": "",
-      "pme_pt": "PME: ideias de campanha que dá para adaptar com poucos recursos.",
-      "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
-      "authors": "",
-      "score": 5,
-      "fetched_at": "2026-06-07T17:39:47.465513+00:00",
-      "id": "04c65863635dbe09"
-    },
-    {
-      "title": "Making Brand Magic Happen When Everyone's Doing the Same Thing ft. Deena Bahri of Nutrafol - ADWEEK",
-      "link": "https://www.adweek.com/brand-marketing/making-brand-magic-happen-when-everyones-doing-the-same-thing-ft-deena-bahri-of-nutrafol/",
-      "source": "ADWEEK",
-      "lang": "en",
-      "region": "world",
-      "category": "posicionamento",
-      "kind": "noticia",
-      "published": "2026-06-05",
-      "raw_summary": "Why brand expression is the only real differentiator in the age of AI.",
-      "title_pt": "Fazendo a magia da marca acontecer quando todos estão fazendo a mesma coisa com Deena Bahri da Nutrafol - ADWEEK",
-      "summary_pt": "Por que a expressão da marca é o único diferencial real na era da IA.",
-      "angle_pt": "",
-      "pme_pt": "PME: como se posicionar e se diferenciar no seu mercado.",
-      "link_kelly": "Posicionamento/reposicionamento — coração do Programa Marca com Essência.",
-      "authors": "",
-      "score": 5,
-      "fetched_at": "2026-06-07T17:39:24.552770+00:00",
-      "id": "ed0f5f176f885bd9"
     }
   ]
 }
