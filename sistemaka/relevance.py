@@ -98,12 +98,13 @@ def rank_and_filter(items: list[Item], cfg: dict) -> list[Item]:
         # Polêmica só vale se tiver contexto de marca/negócio (corta política/esporte).
         if item.category == "polemica" and not _is_brand_polemica(item):
             continue
-        s = score(item, keywords)
-        if s <= 0:
-            continue  # sem nenhuma palavra-chave relevante → fora (vale p/ acadêmico também)
-        # Prioriza o que conversa diretamente com o negócio da Kelly.
-        s += 2 * score(item, business_terms)
-        item.score = s
+        if score(item, keywords) <= 0:
+            continue  # sem nenhuma palavra-chave relevante → fora
+        # GATE de produto: só mostra se tiver a ver com os temas/produtos da Kelly.
+        biz = score(item, business_terms)
+        if biz <= 0:
+            continue
+        item.score = 1 + 2 * biz  # relevância priorizando o encaixe com o negócio
         kept.append(item)
 
     kept.sort(key=lambda it: (it.score, it.published), reverse=True)

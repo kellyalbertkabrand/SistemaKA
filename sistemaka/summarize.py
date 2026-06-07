@@ -25,24 +25,29 @@ BATCH_SIZE = 8
 
 # Rodapé genérico por categoria (usado quando NÃO há IA). Liga ao trabalho da KA.
 FALLBACK_LINK = {
-    "branding_ia": "IA aplicada a marcas — conecta com seus robôs GPT e o Programa Posicione-se.",
-    "marketing_ia": "IA no marketing — gancho para mostrar como você usa IA a favor das marcas.",
-    "branding": "Construção/gestão de marca — material para o Programa Posicione-se.",
-    "campanha": "Referência de campanha/ideia para usar em mentorias e conteúdo.",
-    "posicionamento": "Posicionamento/reposicionamento — o coração do seu Programa Posicione-se.",
-    "semiotica": "Semiótica de marca — embasa seu conteúdo sobre significado e identidade.",
-    "neuromarketing": "Neuromarketing — dado para sustentar decisões de marca no seu conteúdo.",
-    "polemica": "Marca pessoal/reputação — ótimo post de engajamento ligando ao seu método.",
-    "academico": "Base acadêmica para dar autoridade ao seu conteúdo de marca.",
+    "branding_ia": "IA aplicada a marca — Direção de Marca e os robôs GPT do Programa Posicione-se.",
+    "marketing_ia": "IA no marketing — Direção de Marca / Programa Posicione-se.",
+    "branding": "Construção de marca — tema do Livro e da Mentoria.",
+    "campanha": "Case de campanha — referência para a Direção de Marca e mentorias.",
+    "posicionamento": "Posicionamento/reposicionamento — o coração do Programa Posicione-se.",
+    "semiotica": "Semiótica de marca — base do Livro e da Mentoria.",
+    "neuromarketing": "Neuromarketing — embasa o Livro e a Mentoria.",
+    "polemica": "Marca/reputação — gancho para a Mentoria e o Programa Posicione-se.",
+    "academico": "Autoridade acadêmica — material de apoio para o Livro e a Mentoria.",
 }
 
 
 def _business_block() -> str:
     b = config.load_config().get("business", {}) or {}
-    produtos = "; ".join(b.get("produtos", []) or [])
+    prods = []
+    for p in b.get("produtos", []) or []:
+        if isinstance(p, dict):
+            prods.append(f"{p.get('nome')} ({p.get('sobre')}) {p.get('url')}")
+        else:
+            prods.append(str(p))
     return (
         f"NEGÓCIO DA KELLY: {b.get('nome','')}. {b.get('descricao','')} "
-        f"Produtos: {produtos}. Público: {b.get('publico','')}"
+        f"PRODUTOS (nome — sobre — link): {'; '.join(prods)}. Público: {b.get('publico','')}"
     )
 
 
@@ -54,9 +59,9 @@ def _system_prompt() -> str:
         "traduzido (se já estiver em PT, repita); (2) 'resumo' — 1-2 frases com a "
         "essência; (3) 'gancho' — 1 frase de por que é útil para conteúdo de "
         "branding/posicionamento/semiótica/neuromarketing; (4) 'link' — 1 frase "
-        "começando com 'Dá pra linkar ao seu conteúdo:' explicando, de forma "
-        "concreta, como ESTA matéria conecta com o negócio/produtos da Kelly "
-        "(ex.: Posicione-se, marca pessoal, IA para marcas). Seja fiel, sem "
+        "começando com 'Dá pra linkar:' dizendo como ESTA matéria conecta com UM "
+        "produto específico da Kelly, citando-o pelo nome (Livro, Mentoria, "
+        "Direção de Marca ou Programa Posicione-se). Seja fiel, sem "
         "inventar. Responda SOMENTE um array JSON na ordem dos itens: "
         '[{"i":0,"titulo":"...","resumo":"...","gancho":"...","link":"..."}].'
     )

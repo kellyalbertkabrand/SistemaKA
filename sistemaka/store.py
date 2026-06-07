@@ -29,13 +29,28 @@ def today_str() -> str:
     return datetime.now(timezone.utc).date().isoformat()
 
 
+def _norm_title(text: str) -> str:
+    return re.sub(r"\s+", " ", re.sub(r"[^\w\s]", " ", (text or "").lower())).strip()[:90]
+
+
 def save_day(day: str, items: list[Item], max_per_day: int = 60) -> Path:
-    """Mescla os itens no arquivo do dia (dedupe por id, ordena por relevância)."""
+    """Mescla os itens no arquivo do dia, deduplica (por link e por título) e
+    ordena por relevância — a MESMA notícia aparece só uma vez no dia."""
     config.DATA_DIR.mkdir(parents=True, exist_ok=True)
     by_id = {it.id: it for it in load_day(day)}
     for item in items:
-        by_id[item.id] = item
-    merged = sorted(by_id.values(), key=lambda it: (it.score, it.published), reverse=True)
+        by_id[item.id] = item  # novos sobrescrevem
+
+    # Dedup por título: mantém o de maior relevância (corta repetição entre categorias).
+    ordered = sorted(by_id.values(), key=lambda it: (it.score, it.published), reverse=True)
+    seen_titles: set[str] = set()
+    merged: list[Item] = []
+    for it in ordered:
+        t = _norm_title(it.title)
+        if t and t in seen_titles:
+            continue
+        seen_titles.add(t)
+        merged.append(it)
     merged = merged[:max_per_day]
 
     path = _day_path(day)

@@ -1,8 +1,27 @@
 {
   "date": "2026-06-06",
   "generated_at": "2026-06-07T00:10:22.505208+00:00",
-  "count": 11,
+  "count": 9,
   "items": [
+    {
+      "title": "The Anti-Marketing Phenomenon will change marketing - ET BrandEquity",
+      "link": "https://brandequity.economictimes.indiatimes.com/amp/news/marketing/the-anti-marketing-phenomenon-will-change-marketing/131544149",
+      "source": "ET BrandEquity",
+      "lang": "en",
+      "region": "world",
+      "category": "branding_ia",
+      "kind": "noticia",
+      "published": "2026-06-06",
+      "raw_summary": "The Anti-Marketing Phenomenon will change marketing ET BrandEquity",
+      "title_pt": "O fenômeno anti-marketing mudará o marketing - ET BrandEquity",
+      "summary_pt": "O fenômeno anti-marketing mudará o marketing ET BrandEquity",
+      "angle_pt": "",
+      "link_kelly": "IA aplicada a marca — Direção de Marca e os robôs GPT do Programa Posicione-se.",
+      "authors": "",
+      "score": 9,
+      "fetched_at": "2026-06-07T00:04:51.364778+00:00",
+      "id": "eec7762526ebd0be"
+    },
     {
       "title": "YouDare integra criação, conteúdo e influência e reforça estratégia de inteligência artificial",
       "link": "https://propmark.com.br/agencias/youdare-integra-criacao-conteudo-e-influencia-e-reforca-estrategia-de-inteligencia-artificial/",
@@ -16,11 +35,11 @@
       "title_pt": "",
       "summary_pt": "A YouDare, agência do Grupo Dreamers, anunciou uma reestruturação organizacional para acelerar sua transformação digital e ampliar a integração entre criatividade, conteúdo, influência e inteligência artificial. Como parte das mudanças, Yuri Mussoly assume a liderança unificada das áreas de Criação, Conteúdo e Influênc…",
       "angle_pt": "",
-      "link_kelly": "Referência de campanha/ideia para usar em mentorias e conteúdo.",
+      "link_kelly": "Case de campanha — referência para a Direção de Marca e mentorias.",
       "authors": "",
-      "score": 11,
+      "score": 5,
       "fetched_at": "2026-06-07T00:08:52.458056+00:00",
-      "id": "65d1b567c2606cad"
+      "id": "99a707e71768af7a"
     },
     {
       "title": "“Cautious adoption, not blind enthusiasm”: how to build an AI rebrand in a sea of sceptics - Creative Bloq",
@@ -35,68 +54,11 @@
       "title_pt": "“Adoção cautelosa, não entusiasmo cego”: como construir uma reformulação da marca de IA em um mar de céticos - Creative Bloq",
       "summary_pt": "“Adoção cautelosa, não entusiasmo cego”: como construir uma reformulação da marca de IA em um mar de céticos Creative Bloq",
       "angle_pt": "",
-      "link_kelly": "IA aplicada a marcas — conecta com seus robôs GPT e o Programa Posicione-se.",
+      "link_kelly": "IA aplicada a marca — Direção de Marca e os robôs GPT do Programa Posicione-se.",
       "authors": "",
-      "score": 6,
+      "score": 5,
       "fetched_at": "2026-06-07T00:08:36.058442+00:00",
-      "id": "c9c6bd92eff7845b"
-    },
-    {
-      "title": "IA otimiza tarefas e transforma a gestão empresarial em uma atividade mais estratégica - ABC da Comunicação",
-      "link": "https://www.abcdacomunicacao.com.br/ia-otimiza-tarefas-e-transforma-a-gestao-empresarial-em-uma-atividade-mais-estrategica/",
-      "source": "ABC da Comunicação",
-      "lang": "pt",
-      "region": "BR",
-      "category": "marketing_ia",
-      "kind": "noticia",
-      "published": "2026-06-06",
-      "raw_summary": "IA otimiza tarefas e transforma a gestão empresarial em uma atividade mais estratégica ABC da Comunicação",
-      "title_pt": "",
-      "summary_pt": "IA otimiza tarefas e transforma a gestão empresarial em uma atividade mais estratégica ABC da Comunicação",
-      "angle_pt": "",
-      "link_kelly": "IA no marketing — gancho para mostrar como você usa IA a favor das marcas.",
-      "authors": "",
-      "score": 4,
-      "fetched_at": "2026-06-07T00:08:23.494414+00:00",
-      "id": "69f810bb78aef8e8"
-    },
-    {
-      "title": "Cursos gratuitos do Sebrae auxiliam vendas para o Dia dos Namorados - Rádio Itatiaia",
-      "link": "https://www.itatiaia.com.br/suldeminas/cursos-gratuitos-do-sebrae-auxiliam-vendas-para-o-dia-dos-namorados/",
-      "source": "Rádio Itatiaia",
-      "lang": "pt",
-      "region": "BR",
-      "category": "marketing_ia",
-      "kind": "noticia",
-      "published": "2026-06-06",
-      "raw_summary": "Cursos gratuitos do Sebrae auxiliam vendas para o Dia dos Namorados Rádio Itatiaia",
-      "title_pt": "",
-      "summary_pt": "Cursos gratuitos do Sebrae auxiliam vendas para o Dia dos Namorados Rádio Itatiaia",
-      "angle_pt": "",
-      "link_kelly": "IA no marketing — gancho para mostrar como você usa IA a favor das marcas.",
-      "authors": "",
-      "score": 4,
-      "fetched_at": "2026-06-07T00:08:23.796558+00:00",
-      "id": "7f502257a08d8ed7"
-    },
-    {
-      "title": "The Anti-Marketing Phenomenon will change marketing - ET BrandEquity",
-      "link": "https://brandequity.economictimes.indiatimes.com/amp/news/marketing/the-anti-marketing-phenomenon-will-change-marketing/131544149",
-      "source": "ET BrandEquity",
-      "lang": "en",
-      "region": "world",
-      "category": "branding_ia",
-      "kind": "noticia",
-      "published": "2026-06-06",
-      "raw_summary": "The Anti-Marketing Phenomenon will change marketing ET BrandEquity",
-      "title_pt": "O fenômeno anti-marketing mudará o marketing - ET BrandEquity",
-      "summary_pt": "O fenômeno anti-marketing mudará o marketing ET BrandEquity",
-      "angle_pt": "",
-      "link_kelly": "IA aplicada a marcas — conecta com seus robôs GPT e o Programa Posicione-se.",
-      "authors": "",
-      "score": 4,
-      "fetched_at": "2026-06-07T00:04:51.364778+00:00",
-      "id": "6da84033e9acfb9c"
+      "id": "232c71d1890be71a"
     },
     {
       "title": "We Vibe Coded Our AI VP of Marketing. Here’s What It Actually Does. - saastr.com",
@@ -111,11 +73,11 @@
       "title_pt": "Nós Vibe Coded nosso vice-presidente de marketing de IA. Aqui está o que realmente faz. -saastr.com",
       "summary_pt": "Nós Vibe Coded nosso vice-presidente de marketing de IA. Aqui está o que realmente faz. saastr.com",
       "angle_pt": "",
-      "link_kelly": "IA no marketing — gancho para mostrar como você usa IA a favor das marcas.",
+      "link_kelly": "IA no marketing — Direção de Marca / Programa Posicione-se.",
       "authors": "",
-      "score": 4,
+      "score": 5,
       "fetched_at": "2026-06-07T00:08:38.223985+00:00",
-      "id": "9768af3b1847b79e"
+      "id": "6f5d8585976f5592"
     },
     {
       "title": "Apple AI Lawsuit Settlement Puts Marketing And Valuation In Focus - simplywall.st",
@@ -130,11 +92,11 @@
       "title_pt": "Acordo de ação judicial da Apple AI coloca marketing e avaliação em foco - simplewall.st",
       "summary_pt": "Acordo de ação judicial da Apple AI coloca marketing e avaliação em foco simplesmentewall.st",
       "angle_pt": "",
-      "link_kelly": "IA no marketing — gancho para mostrar como você usa IA a favor das marcas.",
+      "link_kelly": "IA no marketing — Direção de Marca / Programa Posicione-se.",
       "authors": "",
-      "score": 4,
+      "score": 5,
       "fetched_at": "2026-06-07T00:08:38.348082+00:00",
-      "id": "6c8c888b9521e7f9"
+      "id": "173370e6dc6cb6ad"
     },
     {
       "title": "Apple AI Lawsuit Settlement Puts Spotlight On iPhone Marketing And Risk - Yahoo Finance",
@@ -149,11 +111,11 @@
       "title_pt": "Acordo de ação judicial sobre IA da Apple destaca marketing e riscos do iPhone - Yahoo Finance",
       "summary_pt": "Acordo de ação judicial de IA da Apple destaca marketing e risco do iPhone Yahoo Finance",
       "angle_pt": "",
-      "link_kelly": "IA no marketing — gancho para mostrar como você usa IA a favor das marcas.",
+      "link_kelly": "IA no marketing — Direção de Marca / Programa Posicione-se.",
       "authors": "",
-      "score": 4,
+      "score": 5,
       "fetched_at": "2026-06-07T00:08:38.725926+00:00",
-      "id": "e12b2414c4cc6635"
+      "id": "fc3f798ec7390e18"
     },
     {
       "title": "AI Marketing Guide for Loan Officers Released – Beyond Referral Model - El Paso Times",
@@ -168,11 +130,11 @@
       "title_pt": "Lançado guia de marketing de IA para agentes de crédito - além do modelo de referência - El Paso Times",
       "summary_pt": "Lançado guia de marketing de IA para agentes de crédito - além do modelo de referência El Paso Times",
       "angle_pt": "",
-      "link_kelly": "IA no marketing — gancho para mostrar como você usa IA a favor das marcas.",
+      "link_kelly": "IA no marketing — Direção de Marca / Programa Posicione-se.",
       "authors": "",
-      "score": 4,
+      "score": 5,
       "fetched_at": "2026-06-07T00:08:39.180026+00:00",
-      "id": "15042d02cd501836"
+      "id": "0fe64fdae20cdb66"
     },
     {
       "title": "Nike Is Rewriting Football Marketing with ‘Rip the Script’ - MediaNews4U",
@@ -187,11 +149,11 @@
       "title_pt": "Nike está reescrevendo o marketing do futebol com ‘Rip the Script’ - MediaNews4U",
       "summary_pt": "Nike está reescrevendo o marketing do futebol com ‘Rip the Script’ MediaNews4U",
       "angle_pt": "",
-      "link_kelly": "Referência de campanha/ideia para usar em mentorias e conteúdo.",
+      "link_kelly": "Case de campanha — referência para a Direção de Marca e mentorias.",
       "authors": "",
-      "score": 4,
+      "score": 5,
       "fetched_at": "2026-06-07T00:08:43.748021+00:00",
-      "id": "ec28fdf0201d2c66"
+      "id": "e3ecceb1b85c7840"
     },
     {
       "title": "Edição de 8 de junho de 2026",
@@ -206,11 +168,11 @@
       "title_pt": "",
       "summary_pt": "No atual marketing de performance, provar impacto vai além da conversão",
       "angle_pt": "",
-      "link_kelly": "Referência de campanha/ideia para usar em mentorias e conteúdo.",
+      "link_kelly": "Case de campanha — referência para a Direção de Marca e mentorias.",
       "authors": "",
-      "score": 2,
+      "score": 3,
       "fetched_at": "2026-06-06T23:59:56.050531+00:00",
-      "id": "1bed48353a25e866"
+      "id": "eaa54b989b4d6784"
     }
   ]
 }

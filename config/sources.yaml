@@ -29,23 +29,35 @@ business:
     de marcas há 20+ anos, cases com McDonald's, Sebrae e Atacadão. Também
     trabalha com semiótica e neuromarketing aplicados à marca.
   produtos:
-    - "Programa Posicione-se (posicionamento e reposicionamento de marca)"
-    - "Identidade verbal e visual + Brand Book"
-    - "Robôs GPT personalizados para marcas (IA aplicada ao branding)"
-    - "Mentoria/consultoria de marca pessoal e gestão de marca"
+    - { nome: "Livro", url: "https://kellyalbert.com.br/livro/", sobre: "livro sobre branding e posicionamento de marca" }
+    - { nome: "Mentoria", url: "https://kellyalbert.com.br/mentoria/", sobre: "mentoria de marca, posicionamento e marca pessoal" }
+    - { nome: "Direção de Marca", url: "https://kellyalbert.com.br/direcao/", sobre: "direção estratégica/criativa de marca para empresas" }
+    - { nome: "Programa Posicione-se", url: "https://kellyalbert.com.br/programa/", sobre: "programa completo: identidade verbal e visual, plano de comunicação, Brand Book e robôs GPT" }
   publico: "Empresas e profissionais que querem posicionar/reposicionar a marca; donos de marca pessoal."
   termos_prioritarios:
     - posicionamento
+    - positioning
     - reposicionamento
+    - repositioning
     - marca pessoal
+    - personal brand
     - identidade de marca
+    - brand identity
     - branding
+    - brand
     - rebranding
+    - marketing
     - propósito de marca
     - semiótica
+    - semiotics
     - neuromarketing
     - inteligência artificial
+    - artificial intelligence
     - marca
+    - campanha
+    - campaign
+    - publicidade
+    - advertising
 
 # -----------------------------------------------------------------------------
 # Google News — buscas por idioma/região (trazem o link real do veículo).

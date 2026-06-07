@@ -70,9 +70,17 @@ class Item:
 
     @property
     def id(self) -> str:
-        """Identificador estável baseado no link (para deduplicar)."""
-        canonical = re.sub(r"[#?].*$", "", self.link.strip().lower())
-        return hashlib.sha1(canonical.encode("utf-8")).hexdigest()[:16]
+        """Identificador estável baseado no link (para deduplicar).
+
+        Canonicaliza para casar a mesma matéria vinda de fontes diferentes:
+        ignora http/https, 'www.', parâmetros (?...), âncoras (#...) e barra final.
+        """
+        c = self.link.strip().lower()
+        c = re.sub(r"[#?].*$", "", c)
+        c = re.sub(r"^https?://", "", c)
+        c = re.sub(r"^www\.", "", c)
+        c = c.rstrip("/")
+        return hashlib.sha1(c.encode("utf-8")).hexdigest()[:16]
 
     @property
     def category_label(self) -> str:
