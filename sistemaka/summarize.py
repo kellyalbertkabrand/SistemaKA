@@ -56,8 +56,9 @@ def _system_prompt() -> str:
         "Você é editor(a) e estrategista de conteúdo da Kelly Albert (branding). "
         + _business_block() +
         " Para cada item escreva em PORTUGUÊS do Brasil: (1) 'titulo' — título "
-        "traduzido (se já estiver em PT, repita); (2) 'resumo' — 1-2 frases com a "
-        "essência; (3) 'gancho' — 1 frase de por que é útil para conteúdo de "
+        "traduzido (se já estiver em PT, repita); (2) 'resumo' — 1 frase CURTA "
+        "com a essência da matéria, para triagem rápida; (3) 'gancho' — 1 frase "
+        "de por que é útil para conteúdo de "
         "branding/posicionamento/semiótica/neuromarketing; (4) 'link' — 1 frase "
         "começando com 'Dá pra linkar:' dizendo como ESTA matéria conecta com UM "
         "produto específico da Kelly, citando-o pelo nome (Livro, Mentoria, "
@@ -167,6 +168,25 @@ def _translate(text: str) -> str:
         return text
 
 
+def _essence(text: str, max_chars: int = 180) -> str:
+    """Resumo curto: 1–2 primeiras frases, para triagem rápida."""
+    text = re.sub(r"\s+", " ", (text or "")).strip()
+    if not text:
+        return ""
+    parts = re.split(r"(?<=[.!?])\s+", text)
+    out = ""
+    for p in parts:
+        if not out:
+            out = p
+        elif len(out) + 1 + len(p) <= max_chars:
+            out += " " + p
+        else:
+            break
+    if len(out) > max_chars + 40:
+        out = out[:max_chars].rsplit(" ", 1)[0] + "…"
+    return out
+
+
 def _translate_fallback(item: Item) -> Item:
     snippet = (item.raw_summary or "").strip()
     if item.needs_translation:
@@ -174,7 +194,7 @@ def _translate_fallback(item: Item) -> Item:
         base = _translate(snippet) if snippet else _translate(item.title)
     else:
         base = snippet or item.title
-    item.summary_pt = base[:320] + ("…" if len(base) > 320 else "")
+    item.summary_pt = _essence(base)
     return item
 
 

@@ -15,7 +15,7 @@
       {% if item.needs_translation and item.title_pt and item.title_pt != item.title %}
       <p class="item-original">Título original: <em>{{ item.title }}</em></p>
       {% endif %}
-      <p class="item-summary">{{ item.summary_pt }}</p>
+      <p class="item-summary"><strong>Em resumo:</strong> {{ item.summary_pt }}</p>
       {% if item.angle_pt %}<p class="item-angle">💡 {{ item.angle_pt }}</p>{% endif %}
       {% if item.link_kelly %}<p class="item-kelly">🔗 <strong>Kelly,</strong> {{ item.link_kelly }}</p>{% endif %}
       <p class="item-meta">
