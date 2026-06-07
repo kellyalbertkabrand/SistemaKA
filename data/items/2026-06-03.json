@@ -1,7 +1,7 @@
 {
   "date": "2026-06-03",
-  "generated_at": "2026-06-07T00:05:57.707506+00:00",
-  "count": 25,
+  "generated_at": "2026-06-07T00:10:22.503582+00:00",
+  "count": 34,
   "items": [
     {
       "title": "O que o rebranding do Asaas ensina sobre estratégia de marca - Economia SC",
@@ -19,8 +19,27 @@
       "link_kelly": "Construção/gestão de marca — material para o Programa Posicione-se.",
       "authors": "",
       "score": 22,
-      "fetched_at": "2026-06-07T00:04:36.903779+00:00",
+      "fetched_at": "2026-06-07T00:08:25.553050+00:00",
       "id": "f4ce4d836fba27af"
+    },
+    {
+      "title": "Inteligência artificial muda busca do consumidor e desafia marcas a se reinventarem - R7",
+      "link": "https://noticias.r7.com/rio-de-janeiro/r7-rio-entrevista/video/inteligencia-artificial-muda-busca-do-consumidor-e-desafia-marcas-a-se-reinventarem-03062026/",
+      "source": "R7",
+      "lang": "pt",
+      "region": "BR",
+      "category": "branding_ia",
+      "kind": "noticia",
+      "published": "2026-06-03",
+      "raw_summary": "Inteligência artificial muda busca do consumidor e desafia marcas a se reinventarem R7",
+      "title_pt": "",
+      "summary_pt": "Inteligência artificial muda busca do consumidor e desafia marcas a se reinventarem R7",
+      "angle_pt": "",
+      "link_kelly": "IA aplicada a marcas — conecta com seus robôs GPT e o Programa Posicione-se.",
+      "authors": "",
+      "score": 18,
+      "fetched_at": "2026-06-07T00:08:22.130852+00:00",
+      "id": "a195aafaf799db92"
     },
     {
       "title": "Em evento sensorial, trade turístico conhece novo posicionamento de marca de Aruba; fotos - Panrotas",
@@ -38,7 +57,7 @@
       "link_kelly": "Posicionamento/reposicionamento — o coração do seu Programa Posicione-se.",
       "authors": "",
       "score": 14,
-      "fetched_at": "2026-06-07T00:04:42.451335+00:00",
+      "fetched_at": "2026-06-07T00:08:30.010817+00:00",
       "id": "9b9f7bda52f7e880"
     },
     {
@@ -57,7 +76,7 @@
       "link_kelly": "Posicionamento/reposicionamento — o coração do seu Programa Posicione-se.",
       "authors": "",
       "score": 14,
-      "fetched_at": "2026-06-07T00:04:43.209422+00:00",
+      "fetched_at": "2026-06-07T00:08:30.557894+00:00",
       "id": "a96a315735f1017c"
     },
     {
@@ -95,7 +114,7 @@
       "link_kelly": "Posicionamento/reposicionamento — o coração do seu Programa Posicione-se.",
       "authors": "",
       "score": 10,
-      "fetched_at": "2026-06-07T00:04:43.006567+00:00",
+      "fetched_at": "2026-06-07T00:08:30.422549+00:00",
       "id": "c36686dad65fea3a"
     },
     {
@@ -114,7 +133,7 @@
       "link_kelly": "Posicionamento/reposicionamento — o coração do seu Programa Posicione-se.",
       "authors": "",
       "score": 8,
-      "fetched_at": "2026-06-07T00:05:12.318143+00:00",
+      "fetched_at": "2026-06-07T00:08:54.552975+00:00",
       "id": "297467c6b6ba1688"
     },
     {
@@ -133,7 +152,7 @@
       "link_kelly": "Posicionamento/reposicionamento — o coração do seu Programa Posicione-se.",
       "authors": "",
       "score": 8,
-      "fetched_at": "2026-06-07T00:04:42.066173+00:00",
+      "fetched_at": "2026-06-07T00:08:29.723952+00:00",
       "id": "85864ec89b069790"
     },
     {
@@ -152,7 +171,7 @@
       "link_kelly": "Posicionamento/reposicionamento — o coração do seu Programa Posicione-se.",
       "authors": "",
       "score": 8,
-      "fetched_at": "2026-06-07T00:04:42.820590+00:00",
+      "fetched_at": "2026-06-07T00:08:30.279994+00:00",
       "id": "68519b11a6e3a247"
     },
     {
@@ -171,7 +190,7 @@
       "link_kelly": "Posicionamento/reposicionamento — o coração do seu Programa Posicione-se.",
       "authors": "",
       "score": 8,
-      "fetched_at": "2026-06-07T00:04:43.398499+00:00",
+      "fetched_at": "2026-06-07T00:08:30.699548+00:00",
       "id": "9c42d295bd9c97c2"
     },
     {
@@ -190,7 +209,7 @@
       "link_kelly": "Posicionamento/reposicionamento — o coração do seu Programa Posicione-se.",
       "authors": "",
       "score": 7,
-      "fetched_at": "2026-06-07T00:05:12.318048+00:00",
+      "fetched_at": "2026-06-07T00:08:54.552880+00:00",
       "id": "242a6186061471b6"
     },
     {
@@ -209,7 +228,7 @@
       "link_kelly": "Construção/gestão de marca — material para o Programa Posicione-se.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T00:05:17.128050+00:00",
+      "fetched_at": "2026-06-07T00:08:58.243853+00:00",
       "id": "a64e362029c17ceb"
     },
     {
@@ -247,7 +266,7 @@
       "link_kelly": "IA aplicada a marcas — conecta com seus robôs GPT e o Programa Posicione-se.",
       "authors": "",
       "score": 4,
-      "fetched_at": "2026-06-07T00:04:31.189975+00:00",
+      "fetched_at": "2026-06-07T00:08:21.311169+00:00",
       "id": "c6439369ab2cb75e"
     },
     {
@@ -266,8 +285,160 @@
       "link_kelly": "IA aplicada a marcas — conecta com seus robôs GPT e o Programa Posicione-se.",
       "authors": "",
       "score": 4,
-      "fetched_at": "2026-06-07T00:04:31.761510+00:00",
+      "fetched_at": "2026-06-07T00:08:21.725156+00:00",
       "id": "f2c6a3edee21a07c"
+    },
+    {
+      "title": "Biglink busca R$ 20 milhões para guiar decisões de marketing com IA - Business Moment",
+      "link": "https://businessmoment.com.br/biglink-marketing-ia-rodada-20-milhoes/",
+      "source": "Business Moment",
+      "lang": "pt",
+      "region": "BR",
+      "category": "marketing_ia",
+      "kind": "noticia",
+      "published": "2026-06-03",
+      "raw_summary": "Biglink busca R$ 20 milhões para guiar decisões de marketing com IA Business Moment",
+      "title_pt": "",
+      "summary_pt": "Biglink busca R$ 20 milhões para guiar decisões de marketing com IA Business Moment",
+      "angle_pt": "",
+      "link_kelly": "IA no marketing — gancho para mostrar como você usa IA a favor das marcas.",
+      "authors": "",
+      "score": 4,
+      "fetched_at": "2026-06-07T00:08:24.649096+00:00",
+      "id": "414ad23004ab6ce6"
+    },
+    {
+      "title": "GAC apresenta AION UT em campanha com Paolla Oliveira - Portal Nosso Meio",
+      "link": "https://nossomeio.com.br/gac-apresenta-aion-ut-em-campanha-com-paolla-oliveira/",
+      "source": "Portal Nosso Meio",
+      "lang": "pt",
+      "region": "BR",
+      "category": "campanha",
+      "kind": "noticia",
+      "published": "2026-06-03",
+      "raw_summary": "GAC apresenta AION UT em campanha com Paolla Oliveira Portal Nosso Meio",
+      "title_pt": "",
+      "summary_pt": "GAC apresenta AION UT em campanha com Paolla Oliveira Portal Nosso Meio",
+      "angle_pt": "",
+      "link_kelly": "Referência de campanha/ideia para usar em mentorias e conteúdo.",
+      "authors": "",
+      "score": 4,
+      "fetched_at": "2026-06-07T00:08:27.776006+00:00",
+      "id": "be291399d022cf67"
+    },
+    {
+      "title": "Sitecore Acquires Scrunch to Help Brands Influence Discovery and Buying Decisions in the AI-Search Era - PR Newswire",
+      "link": "https://www.prnewswire.com/news-releases/sitecore-acquires-scrunch-to-help-brands-influence-discovery-and-buying-decisions-in-the-ai-search-era-302790214.html",
+      "source": "PR Newswire",
+      "lang": "en",
+      "region": "world",
+      "category": "branding_ia",
+      "kind": "noticia",
+      "published": "2026-06-03",
+      "raw_summary": "Sitecore Acquires Scrunch to Help Brands Influence Discovery and Buying Decisions in the AI-Search Era PR Newswire",
+      "title_pt": "Sitecore adquire Scrunch para ajudar marcas a influenciar decisões de descoberta e compra na era da pesquisa de IA - PR Newswire",
+      "summary_pt": "Sitecore adquire Scrunch para ajudar marcas a influenciar decisões de descoberta e compra na era da pesquisa de IA PR Newswire",
+      "angle_pt": "",
+      "link_kelly": "IA aplicada a marcas — conecta com seus robôs GPT e o Programa Posicione-se.",
+      "authors": "",
+      "score": 4,
+      "fetched_at": "2026-06-07T00:08:37.178029+00:00",
+      "id": "9885e8c93de53bd3"
+    },
+    {
+      "title": "En pointe: Why brands are embracing the aesthetics of ballet - Marketing Brew",
+      "link": "https://www.marketingbrew.com/stories/brands-en-pointe-why-ballet-aesthetics-and-performance-arts-are-appealing-to-audiences",
+      "source": "Marketing Brew",
+      "lang": "en",
+      "region": "world",
+      "category": "branding",
+      "kind": "noticia",
+      "published": "2026-06-03",
+      "raw_summary": "En pointe: Why brands are embracing the aesthetics of ballet Marketing Brew",
+      "title_pt": "En pointe: Por que as marcas estão adotando a estética do balé - Marketing Brew",
+      "summary_pt": "En pointe: Por que as marcas estão adotando a estética do balé Marketing Brew",
+      "angle_pt": "",
+      "link_kelly": "Construção/gestão de marca — material para o Programa Posicione-se.",
+      "authors": "",
+      "score": 4,
+      "fetched_at": "2026-06-07T00:08:40.902315+00:00",
+      "id": "e91c03e7a30770c3"
+    },
+    {
+      "title": "PromotEdge Digital Emerges as the Go-To Growth Partner for US Brands Seeking Measurable Digital Marketing Results - Issuewire",
+      "link": "https://www.issuewire.com/promotedge-digital-emerges-as-the-go-to-growth-partner-for-us-brands-seeking-measurable-digital-marketing-results-1866891470484781",
+      "source": "Issuewire",
+      "lang": "en",
+      "region": "world",
+      "category": "branding",
+      "kind": "noticia",
+      "published": "2026-06-03",
+      "raw_summary": "PromotEdge Digital Emerges as the Go-To Growth Partner for US Brands Seeking Measurable Digital Marketing Results Issuewire",
+      "title_pt": "PromotEdge Digital surge como parceiro de crescimento ideal para marcas dos EUA que buscam resultados mensuráveis ​​de marketing digital - Issuewire",
+      "summary_pt": "PromotEdge Digital surge como parceiro de crescimento ideal para marcas dos EUA que buscam resultados mensuráveis ​​de marketing digital Issuewire",
+      "angle_pt": "",
+      "link_kelly": "Construção/gestão de marca — material para o Programa Posicione-se.",
+      "authors": "",
+      "score": 4,
+      "fetched_at": "2026-06-07T00:08:42.041110+00:00",
+      "id": "52ab9078b18300fb"
+    },
+    {
+      "title": "“A Light Touch”: The Secrets of Decades-Long Campaigns, According to Laurence Green - Little Black Book | LBBOnline",
+      "link": "https://lbbonline.com/news/laurence-green-advertising-effectiveness-ipa",
+      "source": "Little Black Book | LBBOnline",
+      "lang": "en",
+      "region": "world",
+      "category": "campanha",
+      "kind": "noticia",
+      "published": "2026-06-03",
+      "raw_summary": "“A Light Touch”: The Secrets of Decades-Long Campaigns, According to Laurence Green Little Black Book | LBBOnline",
+      "title_pt": "“Um toque leve”: os segredos de campanhas de décadas, segundo Laurence Green - livrinho preto | LBB Online",
+      "summary_pt": "“Um toque leve”: os segredos de campanhas de décadas, segundo Laurence Green Little Black Book | LBB Online",
+      "angle_pt": "",
+      "link_kelly": "Referência de campanha/ideia para usar em mentorias e conteúdo.",
+      "authors": "",
+      "score": 4,
+      "fetched_at": "2026-06-07T00:08:43.884376+00:00",
+      "id": "6a83079a3e57fa0c"
+    },
+    {
+      "title": "Opportunities in the Oncology Market: Positioning for the Next Billion-Dollar Catalyst with BioNTech, Vidac Pharma, and Pfizer - news.financial",
+      "link": "https://news.financial/comments/opportunities-for-returns-in-the-cancer-market-seizing-the-next-billion-dollar-trigger-with-biontech-vidac-pharma-and-pfizer",
+      "source": "news.financial",
+      "lang": "en",
+      "region": "world",
+      "category": "posicionamento",
+      "kind": "noticia",
+      "published": "2026-06-03",
+      "raw_summary": "Opportunities in the Oncology Market: Positioning for the Next Billion-Dollar Catalyst with BioNTech, Vidac Pharma, and Pfizer news.financial",
+      "title_pt": "Oportunidades no mercado de oncologia: posicionamento para o próximo catalisador de um bilhão de dólares com BioNTech, Vidac Pharma e Pfizer - news.financial",
+      "summary_pt": "Oportunidades no mercado de oncologia: posicionamento para o próximo catalisador de um bilhão de dólares com BioNTech, Vidac Pharma e Pfizer news.financial",
+      "angle_pt": "",
+      "link_kelly": "Posicionamento/reposicionamento — o coração do seu Programa Posicione-se.",
+      "authors": "",
+      "score": 4,
+      "fetched_at": "2026-06-07T00:08:46.051802+00:00",
+      "id": "114aed64e82dff42"
+    },
+    {
+      "title": "Kering appoints Gianfranco D’Attis as CEO of Alexander McQueen - Inside Retail Asia",
+      "link": "https://insideretail.asia/2026/06/03/kering-appoints-gianfranco-dattis-as-ceo-of-alexander-mcqueen/",
+      "source": "Inside Retail Asia",
+      "lang": "en",
+      "region": "world",
+      "category": "posicionamento",
+      "kind": "noticia",
+      "published": "2026-06-03",
+      "raw_summary": "Kering appoints Gianfranco D’Attis as CEO of Alexander McQueen Inside Retail Asia",
+      "title_pt": "Kering nomeia Gianfranco D’Attis como CEO da Alexander McQueen - Inside Retail Asia",
+      "summary_pt": "Kering nomeia Gianfranco D’Attis como CEO da Alexander McQueen Inside Retail Asia",
+      "angle_pt": "",
+      "link_kelly": "Posicionamento/reposicionamento — o coração do seu Programa Posicione-se.",
+      "authors": "",
+      "score": 4,
+      "fetched_at": "2026-06-07T00:08:46.178371+00:00",
+      "id": "8a3fe8a0c4fc1f5c"
     },
     {
       "title": "O consumidor não quer apenas ser previsto. Quer ser compreendido",
