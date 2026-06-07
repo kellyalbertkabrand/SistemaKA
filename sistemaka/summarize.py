@@ -88,9 +88,10 @@ def _system_prompt() -> str:
         "produto/persona que ESTA matéria melhor serve, citando-o pelo nome "
         "(Livro, Mentoria ou Programa Marca com Essência) e por quê; (5) 'pme' — "
         "1 frase prática de como o conteúdo é útil para o pequeno/médio "
-        "empresário; (6) 'roteiro' — uma ideia curta de ROTEIRO DE VÍDEO "
-        "(abertura/gancho + ângulo) que a Kelly pode gravar a partir do tema, "
-        "conectada à persona certa. Se a matéria não servir a nenhuma persona, "
+        "empresário; (6) 'roteiro' — uma ideia CURTA de roteiro de vídeo no "
+        "formato 'Gancho: … | Ângulo: … | CTA: …' (abertura que prende, o ângulo "
+        "do conteúdo e uma chamada para a persona/produto certo), pronta para a "
+        "Kelly gravar. Se a matéria não servir a nenhuma persona, "
         "devolva os campos vazios (\"\"). Seja fiel, sem inventar. Responda "
         "SOMENTE um array JSON na ordem dos itens: "
         '[{"i":0,"titulo":"...","resumo":"...","gancho":"...","link":"...","pme":"...","roteiro":"..."}].'
