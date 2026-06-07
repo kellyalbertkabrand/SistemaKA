@@ -220,7 +220,7 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 9,
-      "fetched_at": "2026-06-07T17:39:43.507648+00:00",
+      "fetched_at": "2026-06-07T17:51:36.070239+00:00",
       "id": "85d82c325b9a3715"
     },
     {
@@ -280,7 +280,7 @@
       "link_kelly": "Construção de marca — tema do Livro e da Mentoria.",
       "authors": "",
       "score": 9,
-      "fetched_at": "2026-06-07T17:39:17.089258+00:00",
+      "fetched_at": "2026-06-07T17:50:59.992588+00:00",
       "id": "7a4a0dc388441195"
     },
     {
@@ -420,7 +420,7 @@
       "link_kelly": "Dado de pesquisa/tendência — sustenta argumentos na Mentoria e na Direção de Marca.",
       "authors": "",
       "score": 7,
-      "fetched_at": "2026-06-07T17:38:57.401046+00:00",
+      "fetched_at": "2026-06-07T17:50:26.262523+00:00",
       "id": "43ccf981c74fac55"
     },
     {
@@ -540,7 +540,7 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T17:39:43.507917+00:00",
+      "fetched_at": "2026-06-07T17:51:36.070543+00:00",
       "id": "8ec19c3fe8eb0229"
     },
     {
@@ -560,7 +560,7 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T17:39:47.465321+00:00",
+      "fetched_at": "2026-06-07T17:51:37.981637+00:00",
       "id": "ded5d8286aff7caa"
     },
     {
@@ -620,48 +620,8 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T17:39:43.507734+00:00",
+      "fetched_at": "2026-06-07T17:51:36.070325+00:00",
       "id": "9d4af100dbb8c5c5"
-    },
-    {
-      "title": "‘Na CTV, campanhas precisam ser pensadas para o meio’, avalia diretor sênior de vendas Latam da Samsung Ads",
-      "link": "https://propmark.com.br/midia/na-ctv-campanhas-precisam-ser-pensadas-para-o-meio-avalia-diretor-senior-de-vendas-latam-da-samsung-ads/",
-      "source": "Propmark",
-      "lang": "pt",
-      "region": "BR",
-      "category": "campanha",
-      "kind": "noticia",
-      "published": "2026-06-05",
-      "raw_summary": "José Melchert comenta estudo da Samsung Ads, feito em parceria com Offerwise e Amplified Intelligence, que aponta a Smart TV como principal meio de consumo de conteúdo para 90% dos brasileiros",
-      "title_pt": "",
-      "summary_pt": "José Melchert comenta estudo da Samsung Ads, feito em parceria com Offerwise e Amplified Intelligence, que aponta a Smart TV como principal meio de consumo de conteúdo para 90% dos brasileiros",
-      "angle_pt": "",
-      "pme_pt": "PME: ideias de campanha que dá para adaptar com poucos recursos.",
-      "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
-      "authors": "",
-      "score": 5,
-      "fetched_at": "2026-06-07T17:39:47.465513+00:00",
-      "id": "04c65863635dbe09"
-    },
-    {
-      "title": "Making Brand Magic Happen When Everyone's Doing the Same Thing ft. Deena Bahri of Nutrafol - ADWEEK",
-      "link": "https://www.adweek.com/brand-marketing/making-brand-magic-happen-when-everyones-doing-the-same-thing-ft-deena-bahri-of-nutrafol/",
-      "source": "ADWEEK",
-      "lang": "en",
-      "region": "world",
-      "category": "posicionamento",
-      "kind": "noticia",
-      "published": "2026-06-05",
-      "raw_summary": "Why brand expression is the only real differentiator in the age of AI.",
-      "title_pt": "Fazendo a magia da marca acontecer quando todos estão fazendo a mesma coisa com Deena Bahri da Nutrafol - ADWEEK",
-      "summary_pt": "Por que a expressão da marca é o único diferencial real na era da IA.",
-      "angle_pt": "",
-      "pme_pt": "PME: como se posicionar e se diferenciar no seu mercado.",
-      "link_kelly": "Posicionamento/reposicionamento — coração do Programa Marca com Essência.",
-      "authors": "",
-      "score": 5,
-      "fetched_at": "2026-06-07T17:39:24.552770+00:00",
-      "id": "ed0f5f176f885bd9"
     }
   ]
 }
