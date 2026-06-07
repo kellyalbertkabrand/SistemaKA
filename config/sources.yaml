@@ -77,12 +77,12 @@ google_news_locales:
 google_news_topics:
   - category: branding_ia
     label: "Branding & IA"
-    query_pt: 'branding "inteligência artificial" OR IA marca'
-    query_en: 'branding "artificial intelligence" OR AI brand'
+    query_pt: '(branding OR "posicionamento de marca" OR "identidade de marca" OR rebranding) "inteligência artificial"'
+    query_en: '(branding OR "brand positioning" OR "brand identity" OR rebranding) "artificial intelligence"'
   - category: marketing_ia
     label: "Marketing & IA"
-    query_pt: 'marketing "inteligência artificial" OR "IA"'
-    query_en: 'marketing "artificial intelligence" OR "AI"'
+    query_pt: '("estratégia de marca" OR branding) marketing "inteligência artificial"'
+    query_en: '("brand strategy" OR branding) marketing "artificial intelligence"'
   - category: branding
     label: "Branding"
     query_pt: 'branding "estratégia de marca"'

@@ -30,6 +30,35 @@ def _is_brand_polemica(item: Item) -> bool:
     return any(t in hay for t in _POLEMICA_REQUIRED)
 
 
+# Contexto NÚCLEO de marca (sem "marca"/"marketing" soltos, que pegam ruído).
+# Usado para garantir que itens de IA sejam de fato sobre branding/posicionamento.
+_CORE_BRANDING = [
+    "branding", "rebrand", "posicionament", "reposicionament", "positioning",
+    "repositioning", "identidade", "brand identity", "brand strategy",
+    "estratégia de marca", "marca pessoal", "personal brand", "brand purpose",
+    "propósito de marca", "semiót", "semiot", "gestão de marca", "brand management",
+    "construção de marca", "essência da marca", "essência de marca",
+]
+
+
+def _has_core_branding(item: Item) -> bool:
+    hay = _normalize(f"{item.title} {item.raw_summary}")
+    return any(t in hay for t in _CORE_BRANDING)
+
+
+# Ruído de política/justiça (a palavra "marca" como verbo costuma trazer isso).
+_POLITICS_NOISE = [
+    "stf", "stj", "stm", "tse", "bolsonaro", "lula", "ministro", "ministra",
+    "relator", "deputado", "senador", "eleição", "eleitoral", "habeas",
+    "presidente da república", "supremo", "inquérito",
+]
+
+
+def _is_politics_noise(item: Item) -> bool:
+    hay = _normalize(f"{item.title} {item.raw_summary}")
+    return any(t in hay for t in _POLITICS_NOISE)
+
+
 def is_valid(item: Item) -> bool:
     """Item só vale se tiver fonte real (link de matéria) e data PLAUSÍVEL."""
     if not item.has_full_date:
@@ -51,7 +80,6 @@ def is_valid(item: Item) -> bool:
 
 
 def score(item: Item, keywords: list[str]) -> int:
-    """Pontua a relevância pela presença de palavras-chave."""
     body = f" {_normalize(item.title)} {_normalize(item.raw_summary)} "
     title = f" {_normalize(item.title)} "
     points = 0
@@ -95,8 +123,14 @@ def rank_and_filter(items: list[Item], cfg: dict) -> list[Item]:
     unique = dedupe(valid)
     kept: list[Item] = []
     for item in unique:
-        # Polêmica só vale se tiver contexto de marca/negócio (corta política/esporte).
+        # Polêmica só vale se tiver contexto de marca/marketing forte.
         if item.category == "polemica" and not _is_brand_polemica(item):
+            continue
+        # Itens de IA precisam ser de fato sobre branding/posicionamento (não IA genérica).
+        if item.category in ("branding_ia", "marketing_ia") and not _has_core_branding(item):
+            continue
+        # Corta ruído de política/justiça (a menos que seja claramente sobre marca).
+        if _is_politics_noise(item) and not _has_core_branding(item):
             continue
         if score(item, keywords) <= 0:
             continue  # sem nenhuma palavra-chave relevante → fora
