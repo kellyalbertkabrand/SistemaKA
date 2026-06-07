@@ -1,7 +1,7 @@
 {
   "date": "2026-06-05",
-  "generated_at": "2026-06-07T00:10:22.499535+00:00",
-  "count": 34,
+  "generated_at": "2026-06-07T12:08:16.360624+00:00",
+  "count": 40,
   "items": [
     {
       "title": "V3A anuncia rebranding com foco em experiências de marca - Grandes Nomes da Propaganda",
@@ -19,7 +19,7 @@
       "link_kelly": "Posicionamento/reposicionamento — coração do Programa Marca com Essência.",
       "authors": "",
       "score": 17,
-      "fetched_at": "2026-06-07T00:08:29.458034+00:00",
+      "fetched_at": "2026-06-07T12:07:17.436897+00:00",
       "id": "caf7bd7cb72c15a8"
     },
     {
@@ -38,7 +38,7 @@
       "link_kelly": "Posicionamento/reposicionamento — coração do Programa Marca com Essência.",
       "authors": "",
       "score": 17,
-      "fetched_at": "2026-06-07T00:08:30.153616+00:00",
+      "fetched_at": "2026-06-07T12:07:17.916008+00:00",
       "id": "27815d12d29c6229"
     },
     {
@@ -57,7 +57,7 @@
       "link_kelly": "Construção de marca — tema do Livro e da Mentoria.",
       "authors": "",
       "score": 13,
-      "fetched_at": "2026-06-07T00:08:41.192808+00:00",
+      "fetched_at": "2026-06-07T12:07:27.188202+00:00",
       "id": "8cbb394ca9b8e8a1"
     },
     {
@@ -76,7 +76,7 @@
       "link_kelly": "Construção de marca — tema do Livro e da Mentoria.",
       "authors": "",
       "score": 13,
-      "fetched_at": "2026-06-07T00:08:41.459743+00:00",
+      "fetched_at": "2026-06-07T12:07:27.346666+00:00",
       "id": "dc5c3592a572d581"
     },
     {
@@ -95,7 +95,7 @@
       "link_kelly": "Construção de marca — tema do Livro e da Mentoria.",
       "authors": "",
       "score": 13,
-      "fetched_at": "2026-06-07T00:08:41.581957+00:00",
+      "fetched_at": "2026-06-07T12:07:27.516312+00:00",
       "id": "c83796ec1a7070a1"
     },
     {
@@ -133,7 +133,7 @@
       "link_kelly": "IA aplicada a marca — gancho para a Direção de Marca e o Programa Marca com Essência.",
       "authors": "",
       "score": 9,
-      "fetched_at": "2026-06-07T00:08:20.740465+00:00",
+      "fetched_at": "2026-06-07T12:07:09.971296+00:00",
       "id": "45e79f3090aa9851"
     },
     {
@@ -171,7 +171,7 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 9,
-      "fetched_at": "2026-06-07T00:08:51.452855+00:00",
+      "fetched_at": "2026-06-07T12:07:37.118291+00:00",
       "id": "85d82c325b9a3715"
     },
     {
@@ -251,6 +251,63 @@
       "id": "8d24a1894043b8e3"
     },
     {
+      "title": "Artificial Intelligence - AI Update, June 5, 2026: AI News and Views From the Past Week - MarketingProfs",
+      "link": "https://www.marketingprofs.com/opinions/2026/54909/ai-update-june-5-2026-ai-news-and-views-from-the-past-week",
+      "source": "MarketingProfs",
+      "lang": "en",
+      "region": "world",
+      "category": "marketing_ia",
+      "kind": "noticia",
+      "published": "2026-06-05",
+      "raw_summary": "Artificial Intelligence - AI Update, June 5, 2026: AI News and Views From the Past Week MarketingProfs",
+      "title_pt": "Inteligência Artificial - Atualização de IA, 5 de junho de 2026: Notícias e opiniões sobre IA da semana passada - MarketingProfs",
+      "summary_pt": "Inteligência Artificial - Atualização de IA, 5 de junho de 2026: Notícias e opiniões sobre IA da semana passada MarketingProfs",
+      "angle_pt": "",
+      "link_kelly": "IA no marketing — Direção de Marca / Programa Marca com Essência.",
+      "authors": "",
+      "score": 9,
+      "fetched_at": "2026-06-07T12:07:26.030317+00:00",
+      "id": "ea77ad8f5bb4a7b3"
+    },
+    {
+      "title": "Meghan marks Lilibet's fifth birthday amid branding shift - MSN",
+      "link": "https://www.msn.com/en-au/news/insight/meghan-marks-lilibet-s-fifth-birthday-amid-branding-shift/gm-GM94162171?gemSnapshotKey\\u003dGM94162171-snapshot-11\\u0026uxmode\\u003druby",
+      "source": "MSN",
+      "lang": "en",
+      "region": "world",
+      "category": "branding",
+      "kind": "noticia",
+      "published": "2026-06-05",
+      "raw_summary": "Meghan marks Lilibet's fifth birthday amid branding shift MSN",
+      "title_pt": "Meghan comemora quinto aniversário de Lilibet em meio a mudança de marca - MSN",
+      "summary_pt": "Meghan marca o quinto aniversário de Lilibet em meio a mudança de marca MSN",
+      "angle_pt": "",
+      "link_kelly": "Construção de marca — tema do Livro e da Mentoria.",
+      "authors": "",
+      "score": 9,
+      "fetched_at": "2026-06-07T12:07:27.861060+00:00",
+      "id": "7a4a0dc388441195"
+    },
+    {
+      "title": "You’re among fans: Hear from brands that are turning fandom into business results - Campaign US",
+      "link": "https://www.campaignlive.com/article/youre-among-fans-hear-brands-turning-fandom-business-results/1960393",
+      "source": "Campaign US",
+      "lang": "en",
+      "region": "world",
+      "category": "campanha",
+      "kind": "noticia",
+      "published": "2026-06-05",
+      "raw_summary": "You’re among fans: Hear from brands that are turning fandom into business results Campaign US",
+      "title_pt": "Você está entre os fãs: ouça marcas que estão transformando o fandom em resultados de negócios - Campaign US",
+      "summary_pt": "Você está entre os fãs: ouça marcas que estão transformando o fandom em resultados de negócios Campanha nos EUA",
+      "angle_pt": "",
+      "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
+      "authors": "",
+      "score": 9,
+      "fetched_at": "2026-06-07T12:07:29.361747+00:00",
+      "id": "a3e58c0224e575da"
+    },
+    {
       "title": "Confiança virou infraestrutura",
       "link": "https://www.meioemensagem.com.br/opiniao/confianca-virou-infraestrutura",
       "source": "Meio & Mensagem",
@@ -266,7 +323,7 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T00:08:51.453009+00:00",
+      "fetched_at": "2026-06-07T12:07:37.118447+00:00",
       "id": "8ec19c3fe8eb0229"
     },
     {
@@ -285,7 +342,7 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T00:08:52.458209+00:00",
+      "fetched_at": "2026-06-07T12:07:38.312878+00:00",
       "id": "ded5d8286aff7caa"
     },
     {
@@ -304,7 +361,7 @@
       "link_kelly": "IA aplicada a marca — gancho para a Direção de Marca e o Programa Marca com Essência.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T00:08:20.892202+00:00",
+      "fetched_at": "2026-06-07T12:07:10.310296+00:00",
       "id": "20d7e2d56e1fc9f0"
     },
     {
@@ -323,7 +380,7 @@
       "link_kelly": "IA aplicada a marca — gancho para a Direção de Marca e o Programa Marca com Essência.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T00:04:31.377892+00:00",
+      "fetched_at": "2026-06-07T12:07:10.635087+00:00",
       "id": "772e21a31ace8306"
     },
     {
@@ -342,7 +399,7 @@
       "link_kelly": "IA aplicada a marca — gancho para a Direção de Marca e o Programa Marca com Essência.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T00:08:21.458533+00:00",
+      "fetched_at": "2026-06-07T12:07:10.800621+00:00",
       "id": "c5bfeb04a9c483e2"
     },
     {
@@ -399,7 +456,7 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T00:08:51.452904+00:00",
+      "fetched_at": "2026-06-07T12:07:37.118341+00:00",
       "id": "9d4af100dbb8c5c5"
     },
     {
@@ -418,26 +475,26 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T00:08:52.458344+00:00",
+      "fetched_at": "2026-06-07T12:07:38.313010+00:00",
       "id": "04c65863635dbe09"
     },
     {
-      "title": "Making Brand Magic Happen When Everyone’s Doing the Same Thing ft. Deena Bahri of Nutrafol",
+      "title": "Making Brand Magic Happen When Everyone's Doing the Same Thing ft. Deena Bahri of Nutrafol - ADWEEK",
       "link": "https://www.adweek.com/brand-marketing/making-brand-magic-happen-when-everyones-doing-the-same-thing-ft-deena-bahri-of-nutrafol/",
-      "source": "Adweek",
+      "source": "ADWEEK",
       "lang": "en",
-      "region": "us",
-      "category": "campanha",
+      "region": "world",
+      "category": "posicionamento",
       "kind": "noticia",
       "published": "2026-06-05",
-      "raw_summary": "Why brand expression is the only real differentiator in the age of AI.",
-      "title_pt": "Fazendo a magia da marca acontecer quando todos estão fazendo a mesma coisa com Deena Bahri da Nutrafol",
-      "summary_pt": "Por que a expressão da marca é o único diferencial real na era da IA.",
+      "raw_summary": "Making Brand Magic Happen When Everyone's Doing the Same Thing ft. Deena Bahri of Nutrafol ADWEEK",
+      "title_pt": "Fazendo a magia da marca acontecer quando todos estão fazendo a mesma coisa com Deena Bahri da Nutrafol - ADWEEK",
+      "summary_pt": "Fazendo a magia da marca acontecer quando todos estão fazendo a mesma coisa com Deena Bahri da Nutrafol ADWEEK",
       "angle_pt": "",
-      "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
+      "link_kelly": "Posicionamento/reposicionamento — coração do Programa Marca com Essência.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-06T23:59:58.651158+00:00",
+      "fetched_at": "2026-06-07T12:07:31.069769+00:00",
       "id": "ed0f5f176f885bd9"
     },
     {
@@ -456,7 +513,7 @@
       "link_kelly": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T00:08:55.119405+00:00",
+      "fetched_at": "2026-06-07T12:07:41.633013+00:00",
       "id": "21e82a4f84fcf4af"
     },
     {
@@ -475,7 +532,7 @@
       "link_kelly": "Construção de marca — tema do Livro e da Mentoria.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T00:08:57.370801+00:00",
+      "fetched_at": "2026-06-07T12:07:44.703279+00:00",
       "id": "e106065f787a6fdd"
     },
     {
@@ -494,7 +551,7 @@
       "link_kelly": "IA aplicada a marca — gancho para a Direção de Marca e o Programa Marca com Essência.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T00:08:20.608823+00:00",
+      "fetched_at": "2026-06-07T12:07:09.802209+00:00",
       "id": "b8d1d6827705d8f1"
     },
     {
@@ -532,7 +589,7 @@
       "link_kelly": "IA aplicada a marca — gancho para a Direção de Marca e o Programa Marca com Essência.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T00:08:21.870762+00:00",
+      "fetched_at": "2026-06-07T12:07:11.327031+00:00",
       "id": "7ea13eb4d196a3ee"
     },
     {
@@ -608,7 +665,7 @@
       "link_kelly": "IA no marketing — Direção de Marca / Programa Marca com Essência.",
       "authors": "",
       "score": 5,
-      "fetched_at": "2026-06-07T00:08:39.009796+00:00",
+      "fetched_at": "2026-06-07T12:07:24.675544+00:00",
       "id": "4b23aa1a90ab6ed5"
     },
     {
@@ -648,6 +705,63 @@
       "score": 5,
       "fetched_at": "2026-06-07T00:08:36.764833+00:00",
       "id": "790a4cc1993af865"
+    },
+    {
+      "title": "Grupo RFK mira mercado paulista para consolidar Furioso entre as principais marcas de energéticos do país - Portal Revista Kdea 360",
+      "link": "https://revistakdea360.com.br/noticia/70060/grupo-rfk-mira-mercado-paulista-para-consolidar-furioso-entre-as-principais-marcas-de-energeticos-do-pais/amp",
+      "source": "Portal Revista Kdea 360",
+      "lang": "pt",
+      "region": "BR",
+      "category": "posicionamento",
+      "kind": "noticia",
+      "published": "2026-06-05",
+      "raw_summary": "Grupo RFK mira mercado paulista para consolidar Furioso entre as principais marcas de energéticos do país Portal Revista Kdea 360",
+      "title_pt": "",
+      "summary_pt": "Grupo RFK mira mercado paulista para consolidar Furioso entre as principais marcas de energéticos do país Portal Revista Kdea 360",
+      "angle_pt": "",
+      "link_kelly": "Posicionamento/reposicionamento — coração do Programa Marca com Essência.",
+      "authors": "",
+      "score": 5,
+      "fetched_at": "2026-06-07T12:07:18.732095+00:00",
+      "id": "3cead4ff1d224b50"
+    },
+    {
+      "title": "NYU International Hospitality Investment Forum Takeaways: Key Observations on Brands, Capital, and AI - Hotel News Resource",
+      "link": "https://www.hotelnewsresource.com/article141529.html",
+      "source": "Hotel News Resource",
+      "lang": "en",
+      "region": "world",
+      "category": "branding_ia",
+      "kind": "noticia",
+      "published": "2026-06-05",
+      "raw_summary": "NYU International Hospitality Investment Forum Takeaways: Key Observations on Brands, Capital, and AI Hotel News Resource",
+      "title_pt": "Conclusões do Fórum Internacional de Investimento em Hospitalidade da NYU: Principais observações sobre marcas, capital e IA - Hotel News Resource",
+      "summary_pt": "Conclusões do Fórum Internacional de Investimento em Hospitalidade da NYU: Principais observações sobre marcas, capital e recursos de notícias de hotéis de IA",
+      "angle_pt": "",
+      "link_kelly": "IA aplicada a marca — gancho para a Direção de Marca e o Programa Marca com Essência.",
+      "authors": "",
+      "score": 5,
+      "fetched_at": "2026-06-07T12:07:22.626246+00:00",
+      "id": "459a1348ef83a6e6"
+    },
+    {
+      "title": "ANA Brand Masters Through the Gen Z Lens - Little Black Book | LBBOnline",
+      "link": "https://lbbonline.com/news/ANA-Brand-Masters-Through-the-Gen-Z-Lens",
+      "source": "Little Black Book | LBBOnline",
+      "lang": "en",
+      "region": "world",
+      "category": "branding_ia",
+      "kind": "noticia",
+      "published": "2026-06-05",
+      "raw_summary": "ANA Brand Masters Through the Gen Z Lens Little Black Book | LBBOnline",
+      "title_pt": "Marca ANA domina através das lentes da geração Z - livrinho preto | LBB Online",
+      "summary_pt": "ANA Brand Masters através das lentes da Geração Z Little Black Book | LBB Online",
+      "angle_pt": "",
+      "link_kelly": "IA aplicada a marca — gancho para a Direção de Marca e o Programa Marca com Essência.",
+      "authors": "",
+      "score": 5,
+      "fetched_at": "2026-06-07T12:07:22.948189+00:00",
+      "id": "767c6ef31d60771e"
     }
   ]
 }
