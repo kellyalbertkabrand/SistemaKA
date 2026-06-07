@@ -1,6 +1,6 @@
 {
   "date": "2026-06-06",
-  "generated_at": "2026-06-06T23:18:47.307003+00:00",
+  "generated_at": "2026-06-07T00:00:25.626040+00:00",
   "count": 2,
   "items": [
     {
@@ -16,11 +16,11 @@
       "title_pt": "",
       "summary_pt": "A YouDare, agência do Grupo Dreamers, anunciou uma reestruturação organizacional para acelerar sua transformação digital e ampliar a integração entre criatividade, conteúdo, influência e inteligência artificial. Como parte das mudanças, Yuri Mussoly assume a liderança unificada das áreas de Criação, Conteúdo e Influênc…",
       "angle_pt": "",
+      "link_kelly": "Referência de campanha/ideia para usar em mentorias e conteúdo.",
       "authors": "",
-      "score": 7,
-      "fetched_at": "2026-06-06T23:16:34.922151+00:00",
-      "id": "65d1b567c2606cad",
-      "link_kelly": "Referência de campanha/ideia para usar em mentorias e conteúdo."
+      "score": 11,
+      "fetched_at": "2026-06-06T23:59:56.050463+00:00",
+      "id": "65d1b567c2606cad"
     },
     {
       "title": "Edição de 8 de junho de 2026",
@@ -35,11 +35,11 @@
       "title_pt": "",
       "summary_pt": "No atual marketing de performance, provar impacto vai além da conversão",
       "angle_pt": "",
+      "link_kelly": "Referência de campanha/ideia para usar em mentorias e conteúdo.",
       "authors": "",
       "score": 2,
-      "fetched_at": "2026-06-06T23:16:34.922222+00:00",
-      "id": "1bed48353a25e866",
-      "link_kelly": "Referência de campanha/ideia para usar em mentorias e conteúdo."
+      "fetched_at": "2026-06-06T23:59:56.050531+00:00",
+      "id": "1bed48353a25e866"
     }
   ]
 }
