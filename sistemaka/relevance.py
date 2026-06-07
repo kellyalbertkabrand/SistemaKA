@@ -16,6 +16,20 @@ def _normalize(text: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"[^\w\s]", " ", text.lower())).strip()
 
 
+# Termos que indicam contexto de MARCA/negócio (usado p/ filtrar polêmicas que
+# são só política/esporte e casaram com a palavra "polêmica").
+_BRAND_CONTEXT = [
+    "marca", "brand", "branding", "marketing", "campanha", "publicidade",
+    "anunciante", "empresa", "logo", "rebrand", "patrocin", "consumidor",
+    "reputaç", "varejo", "produto", "ceo", "influenc",
+]
+
+
+def _has_brand_context(item: Item) -> bool:
+    hay = _normalize(f"{item.title} {item.raw_summary}")
+    return any(t in hay for t in _BRAND_CONTEXT)
+
+
 def is_valid(item: Item) -> bool:
     """Item só vale se tiver fonte real (link de matéria) e data PLAUSÍVEL."""
     if not item.has_full_date:
@@ -81,6 +95,9 @@ def rank_and_filter(items: list[Item], cfg: dict) -> list[Item]:
     unique = dedupe(valid)
     kept: list[Item] = []
     for item in unique:
+        # Polêmica só vale se tiver contexto de marca/negócio (corta política/esporte).
+        if item.category == "polemica" and not _has_brand_context(item):
+            continue
         s = score(item, keywords)
         if s <= 0:
             continue  # sem nenhuma palavra-chave relevante → fora (vale p/ acadêmico também)

@@ -1,4 +1,4 @@
-# trigger: decodificador google news
+# trigger: polemicas marca + decoder
 name: Backfill + deploy (one-time)
 
 # Recoleta os últimos dias usando o mapa ampliado de portais (BR/EUA/Europa),
@@ -50,4 +50,4 @@ jobs:
         run: |
           npx -y @netlify/mcp@latest \
             --site-id 08fc9134-351a-4237-9891-fd4dea56d013 \
-            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..ouyNsiVwmH9747vU.g3sF0fumEnSK0_VejvF1VYXVEaEMf1GAJteILLMgePvJ2lGMRoH71wcTWgSAV_bvcif37Ok6EtaMO9W2K8cHr21MfajZkvmLPBhEzsYjmV3cfMt2cFBneHoNCSBApgCew4Nfl_2F37g0Ue2qR5h5yGG4LJQkAFnEc7tvIuJoHGZO6zzKHWw6xfdWJ_MBH950I0-0-SDUqUQROr9FHZqrsZsUqkusEhdmh6SEgCbSH-Or_LO97cYeDjd9Njq8npDvM8woVeMTC6FlIolUnpaoCLD4w0d8oKtTHSNNbCaP2rLvWpAPjeWFp_D1UKgrhNf5TrevbDc3cNPeFhqsUJtjngXSRT2Vu36i8jqGRswT7zseZq8BQ6JWiFdPGTXJ_w7WABh3hlKk.PgtDUy5N-lbDrnSmUZRUCw"
+            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..vX3Ek2DjjgrvyimM.UPb3GWvxucAGkuwqWXx-t6jRnaKpI7a5IlWoyknIPJARDWL9qD3RlmLrdTBeY8lkxyDteb1yMroNUC1SEbvAWVW9bOJVpY0J2-dxNNMZLZmu2rqAJGvWfTsBr5FN18AKVYkgC1zP_AlUubLuIGajR4XGmpjguObJjIF-tvQSHlNCDoMaQb3PTjrSF5b9VfL6Tiqv-IL-i98n3Fgs_tXUIglTx0p95-K0LkEWBg9K0-t3Pw-mXk8yrB20eKIBJosGvgYqzzLa3NYgh3KuoNlnyU1A7tPbOsZT4O_gsjJAENsRan8bwhP7icwHAE7yxoh5sgA_7IY-PVf6ws-_P0H3fQFUHd-anj8BdtgRcjYrRbEfbu2ZajT_TUxZbAw7tjQD9nPQ4kw-.Hfipe55jC-qiPyZlIlw9Fw"

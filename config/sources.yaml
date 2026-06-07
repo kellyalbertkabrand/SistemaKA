@@ -86,8 +86,8 @@ google_news_topics:
     query_en: 'neuromarketing brand consumer behavior'
   - category: polemica
     label: "Polêmicas de Marca"
-    query_pt: 'polêmica marca OR boicote OR cancelamento OR "crise de imagem" OR campanha polêmica'
-    query_en: 'brand controversy OR backlash OR boycott OR "brand crisis" OR ad controversy'
+    query_pt: 'marca polêmica OR "campanha polêmica" OR boicote marca OR cancelamento marca OR "crise de imagem" marca'
+    query_en: '"brand" controversy OR "ad controversy" OR "brand boycott" OR "rebrand backlash"'
 
 # -----------------------------------------------------------------------------
 # Feeds RSS diretos de publicações de referência. Se algum feed mudar de URL
