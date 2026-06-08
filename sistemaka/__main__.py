@@ -3,6 +3,7 @@
 Uso:
     python -m sistemaka run            # coleta o dia + gera o site (padrão)
     python -m sistemaka run --days 7   # coleta os últimos 7 dias (backfill)
+    python -m sistemaka refresh        # re-processa TODO o histórico com o perfil atual
     python -m sistemaka build          # só reconstrói o site a partir do histórico
     python -m sistemaka demo           # dados de exemplo (sem internet) + site
 """
@@ -25,7 +26,7 @@ def _setup_logging() -> None:
 def main(argv: list[str] | None = None) -> int:
     _setup_logging()
     parser = argparse.ArgumentParser(prog="sistemaka", description="Radar de Branding & IA")
-    parser.add_argument("command", choices=["run", "build", "demo"])
+    parser.add_argument("command", choices=["run", "refresh", "build", "demo"])
     parser.add_argument("--days", type=int, default=None,
                         help="janela de coleta em dias (sobrepõe o config)")
     args = parser.parse_args(argv)
@@ -34,6 +35,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.command == "run":
         pipeline.run_daily(window=args.days)
+    elif args.command == "refresh":
+        pipeline.refresh_history()
     elif args.command == "build":
         pipeline.rebuild_site()
     elif args.command == "demo":

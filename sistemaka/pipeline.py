@@ -30,5 +30,42 @@ def run_daily(window: int | None = None) -> list[str]:
     return days
 
 
+def refresh_history(resummarize: bool = True) -> list[str]:
+    """Re-processa TODO o histórico já coletado com o perfil/lógica ATUAIS.
+
+    O que faz em cada dia salvo:
+    - recalcula o score/ordem com o peso novo da especialidade (posicionamento,
+      essência, PME) — itens prioritários sobem;
+    - regera persona, "Para o PME" e título traduzido com o perfil novo dos 4
+      produtos (quando há ANTHROPIC_API_KEY; senão, tradução + rodapé por tema).
+
+    Não recoleta (não é possível buscar notícias de dias passados). As novas
+    categorias (Essência, PME) aparecem só nas coletas daqui pra frente.
+    """
+    from .relevance import score as _score, _CATEGORY_BOOST
+
+    cfg = config.load_config()
+    max_per_day = int(cfg.get("max_items_per_day", 40))
+    business_terms = (cfg.get("business", {}) or {}).get("termos_prioritarios", []) or []
+
+    days = store.all_days()
+    log.info("=== SistemaKA · refresh do histórico: %d dia(s) ===", len(days))
+    for day in days:
+        items = store.load_day(day)
+        if not items:
+            continue
+        for it in items:
+            biz = _score(it, business_terms)
+            it.score = 1 + 2 * max(biz, 0) + _CATEGORY_BOOST.get(it.category, 0)
+        if resummarize:
+            summarize_items(items)  # regenera persona/PME/título com o perfil novo
+        store.save_day(day, items, max_per_day)
+        log.info("Atualizado %s (%d itens)", day, len(items))
+
+    build_site()
+    log.info("=== Refresh concluído: %d dia(s) atualizados ===", len(days))
+    return days
+
+
 def rebuild_site() -> None:
     build_site()

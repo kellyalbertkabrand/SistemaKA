@@ -1,0 +1,70 @@
+# trigger: realinhamento do radar (posicionamento + essência) v1
+name: Coleta + Refresh do histórico (one-time)
+
+# Dispara quando este arquivo muda. Faz, em sequência:
+#  1) coleta nova (já com os temas novos: Essência, PME, etc.)
+#  2) re-processa TODO o histórico com o perfil novo dos 4 produtos
+#  3) salva o histórico e republica o painel no Netlify (chave fixa)
+on:
+  push:
+    paths:
+      - '.github/workflows/refresh-now.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sistemaka-coleta
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Coleta nova (temas novos) + refresh de todo o histórico
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SISTEMAKA_REPO: ${{ github.repository }}
+        run: |
+          python -m sistemaka run
+          python -m sistemaka refresh
+
+      - name: Salvar histórico no repositório
+        run: |
+          git config user.name "SistemaKA Bot"
+          git config user.email "actions@github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "Sem mudanças no histórico."
+          else
+            git commit -m "data: coleta nova + refresh do histórico (perfil/temas atualizados)"
+            git push
+          fi
+
+      - name: Republicar no Netlify (chave fixa)
+        if: ${{ env.NETLIFY_AUTH_TOKEN != '' }}
+        run: |
+          npx -y netlify-cli@17 deploy \
+            --dir=public \
+            --site=08fc9134-351a-4237-9891-fd4dea56d013 \
+            --prod \
+            --message "Refresh do radar $(date -u +%Y-%m-%dT%H:%M)"
