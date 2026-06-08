@@ -1,4 +1,4 @@
-# trigger: realinhamento do radar (posicionamento + essência) v1
+# trigger: realinhamento do radar (posicionamento + essência) v2 — nova coleta 08/jun
 name: Coleta + Refresh do histórico (one-time)
 
 # Dispara quando este arquivo muda. Faz, em sequência:
