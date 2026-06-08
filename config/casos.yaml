@@ -1,60 +1,138 @@
 # =============================================================================
 # Casos de Virada — biblioteca CURADA (sem data).
 # Marcas que estavam com resultados ruins e viraram referência através de
-# MARCA / POSICIONAMENTO. Cada caso tem fonte real (link que abre) e números.
+# MARCA / POSICIONAMENTO / REBRANDING. Cada caso tem números (antes -> depois)
+# e 2+ fontes reais (links que abrem).
 # Prioridade: nacionais primeiro; depois internacionais. Foco em exemplos que
-# fogem do óbvio (médias, pequenas, menos badaladas) — prova viva do método.
+# fogem do óbvio — marcas pequenas e médias (nacionais e internacionais).
 #
-# Para adicionar um caso novo, basta copiar um bloco e preencher.
+# Para adicionar um caso novo, copie um bloco e preencha. 'fontes' aceita
+# quantos links você quiser (sempre 2 ou mais).
 # =============================================================================
 
 casos:
   nacionais:
+    - marca: "Cimed"
+      setor: "Farmacêutica · MG · média/grande"
+      antes: "Genéricos tratados como commodity — embalagens brancas, sem emoção, brigando só por preço num setor conservador."
+      depois: "Genérico virou MARCA DE DESEJO. A “revolução amarela” deu cor proprietária, personalidade e presença em mais de 98% das farmácias do país."
+      virada: "Usou branding e identidade para diferenciar um produto que “todo mundo achava igual” — exatamente a dor de quem entrega valor e não é percebido."
+      numeros: "De R$ 500 milhões para R$ 3 bilhões de faturamento em ~5 anos (2023: receita líquida R$ 2,25 bi e lucro de R$ 223,6 mi)."
+      fontes:
+        - { nome: "Meio & Mensagem", link: "https://www.meioemensagem.com.br/marketing/como-a-cimed-quer-se-tornar-a-pg-brasileira" }
+        - { nome: "StartSe", link: "https://www.startse.com/artigos/estrategia-a-cimed-trocou-margem-por-mais-presenca-no-mercado/" }
+
     - marca: "Granado"
-      setor: "Cosméticos & perfumaria · RJ"
+      setor: "Cosméticos & perfumaria · RJ · média"
       antes: "Marca de 1870 vista como “coisa de vovó”, datada e sem investimento — comprada em 1994 faturando cerca de R$ 8 milhões/ano."
       depois: "Reposicionada como marca premium de herança brasileira (perfumaria, sabonetes, varejo próprio) e exportada para o mundo."
       virada: "Em vez de apagar a tradição, transformou os 150 anos de história em ATIVO de marca: resgatou fórmulas e estética vintage e elevou a percepção de valor."
       numeros: "De ~R$ 8 milhões para a casa dos R$ 800 milhões/ano (cresceu 4–5x em 10 anos); hoje mira R$ 2 bilhões."
-      fonte: "InfoMoney"
-      link: "https://www.infomoney.com.br/business/como-a-granado-transformou-tradicao-e-uma-historia-de-150-anos-em-crescimento-global/"
+      fontes:
+        - { nome: "InfoMoney", link: "https://www.infomoney.com.br/business/como-a-granado-transformou-tradicao-e-uma-historia-de-150-anos-em-crescimento-global/" }
+        - { nome: "Exame", link: "https://exame.com/revista-exame/granado-a-marca-da-vovo-agora-e-pop/" }
 
-    - marca: "Cimed"
-      setor: "Farmacêutica · MG"
-      antes: "Genéricos tratados como commodity — embalagens brancas, sem emoção, brigando por preço num setor conservador."
-      depois: "Genérico virou MARCA DE DESEJO. A “revolução amarela” deu cor proprietária, personalidade e presença em mais de 98% das farmácias do país."
-      virada: "Usou branding e identidade verbal/visual para diferenciar um produto que “todo mundo achava igual” — exatamente o problema do empresário que entrega valor e não é percebido."
-      numeros: "De R$ 500 milhões para R$ 3 bilhões de faturamento em ~5 anos (2023: receita líquida R$ 2,25 bi e lucro de R$ 223,6 mi)."
-      fonte: "Meio & Mensagem"
-      link: "https://www.meioemensagem.com.br/marketing/como-a-cimed-quer-se-tornar-a-pg-brasileira"
+    - marca: "Insider Store"
+      setor: "Moda + tecnologia · pequena→média (DTC)"
+      antes: "Começou pequena, vendendo camiseta “que não amassa” pela internet, no meio de um mar de marcas de básicos."
+      depois: "Reposicionou-se como techwear premium (“made for the future”) e virou a marca que mais vende roupa básica online no Brasil, ultrapassando a Hering."
+      virada: "Rebranding em torno de tecnologia + design + sustentabilidade — transformou um “básico” em produto desejado e com história."
+      numeros: "Cresceu ~100% ao ano desde a fundação; reposicionamento puxou alta de 165%; chegou a R$ 400 mi (2024) mirando R$ 600 mi; +4,4 mi de produtos vendidos em 40 países."
+      fontes:
+        - { nome: "Exame", link: "https://exame.com/negocios/insider-abre-loja-fisica-apos-criar-imperio-de-r-600-milhoes-com-venda-de-camiseta-pela-internet/" }
+        - { nome: "InfoMoney", link: "https://www.infomoney.com.br/business/como-a-insider-store-desbancou-a-hering-em-vendas-de-roupas-basicas-do-brasil/" }
+        - { nome: "Startups", link: "https://startups.com.br/negocios/queridinha-dos-basicos-insider-se-reposiciona-para-crescer-165/" }
+
+    - marca: "Dengo Chocolates"
+      setor: "Alimentos / chocolate · pequena→média · SP"
+      antes: "Categoria de chocolate saturada — “o mundo não precisa de mais uma marca de chocolate”."
+      depois: "Nasceu (2017) e cresceu como marca de PROPÓSITO: paga mais ao produtor de cacau, chocolate premium e lojas-experiência."
+      virada: "O propósito e a experiência viraram o coração da marca — diferenciação real num mercado dominado por gigantes."
+      numeros: "Cresce acima de 25% ao ano (projeção de +50% em 2025); de ~52 lojas rumo a 250 até 2030 (+360%); R$ 100 mi em nova fábrica (5x a capacidade)."
+      fontes:
+        - { nome: "Exame", link: "https://exame.com/carreira/do-esporte-para-o-cacau-a-trajetoria-ousada-do-ceo-da-dengo-chocolates/" }
+        - { nome: "Meio & Mensagem", link: "https://www.meioemensagem.com.br/marketing/dengo-em-2025" }
+
+    - marca: "Reserva"
+      setor: "Moda · pequena→média (carioca)"
+      antes: "Nasceu como uma marca de moda masculina carioca, com alcance limitado."
+      depois: "Reposicionou-se com propósito (1P=5P) e formato “loja das lojas”, ampliando para feminino, infantil e além."
+      virada: "Marca movida a propósito e experiência: a cada peça vendida, 5 pratos de comida doados — engajamento que virou diferencial e crescimento."
+      numeros: "Faturamento cresceu quase 5x desde 2020, chegando a R$ 1,5 bi em 2023; nova loja vendeu +180% vs. a antiga; já são +55 milhões de pratos doados."
+      fontes:
+        - { nome: "Exame", link: "https://exame.com/casual/a-casa-reserva-reune-todas-as-marcas-do-pica-pau-em-uma-so-loja/" }
+        - { nome: "NeoFeed", link: "https://neofeed.com.br/blog/home/reserva-vai-entrar-na-moda-feminina-e-pode-multiplicar-seu-tamanho/" }
 
     - marca: "Happy Eggs (Mantiqueira)"
-      setor: "Alimentos / ovos · SP"
+      setor: "Alimentos / ovos · média · SP"
       antes: "Ovo como commodity — categoria sem marca, decidida só por preço na gôndola."
-      depois: "Happy Eggs deixou de ser “linha de produto” e virou marca independente, com personalidade própria (a galinha feliz por ser livre) e posicionamento de bem-estar animal."
+      depois: "Virou marca independente, com personalidade própria (a galinha feliz por ser livre) e posicionamento de bem-estar animal."
       virada: "Provou que dá para construir marca forte até numa categoria “sem graça”: branding + propósito transformaram um item básico em escolha consciente."
       numeros: "Maior investimento de marketing da história da categoria de ovos no Brasil (R$ 30 milhões) e aumento de vendas de até 60% em algumas redes."
-      fonte: "Mundo do Marketing"
-      link: "https://mundodomarketing.com.br/happy-eggs-como-a-mantiqueira-reposicionou-a-marca-e-impulsionou-vendas"
+      fontes:
+        - { nome: "Mundo do Marketing", link: "https://mundodomarketing.com.br/happy-eggs-como-a-mantiqueira-reposicionou-a-marca-e-impulsionou-vendas" }
+        - { nome: "Ana Couto (case)", link: "https://anacouto.com.br/en/cases/happy-eggs/" }
 
     - marca: "Kaline Modas"
       setor: "Pequeno negócio / moda · Campina Grande (PB)"
-      antes: "Loja de moda local, pequena, com presença e vendas limitadas ao ponto físico."
-      depois: "Reorganizou a marca e a presença digital (e-commerce), ampliando muito o alcance — caso de PME real."
-      virada: "Mostra a tese “branding não é luxo de marca grande”: com método e direção, o pequeno também cresce — sem grande orçamento."
+      antes: "Começou como vendedora ambulante; loja de moda local, pequena, com vendas limitadas ao ponto físico."
+      depois: "Estruturou marca, atendimento e presença digital (e-commerce) com apoio do Sebrae, ampliando muito o alcance."
+      virada: "A tese “branding não é luxo de marca grande” na prática: com método e direção, o pequeno também cresce — sem grande orçamento."
       numeros: "Aumento de 300% nas vendas após estruturar marca e canais digitais (programa Brasil Mais)."
-      fonte: "Agência Sebrae de Notícias"
-      link: "https://agenciasebrae.com.br/inovacao-e-tecnologia/empresas-que-participam-do-brasil-mais-registram-aumento-no-faturamento-e-na-produtividade/"
+      fontes:
+        - { nome: "Agência Sebrae", link: "https://agenciasebrae.com.br/inovacao-e-tecnologia/empresas-que-participam-do-brasil-mais-registram-aumento-no-faturamento-e-na-produtividade/" }
+        - { nome: "Paraíba Total", link: "https://paraibatotal.com.br/2022/10/05/paraiba-tem-258-mil-pequenos-negocios/" }
 
   internacionais:
-    - marca: "LEGO"
-      setor: "Brinquedos · Dinamarca"
-      antes: "À beira da falência em 2003: perdia ~US$ 1 milhão por dia, com US$ 800 milhões de dívida e vendas caindo 30% em dois anos."
-      depois: "Voltou às origens (criatividade e o “tijolinho”), cortou o que dispersava a marca e virou a nº 1 do mundo em brinquedos em 2014."
-      virada: "Clareza e foco no essencial da marca: parou de “inovar para todo lado” e reforçou o que a tornava única."
-      numeros: "De prejuízo bilionário para vendas acima de US$ 2 bilhões (≈900% de crescimento em 10 anos); ultrapassou a Mattel como líder global."
-      fonte: "The Strategy Institute"
-      link: "https://www.thestrategyinstitute.org/insights/from-bankruptcy-to-billions-legos-blueprint-for-business-transformation"
+    - marca: "Liquid Death"
+      setor: "Bebidas / água · pequena→média · EUA"
+      antes: "Uma “simples água” entrando num mercado dominado por gigantes — startup avaliada em apenas US$ 6 milhões (2018)."
+      depois: "Virou marca de culto vendendo água em lata com estética de heavy metal e o lema “Murder Your Thirst”."
+      virada: "A MARCA é o produto: humor, irreverência e identidade inconfundível geraram atenção sem gastar fortunas em mídia — exemplo máximo de branding como motor."
+      numeros: "Receita de US$ 3 mi (2020) → US$ 130 mi (2022) → US$ 333 mi (2024); avaliação saltou de US$ 6 mi para ~US$ 1,4 bilhão; +113 mil pontos de venda."
+      fontes:
+        - { nome: "OptiMonk", link: "https://www.optimonk.com/liquid-death-marketing-breakdown" }
+        - { nome: "Bigblue", link: "https://www.bigblue.co/blog/how-liquid-death-built-a-1-4b-brand-by-breaking-the-rules" }
+
+    - marca: "Oatly"
+      setor: "Alimentos / leite vegetal · pequena→média · Suécia"
+      antes: "Pequena empresa sueca com ~20 anos de vendas baixas e estáveis — leite de aveia era nicho desconhecido."
+      depois: "Rebranding ousado (2014) transformou o produto num fenômeno cultural e lifestyle: “It's like milk, but made for humans”."
+      virada: "Repensou a marca por inteiro — personalidade rebelde, tipografia própria e tom que desafia a indústria do leite. Branding virou estratégia central."
+      numeros: "Receita de US$ 39,5 mi (2014) → US$ 862,5 mi (2025), sem um único ano de queda; +295% em 2020; IPO avaliou a marca em ~US$ 10 bilhões."
+      fontes:
+        - { nome: "Adam Insights", link: "https://www.adaminsights.com/rebrand-how-oatly-transformed-a-niche-product-into-a-global-sensation/" }
+        - { nome: "The Brand Gym", link: "https://thebrandgym.com/the-oatly-brand-growth-story-part-1-driving-distinctiveness-through-the-mix/" }
+
+    - marca: "Tony's Chocolonely"
+      setor: "Alimentos / chocolate · pequena→média · Holanda"
+      antes: "Marca-desafiante minúscula num mercado de US$ 119 bi dominado por gigantes."
+      depois: "Cresceu “vendendo uma missão” (chocolate livre de trabalho escravo) — até as barras são divididas em pedaços desiguais para simbolizar a injustiça."
+      virada: "Propósito travado em cada detalhe da marca e do produto: o próprio produto é a ferramenta nº 1 de marketing."
+      numeros: "Mercado holandês: de 8,8% (2015) para ~19% de participação; receita de ~€200 mi (~US$ 230 mi), gastando só 2–3% em marketing."
+      fontes:
+        - { nome: "Fortune", link: "https://fortune.com/2025/05/13/tonys-chocolonely-small-business-230-million/" }
+        - { nome: "Statista", link: "https://www.statista.com/statistics/942628/revenue-market-share-of-tony-s-chocolonely-in-the-netherlands/" }
+
+    - marca: "Old Spice"
+      setor: "Higiene masculina · EUA (P&G)"
+      antes: "Marca percebida como “coisa de velho”, datada e perdendo relevância para concorrentes mais jovens (Axe, Dove Men+Care)."
+      depois: "Campanha “The Man Your Man Could Smell Like” (2010) redefiniu o tom da marca e a tornou nº 1 em sabonete líquido masculino nos EUA."
+      virada: "Reposicionou a personalidade (humor, frescor) e falou com quem decide a compra — sem trocar o produto, trocou a percepção."
+      numeros: "Vendas do body wash +107% em um ano (e +27% nos primeiros 6 meses); liderança de categoria nos EUA."
+      fontes:
+        - { nome: "Great Ideas for Teaching Marketing", link: "https://www.greatideasforteachingmarketing.com/classic-case-study-old-spice/" }
+        - { nome: "Wieden+Kennedy", link: "https://www.wk.com/work/old-spice-smell-like-a-man-man/" }
+
+    - marca: "Burberry"
+      setor: "Moda / luxo · Reino Unido"
+      antes: "No fim dos anos 1990, a icônica xadrez foi “sequestrada” pela cultura chav e pela pirataria — a marca corria risco de virar obsoleta no luxo."
+      depois: "Sob Rose Marie Bravo (1997) e Christopher Bailey (2001), recuperou o status de luxo e modernizou a herança."
+      virada: "Reposicionamento de luxo: recolocou a marca no lugar certo da mente do consumidor, unindo tradição e contemporâneo."
+      numeros: "Abriu capital em 2002 avaliada em £ 1,2 bilhão e se tornou uma das marcas de luxo de maior sucesso do período, com crescimento de dois dígitos."
+      fontes:
+        - { nome: "Second Acts", link: "https://secondactsbiz.substack.com/p/burberry-the-brand-of-multiple-turnarounds" }
+        - { nome: "Luxury Society", link: "https://www.luxurysociety.com/en/articles/2011/02/burberry-success-story-or-cautionary-tale/" }
 
     - marca: "Domino's"
       setor: "Food / pizza · EUA"
@@ -62,14 +140,16 @@ casos:
       depois: "Assumiu publicamente as críticas, mudou a receita e se reposicionou como marca transparente e inovadora."
       virada: "Transformou uma crise de reputação em virada: ouvir o cliente e ter coragem de mudar o produto + a narrativa da marca."
       numeros: "Vendas +16,5% logo após o relançamento; receita de US$ 1,4 bi (2009) para US$ 3,5 bi; ação valorizou mais de 6.000% em 10 anos."
-      fonte: "Aaron Allen & Associates"
-      link: "https://aaronallen.com/blog/dominos-turnaround"
+      fontes:
+        - { nome: "Aaron Allen & Associates", link: "https://aaronallen.com/blog/dominos-turnaround" }
+        - { nome: "The Motley Fool", link: "https://www.fool.com/investing/2019/11/19/the-secret-behind-dominos-epic-turnaround.aspx" }
 
-    - marca: "Old Spice"
-      setor: "Higiene masculina · EUA"
-      antes: "Marca percebida como “coisa de velho”, datada e perdendo relevância para concorrentes mais jovens (Axe, Dove Men+Care)."
-      depois: "Campanha “The Man Your Man Could Smell Like” (2010) redefiniu o tom da marca e a tornou nº 1 em sabonete líquido masculino nos EUA."
-      virada: "Reposicionou a personalidade da marca (humor, frescor) e falou com quem realmente decide a compra — sem trocar o produto, trocou a percepção."
-      numeros: "Vendas do body wash +107% em um ano (e +27% nos primeiros 6 meses); liderança de categoria nos EUA."
-      fonte: "Great Ideas for Teaching Marketing"
-      link: "https://www.greatideasforteachingmarketing.com/classic-case-study-old-spice/"
+    - marca: "LEGO"
+      setor: "Brinquedos · Dinamarca"
+      antes: "À beira da falência em 2003: perdia ~US$ 1 milhão por dia, com US$ 800 milhões de dívida e vendas caindo 30% em dois anos."
+      depois: "Voltou às origens (criatividade e o “tijolinho”), cortou o que dispersava a marca e virou a nº 1 do mundo em brinquedos em 2014."
+      virada: "Clareza e foco no essencial da marca: parou de “inovar para todo lado” e reforçou o que a tornava única."
+      numeros: "De prejuízo bilionário para vendas acima de US$ 2 bilhões (≈900% de crescimento em 10 anos); ultrapassou a Mattel como líder global."
+      fontes:
+        - { nome: "The Strategy Institute", link: "https://www.thestrategyinstitute.org/insights/from-bankruptcy-to-billions-legos-blueprint-for-business-transformation" }
+        - { nome: "Platform01 Consulting", link: "https://www.platform01consulting.com/insights/lego-one-of-the-greatest-turnaround-stories-in-corporate-history" }

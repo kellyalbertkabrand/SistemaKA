@@ -25,7 +25,8 @@
       {% if c.virada %}<p class="caso-line"><span class="caso-tag turn">🔁 A virada</span> {{ c.virada }}</p>{% endif %}
       {% if c.numeros %}<p class="item-pme">📊 <strong>Números:</strong> {{ c.numeros }}</p>{% endif %}
       <p class="item-meta">
-        {{ c.fonte }} · <a href="{{ c.link }}" data-ext target="_blank" rel="noopener">ver matéria na fonte ↗</a>
+        <strong>Fontes:</strong>
+        {% for f in c.fontes %}<a href="{{ f.link }}" data-ext target="_blank" rel="noopener">{{ f.nome }} ↗</a>{% if not loop.last %} · {% endif %}{% endfor %}
       </p>
     </article>
     {% endfor %}
