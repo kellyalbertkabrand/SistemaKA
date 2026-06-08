@@ -25,15 +25,15 @@ BATCH_SIZE = 8
 
 # Rodapé genérico por categoria (usado quando NÃO há IA). Liga ao trabalho da KA.
 FALLBACK_LINK = {
-    "branding_ia": "IA aplicada a marca — gancho para a Direção de Marca e o Programa Marca com Essência.",
-    "marketing_ia": "IA no marketing — Direção de Marca / Programa Marca com Essência.",
+    "branding_ia": "IA aplicada a marca — gancho para o Projeto e a Direção com Essência.",
+    "marketing_ia": "IA no marketing — Direção com Essência / Projeto Marca com Essência.",
     "branding": "Construção de marca — tema do Livro e da Mentoria.",
-    "campanha": "Case de campanha — referência para a Direção de Marca e a Mentoria.",
-    "posicionamento": "Posicionamento/reposicionamento — coração do Programa Marca com Essência.",
+    "campanha": "Case de campanha — referência para o Projeto e a Mentoria.",
+    "posicionamento": "Posicionamento/reposicionamento — coração do método Marca com Essência.",
     "semiotica": "Semiótica de marca — base do Livro e da Mentoria.",
     "neuromarketing": "Neuromarketing — embasa o Livro e a Mentoria.",
-    "polemica": "Marca/reputação — gancho para a Mentoria e o Programa Marca com Essência.",
-    "pesquisa": "Dado de pesquisa/tendência — sustenta argumentos na Mentoria e na Direção de Marca.",
+    "polemica": "Marca/reputação — gancho para a Mentoria e a Direção com Essência.",
+    "pesquisa": "Dado de pesquisa/tendência — sustenta argumentos na Mentoria e na Direção com Essência.",
     "academico": "Autoridade acadêmica — material de apoio para o Livro e a Mentoria.",
 }
 
@@ -83,8 +83,10 @@ def _system_prompt() -> str:
         " Para cada item escreva em PORTUGUÊS do Brasil: (1) 'titulo' — título "
         "traduzido (se já estiver em PT, repita); (2) 'resumo' — 1 frase CURTA "
         "com a essência da matéria, para triagem rápida; (3) 'persona' — diga "
-        "para QUAL persona/produto esta matéria mais interessa (Livro/Despertar, "
-        "Mentoria/Autonomia ou Programa/Maturidade) e por quê, em 1 frase; se não "
+        "para QUAL persona/produto esta matéria mais interessa e por quê, em 1 "
+        "frase, escolhendo entre: Livro (faça você mesmo, autonomia), Mentoria "
+        "(apoio estratégico ao vivo em grupo), Projeto (feito sob medida pra "
+        "você) ou Direção (acompanhamento estratégico contínuo); se não "
         "interessar a nenhuma, devolva \"\"; (4) 'pme' — 1 frase prática de como o "
         "conteúdo é útil para o pequeno/médio empresário. Seja fiel, sem inventar. "
         "Responda SOMENTE um array JSON na ordem dos itens: "

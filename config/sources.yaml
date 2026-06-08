@@ -22,41 +22,74 @@ max_total_items: 90
 business:
   nome: "Kelly Albert · KA — Inteligência para Marcas (método Marca com Essência©)"
   descricao: >
-    Marca com Essência© é o método de Kelly Albert para construir marcas a partir
-    da ESSÊNCIA — posicionamento, proposta de valor, identidade e comunicação.
-    Três formatos por nível de maturidade do cliente: Livro (faça você mesmo),
-    Mentoria (você faz com orientação) e Programa (nós fazemos por você).
+    A KA | Inteligência para Marcas é um escritório de branding especializado em
+    POSICIONAMENTO e REPOSICIONAMENTO de marcas. Pelo método autoral Marca com
+    Essência©, revela a essência que já existe na marca (a partir dos fundadores)
+    e a transforma em posicionamento, identidade verbal e direção estratégica —
+    de dentro para fora: da essência dos fundadores à percepção do mercado, unindo
+    inteligência humana e artificial. Tese central: "Branding não é luxo de marca
+    grande; é o que faz o pequeno sobreviver e crescer". O método tem 4 etapas
+    (Revelação de Essência → Construção de Clareza → Definição de Direção →
+    Posicionamento no Mercado) e um ecossistema de 4 produtos para 4 momentos:
+    Livro (faça você mesmo), Mentoria (com apoio ao vivo), Projeto (feito sob
+    medida pra você) e Direção (acompanhamento estratégico contínuo).
   produtos:
-    - nome: "Livro Marca com Essência"
+    - nome: "Livro Marca com Essência©"
       url: "https://kellyalbert.com.br/livro/"
-      preco: "R$ 117"
-      nivel: "Despertar — faça você mesmo"
+      preco: "R$ 117 (de R$ 217), em até 12x"
+      nivel: "Faça você mesmo — autonomia, no seu ritmo"
       persona: >
-        Empresários, profissionais liberais, especialistas e gestores começando a
-        olhar a marca de forma estratégica. Têm marca pessoal ou empresarial e
-        querem organizar posicionamento, comunicação e proposta de valor no
-        próprio ritmo, com método prático e acessível.
-      dor: "Percebo que minha marca precisa de direção e clareza; quero começar a organizar isso sozinho."
-    - nome: "Mentoria Marca com Essência"
+        Empresário, profissional liberal, especialista ou marca pessoal que sabe
+        que tem valor mas sente que o mercado não percebe; já investiu em logo,
+        site e redes sociais mas sente que falta algo mais profundo; quer
+        posicionar a marca com AUTONOMIA, no próprio ritmo, de forma 100% prática
+        e com inteligência artificial integrada (agentes de IA no ChatGPT, áudios
+        no Spotify e exercícios no Google Docs). Livro-consultoria de 126 páginas,
+        4 pilares e 11 capítulos; ao final monta a própria Base Estratégica
+        (Brand Book).
+      dor: "Sei que minha marca tem valor, mas ainda não transformei isso em posicionamento claro — e quero começar sozinho, no meu ritmo."
+    - nome: "Mentoria Marca com Essência©"
       url: "https://kellyalbert.com.br/mentoria/"
-      preco: "a partir de R$ 990"
-      nivel: "Autonomia — você faz com orientação"
+      preco: "sob consulta (turmas ao vivo em grupo)"
+      nivel: "Com apoio estratégico — você faz, a Kelly orienta ao vivo"
       persona: >
-        Empresários, profissionais liberais e gestores que já têm marca em
-        operação e querem participar ativamente da estratégia, aplicando o método
-        com acompanhamento e direcionamento.
-      dor: "Quero uma marca mais forte e estratégica, mas preciso de método, clareza e orientação."
-    - nome: "Programa Marca com Essência"
-      url: "https://kellyalbert.com.br/programa/"
-      preco: "a partir de R$ 8.000"
-      nivel: "Maturidade — nós fazemos por você"
+        Empresário, empreendedor, profissional liberal, especialista ou marca
+        (pessoal ou empresarial) que quer construir a Base Estratégica da marca
+        com ORIENTAÇÃO AO VIVO, sem perder o protagonismo. Precisa organizar o que
+        a marca é, o que entrega, o que a diferencia e como deve se comunicar —
+        sair do improviso. São 8 encontros ao vivo em grupo (Google Meet),
+        guiados pelo livro, com exercícios, agentes de IA e relatórios
+        personalizados. Não inclui criação de identidade visual.
+      dor: "Quero estruturar o posicionamento e a comunicação da minha marca com orientação ao vivo, participando ativamente do processo."
+    - nome: "Projeto Marca com Essência©"
+      url: "https://kellyalbert.com.br/projeto/"
+      preco: "sob consulta (planos Essência, Clareza e Direção)"
+      nivel: "Fazemos pra você — projeto completo sob medida"
       persona: >
-        Empresas maduras, com história, clientes, operação estruturada e entrega
-        validada pelo mercado (não necessariamente grandes). Já passaram da fase
-        de sobrevivência e percebem que a marca precisa acompanhar a evolução do
-        negócio.
-      dor: "Minha empresa cresceu e entrega mais do que o mercado percebe; preciso organizar a marca com profundidade e apoio especializado."
-  publico: "Da marca pessoal ao negócio maduro: quem quer posicionar/reposicionar a marca a partir da essência."
+        Empresa ou marca (não necessariamente grande) que sabe que entrega valor
+        real mas o mercado não percebe; precisa de posicionamento, identidade
+        verbal e direção estratégica, NÃO tem tempo de fazer sozinha e quer
+        resultado sob medida; entende branding como investimento. Projeto completo
+        conduzido por Kelly Albert, equipe e parceiros — da revelação da essência
+        dos fundadores à identidade visual, linha de produtos, plano de
+        comunicação e agente de IA exclusivo (Brand Book completo).
+      dor: "Minha marca entrega valor que o mercado não percebe; quero o posicionamento feito sob medida, da essência à presença, sem ter que conduzir eu mesmo."
+    - nome: "Direção com Essência©"
+      url: "https://kellyalbert.com.br/direcao/"
+      preco: "R$ 1.200 (5x de R$ 288,72), sob demanda"
+      nivel: "Acompanhamento contínuo — bússola estratégica mensal"
+      persona: >
+        Empresário ou marca que JÁ tem posicionamento ou estrutura de marca
+        definidos e sente que branding, comunicação e marketing perdem o rumo sem
+        acompanhamento. Quer clareza e DIREÇÃO CONTÍNUA para decisões de marca,
+        conteúdo e estratégia — não execução operacional. Acompanhamento
+        estratégico mensal (encontros individuais, resumo em PDF e revisão) nas
+        três frentes: branding, comunicação e marketing.
+      dor: "Já tenho a marca estruturada, mas preciso de clareza e direção contínua para não perder o rumo nas decisões do dia a dia."
+  publico: >
+    De marcas pessoais a empresas (não necessariamente grandes) que entregam valor
+    real mas não são percebidas por ele — e querem posicionar ou reposicionar a
+    marca a partir da essência. Branding para o pequeno e médio sobreviver e crescer.
   termos_prioritarios:
     - posicionamento
     - positioning
