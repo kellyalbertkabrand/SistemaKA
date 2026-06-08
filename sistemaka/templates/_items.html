@@ -1,29 +1,34 @@
-{% macro render_groups(groups) %}
-  {% for category, items in groups %}
-  <div class="group" id="cat-{{ category }}">
-    <h2 class="group-title">{{ items[0].category_label }} <span class="count">{{ items|length }}</span></h2>
-    {% for item in items %}
-    <article class="item">
-      <div class="item-tags">
-        <span class="tag tag-{{ item.kind }}">{{ item.kind_label }}</span>
-        <span class="tag tag-lang">{{ item.lang_label }}</span>
-        {% if item.needs_translation %}<span class="tag tag-trad">traduzido</span>{% endif %}
-        <span class="tag tag-region">{{ item.region_label }}</span>
-        {% if item.published %}<span class="tag tag-date">{{ item.published|br_date }}</span>{% endif %}
-      </div>
-      <h3 class="item-title"><a href="{{ item.link }}" data-ext target="_blank" rel="noopener">{{ item.display_title }}</a></h3>
-      {% if item.needs_translation and item.title_pt and item.title_pt != item.title %}
-      <p class="item-original">Título original: <em>{{ item.title }}</em></p>
-      {% endif %}
-      <p class="item-summary"><strong>Em resumo:</strong> {{ item.summary_pt }}</p>
-      {% if item.link_kelly %}<p class="item-kelly">🎯 <strong>Para a persona:</strong> {{ item.link_kelly }}</p>{% endif %}
-      {% if item.pme_pt %}<p class="item-pme">💼 {{ item.pme_pt }}</p>{% endif %}
-      <p class="item-meta">
-        {% if item.authors %}{{ item.authors }} · {% endif %}{{ item.source }}
-        · <a href="{{ item.link }}" data-ext target="_blank" rel="noopener">ver matéria na fonte ↗</a>
-      </p>
-    </article>
+{% macro render_groups(sections) %}
+  {% for section_label, cat_groups in sections %}
+  <section class="region-section">
+    <h2 class="section-title">{{ section_label }}</h2>
+    {% for category, items in cat_groups %}
+    <div class="group" id="cat-{{ category }}">
+      <h3 class="group-title">{{ items[0].category_label }} <span class="count">{{ items|length }}</span></h3>
+      {% for item in items %}
+      <article class="item">
+        <div class="item-tags">
+          <span class="tag tag-{{ item.kind }}">{{ item.kind_label }}</span>
+          <span class="tag tag-lang">{{ item.lang_label }}</span>
+          {% if item.needs_translation %}<span class="tag tag-trad">traduzido</span>{% endif %}
+          <span class="tag tag-region">{{ item.region_label }}</span>
+          {% if item.published %}<span class="tag tag-date">{{ item.published|br_date }}</span>{% endif %}
+        </div>
+        <h4 class="item-title"><a href="{{ item.link }}" data-ext target="_blank" rel="noopener">{{ item.display_title }}</a></h4>
+        {% if item.needs_translation and item.title_pt and item.title_pt != item.title %}
+        <p class="item-original">Título original: <em>{{ item.title }}</em></p>
+        {% endif %}
+        <p class="item-summary"><strong>Em resumo:</strong> {{ item.summary_pt }}</p>
+        {% if item.link_kelly %}<p class="item-kelly">🎯 <strong>Para a persona:</strong> {{ item.link_kelly }}</p>{% endif %}
+        {% if item.pme_pt %}<p class="item-pme">💼 {{ item.pme_pt }}</p>{% endif %}
+        <p class="item-meta">
+          {% if item.authors %}{{ item.authors }} · {% endif %}{{ item.source }}
+          · <a href="{{ item.link }}" data-ext target="_blank" rel="noopener">ver matéria na fonte ↗</a>
+        </p>
+      </article>
+      {% endfor %}
+    </div>
     {% endfor %}
-  </div>
+  </section>
   {% endfor %}
 {% endmacro %}

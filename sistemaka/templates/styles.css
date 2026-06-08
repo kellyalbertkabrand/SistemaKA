@@ -64,8 +64,14 @@ a { color: inherit; }
   color: #cfe0ff; font-size: 14px;
 }
 
-/* Groups & items */
-.group { margin: 30px 0; }
+/* Region sections, groups & items */
+.region-section { margin: 40px 0; }
+.section-title {
+  font-size: 22px; font-weight: 800; margin: 0 0 10px;
+  padding: 12px 16px; border-radius: 12px;
+  background: var(--panel-2); border: 1px solid var(--line);
+}
+.group { margin: 24px 0 24px; padding-left: 4px; }
 .group-title {
   font-size: 18px; padding-bottom: 8px; margin: 0 0 14px;
   border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 10px;

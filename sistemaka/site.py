@@ -20,6 +20,13 @@ CATEGORY_ORDER = [
     "campanha", "pme", "marketing_ia", "semiotica", "neuromarketing",
     "pesquisa", "academico",
 ]
+# Seções por ORIGEM, na ordem que a Kelly pediu: polêmicas nacionais no topo,
+# depois o restante do Brasil, e só então o internacional.
+REGION_SECTIONS = [
+    ("polemica_nacional", "🇧🇷 Polêmicas Nacionais"),
+    ("nacional",          "🇧🇷 Notícias Nacionais"),
+    ("internacional",     "🌎 Notícias Internacionais"),
+]
 MESES_PT = [
     "", "janeiro", "fevereiro", "março", "abril", "maio", "junho",
     "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
@@ -54,16 +61,41 @@ def _env() -> Environment:
     return env
 
 
-def _group_by_category(items: list[Item]) -> list[tuple[str, list[Item]]]:
-    buckets: dict[str, list[Item]] = defaultdict(list)
+def _section_of(item: Item) -> str:
+    """Em qual seção de ORIGEM o item entra."""
+    is_br = (item.region or "").upper() == "BR"
+    if is_br and item.category == "polemica":
+        return "polemica_nacional"
+    if is_br:
+        return "nacional"
+    return "internacional"
+
+
+def _group_by_region(items: list[Item]):
+    """Agrupa por SEÇÃO de origem (nacional polêmica → nacional → internacional);
+    dentro de cada seção, subagrupa por tema na ordem de CATEGORY_ORDER.
+
+    Retorna: lista de (rótulo_da_seção, [(categoria, [itens]), ...]).
+    """
+    sections: dict[str, dict[str, list[Item]]] = {
+        sid: defaultdict(list) for sid, _ in REGION_SECTIONS
+    }
     for item in items:
         cat = item.category if item.category in CATEGORY_LABELS else "branding"
-        buckets[cat].append(item)
-    ordered: list[tuple[str, list[Item]]] = []
-    for cat in CATEGORY_ORDER:
-        if buckets.get(cat):
-            ordered.append((cat, sorted(buckets[cat], key=lambda it: it.score, reverse=True)))
-    return ordered
+        sections[_section_of(item)][cat].append(item)
+
+    out: list[tuple[str, list[tuple[str, list[Item]]]]] = []
+    for sid, label in REGION_SECTIONS:
+        cat_groups: list[tuple[str, list[Item]]] = []
+        for cat in CATEGORY_ORDER:
+            bucket = sections[sid].get(cat)
+            if bucket:
+                cat_groups.append(
+                    (cat, sorted(bucket, key=lambda it: it.score, reverse=True))
+                )
+        if cat_groups:
+            out.append((label, cat_groups))
+    return out
 
 
 def _date_range(min_day: str, today: date) -> list[str]:
@@ -124,7 +156,7 @@ def build_site() -> None:
     has_ai = any(it.angle_pt and "Conteúdo em inglês" not in it.angle_pt for it in home_items)
     _render(env, "index.html", config.SITE_DIR / "index.html", rel="", **common,
             day=home_day, is_today=(home_day == today_iso), total=len(home_items),
-            groups=_group_by_category(home_items), has_ai=has_ai)
+            groups=_group_by_region(home_items), has_ai=has_ai)
 
     # ---- Arquivo ----
     archive_ctx = {**common, "months": [(m, len(i)) for m, i in month_items.items()]}
@@ -135,14 +167,14 @@ def build_site() -> None:
     for day in all_dates:
         items = store.load_day(day)
         _render(env, "day.html", config.SITE_DIR / "dia" / f"{day}.html", rel="../",
-                **common, day=day, total=len(items), groups=_group_by_category(items))
+                **common, day=day, total=len(items), groups=_group_by_region(items))
 
     # ---- Página por mês ----
     for month, items in month_items.items():
         _render(env, "month.html", config.SITE_DIR / "mes" / f"{month}.html", rel="../",
                 **common, month=month, total=len(items),
                 days_count=sum(1 for d in data_days if d.startswith(month)),
-                groups=_group_by_category(items),
+                groups=_group_by_region(items),
                 category_counts=_category_counts(items),
                 monthly_summary=summarize_month(month, items))
 

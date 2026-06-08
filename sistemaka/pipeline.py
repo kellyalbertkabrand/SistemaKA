@@ -42,7 +42,7 @@ def refresh_history(resummarize: bool = True) -> list[str]:
     Não recoleta (não é possível buscar notícias de dias passados). As novas
     categorias (Essência, PME) aparecem só nas coletas daqui pra frente.
     """
-    from .relevance import score as _score, _CATEGORY_BOOST
+    from .relevance import score as _score, _CATEGORY_BOOST, _region_boost
 
     cfg = config.load_config()
     max_per_day = int(cfg.get("max_items_per_day", 40))
@@ -56,7 +56,9 @@ def refresh_history(resummarize: bool = True) -> list[str]:
             continue
         for it in items:
             biz = _score(it, business_terms)
-            it.score = 1 + 2 * max(biz, 0) + _CATEGORY_BOOST.get(it.category, 0)
+            it.score = (1 + 2 * max(biz, 0)
+                        + _CATEGORY_BOOST.get(it.category, 0)
+                        + _region_boost(it))
         if resummarize:
             summarize_items(items)  # regenera persona/PME/título com o perfil novo
         store.save_day(day, items, max_per_day)

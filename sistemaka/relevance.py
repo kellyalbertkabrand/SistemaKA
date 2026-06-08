@@ -50,6 +50,14 @@ _CORE_REQUIRED_CATEGORIES = {"branding_ia", "marketing_ia", "essencia", "pme"}
 # Peso extra por categoria — a especialidade da KA sobe no ranking.
 _CATEGORY_BOOST = {"posicionamento": 4, "essencia": 3, "pme": 2, "polemica": 1}
 
+# Peso extra por ORIGEM — a Kelly quer o nacional priorizado (retido na triagem
+# e mais bem ranqueado). Polêmica nacional fica no topo (categoria + região).
+_REGION_BOOST = {"BR": 5}
+
+
+def _region_boost(item: Item) -> int:
+    return _REGION_BOOST.get((item.region or "").upper(), 0)
+
 
 def _has_core_branding(item: Item) -> bool:
     hay = _normalize(f"{item.title} {item.raw_summary}")
@@ -148,8 +156,10 @@ def rank_and_filter(items: list[Item], cfg: dict) -> list[Item]:
         biz = score(item, business_terms)
         if biz <= 0:
             continue
-        # Relevância: encaixe com o negócio + peso extra da especialidade da KA.
-        item.score = 1 + 2 * biz + _CATEGORY_BOOST.get(item.category, 0)
+        # Relevância: negócio + especialidade da KA + prioridade do nacional.
+        item.score = (1 + 2 * biz
+                      + _CATEGORY_BOOST.get(item.category, 0)
+                      + _region_boost(item))
         kept.append(item)
 
     kept.sort(key=lambda it: (it.score, it.published), reverse=True)
