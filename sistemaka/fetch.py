@@ -424,11 +424,21 @@ def fetch_arxiv(cfg: dict, session: requests.Session) -> list[Item]:
 # ---------------------------------------------------------------------------
 
 def _safe_parse(url: str, session: requests.Session):
-    """feedparser sobre um GET com timeout e user-agent controlados."""
+    """feedparser sobre um GET com timeout e user-agent controlados.
+
+    Registra status HTTP e nº de entradas para que os logs do run revelem
+    feeds mortos/bloqueados (403, 404, vazios) e a gente possa podá-los.
+    """
     import feedparser  # import tardio: só é exigido na coleta real
     try:
         resp = session.get(url, timeout=TIMEOUT, headers={"User-Agent": USER_AGENT})
-        return feedparser.parse(resp.content)
+        parsed = feedparser.parse(resp.content)
+        n = len(getattr(parsed, "entries", []) or [])
+        if resp.status_code != 200:
+            log.warning("Feed status %s (%d entradas): %s", resp.status_code, n, url)
+        elif n == 0:
+            log.warning("Feed sem entradas (200, mas vazio/ilegível): %s", url)
+        return parsed
     except Exception as exc:  # noqa: BLE001
         log.warning("Feed falhou %s: %s", url, exc)
         return feedparser.parse("")

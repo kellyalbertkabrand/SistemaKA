@@ -103,8 +103,24 @@ business:
     - brand
     - rebranding
     - essência da marca
+    - essência de marca
+    - brand essence
     - propósito de marca
     - brand purpose
+    - purpose-driven
+    - cultura de marca
+    - brand culture
+    - marca de fundador
+    - founder brand
+    - founder-led
+    - employer brand
+    - pequena empresa
+    - pequenas empresas
+    - pequeno negócio
+    - small business
+    - pme
+    - empreendedor
+    - solopreneur
     - proposta de valor
     - storytelling de marca
     - autoridade de marca
@@ -137,38 +153,50 @@ google_news_locales:
   - { name: "Mundo",   hl: "en-US", gl: "US", ceid: "US:en",     lang: en, region: world }
 
 google_news_topics:
-  - category: branding_ia
-    label: "Branding & IA"
-    query_pt: '(branding OR "posicionamento de marca" OR "identidade de marca" OR rebranding) "inteligência artificial"'
-    query_en: '(branding OR "brand positioning" OR "brand identity" OR rebranding) "artificial intelligence"'
-  - category: marketing_ia
-    label: "Marketing & IA"
-    query_pt: '("estratégia de marca" OR branding) marketing "inteligência artificial"'
-    query_en: '("brand strategy" OR branding) marketing "artificial intelligence"'
+  # NÚCLEO: posicionamento e reposicionamento (a especialidade da KA).
+  - category: posicionamento
+    label: "Posicionamento & Reposicionamento"
+    query_pt: '"posicionamento de marca" OR "reposicionamento de marca" OR rebranding OR "nova identidade de marca" OR "mudança de marca"'
+    query_en: '"brand positioning" OR "brand repositioning" OR rebranding OR "brand refresh" OR "new brand identity"'
+  # NÚCLEO: essência, propósito e cultura ("de dentro para fora").
+  - category: essencia
+    label: "Essência, Propósito & Cultura"
+    query_pt: '"propósito de marca" OR "essência da marca" OR "cultura de marca" OR "marca de fundador" OR "branding de propósito"'
+    query_en: '"brand purpose" OR "brand essence" OR "founder brand" OR "brand culture" OR "purpose-driven brand"'
   - category: branding
     label: "Branding"
-    query_pt: 'branding "estratégia de marca"'
-    query_en: 'branding "brand strategy"'
+    query_pt: 'branding "estratégia de marca" OR "gestão de marca" OR "construção de marca"'
+    query_en: 'branding "brand strategy" OR "brand building" OR "brand management"'
+  # IA aplicada a MARCA (não IA genérica): estratégia, posicionamento, agentes.
+  - category: branding_ia
+    label: "Branding & IA"
+    query_pt: '("estratégia de marca" OR "posicionamento de marca" OR branding OR rebranding OR "identidade de marca") ("inteligência artificial" OR "agentes de IA" OR "IA generativa")'
+    query_en: '("brand strategy" OR "brand positioning" OR branding OR rebranding OR "brand identity") ("artificial intelligence" OR "AI agents" OR "generative AI")'
+  - category: marketing_ia
+    label: "Marketing & IA"
+    query_pt: '"estratégia de marca" marketing ("inteligência artificial" OR "agentes de IA")'
+    query_en: '"brand strategy" marketing ("artificial intelligence" OR "AI agents")'
   - category: campanha
     label: "Campanhas & Ideias"
     query_pt: 'campanha publicitária marca conceito criativo'
     query_en: 'advertising campaign brand creative idea'
-  - category: posicionamento
-    label: "Posicionamento & Reposicionamento"
-    query_pt: 'posicionamento de marca OR reposicionamento de marca'
-    query_en: 'brand positioning OR repositioning OR rebranding'
+  # PME e marca pessoal (a tese: branding faz o pequeno crescer).
+  - category: pme
+    label: "Marca para PME & Marca Pessoal"
+    query_pt: '"branding para pequenas empresas" OR "marca pessoal" OR "branding para PME" OR "marca de pequeno negócio" OR "branding para empreendedores"'
+    query_en: '"small business branding" OR "personal branding" OR "branding for small business" OR "solopreneur brand" OR "founder-led brand"'
   - category: semiotica
     label: "Semiótica de Marca"
-    query_pt: 'semiótica marca branding'
-    query_en: 'semiotics branding brand'
+    query_pt: 'semiótica marca branding OR "significado de marca"'
+    query_en: 'semiotics branding brand OR "brand meaning"'
   - category: neuromarketing
     label: "Neuromarketing"
-    query_pt: 'neuromarketing marca consumidor'
-    query_en: 'neuromarketing brand consumer behavior'
+    query_pt: 'neuromarketing marca consumidor OR "decisão de compra"'
+    query_en: 'neuromarketing brand consumer behavior OR "purchase decision"'
   - category: polemica
     label: "Polêmicas de Marca"
-    query_pt: 'marca polêmica OR publicidade polêmica OR boicote marca OR "cancelamento de marca" OR rebranding polêmico'
-    query_en: '"brand" controversy OR "ad controversy" OR "brand boycott" OR "rebrand backlash"'
+    query_pt: 'marca polêmica OR "publicidade polêmica" OR "boicote" marca OR "cancelamento de marca" OR "crise de marca" OR "rebranding polêmico"'
+    query_en: '"brand controversy" OR "ad controversy" OR "brand boycott" OR "rebrand backlash" OR "brand crisis"'
   - category: pesquisa
     label: "Pesquisas & Tendências"
     query_pt: 'pesquisa de mercado marca OR "tendências de consumo" OR comportamento do consumidor marca'
@@ -242,6 +270,10 @@ academic:
   crossref_queries:
     - { query: "brand positioning",                category: posicionamento }
     - { query: "brand repositioning rebranding",   category: posicionamento }
+    - { query: "brand purpose authenticity",       category: essencia }
+    - { query: "founder brand organizational culture", category: essencia }
+    - { query: "small business branding SME",      category: pme }
+    - { query: "personal branding entrepreneur",   category: pme }
     - { query: "brand semiotics meaning",          category: semiotica }
     - { query: "neuromarketing brand consumer",    category: neuromarketing }
     - { query: "artificial intelligence branding", category: branding_ia }
@@ -265,6 +297,20 @@ keywords:
   - positioning
   - reposicionamento
   - repositioning
+  - propósito de marca
+  - brand purpose
+  - essência da marca
+  - brand essence
+  - cultura de marca
+  - brand culture
+  - marca de fundador
+  - founder brand
+  - marca pessoal
+  - personal brand
+  - pequena empresa
+  - small business
+  - pme
+  - empreendedor
   - campanha
   - campaign
   - semiótica

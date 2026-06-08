@@ -37,8 +37,18 @@ _CORE_BRANDING = [
     "repositioning", "identidade", "brand identity", "brand strategy",
     "estratégia de marca", "marca pessoal", "personal brand", "brand purpose",
     "propósito de marca", "semiót", "semiot", "gestão de marca", "brand management",
-    "construção de marca", "essência da marca", "essência de marca",
+    "construção de marca", "essência da marca", "essência de marca", "brand essence",
+    "cultura de marca", "brand culture", "marca de fundador", "founder brand",
+    "founder-led", "employer brand", "small business brand", "branding para",
+    "branding for", "brand building",
 ]
+
+# Categorias que SÓ valem se tiverem contexto-núcleo de marca (cortam ruído
+# de "IA genérica", "marketing genérico" ou "pequeno negócio sem branding").
+_CORE_REQUIRED_CATEGORIES = {"branding_ia", "marketing_ia", "essencia", "pme"}
+
+# Peso extra por categoria — a especialidade da KA sobe no ranking.
+_CATEGORY_BOOST = {"posicionamento": 4, "essencia": 3, "pme": 2, "polemica": 1}
 
 
 def _has_core_branding(item: Item) -> bool:
@@ -126,8 +136,8 @@ def rank_and_filter(items: list[Item], cfg: dict) -> list[Item]:
         # Polêmica só vale se tiver contexto de marca/marketing forte.
         if item.category == "polemica" and not _is_brand_polemica(item):
             continue
-        # Itens de IA precisam ser de fato sobre branding/posicionamento (não IA genérica).
-        if item.category in ("branding_ia", "marketing_ia") and not _has_core_branding(item):
+        # IA, marketing, essência e PME precisam ser de fato sobre marca (não genéricos).
+        if item.category in _CORE_REQUIRED_CATEGORIES and not _has_core_branding(item):
             continue
         # Corta ruído de política/justiça (a menos que seja claramente sobre marca).
         if _is_politics_noise(item) and not _has_core_branding(item):
@@ -138,7 +148,8 @@ def rank_and_filter(items: list[Item], cfg: dict) -> list[Item]:
         biz = score(item, business_terms)
         if biz <= 0:
             continue
-        item.score = 1 + 2 * biz  # relevância priorizando o encaixe com o negócio
+        # Relevância: encaixe com o negócio + peso extra da especialidade da KA.
+        item.score = 1 + 2 * biz + _CATEGORY_BOOST.get(item.category, 0)
         kept.append(item)
 
     kept.sort(key=lambda it: (it.score, it.published), reverse=True)

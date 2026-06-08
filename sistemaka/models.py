@@ -10,11 +10,13 @@ from typing import Any
 
 # Rótulos amigáveis (em português) para cada categoria temática.
 CATEGORY_LABELS = {
+    "posicionamento": "Posicionamento & Reposicionamento",
+    "essencia": "Essência, Propósito & Cultura",
     "branding_ia": "Branding & IA",
     "marketing_ia": "Marketing & IA",
     "branding": "Branding",
     "campanha": "Campanhas & Ideias",
-    "posicionamento": "Posicionamento & Reposicionamento",
+    "pme": "Marca para PME & Marca Pessoal",
     "semiotica": "Semiótica de Marca",
     "neuromarketing": "Neuromarketing",
     "pesquisa": "Pesquisas & Tendências",
