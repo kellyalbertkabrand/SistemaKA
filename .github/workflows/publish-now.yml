@@ -1,4 +1,4 @@
-# verify: botao "ja li/descartar" + casos (build + deploy)
+# verify: botao "Atualizar agora" no painel (build + deploy)
 name: Publicar agora (one-time)
 
 # Publica usando a CHAVE FIXA do Netlify (segredo NETLIFY_AUTH_TOKEN).
