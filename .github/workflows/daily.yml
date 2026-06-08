@@ -8,8 +8,8 @@ name: Coleta diária (SistemaKA)
 #  - workflow_dispatch: quando você clica em "Atualizar agora" / "Run workflow"
 on:
   schedule:
-    - cron: "30 10 * * *"   # 10:30 UTC = 07:30 Brasília
-    - cron: "30 16 * * *"   # 16:30 UTC = 13:30 Brasília
+    - cron: "0 10 * * *"   # 10:00 UTC = 07:00 Brasília
+    - cron: "0 19 * * *"   # 19:00 UTC = 16:00 Brasília
   workflow_dispatch: {}
 
 permissions:
