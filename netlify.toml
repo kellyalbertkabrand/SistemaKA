@@ -9,3 +9,7 @@
 [build.environment]
   PYTHON_VERSION = "3.12"
   SISTEMAKA_REPO = "kellyalbertkabrand/SistemaKA"
+
+# Botão "Atualizar agora" do painel chama esta função (dispara a coleta).
+[functions]
+  directory = "netlify/functions"

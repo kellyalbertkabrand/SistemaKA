@@ -1,4 +1,4 @@
-# verify: botao "Atualizar agora" no painel (build + deploy)
+# verify: 1-clique Atualizar agora (funcao netlify) v1
 name: Publicar agora (one-time)
 
 # Publica usando a CHAVE FIXA do Netlify (segredo NETLIFY_AUTH_TOKEN).
@@ -47,6 +47,7 @@ jobs:
           echo "Token presente. Publicando..."
           npx -y netlify-cli@17 deploy \
             --dir=public \
+            --functions=netlify/functions \
             --site=08fc9134-351a-4237-9891-fd4dea56d013 \
             --prod \
             --message "Publicacao (chave fixa) $(date -u +%Y-%m-%dT%H:%M)"

@@ -65,6 +65,7 @@ jobs:
         run: |
           npx -y netlify-cli@17 deploy \
             --dir=public \
+            --functions=netlify/functions \
             --site=08fc9134-351a-4237-9891-fd4dea56d013 \
             --prod \
             --message "Refresh do radar $(date -u +%Y-%m-%dT%H:%M)"

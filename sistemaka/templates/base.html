@@ -27,10 +27,11 @@
       {% block sidebar %}
       <div class="card update-card">
         <h3>🔄 Atualizar agora</h3>
-        <p class="hint">Quer buscar notícias novas na hora? Toque no botão, e na
-          página que abrir clique em <strong>“Run workflow”</strong> (botão verde).
-          Em ~8 minutos as novidades já aparecem aqui — é só recarregar o painel.</p>
-        <a class="update-btn" href="{{ update_url }}" target="_blank" rel="noopener">Atualizar agora ↗</a>
+        <p class="hint">Buscar notícias novas na hora, com um toque. Em ~8 minutos
+          as novidades aparecem — é só recarregar o painel.</p>
+        <button class="update-btn" id="update-now" type="button">Atualizar agora</button>
+        <p class="hint" id="update-status" role="status" aria-live="polite"></p>
+        <p class="hint"><a href="{{ update_url }}" target="_blank" rel="noopener">Abrir no GitHub</a> (alternativa)</p>
       </div>
       <div class="card">
         <h3>Buscar por data</h3>
@@ -137,6 +138,40 @@
     });
 
     apply();
+  })();
+  </script>
+
+  <script>
+  // Botão "Atualizar agora": chama a função do Netlify que dispara a coleta.
+  (function () {
+    var btn = document.getElementById('update-now');
+    if (!btn) return;
+    var status = document.getElementById('update-status');
+    function say(msg) { if (status) status.textContent = msg; }
+    btn.addEventListener('click', async function () {
+      btn.disabled = true;
+      var original = btn.textContent;
+      btn.textContent = 'Disparando…';
+      say('');
+      try {
+        var r = await fetch('/.netlify/functions/atualizar', { method: 'POST' });
+        var data = {};
+        try { data = await r.json(); } catch (e) {}
+        if (r.ok && data.ok) {
+          btn.textContent = '✓ Coleta iniciada';
+          say('Pronto! Em ~8 minutos recarregue o painel para ver as novidades.');
+        } else if (data.error === 'token_missing') {
+          btn.disabled = false; btn.textContent = original;
+          say('Falta configurar a chave do GitHub no Netlify (GITHUB_DISPATCH_TOKEN).');
+        } else {
+          btn.disabled = false; btn.textContent = original;
+          say('Não consegui disparar agora. Tente de novo em instantes ou use "Abrir no GitHub".');
+        }
+      } catch (e) {
+        btn.disabled = false; btn.textContent = original;
+        say('Sem conexão para disparar. Tente de novo.');
+      }
+    });
   })();
   </script>
 </body>
