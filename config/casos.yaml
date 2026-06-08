@@ -1,0 +1,75 @@
+# =============================================================================
+# Casos de Virada — biblioteca CURADA (sem data).
+# Marcas que estavam com resultados ruins e viraram referência através de
+# MARCA / POSICIONAMENTO. Cada caso tem fonte real (link que abre) e números.
+# Prioridade: nacionais primeiro; depois internacionais. Foco em exemplos que
+# fogem do óbvio (médias, pequenas, menos badaladas) — prova viva do método.
+#
+# Para adicionar um caso novo, basta copiar um bloco e preencher.
+# =============================================================================
+
+casos:
+  nacionais:
+    - marca: "Granado"
+      setor: "Cosméticos & perfumaria · RJ"
+      antes: "Marca de 1870 vista como “coisa de vovó”, datada e sem investimento — comprada em 1994 faturando cerca de R$ 8 milhões/ano."
+      depois: "Reposicionada como marca premium de herança brasileira (perfumaria, sabonetes, varejo próprio) e exportada para o mundo."
+      virada: "Em vez de apagar a tradição, transformou os 150 anos de história em ATIVO de marca: resgatou fórmulas e estética vintage e elevou a percepção de valor."
+      numeros: "De ~R$ 8 milhões para a casa dos R$ 800 milhões/ano (cresceu 4–5x em 10 anos); hoje mira R$ 2 bilhões."
+      fonte: "InfoMoney"
+      link: "https://www.infomoney.com.br/business/como-a-granado-transformou-tradicao-e-uma-historia-de-150-anos-em-crescimento-global/"
+
+    - marca: "Cimed"
+      setor: "Farmacêutica · MG"
+      antes: "Genéricos tratados como commodity — embalagens brancas, sem emoção, brigando por preço num setor conservador."
+      depois: "Genérico virou MARCA DE DESEJO. A “revolução amarela” deu cor proprietária, personalidade e presença em mais de 98% das farmácias do país."
+      virada: "Usou branding e identidade verbal/visual para diferenciar um produto que “todo mundo achava igual” — exatamente o problema do empresário que entrega valor e não é percebido."
+      numeros: "De R$ 500 milhões para R$ 3 bilhões de faturamento em ~5 anos (2023: receita líquida R$ 2,25 bi e lucro de R$ 223,6 mi)."
+      fonte: "Meio & Mensagem"
+      link: "https://www.meioemensagem.com.br/marketing/como-a-cimed-quer-se-tornar-a-pg-brasileira"
+
+    - marca: "Happy Eggs (Mantiqueira)"
+      setor: "Alimentos / ovos · SP"
+      antes: "Ovo como commodity — categoria sem marca, decidida só por preço na gôndola."
+      depois: "Happy Eggs deixou de ser “linha de produto” e virou marca independente, com personalidade própria (a galinha feliz por ser livre) e posicionamento de bem-estar animal."
+      virada: "Provou que dá para construir marca forte até numa categoria “sem graça”: branding + propósito transformaram um item básico em escolha consciente."
+      numeros: "Maior investimento de marketing da história da categoria de ovos no Brasil (R$ 30 milhões) e aumento de vendas de até 60% em algumas redes."
+      fonte: "Mundo do Marketing"
+      link: "https://mundodomarketing.com.br/happy-eggs-como-a-mantiqueira-reposicionou-a-marca-e-impulsionou-vendas"
+
+    - marca: "Kaline Modas"
+      setor: "Pequeno negócio / moda · Campina Grande (PB)"
+      antes: "Loja de moda local, pequena, com presença e vendas limitadas ao ponto físico."
+      depois: "Reorganizou a marca e a presença digital (e-commerce), ampliando muito o alcance — caso de PME real."
+      virada: "Mostra a tese “branding não é luxo de marca grande”: com método e direção, o pequeno também cresce — sem grande orçamento."
+      numeros: "Aumento de 300% nas vendas após estruturar marca e canais digitais (programa Brasil Mais)."
+      fonte: "Agência Sebrae de Notícias"
+      link: "https://agenciasebrae.com.br/inovacao-e-tecnologia/empresas-que-participam-do-brasil-mais-registram-aumento-no-faturamento-e-na-produtividade/"
+
+  internacionais:
+    - marca: "LEGO"
+      setor: "Brinquedos · Dinamarca"
+      antes: "À beira da falência em 2003: perdia ~US$ 1 milhão por dia, com US$ 800 milhões de dívida e vendas caindo 30% em dois anos."
+      depois: "Voltou às origens (criatividade e o “tijolinho”), cortou o que dispersava a marca e virou a nº 1 do mundo em brinquedos em 2014."
+      virada: "Clareza e foco no essencial da marca: parou de “inovar para todo lado” e reforçou o que a tornava única."
+      numeros: "De prejuízo bilionário para vendas acima de US$ 2 bilhões (≈900% de crescimento em 10 anos); ultrapassou a Mattel como líder global."
+      fonte: "The Strategy Institute"
+      link: "https://www.thestrategyinstitute.org/insights/from-bankruptcy-to-billions-legos-blueprint-for-business-transformation"
+
+    - marca: "Domino's"
+      setor: "Food / pizza · EUA"
+      antes: "Em 2008/2009 a ação valia menos de US$ 3, vendas em queda e a marca empatou em ÚLTIMO numa pesquisa de sabor — “gosto de papelão”."
+      depois: "Assumiu publicamente as críticas, mudou a receita e se reposicionou como marca transparente e inovadora."
+      virada: "Transformou uma crise de reputação em virada: ouvir o cliente e ter coragem de mudar o produto + a narrativa da marca."
+      numeros: "Vendas +16,5% logo após o relançamento; receita de US$ 1,4 bi (2009) para US$ 3,5 bi; ação valorizou mais de 6.000% em 10 anos."
+      fonte: "Aaron Allen & Associates"
+      link: "https://aaronallen.com/blog/dominos-turnaround"
+
+    - marca: "Old Spice"
+      setor: "Higiene masculina · EUA"
+      antes: "Marca percebida como “coisa de velho”, datada e perdendo relevância para concorrentes mais jovens (Axe, Dove Men+Care)."
+      depois: "Campanha “The Man Your Man Could Smell Like” (2010) redefiniu o tom da marca e a tornou nº 1 em sabonete líquido masculino nos EUA."
+      virada: "Reposicionou a personalidade da marca (humor, frescor) e falou com quem realmente decide a compra — sem trocar o produto, trocou a percepção."
+      numeros: "Vendas do body wash +107% em um ano (e +27% nos primeiros 6 meses); liderança de categoria nos EUA."
+      fonte: "Great Ideas for Teaching Marketing"
+      link: "https://www.greatideasforteachingmarketing.com/classic-case-study-old-spice/"

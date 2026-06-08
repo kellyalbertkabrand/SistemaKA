@@ -64,6 +64,18 @@ a { color: inherit; }
   color: #cfe0ff; font-size: 14px;
 }
 
+/* Casos de Virada */
+.tag-caso { background: #2a1a3a; color: #e9d5ff; border: 1px solid #6d28d9; }
+.caso .item-title { font-size: 20px; }
+.caso-line { margin: 0 0 8px; line-height: 1.5; }
+.caso-tag {
+  display: inline-block; font-size: 12px; font-weight: 700; padding: 1px 8px;
+  border-radius: 8px; margin-right: 6px; vertical-align: middle;
+}
+.caso-tag.down { background: rgba(255,99,99,.16); color: #ffb4b4; }
+.caso-tag.up   { background: rgba(80,220,140,.16); color: #aaf0c4; }
+.caso-tag.turn { background: rgba(120,170,255,.16); color: #cfe0ff; }
+
 /* Region sections, groups & items */
 .region-section { margin: 40px 0; }
 .section-title {

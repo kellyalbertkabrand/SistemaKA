@@ -1,4 +1,4 @@
-# verify: token netlify 022750
+# verify: publica "Casos de Virada" (build + deploy)
 name: Publicar agora (one-time)
 
 # Publica usando a CHAVE FIXA do Netlify (segredo NETLIFY_AUTH_TOKEN).

@@ -178,6 +178,10 @@ def build_site() -> None:
                 category_counts=_category_counts(items),
                 monthly_summary=summarize_month(month, items))
 
+    # ---- Página "Casos de Virada" (vitrine curada, sem data) ----
+    _render(env, "casos.html", config.SITE_DIR / "casos.html", rel="", **common,
+            casos=config.load_casos())
+
     # ---- Página 404 (datas/links inexistentes) ----
     _render(env, "notfound.html", config.SITE_DIR / "404.html", rel="", **common)
 

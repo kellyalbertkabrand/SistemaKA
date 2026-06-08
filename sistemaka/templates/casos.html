@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Casos de Virada · {{ site_title }}{% endblock %}
+{% block content %}
+  <div class="page-head">
+    <p class="eyebrow">Vitrine fixa · prova do método</p>
+    <h1>Casos de Virada</h1>
+    <p class="lead">
+      Marcas que estavam com resultados ruins e viraram referência através de
+      <strong>marca e posicionamento</strong> — com números <em>antes → depois</em>.
+      Primeiro casos nacionais, depois internacionais. Cada caso linka para a
+      fonte original.
+    </p>
+  </div>
+
+  {% macro caso_cards(casos) %}
+    {% for c in casos %}
+    <article class="item caso">
+      <div class="item-tags">
+        <span class="tag tag-caso">Caso de virada</span>
+        {% if c.setor %}<span class="tag tag-region">{{ c.setor }}</span>{% endif %}
+      </div>
+      <h3 class="item-title">{{ c.marca }}</h3>
+      {% if c.antes %}<p class="caso-line"><span class="caso-tag down">🔻 Antes</span> {{ c.antes }}</p>{% endif %}
+      {% if c.depois %}<p class="caso-line"><span class="caso-tag up">🚀 Depois</span> {{ c.depois }}</p>{% endif %}
+      {% if c.virada %}<p class="caso-line"><span class="caso-tag turn">🔁 A virada</span> {{ c.virada }}</p>{% endif %}
+      {% if c.numeros %}<p class="item-pme">📊 <strong>Números:</strong> {{ c.numeros }}</p>{% endif %}
+      <p class="item-meta">
+        {{ c.fonte }} · <a href="{{ c.link }}" data-ext target="_blank" rel="noopener">ver matéria na fonte ↗</a>
+      </p>
+    </article>
+    {% endfor %}
+  {% endmacro %}
+
+  {% if casos.nacionais %}
+  <section class="region-section">
+    <h2 class="section-title">🇧🇷 Casos Nacionais</h2>
+    <div class="group">{{ caso_cards(casos.nacionais) }}</div>
+  </section>
+  {% endif %}
+
+  {% if casos.internacionais %}
+  <section class="region-section">
+    <h2 class="section-title">🌎 Casos Internacionais</h2>
+    <div class="group">{{ caso_cards(casos.internacionais) }}</div>
+  </section>
+  {% endif %}
+
+  {% if not casos.nacionais and not casos.internacionais %}
+  <p class="empty">Nenhum caso cadastrado ainda.</p>
+  {% endif %}
+{% endblock %}
