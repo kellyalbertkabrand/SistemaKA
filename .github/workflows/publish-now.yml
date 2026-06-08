@@ -1,6 +1,6 @@
-# retrigger: dados filtrados IA
 name: Publicar agora (one-time)
 
+# Publica usando a CHAVE FIXA do Netlify (segredo NETLIFY_AUTH_TOKEN).
 on:
   push:
     paths:
@@ -12,12 +12,40 @@ permissions:
 jobs:
   publicar:
     runs-on: ubuntu-latest
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Publicar no Netlify
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Gerar o painel
+        env:
+          SISTEMAKA_REPO: ${{ github.repository }}
+        run: python -m sistemaka build
+
+      - name: Publicar no Netlify (chave fixa)
         run: |
-          npx -y @netlify/mcp@latest \
-            --site-id 08fc9134-351a-4237-9891-fd4dea56d013 \
-            --proxy-path "https://netlify-mcp.netlify.app/proxy/eyJhbGciOiJkaXIiLCJlbmMiOiJBMjU2R0NNIn0..qhCfh0Kcfb5iVw9C.myxCsxfw6dBKHjO9FncOLGviihnsurI-aiou7Ool0Y5NbdFxT-rA9RBz1i-fqkd9N-0LINjzamETa-tBJl_9NXlppAWY-VaDTXzuJHBcUweTPXz7MhK2y2ioOgHRmX1zRlxtATUgos4O5XCJwl2t_N1jLZb3TJW_80NOBotoFT3AXeoa_CfmqtcmH6vVSogkxvS7FocpjsZ1brN-HaTSzz7Gq2btl2h3YLy6MKfN4Xq5rT3S1nIP-Im616vCTapaCueLbQ07W-r0QMIdtQiJ0gib0FOICjg9OzDLqwpyDk9b80BRKLW-d49zHMnm1gZt6u7kw9WKCt9igv7_btN5WLvL5eL5eCxAMsrEjRyIhdj6pGM-vDaOkUsAVR_z8-kcNokdU275.1G7HbcClaF0VZvA5CJ81uA"
+          if [ -z "$NETLIFY_AUTH_TOKEN" ]; then
+            echo "::error::NETLIFY_AUTH_TOKEN NAO encontrado — o segredo nao esta configurado (ou o nome esta diferente)."
+            exit 1
+          fi
+          echo "Token presente. Publicando..."
+          npx -y netlify-cli@17 deploy \
+            --dir=public \
+            --site=08fc9134-351a-4237-9891-fd4dea56d013 \
+            --prod \
+            --message "Publicacao (chave fixa) $(date -u +%Y-%m-%dT%H:%M)"
