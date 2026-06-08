@@ -6,7 +6,7 @@
     <div class="group" id="cat-{{ category }}">
       <h3 class="group-title">{{ items[0].category_label }} <span class="count">{{ items|length }}</span></h3>
       {% for item in items %}
-      <article class="item">
+      <article class="item" data-card="{{ item.id }}">
         <div class="item-tags">
           <span class="tag tag-{{ item.kind }}">{{ item.kind_label }}</span>
           <span class="tag tag-lang">{{ item.lang_label }}</span>
@@ -25,6 +25,7 @@
           {% if item.authors %}{{ item.authors }} · {% endif %}{{ item.source }}
           · <a href="{{ item.link }}" data-ext target="_blank" rel="noopener">ver matéria na fonte ↗</a>
         </p>
+        <button class="dismiss-btn" type="button">✓ Já li · descartar</button>
       </article>
       {% endfor %}
     </div>

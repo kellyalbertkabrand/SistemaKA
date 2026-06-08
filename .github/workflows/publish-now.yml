@@ -1,4 +1,4 @@
-# verify: publica "Casos de Virada" v2 — 14 casos, 2+ links (build + deploy)
+# verify: botao "ja li/descartar" + casos (build + deploy)
 name: Publicar agora (one-time)
 
 # Publica usando a CHAVE FIXA do Netlify (segredo NETLIFY_AUTH_TOKEN).

@@ -64,6 +64,21 @@ a { color: inherit; }
   color: #cfe0ff; font-size: 14px;
 }
 
+/* Botão "já li / descartar" + estado escondido */
+.dismiss-btn {
+  margin-top: 10px; font-size: 13px; padding: 6px 12px; border-radius: 9px;
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--muted);
+  cursor: pointer; transition: all .15s;
+}
+.dismiss-btn:hover { color: var(--text); border-color: var(--accent); }
+.item.is-dismissed { opacity: .45; }
+.item.is-dismissed .dismiss-btn { color: var(--accent); border-color: var(--accent); }
+.toggle-hidden {
+  font-size: 13px; padding: 6px 12px; border-radius: 9px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--text);
+}
+.toggle-hidden:hover { border-color: var(--accent); }
+
 /* Casos de Virada */
 .tag-caso { background: #2a1a3a; color: #e9d5ff; border: 1px solid #6d28d9; }
 .caso .item-title { font-size: 20px; }

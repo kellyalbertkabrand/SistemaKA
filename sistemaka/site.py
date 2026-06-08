@@ -10,7 +10,7 @@ from datetime import date, datetime, timedelta, timezone
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from . import config, store
-from .models import CATEGORY_LABELS, Item
+from .models import CATEGORY_LABELS, Item, _slugify
 from .summarize import summarize_month
 
 log = logging.getLogger("sistemaka.site")
@@ -58,6 +58,7 @@ def _env() -> Environment:
     )
     env.filters["br_date"] = _br_date
     env.filters["br_month"] = _br_month
+    env.filters["slug"] = _slugify
     return env
 
 

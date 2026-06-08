@@ -33,6 +33,12 @@
         </form>
         <p class="hint">Escolha qualquer data para ver exatamente o que foi publicado nela.</p>
       </div>
+      <div class="card" id="descartados-card">
+        <h3>Descartados</h3>
+        <p class="hint">Itens que você marcou como “já li/usei” ficam escondidos
+          neste aparelho. <span id="descartados-count">0</span> escondido(s).</p>
+        <button type="button" class="toggle-hidden" id="toggle-hidden">Mostrar descartados</button>
+      </div>
       {% endblock %}
     </aside>
   </main>
@@ -59,6 +65,71 @@
       // Se o Chrome não estiver instalado, abre normalmente após um instante.
       setTimeout(function () { if (!document.hidden) window.location.href = url; }, 1200);
     }, false);
+  })();
+  </script>
+
+  <script>
+  // "Já li / Já usei": esconde o card e lembra no próprio aparelho (localStorage).
+  (function () {
+    var KEY = 'ka_dismissed';
+    var showHidden = false;
+    function load() {
+      try { return new Set(JSON.parse(localStorage.getItem(KEY) || '[]')); }
+      catch (e) { return new Set(); }
+    }
+    function store(set) {
+      try { localStorage.setItem(KEY, JSON.stringify(Array.from(set))); } catch (e) {}
+    }
+    var dismissed = load();
+
+    function apply() {
+      var hiddenCount = 0;
+      document.querySelectorAll('[data-card]').forEach(function (el) {
+        var id = el.getAttribute('data-card');
+        var isOut = dismissed.has(id);
+        var btn = el.querySelector('.dismiss-btn');
+        if (isOut) {
+          hiddenCount++;
+          el.classList.add('is-dismissed');
+          el.style.display = showHidden ? '' : 'none';
+          if (btn) btn.textContent = '↩ Restaurar';
+        } else {
+          el.classList.remove('is-dismissed');
+          el.style.display = '';
+          if (btn) btn.textContent = btn.getAttribute('data-label') || '✓ Já li · descartar';
+        }
+      });
+      var c = document.getElementById('descartados-count');
+      if (c) c.textContent = hiddenCount;
+    }
+
+    // guarda o rótulo original de cada botão (matérias x casos têm textos diferentes)
+    document.querySelectorAll('.dismiss-btn').forEach(function (b) {
+      b.setAttribute('data-label', b.textContent.trim());
+    });
+
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest('.dismiss-btn');
+      if (b) {
+        e.preventDefault();
+        var card = b.closest('[data-card]');
+        if (!card) return;
+        var id = card.getAttribute('data-card');
+        if (dismissed.has(id)) { dismissed.delete(id); } else { dismissed.add(id); }
+        store(dismissed);
+        apply();
+        return;
+      }
+      var t = e.target.closest('.toggle-hidden');
+      if (t) {
+        e.preventDefault();
+        showHidden = !showHidden;
+        t.textContent = showHidden ? 'Ocultar descartados' : 'Mostrar descartados';
+        apply();
+      }
+    });
+
+    apply();
   })();
   </script>
 </body>

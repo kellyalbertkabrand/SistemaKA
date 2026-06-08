@@ -14,7 +14,7 @@
 
   {% macro caso_cards(casos) %}
     {% for c in casos %}
-    <article class="item caso">
+    <article class="item caso" data-card="caso-{{ c.marca|slug }}">
       <div class="item-tags">
         <span class="tag tag-caso">Caso de virada</span>
         {% if c.setor %}<span class="tag tag-region">{{ c.setor }}</span>{% endif %}
@@ -28,6 +28,7 @@
         <strong>Fontes:</strong>
         {% for f in c.fontes %}<a href="{{ f.link }}" data-ext target="_blank" rel="noopener">{{ f.nome }} ↗</a>{% if not loop.last %} · {% endif %}{% endfor %}
       </p>
+      <button class="dismiss-btn" type="button">✓ Já usei · descartar</button>
     </article>
     {% endfor %}
   {% endmacro %}
