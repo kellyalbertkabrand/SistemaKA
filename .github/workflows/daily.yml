@@ -49,6 +49,7 @@ jobs:
         run: python -m sistemaka run
 
       - name: Salvar histórico no repositório
+        continue-on-error: true
         run: |
           git config user.name "SistemaKA Bot"
           git config user.email "actions@github.com"
@@ -57,11 +58,19 @@ jobs:
             echo "Sem novidades no histórico."
           else
             git commit -m "chore: histórico de coleta ($(date -u +%Y-%m-%d))"
-            git push
+            # Empurra com segurança: puxa antes (rebase) e tenta de novo se colidir.
+            for i in 1 2 3 4 5; do
+              if git push origin "HEAD:${GITHUB_REF_NAME}"; then
+                echo "Histórico enviado."; break
+              fi
+              echo "Push colidiu (tentativa $i) — puxando e tentando de novo..."
+              git pull --rebase origin "${GITHUB_REF_NAME}" || true
+              sleep 5
+            done
           fi
 
       - name: Republicar no Netlify (se a credencial estiver configurada)
-        if: ${{ env.NETLIFY_AUTH_TOKEN != '' }}
+        if: ${{ always() && env.NETLIFY_AUTH_TOKEN != '' }}
         run: |
           npx -y netlify-cli@17 deploy \
             --dir=public \
