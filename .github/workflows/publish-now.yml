@@ -1,4 +1,4 @@
-# verify: 1-clique Atualizar agora (funcao netlify) v1
+# verify: ativar token GITHUB_DISPATCH_TOKEN (redeploy funcao) v2
 name: Publicar agora (one-time)
 
 # Publica usando a CHAVE FIXA do Netlify (segredo NETLIFY_AUTH_TOKEN).
