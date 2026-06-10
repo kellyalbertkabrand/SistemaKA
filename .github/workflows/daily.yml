@@ -4,12 +4,18 @@ name: Coleta diária (SistemaKA)
 # republica o painel no Netlify automaticamente.
 #
 # Quando roda:
-#  - schedule: todo dia (07:30 e 13:30 no horário de Brasília)
+#  - schedule: VÁRIAS vezes ao dia. O agendador do GitHub costuma ATRASAR a
+#    execução (até 2–4h), então rodamos várias vezes e em minutos "quebrados"
+#    (atrasam menos) para garantir que, quando você abrir o painel, o dia já
+#    esteja coletado e publicado.
 #  - workflow_dispatch: quando você clica em "Atualizar agora" / "Run workflow"
 on:
   schedule:
-    - cron: "0 10 * * *"   # 10:00 UTC = 07:00 Brasília
-    - cron: "0 19 * * *"   # 19:00 UTC = 16:00 Brasília
+    - cron: "37 7 * * *"    # 07:37 UTC ≈ 04:37 Brasília (bem cedo)
+    - cron: "37 10 * * *"   # 10:37 UTC ≈ 07:37 Brasília
+    - cron: "37 13 * * *"   # 13:37 UTC ≈ 10:37 Brasília
+    - cron: "37 16 * * *"   # 16:37 UTC ≈ 13:37 Brasília
+    - cron: "37 19 * * *"   # 19:37 UTC ≈ 16:37 Brasília
   workflow_dispatch: {}
 
 permissions:
