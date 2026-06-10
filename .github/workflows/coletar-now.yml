@@ -1,4 +1,4 @@
-# trigger: coleta leve com fix de influenciador v1
+# trigger: coleta leve com fix de influenciador v2 (canal próprio)
 name: Coletar agora (leve)
 
 # Só COLETA o dia + publica (sem re-resumir todo o histórico). Rápido.
@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: sistemaka-coleta
+  group: sistemaka-coletar-now
   cancel-in-progress: false
 
 jobs:
