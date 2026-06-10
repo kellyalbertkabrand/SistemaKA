@@ -63,7 +63,7 @@ jobs:
                 echo "Histórico enviado."; break
               fi
               echo "Push colidiu (tentativa $i) — puxando e tentando de novo..."
-              git pull --rebase origin "${GITHUB_REF_NAME}" || true
+              git fetch origin "${GITHUB_REF_NAME}" || true; git merge -X ours --no-edit "origin/${GITHUB_REF_NAME}" || git merge --abort
               sleep 5
             done
           fi

@@ -11,11 +11,9 @@ name: Coleta diária (SistemaKA)
 #  - workflow_dispatch: quando você clica em "Atualizar agora" / "Run workflow"
 on:
   schedule:
-    - cron: "37 7 * * *"    # 07:37 UTC ≈ 04:37 Brasília (bem cedo)
-    - cron: "37 10 * * *"   # 10:37 UTC ≈ 07:37 Brasília
-    - cron: "37 13 * * *"   # 13:37 UTC ≈ 10:37 Brasília
-    - cron: "37 16 * * *"   # 16:37 UTC ≈ 13:37 Brasília
-    - cron: "37 19 * * *"   # 19:37 UTC ≈ 16:37 Brasília
+    - cron: "11 8 * * *"    # 08:11 UTC ≈ 05:11 Brasília (cedo; pronto de manhã)
+    - cron: "11 13 * * *"   # 13:11 UTC ≈ 10:11 Brasília
+    - cron: "11 18 * * *"   # 18:11 UTC ≈ 15:11 Brasília
   workflow_dispatch: {}
 
 permissions:
@@ -70,7 +68,7 @@ jobs:
                 echo "Histórico enviado."; break
               fi
               echo "Push colidiu (tentativa $i) — puxando e tentando de novo..."
-              git pull --rebase origin "${GITHUB_REF_NAME}" || true
+              git fetch origin "${GITHUB_REF_NAME}" || true; git merge -X ours --no-edit "origin/${GITHUB_REF_NAME}" || git merge --abort
               sleep 5
             done
           fi
