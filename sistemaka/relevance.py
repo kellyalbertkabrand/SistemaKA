@@ -178,7 +178,7 @@ def rank_and_filter(items: list[Item], cfg: dict) -> list[Item]:
         # Corta ruído de política/justiça (a menos que seja claramente sobre marca).
         if _is_politics_noise(item) and not _has_core_branding(item):
             continue
-        if score(item, keywords) <= 0:
+        if item.category != "influencer" and score(item, keywords) <= 0:
             continue  # sem nenhuma palavra-chave relevante → fora
         if item.category == "influencer":
             # Marca pessoal / reputação é relevante por si — não exige termo de negócio.

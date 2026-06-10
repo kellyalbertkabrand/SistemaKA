@@ -237,6 +237,7 @@ def fetch_google_news(cfg: dict, session: requests.Session, window: int) -> list
             query = topic.get(query_key)
             if not query:
                 continue
+            category = topic.get("category", "branding")
             full_query = f"{query} when:{window}d"
             url = (
                 "https://news.google.com/rss/search?"
@@ -251,7 +252,10 @@ def fetch_google_news(cfg: dict, session: requests.Session, window: int) -> list
                 title = _strip_html(entry.get("title", ""))
                 summary = _strip_html(entry.get("summary", ""))
                 # Pré-filtro de relevância ANTES de resolver o link (economiza rede).
-                if not _matches_keywords(f"{title} {summary}", norm_keywords):
+                # A busca de influenciador já é específica (nome + polêmica), então
+                # não aplicamos o pré-filtro nela — a relevância decide depois.
+                if category != "influencer" and not _matches_keywords(
+                        f"{title} {summary}", norm_keywords):
                     continue
                 link = resolve_source_url(entry.get("link", ""), session)
                 if not _is_real_source(link):

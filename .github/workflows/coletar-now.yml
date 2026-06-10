@@ -1,0 +1,72 @@
+# trigger: coleta leve com fix de influenciador v1
+name: Coletar agora (leve)
+
+# Só COLETA o dia + publica (sem re-resumir todo o histórico). Rápido.
+# Dispara quando este arquivo muda.
+on:
+  push:
+    paths:
+      - '.github/workflows/coletar-now.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sistemaka-coleta
+  cancel-in-progress: false
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Configurar Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Coletar notícias do dia + gerar painel
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SISTEMAKA_REPO: ${{ github.repository }}
+        run: python -m sistemaka run
+
+      - name: Salvar histórico no repositório
+        continue-on-error: true
+        run: |
+          git config user.name "SistemaKA Bot"
+          git config user.email "actions@github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "Sem novidades no histórico."
+          else
+            git commit -m "data: coleta leve ($(date -u +%Y-%m-%dT%H:%M))"
+            for i in 1 2 3 4 5; do
+              if git push origin "HEAD:${GITHUB_REF_NAME}"; then echo "ok"; break; fi
+              git pull --rebase origin "${GITHUB_REF_NAME}" || true
+              sleep 5
+            done
+          fi
+
+      - name: Republicar no Netlify
+        if: ${{ always() && env.NETLIFY_AUTH_TOKEN != '' }}
+        run: |
+          npx -y netlify-cli@17 deploy \
+            --dir=public \
+            --functions=netlify/functions \
+            --site=08fc9134-351a-4237-9891-fd4dea56d013 \
+            --prod \
+            --message "Coleta leve $(date -u +%Y-%m-%dT%H:%M)"
