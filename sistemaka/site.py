@@ -16,9 +16,9 @@ from .summarize import summarize_month
 log = logging.getLogger("sistemaka.site")
 
 CATEGORY_ORDER = [
-    "polemica", "posicionamento", "essencia", "branding", "branding_ia",
-    "campanha", "pme", "marketing_ia", "semiotica", "neuromarketing",
-    "pesquisa", "academico",
+    "polemica", "influencer", "posicionamento", "essencia", "branding",
+    "branding_ia", "campanha", "pme", "marketing_ia", "semiotica",
+    "neuromarketing", "pesquisa", "academico",
 ]
 # Seções por ORIGEM, na ordem que a Kelly pediu: polêmicas nacionais no topo,
 # depois o restante do Brasil, e só então o internacional.
@@ -65,7 +65,7 @@ def _env() -> Environment:
 def _section_of(item: Item) -> str:
     """Em qual seção de ORIGEM o item entra."""
     is_br = (item.region or "").upper() == "BR"
-    if is_br and item.category == "polemica":
+    if is_br and item.category in ("polemica", "influencer"):
         return "polemica_nacional"
     if is_br:
         return "nacional"
