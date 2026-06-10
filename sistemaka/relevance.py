@@ -39,9 +39,12 @@ _INFLUENCER_TERMS = [
 ]
 _POLEMICA_TERMS = [
     "polêmica", "polemica", "cancelad", "cancelament", "boicote", "crise",
-    "escândalo", "escandalo", "processo", "acusa", "exposição", "exposicao",
-    "treta", "controvérsia", "controversia", "backlash", "boycott", "scandal",
-    "controversy", "lawsuit", "cancel",
+    "escândalo", "escandalo", "processo", "processad", "acusa", "exposição",
+    "exposicao", "expõe", "expos", "treta", "controvérsia", "controversia",
+    "crítica", "criticad", "detona", "detonou", "repercussão", "repercute",
+    "denúncia", "denuncia", "indiciad", "multa", "alvo de", "rebate", "ataca",
+    "backlash", "boycott", "scandal", "controversy", "lawsuit", "cancel",
+    "slammed", "accused", "apology", "apologiz",
 ]
 
 
