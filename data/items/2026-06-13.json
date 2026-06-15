@@ -1,6 +1,6 @@
 {
   "date": "2026-06-13",
-  "generated_at": "2026-06-15T14:37:55.626187+00:00",
+  "generated_at": "2026-06-15T18:06:16.979027+00:00",
   "count": 40,
   "items": [
     {
@@ -307,15 +307,15 @@
       "kind": "noticia",
       "published": "2026-06-13",
       "raw_summary": "“We are excited to unveil a distinct identity for the Reign that honors our team’s history, celebrates our ties to the Inland Empire community, and…",
-      "title_pt": "Ontario Reign revela nova identidade de marca para próxima era do hockey Reign",
-      "summary_pt": "Time desportivo reposiciona marca honrando história e celebrando conexão comunitária.",
+      "title_pt": "ONTARIO REIGN UNVEIL NEW BRAND IDENTITY FOR THE NEXT ERA OF REIGN HOCKEY - Ontario Reign",
+      "summary_pt": "Time de hockey apresenta identidade renovada que honra histórico e celebra vínculo comunitário.",
       "angle_pt": "",
-      "pme_pt": "Ilustra como revelar essência (história, comunidade) e transformá-la em identidade visual — modelo para marcas que querem raiz estratégica.",
+      "pme_pt": "",
       "roteiro_pt": "",
-      "link_kelly": "Projeto",
+      "link_kelly": "",
       "authors": "",
       "score": 13,
-      "fetched_at": "2026-06-15T14:34:29.928885+00:00",
+      "fetched_at": "2026-06-15T18:02:50.426617+00:00",
       "id": "7f55807c6d3e0e09"
     },
     {
@@ -392,14 +392,14 @@
       "published": "2026-06-13",
       "raw_summary": "O Otimista - Identidade olfativa se consolida como estratégia para fortalecer marcas e criar conexões com clientes",
       "title_pt": "",
-      "summary_pt": "Aroma como elemento estratégico de identidade de marca para diferenciação e conexão emocional com clientes.",
+      "summary_pt": "Pesquisa mostra olfato como ferramenta sensorial para diferenciação e conexão de marca.",
       "angle_pt": "",
-      "pme_pt": "PMEs de beleza, bem-estar e varejo podem usar identidade olfativa como ferramenta de diferenciação de marca sem grande investimento em produção.",
+      "pme_pt": "PME pode explorar identidade olfativa como camada estratégica para criar conexão sensorial e diferenciação no ponto de venda ou experiência, fortalecendo o posicionamento sem depender apenas de visual.",
       "roteiro_pt": "",
-      "link_kelly": "Projeto",
+      "link_kelly": "Projeto; marca que entrega valor real mas não é percebida pode usar identidade olfativa como diferencial estratégico no posicionamento.",
       "authors": "",
       "score": 10,
-      "fetched_at": "2026-06-14T19:56:33.941748+00:00",
+      "fetched_at": "2026-06-15T18:02:40.265984+00:00",
       "id": "dc4cd575c6891f9a"
     },
     {
@@ -476,14 +476,14 @@
       "published": "2026-06-13",
       "raw_summary": "Vídeo com suposta revelação sobre Ana Castela foi apagado pouco tempo após a publicação",
       "title_pt": "",
-      "summary_pt": "Influenciador publica conteúdo invasivo sobre celebridade e enfrenta críticas nas redes.",
+      "summary_pt": "Polêmica em rede social envolvendo influenciador e celebridade.",
       "angle_pt": "",
       "pme_pt": "",
       "roteiro_pt": "",
       "link_kelly": "",
       "authors": "",
       "score": 9,
-      "fetched_at": "2026-06-15T14:34:04.739627+00:00",
+      "fetched_at": "2026-06-15T18:02:17.963388+00:00",
       "id": "0759a1becdb0eb77"
     },
     {
@@ -590,6 +590,27 @@
       "score": 8,
       "fetched_at": "2026-06-14T15:17:34.796714+00:00",
       "id": "44c1d91eda55fea3"
+    },
+    {
+      "title": "O Pinterest agora permite que criadores vinculem suas lojas da Amazon diretamente. - ALM Corp",
+      "link": "https://almcorp.com/pt/news/pinterest-amazon-storefront-creator-integration/",
+      "source": "ALM Corp",
+      "lang": "pt",
+      "region": "BR",
+      "category": "pesquisa",
+      "kind": "noticia",
+      "published": "2026-06-13",
+      "raw_summary": "O Pinterest agora permite que criadores de conteúdo vinculem lojas da Amazon diretamente. Saiba como a nova integração funciona, quem pode participar e o que isso significa para o marketing de afiliados em 2026.",
+      "title_pt": "",
+      "summary_pt": "Guia prático sobre integração Pinterest-Amazon para marketing de afiliados em 2026.",
+      "angle_pt": "",
+      "pme_pt": "Educação prática sobre novas ferramentas e canais que marcas pessoais e especialistas podem usar autonomamente para criar posicionamento de monetização.",
+      "roteiro_pt": "",
+      "link_kelly": "Livro",
+      "authors": "",
+      "score": 8,
+      "fetched_at": "2026-06-15T18:02:42.787112+00:00",
+      "id": "9a3cbae6c31c0841"
     },
     {
       "title": "Instamart promotes Dhanya Hemanth Raj to director marketing - Indian Television Dot Com",
@@ -821,27 +842,6 @@
       "score": 4,
       "fetched_at": "2026-06-14T19:57:23.389344+00:00",
       "id": "a9ed677b3b757591"
-    },
-    {
-      "title": "Thiruvananthapuram-based Instagram influencer's suicide: Court sends main accused to two-day police custody - Kerala Kaumudi",
-      "link": "https://keralakaumudi.com/en/news/mobile/kerala/general/thiruvananthapuram-based-instagram-influencers-suicide-court-sends-main-accused-to-two-day-police-custody-1333617",
-      "source": "Kerala Kaumudi",
-      "lang": "en",
-      "region": "world",
-      "category": "influencer",
-      "kind": "noticia",
-      "published": "2026-06-13",
-      "raw_summary": "THIRUVANANTHAPURAM: The first accused in the suicide of an Instagram influencer in Thiruvananthapuram was sent again to police custody for two days by the court.",
-      "title_pt": "Suicídio de influenciadora Instagram: Acusado enviado à custódia policial",
-      "summary_pt": "Caso criminal envolvendo morte de influenciadora digital em rede social.",
-      "angle_pt": "",
-      "pme_pt": "",
-      "roteiro_pt": "",
-      "link_kelly": "",
-      "authors": "",
-      "score": 4,
-      "fetched_at": "2026-06-15T14:35:26.780736+00:00",
-      "id": "6562d2fdaf7a5c8c"
     }
   ]
 }
