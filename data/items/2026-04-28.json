@@ -1,7 +1,7 @@
 {
   "date": "2026-04-28",
-  "generated_at": "2026-06-16T13:08:01.173890+00:00",
-  "count": 5,
+  "generated_at": "2026-06-16T18:13:13.792374+00:00",
+  "count": 6,
   "items": [
     {
       "title": "Carlinhos Maia e Lucas se defendem em processo milionário de motorista - Metrópoles",
@@ -56,14 +56,14 @@
       "published": "2026-04-28",
       "raw_summary": "Atriz falou sobre \"consequências dos atos de quem ganha dinheiro destruindo a vida dos outros\"",
       "title_pt": "",
-      "summary_pt": "Atriz questiona consequências éticas de ganhar dinheiro via conteúdo destrutivo.",
+      "summary_pt": "Influenciadora comenta sobre atos que prejudicam reputação de outras pessoas.",
       "angle_pt": "",
       "pme_pt": "",
       "roteiro_pt": "",
       "link_kelly": "",
       "authors": "",
       "score": 9,
-      "fetched_at": "2026-06-16T13:04:00.820064+00:00",
+      "fetched_at": "2026-06-16T18:09:48.115824+00:00",
       "id": "9312b602d8428045"
     },
     {
@@ -107,6 +107,27 @@
       "score": 9,
       "fetched_at": "2026-06-14T19:56:24.157577+00:00",
       "id": "6c027f8524da0a4d"
+    },
+    {
+      "title": "Virginia Fonseca anuncia processo contra Luana Piovani: \"Não tô aguentando mais\" - SBT",
+      "link": "https://tv.sbt.com.br/programas/jornalismo/fofocalizando/noticia/286992-virginia-fonseca-anuncia-processo-contra-luana-piovani-nao-to-aguentando-mais",
+      "source": "SBT",
+      "lang": "pt",
+      "region": "BR",
+      "category": "influencer",
+      "kind": "noticia",
+      "published": "2026-04-28",
+      "raw_summary": "Empresária chorou nas redes após declarações envolvendo seus filhos e decidiu processar a atriz",
+      "title_pt": "",
+      "summary_pt": "Empresária/influenciadora processa outra por declarações prejudiciais à sua reputação.",
+      "angle_pt": "",
+      "pme_pt": "Marcas pessoais e empresárias precisam de posicionamento claro e identidade verbal estruturada para se defender de ataques e manter reputação — um Brand Book bem definido protege tanto a marca quanto a pessoa.",
+      "roteiro_pt": "",
+      "link_kelly": "Projeto",
+      "authors": "",
+      "score": 9,
+      "fetched_at": "2026-06-16T18:09:50.072828+00:00",
+      "id": "74b2ba7e4b1d9c87"
     }
   ]
 }
