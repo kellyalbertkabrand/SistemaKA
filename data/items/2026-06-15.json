@@ -1,6 +1,6 @@
 {
   "date": "2026-06-15",
-  "generated_at": "2026-06-17T16:47:44.886046+00:00",
+  "generated_at": "2026-06-17T20:33:47.289570+00:00",
   "count": 40,
   "items": [
     {
@@ -487,6 +487,27 @@
       "id": "f0cf9e5fc2d1931c"
     },
     {
+      "title": "Por que as marcas estão transformando funcionários em influenciadores?",
+      "link": "https://consumidormoderno.com.br/funcionario-influenciador-colaborador-creator/",
+      "source": "Consumidor Moderno",
+      "lang": "pt",
+      "region": "BR",
+      "category": "posicionamento",
+      "kind": "noticia",
+      "published": "2026-06-15",
+      "raw_summary": "Empresas transformam funcionários em creators, embaixadores e afiliados. Entenda como a tendência une influência, vendas e experiência do consumidor. O post Por que as marcas estão transformando funcionários em influenciadores? apareceu primeiro em Consumidor Moderno .",
+      "title_pt": "",
+      "summary_pt": "Empresas usam funcionários como creators e embaixadores para unir influência, vendas e experiência do consumidor.",
+      "angle_pt": "",
+      "pme_pt": "Ajuda a reposicionar a marca aproveitando o capital humano interno como diferencial de autenticidade e proximidade com o mercado.",
+      "roteiro_pt": "",
+      "link_kelly": "Projeto (feito sob medida pra você)",
+      "authors": "",
+      "score": 14,
+      "fetched_at": "2026-06-17T20:31:51.161282+00:00",
+      "id": "a2e970cfd285f715"
+    },
+    {
       "title": "New names, new narratives: Why biotechs decide to rebrand - Labiotech.eu",
       "link": "https://www.labiotech.eu/in-depth/biotech-rebranding-new-names/",
       "source": "Labiotech.eu",
@@ -821,27 +842,6 @@
       "score": 11,
       "fetched_at": "2026-06-15T14:35:07.053858+00:00",
       "id": "948b56e704dd6365"
-    },
-    {
-      "title": "Carlinhos Maia escapa de processo por publicidade enganosa; entenda - NaTelinha",
-      "link": "https://natelinha.uol.com.br/famosos/2026/06/15/carlinhos-maia-escapa-de-processo-por-publicidade-enganosa-entenda-243485.php",
-      "source": "NaTelinha",
-      "lang": "pt",
-      "region": "BR",
-      "category": "influencer",
-      "kind": "noticia",
-      "published": "2026-06-15",
-      "raw_summary": "O humorista Carlinhos Maia se livrou de um processo no qual era acusado de fazer publicidade enganosa após entrar em acordo com o homem que entrou na Justiça. Entenda!",
-      "title_pt": "",
-      "summary_pt": "Caso de resolução de conflito envolvendo transparência e risco reputacional em publicidade de influenciador.",
-      "angle_pt": "",
-      "pme_pt": "",
-      "roteiro_pt": "",
-      "link_kelly": "",
-      "authors": "",
-      "score": 11,
-      "fetched_at": "2026-06-17T16:43:51.974646+00:00",
-      "id": "54e4a6ab6e7192ed"
     }
   ]
 }
