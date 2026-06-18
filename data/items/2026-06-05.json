@@ -1,6 +1,6 @@
 {
   "date": "2026-06-05",
-  "generated_at": "2026-06-10T14:07:44.840484+00:00",
+  "generated_at": "2026-06-18T20:43:03.786466+00:00",
   "count": 40,
   "items": [
     {
@@ -739,6 +739,27 @@
       "id": "847c0c49c83b291f"
     },
     {
+      "title": "Zé Felipe é citado em processo da PF envolvendo Virginia Fonseca - OFuxico",
+      "link": "https://ofuxico.com.br/noticias/ze-felipe-e-citado-em-processo-da-pf-envolvendo-virginia-fonseca/",
+      "source": "OFuxico",
+      "lang": "pt",
+      "region": "BR",
+      "category": "influencer",
+      "kind": "noticia",
+      "published": "2026-06-05",
+      "raw_summary": "PF investiga movimentações financeiras ligadas à empresa de Virginia Fonseca e Zé Felipe após comunicações enviadas ao COAF.",
+      "title_pt": "",
+      "summary_pt": "Investigação federal sobre movimentações financeiras de casal influencer.",
+      "angle_pt": "",
+      "pme_pt": "",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 9,
+      "fetched_at": "2026-06-18T20:39:06.497473+00:00",
+      "id": "6fa6b77b91ee2f7a"
+    },
+    {
       "title": "Shangri-La Jeddah Names Lina Khan as Director of Marketing & Communications | TradeArabia - News and Statistics - IndexBox",
       "link": "https://www.indexbox.io/blog/lina-khan-appointed-director-of-marketing-communications-at-shangri-la-jeddah-1/",
       "source": "IndexBox",
@@ -821,27 +842,6 @@
       "score": 7,
       "fetched_at": "2026-06-08T01:22:46.298874+00:00",
       "id": "6378e62ab96b3c9d"
-    },
-    {
-      "title": "boAt elevates Vedansh kumar to Chief Marketing Officer - Social Samosa",
-      "link": "https://www.socialsamosa.com/industry-updates/boat-vedansh-kumar-chief-marketing-officer-12003973",
-      "source": "Social Samosa",
-      "lang": "en",
-      "region": "world",
-      "category": "branding",
-      "kind": "noticia",
-      "published": "2026-06-05",
-      "raw_summary": "Kumar, previously as Head of Brand Marketing at boAt, oversaw brand strategy, creator marketing, growth initiatives, community building and portfolio management.",
-      "title_pt": "boAt Promove Vedansh Kumar a Chief Marketing Officer",
-      "summary_pt": "Profissional sobe de Head of Brand Marketing a CMO, ampliando atuação em estratégia, criadores e crescimento.",
-      "angle_pt": "",
-      "pme_pt": "",
-      "roteiro_pt": "",
-      "link_kelly": "",
-      "authors": "",
-      "score": 7,
-      "fetched_at": "2026-06-08T01:22:20.673902+00:00",
-      "id": "cf2c4098a0a1f501"
     }
   ]
 }
