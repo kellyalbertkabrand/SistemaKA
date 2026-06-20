@@ -1,7 +1,7 @@
 {
   "date": "2026-05-20",
-  "generated_at": "2026-06-20T15:14:30.358251+00:00",
-  "count": 3,
+  "generated_at": "2026-06-20T19:58:11.561763+00:00",
+  "count": 4,
   "items": [
     {
       "title": "Influencer leva processo milionário pela BYD após críticas - iG Carros",
@@ -14,14 +14,14 @@
       "published": "2026-05-20",
       "raw_summary": "A marca justificou que o criador de conteúdo estaria fazendo comentários baseados em informações falsas na internet; Justiça deu razão à montadora",
       "title_pt": "",
-      "summary_pt": "Influenciador condenado por difamar marca com informações falsas — risco legal de comunicação sem verificação.",
+      "summary_pt": "Influenciador condenado por fazer críticas baseadas em informações falsas sobre produto.",
       "angle_pt": "",
       "pme_pt": "",
       "roteiro_pt": "",
       "link_kelly": "",
       "authors": "",
       "score": 9,
-      "fetched_at": "2026-06-20T15:10:49.762407+00:00",
+      "fetched_at": "2026-06-20T19:54:40.287583+00:00",
       "id": "f9d4021f56b88229"
     },
     {
@@ -56,15 +56,36 @@
       "published": "2026-05-20",
       "raw_summary": "A influenciadora digital Virginia Fonseca fez um pedido aos fãs após repercussão de vídeo polêmico",
       "title_pt": "",
-      "summary_pt": "Influenciadora tenta gerenciar crise pedindo apoio dos seguidores após repercussão negativa.",
+      "summary_pt": "Influenciadora faz pedido aos seguidores após repercussão negativa.",
       "angle_pt": "",
-      "pme_pt": "Exemplifica a necessidade de direção estratégica em crises — marcas pessoais precisam de clareza sobre como se comunicar quando a percepção muda.",
+      "pme_pt": "",
       "roteiro_pt": "",
-      "link_kelly": "Direção",
+      "link_kelly": "",
       "authors": "",
       "score": 9,
-      "fetched_at": "2026-06-20T15:10:53.527682+00:00",
+      "fetched_at": "2026-06-20T19:54:44.736382+00:00",
       "id": "fd5ddc1e92284de1"
+    },
+    {
+      "title": "Virginia Fonseca se pronuncia após polêmica com vídeo beijando macaco e repudia ataques contra Vini Jr. - Correio Braziliense",
+      "link": "https://www.correiobraziliense.com.br/brasil/2026/05/7424485-virginia-fonseca-se-pronuncia-apos-polemica-com-video-beijando-macaco-e-repudia-ataques-contra-vini-jr.html",
+      "source": "Correio Braziliense",
+      "lang": "pt",
+      "region": "BR",
+      "category": "influencer",
+      "kind": "noticia",
+      "published": "2026-05-20",
+      "raw_summary": "Virginia negou qualquer intenÃ§Ã£o ofensiva e afirmou ter ficado surpresa com a interpretaÃ§Ã£o do pÃºblico",
+      "title_pt": "",
+      "summary_pt": "Influenciadora nega intenção ofensiva em vídeo polêmico que viralizou.",
+      "angle_pt": "",
+      "pme_pt": "",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 9,
+      "fetched_at": "2026-06-20T19:54:44.162083+00:00",
+      "id": "cdb8ea04410dd55a"
     }
   ]
 }
