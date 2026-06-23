@@ -1,4 +1,4 @@
-# trigger: rede ampliada de polêmica de influenciador v6
+# trigger: gerar Boletim do dia + publicar v7
 name: Coleta + Refresh do histórico (one-time)
 
 # Dispara quando este arquivo muda. Faz, em sequência:
