@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = ROOT / "config" / "sources.yaml"
 CASOS_PATH = ROOT / "config" / "casos.yaml"
 DATA_DIR = ROOT / "data" / "items"
+BULLETIN_DIR = ROOT / "data" / "bulletins"
 SITE_DIR = ROOT / "public"
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 

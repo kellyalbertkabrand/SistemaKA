@@ -8,7 +8,7 @@ from . import config, store
 from .fetch import fetch_all
 from .relevance import rank_and_filter
 from .site import build_site
-from .summarize import summarize_items
+from .summarize import generate_bulletin, summarize_items
 
 log = logging.getLogger("sistemaka.pipeline")
 
@@ -23,6 +23,14 @@ def run_daily(window: int | None = None) -> list[str]:
     selected = rank_and_filter(raw, cfg)
     summarize_items(selected)
     days = store.save_items_by_published(selected, max_per_day)
+
+    # Boletim do dia: resumo editorial dos temas (branding, posicionamento,
+    # semiótica, comunicação) para cada dia que recebeu matérias.
+    for day in days:
+        html = generate_bulletin(day, store.load_day(day))
+        if html:
+            store.save_bulletin(day, html)
+            log.info("Boletim do dia gerado para %s", day)
 
     build_site()
     log.info("=== Concluído: %d itens em %d dia(s): %s ===",

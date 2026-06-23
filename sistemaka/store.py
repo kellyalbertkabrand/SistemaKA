@@ -91,6 +91,27 @@ def all_days() -> list[str]:
     return sorted(days, reverse=True)
 
 
+def _bulletin_path(day: str) -> Path:
+    return config.BULLETIN_DIR / f"{day}.html"
+
+
+def save_bulletin(day: str, html: str) -> None:
+    """Salva o 'Boletim do dia' (HTML) para aquela data."""
+    if not html:
+        return
+    config.BULLETIN_DIR.mkdir(parents=True, exist_ok=True)
+    with open(_bulletin_path(day), "w", encoding="utf-8") as fh:
+        fh.write(html)
+
+
+def load_bulletin(day: str) -> str:
+    path = _bulletin_path(day)
+    if not path.exists():
+        return ""
+    with open(path, "r", encoding="utf-8") as fh:
+        return fh.read()
+
+
 def load_month(year_month: str) -> list[Item]:
     items: list[Item] = []
     for day in all_days():

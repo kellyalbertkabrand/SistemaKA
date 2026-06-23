@@ -157,7 +157,8 @@ def build_site() -> None:
     has_ai = any(it.angle_pt and "Conteúdo em inglês" not in it.angle_pt for it in home_items)
     _render(env, "index.html", config.SITE_DIR / "index.html", rel="", **common,
             day=home_day, is_today=(home_day == today_iso), total=len(home_items),
-            groups=_group_by_region(home_items), has_ai=has_ai)
+            groups=_group_by_region(home_items), has_ai=has_ai,
+            bulletin=store.load_bulletin(home_day))
 
     # ---- Arquivo ----
     archive_ctx = {**common, "months": [(m, len(i)) for m, i in month_items.items()]}
@@ -168,7 +169,8 @@ def build_site() -> None:
     for day in all_dates:
         items = store.load_day(day)
         _render(env, "day.html", config.SITE_DIR / "dia" / f"{day}.html", rel="../",
-                **common, day=day, total=len(items), groups=_group_by_region(items))
+                **common, day=day, total=len(items), groups=_group_by_region(items),
+                bulletin=store.load_bulletin(day))
 
     # ---- Página por mês ----
     for month, items in month_items.items():

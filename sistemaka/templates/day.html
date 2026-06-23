@@ -7,6 +7,13 @@
     <h1>{{ day|br_date }}</h1>
     <p class="lead">{{ total }} matéria(s) publicada(s) neste dia.</p>
   </div>
+  {% if bulletin %}
+  <section class="bulletin">
+    <h2 class="bulletin-title">📰 Boletim do dia</h2>
+    <div class="bulletin-body">{{ bulletin|safe }}</div>
+  </section>
+  {% endif %}
+
   {% if groups %}
     {{ macros.render_groups(groups) }}
   {% else %}

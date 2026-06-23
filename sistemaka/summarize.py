@@ -260,3 +260,58 @@ def summarize_month(month: str, items: list[Item]) -> str:
     except Exception as exc:  # noqa: BLE001
         log.warning("Resumo mensal falhou: %s", exc)
         return ""
+
+
+# ---- Boletim do dia --------------------------------------------------------
+
+# Temas do boletim pedidos pela Kelly: branding, posicionamento, semiótica e
+# comunicação (campanha/marketing). Essência e IA aplicada a marca entram juntas.
+BULLETIN_CATEGORIES = {
+    "branding", "posicionamento", "semiotica", "campanha", "essencia",
+    "branding_ia", "marketing_ia",
+}
+
+BULLETIN_SYSTEM_PROMPT = (
+    "Você é editora de branding e escreve com a voz da Kelly Albert (método "
+    "Marca com Essência: marca construída de dentro para fora — essência, "
+    "posicionamento, identidade verbal, comunicação). Receberá as notícias do "
+    "dia sobre BRANDING, POSICIONAMENTO, SEMIÓTICA e COMUNICAÇÃO. Escreva, em "
+    "PORTUGUÊS do Brasil, o BOLETIM DO DIA em DUAS partes, em HTML simples:\n"
+    "1) <h4>Em resumo</h4> seguido de <ul> com 4 a 6 <li> CURTOS — cada um diz o "
+    "que aconteceu e, em poucas palavras, por que importa para quem cuida de marca.\n"
+    "2) <h4>Pronto para repostar</h4> seguido de 1 ou 2 <p> em tom editorial, na "
+    "voz da Kelly, conectando os fatos a uma ideia central, e terminando com um "
+    "gancho de reflexão/opinião que ela possa usar em post, story ou newsletter.\n"
+    "Seja fiel às notícias (não invente). Não cite links. Use só <h4>, <ul>, <li>, <p>."
+)
+
+
+def generate_bulletin(day: str, items: list[Item]) -> str:
+    """Gera o 'Boletim do dia' (HTML) a partir das notícias do dia nos temas
+    de branding/posicionamento/semiótica/comunicação. Sem chave de IA: vazio."""
+    key = config.anthropic_api_key()
+    if not key:
+        return ""
+    relevantes = [it for it in items if it.category in BULLETIN_CATEGORIES and it.summary_pt]
+    relevantes.sort(key=lambda it: it.score, reverse=True)
+    relevantes = relevantes[:18]
+    if len(relevantes) < 2:
+        return ""
+    try:
+        import anthropic
+        client = anthropic.Anthropic(api_key=key)
+        linhas = "\n".join(
+            f"- [{it.category_label}] {it.display_title} — {it.summary_pt[:200]}"
+            for it in relevantes
+        )
+        message = client.messages.create(
+            model=config.anthropic_model(), max_tokens=1200,
+            system=BULLETIN_SYSTEM_PROMPT,
+            messages=[{"role": "user", "content": f"Notícias de {day}:\n{linhas}"}],
+        )
+        return "".join(
+            b.text for b in message.content if getattr(b, "type", "") == "text"
+        ).strip()
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Boletim do dia falhou (%s): %s", day, exc)
+        return ""

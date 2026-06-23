@@ -99,6 +99,22 @@ a { color: inherit; }
 .caso-tag.up   { background: rgba(80,220,140,.16); color: #aaf0c4; }
 .caso-tag.turn { background: rgba(120,170,255,.16); color: #cfe0ff; }
 
+/* Boletim do dia */
+.bulletin {
+  margin: 8px 0 34px; padding: 20px 22px; border-radius: 16px;
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--accent);
+}
+.bulletin-title { margin: 0 0 12px; font-size: 22px; font-weight: 800; }
+.bulletin-body h4 {
+  margin: 16px 0 8px; font-size: 14px; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--accent);
+}
+.bulletin-body h4:first-child { margin-top: 0; }
+.bulletin-body ul { margin: 0 0 6px; padding-left: 20px; }
+.bulletin-body li { margin: 0 0 6px; line-height: 1.5; }
+.bulletin-body p { margin: 0 0 10px; line-height: 1.6; }
+
 /* Region sections, groups & items */
 .region-section { margin: 40px 0; }
 .section-title {
