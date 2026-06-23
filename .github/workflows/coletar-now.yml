@@ -1,14 +1,12 @@
-# trigger: rede ampliada de polêmica de influenciador v6
-name: Coleta + Refresh do histórico (one-time)
+# trigger: coleta serializada e salvamento à prova de conflito v3
+name: Coletar agora (leve)
 
-# Dispara quando este arquivo muda. Faz, em sequência:
-#  1) coleta nova (já com os temas novos: Essência, PME, etc.)
-#  2) re-processa TODO o histórico com o perfil novo dos 4 produtos
-#  3) salva o histórico e republica o painel no Netlify (chave fixa)
+# Só COLETA o dia + publica (sem re-resumir todo o histórico). Rápido.
+# Dispara quando este arquivo muda.
 on:
   push:
     paths:
-      - '.github/workflows/refresh-now.yml'
+      - '.github/workflows/coletar-now.yml'
 
 permissions:
   contents: write
@@ -18,7 +16,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  refresh:
+  coletar:
     runs-on: ubuntu-latest
     env:
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
@@ -40,13 +38,11 @@ jobs:
       - name: Instalar dependências
         run: pip install -r requirements.txt
 
-      - name: Coleta nova (temas novos) + refresh de todo o histórico
+      - name: Coletar notícias do dia + gerar painel
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SISTEMAKA_REPO: ${{ github.repository }}
-        run: |
-          python -m sistemaka run
-          python -m sistemaka refresh
+        run: python -m sistemaka run
 
       - name: Salvar histórico no repositório
         continue-on-error: true
@@ -55,20 +51,17 @@ jobs:
           git config user.email "actions@github.com"
           git add data
           if git diff --cached --quiet; then
-            echo "Sem mudanças no histórico."
+            echo "Sem novidades no histórico."
           else
-            git commit -m "data: coleta nova + refresh do histórico (perfil/temas atualizados)"
+            git commit -m "data: coleta leve ($(date -u +%Y-%m-%dT%H:%M))"
             for i in 1 2 3 4 5; do
-              if git push origin "HEAD:${GITHUB_REF_NAME}"; then
-                echo "Histórico enviado."; break
-              fi
-              echo "Push colidiu (tentativa $i) — puxando e tentando de novo..."
+              if git push origin "HEAD:${GITHUB_REF_NAME}"; then echo "ok"; break; fi
               git fetch origin "${GITHUB_REF_NAME}" || true; git merge -X ours --no-edit "origin/${GITHUB_REF_NAME}" || git merge --abort
               sleep 5
             done
           fi
 
-      - name: Republicar no Netlify (chave fixa)
+      - name: Republicar no Netlify
         if: ${{ always() && env.NETLIFY_AUTH_TOKEN != '' }}
         run: |
           npx -y netlify-cli@17 deploy \
@@ -76,4 +69,4 @@ jobs:
             --functions=netlify/functions \
             --site=08fc9134-351a-4237-9891-fd4dea56d013 \
             --prod \
-            --message "Refresh do radar $(date -u +%Y-%m-%dT%H:%M)"
+            --message "Coleta leve $(date -u +%Y-%m-%dT%H:%M)"

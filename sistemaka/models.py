@@ -21,6 +21,7 @@ CATEGORY_LABELS = {
     "neuromarketing": "Neuromarketing",
     "pesquisa": "Pesquisas & Tendências",
     "polemica": "Polêmicas de Marca",
+    "influencer": "Polêmicas de Influenciadores",
     "academico": "Acadêmico",
 }
 

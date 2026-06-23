@@ -197,6 +197,10 @@ google_news_topics:
     label: "Polêmicas de Marca"
     query_pt: 'marca polêmica OR "publicidade polêmica" OR "boicote" marca OR "cancelamento de marca" OR "crise de marca" OR "rebranding polêmico"'
     query_en: '"brand controversy" OR "ad controversy" OR "brand boycott" OR "rebrand backlash" OR "brand crisis"'
+  - category: influencer
+    label: "Polêmicas de Influenciadores"
+    query_pt: '(influenciador OR influencer OR youtuber OR "criador de conteúdo" OR "Virginia Fonseca" OR "Carlinhos Maia") (polêmica OR cancelamento OR boicote OR "crise de imagem" OR escândalo OR processo OR acusação OR treta OR exposição OR críticas OR repercussão OR denúncia)'
+    query_en: '(influencer OR "content creator" OR youtuber OR creator) (controversy OR backlash OR canceled OR cancelled OR boycott OR scandal OR lawsuit OR "PR crisis" OR slammed OR accused)'
   - category: pesquisa
     label: "Pesquisas & Tendências"
     query_pt: 'pesquisa de mercado marca OR "tendências de consumo" OR comportamento do consumidor marca'
@@ -313,6 +317,14 @@ keywords:
   - boicote
   - cancelamento
   - crise de imagem
+  - influenciador
+  - influencer
+  - youtuber
+  - criador de conteúdo
+  - content creator
+  - escândalo
+  - acusação
+  - treta
   - controversy
   - backlash
   - boycott

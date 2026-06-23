@@ -30,6 +30,30 @@ def _is_brand_polemica(item: Item) -> bool:
     return any(t in hay for t in _POLEMICA_REQUIRED)
 
 
+# Polêmica de INFLUENCIADOR (marca pessoal / reputação). Precisa ter um termo de
+# influenciador (ou nome) E um termo de polêmica/crise — para não virar fofoca solta.
+_INFLUENCER_TERMS = [
+    "influenciador", "influencer", "digital influencer", "youtuber", "tiktoker",
+    "criador de conteúdo", "content creator", "creator", "blogueir",
+    "virginia fonseca", "carlinhos maia",
+]
+_POLEMICA_TERMS = [
+    "polêmica", "polemica", "cancelad", "cancelament", "boicote", "crise",
+    "escândalo", "escandalo", "processo", "processad", "acusa", "exposição",
+    "exposicao", "expõe", "expos", "treta", "controvérsia", "controversia",
+    "crítica", "criticad", "detona", "detonou", "repercussão", "repercute",
+    "denúncia", "denuncia", "indiciad", "multa", "alvo de", "rebate", "ataca",
+    "backlash", "boycott", "scandal", "controversy", "lawsuit", "cancel",
+    "slammed", "accused", "apology", "apologiz",
+]
+
+
+def _is_influencer_polemica(item: Item) -> bool:
+    hay = _normalize(f"{item.title} {item.raw_summary}")
+    return (any(t in hay for t in _INFLUENCER_TERMS)
+            and any(t in hay for t in _POLEMICA_TERMS))
+
+
 # Contexto NÚCLEO de marca (sem "marca"/"marketing" soltos, que pegam ruído).
 # Usado para garantir que itens de IA sejam de fato sobre branding/posicionamento.
 _CORE_BRANDING = [
@@ -48,7 +72,8 @@ _CORE_BRANDING = [
 _CORE_REQUIRED_CATEGORIES = {"branding_ia", "marketing_ia", "essencia", "pme"}
 
 # Peso extra por categoria — a especialidade da KA sobe no ranking.
-_CATEGORY_BOOST = {"posicionamento": 4, "essencia": 3, "pme": 2, "polemica": 1}
+_CATEGORY_BOOST = {"posicionamento": 4, "essencia": 3, "pme": 2, "polemica": 1,
+                   "influencer": 1}
 
 # Peso extra por ORIGEM — a Kelly quer o nacional priorizado (retido na triagem
 # e mais bem ranqueado). Polêmica nacional fica no topo (categoria + região).
@@ -141,8 +166,11 @@ def rank_and_filter(items: list[Item], cfg: dict) -> list[Item]:
     unique = dedupe(valid)
     kept: list[Item] = []
     for item in unique:
-        # Polêmica só vale se tiver contexto de marca/marketing forte.
+        # Polêmica de marca só vale com contexto de marca/marketing forte.
         if item.category == "polemica" and not _is_brand_polemica(item):
+            continue
+        # Polêmica de influenciador: exige influenciador + termo de polêmica/crise.
+        if item.category == "influencer" and not _is_influencer_polemica(item):
             continue
         # IA, marketing, essência e PME precisam ser de fato sobre marca (não genéricos).
         if item.category in _CORE_REQUIRED_CATEGORIES and not _has_core_branding(item):
@@ -150,12 +178,16 @@ def rank_and_filter(items: list[Item], cfg: dict) -> list[Item]:
         # Corta ruído de política/justiça (a menos que seja claramente sobre marca).
         if _is_politics_noise(item) and not _has_core_branding(item):
             continue
-        if score(item, keywords) <= 0:
+        if item.category != "influencer" and score(item, keywords) <= 0:
             continue  # sem nenhuma palavra-chave relevante → fora
-        # GATE de produto: só mostra se tiver a ver com os temas/produtos da Kelly.
-        biz = score(item, business_terms)
-        if biz <= 0:
-            continue
+        if item.category == "influencer":
+            # Marca pessoal / reputação é relevante por si — não exige termo de negócio.
+            biz = max(score(item, business_terms), 1)
+        else:
+            # GATE de produto: só mostra se tiver a ver com os temas/produtos da Kelly.
+            biz = score(item, business_terms)
+            if biz <= 0:
+                continue
         # Relevância: negócio + especialidade da KA + prioridade do nacional.
         item.score = (1 + 2 * biz
                       + _CATEGORY_BOOST.get(item.category, 0)

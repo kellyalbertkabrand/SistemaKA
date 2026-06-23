@@ -35,6 +35,7 @@ FALLBACK_LINK = {
     "semiotica": "Semiótica de marca — base do Livro e da Mentoria.",
     "neuromarketing": "Neuromarketing — embasa o Livro e a Mentoria.",
     "polemica": "Marca/reputação — gancho para a Mentoria e a Direção com Essência.",
+    "influencer": "Reputação de marca pessoal/influenciador — gestão de crise: gancho para a Mentoria e a Direção com Essência.",
     "pesquisa": "Dado de pesquisa/tendência — sustenta argumentos na Mentoria e na Direção com Essência.",
     "academico": "Autoridade acadêmica — material de apoio para o Livro e a Mentoria.",
 }
@@ -51,6 +52,7 @@ FALLBACK_PME = {
     "semiotica": "PME: como usar símbolos e significados para comunicar o valor da marca.",
     "neuromarketing": "PME: gatilhos de decisão para aplicar em vendas e comunicação.",
     "polemica": "PME: o que aprender sobre reputação e gestão de crise da marca.",
+    "influencer": "PME: lições de reputação e gestão de crise aplicáveis à marca (pessoal ou do negócio).",
     "pesquisa": "PME: dados de consumo/tendências para decidir com base em evidência.",
     "academico": "PME: base sólida para decisões de marca com mais segurança.",
 }
