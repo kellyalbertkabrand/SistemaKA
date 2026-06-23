@@ -1,0 +1,18 @@
+# Configuração do Netlify para o Painel de Obra (piloto).
+# IMPORTANTE: ao criar o site no Netlify, defina o "Base directory" como
+# "painel-obra" (este projeto vive numa subpasta do repositório).
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# SPA: qualquer rota cai no index.html para o roteador do front cuidar.
+# As chamadas a /.netlify/functions/* são tratadas antes deste redirect.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
