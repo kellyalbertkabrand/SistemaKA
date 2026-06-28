@@ -1,7 +1,7 @@
 {
   "date": "2026-06-28",
-  "generated_at": "2026-06-28T10:36:29.920011+00:00",
-  "count": 6,
+  "generated_at": "2026-06-28T14:59:26.647618+00:00",
+  "count": 10,
   "items": [
     {
       "title": "Nesma Airlines receives new Airbus A321 amid rebranding to ‘flyplus’ - ZAWYA",
@@ -21,7 +21,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 17,
-      "fetched_at": "2026-06-28T10:34:24.503204+00:00",
+      "fetched_at": "2026-06-28T14:57:28.744471+00:00",
       "id": "48b6ca37a82a2fdb"
     },
     {
@@ -46,6 +46,48 @@
       "id": "fff851a8693cb14c"
     },
     {
+      "title": "O que a carreira de Galvão Bueno ensina sobre marca pessoal - Exame",
+      "link": "https://exame.com/carreira/o-que-a-carreira-de-galvao-bueno-ensina-sobre-marca-pessoal/",
+      "source": "Exame",
+      "lang": "pt",
+      "region": "BR",
+      "category": "pme",
+      "kind": "noticia",
+      "published": "2026-06-28",
+      "raw_summary": "Ao sair da Globo, o narrador esportivo provou que sua carreira não acabou. Ele revelou um ativo valioso que estava escondido atrás da emissora: sua própria autonomia profissional",
+      "title_pt": "",
+      "summary_pt": "Ao sair da Globo, o narrador esportivo provou que sua carreira não acabou. Ele revelou um ativo valioso que estava escondido atrás da emissora: sua própria autonomia profissional",
+      "angle_pt": "",
+      "pme_pt": "PME: branding aplicado à realidade de quem tem pouco orçamento e precisa se diferenciar.",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 16,
+      "fetched_at": "2026-06-28T14:56:35.655189+00:00",
+      "id": "f7c43ecb84a30a78"
+    },
+    {
+      "title": "Why Too Much Personal Branding Can Seem Inauthentic To Your Audience - Forbes",
+      "link": "https://www.forbes.com/sites/johnhall/2026/06/28/why-too-much-personal-branding-can-seem-inauthentic-to-your-audience/",
+      "source": "Forbes",
+      "lang": "en",
+      "region": "world",
+      "category": "pme",
+      "kind": "noticia",
+      "published": "2026-06-28",
+      "raw_summary": "Your personal brand can be your best asset. But overdoing it can make it your worst liability.",
+      "title_pt": "Por que muita marca pessoal pode parecer inautêntica para o seu público - Forbes",
+      "summary_pt": "Sua marca pessoal pode ser seu melhor ativo. Mas exagerar pode torná-lo seu pior passivo.",
+      "angle_pt": "",
+      "pme_pt": "PME: branding aplicado à realidade de quem tem pouco orçamento e precisa se diferenciar.",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 15,
+      "fetched_at": "2026-06-28T14:57:49.601304+00:00",
+      "id": "8bc0c05f5181f3e0"
+    },
+    {
       "title": "\"Normalmente, não reage.\" A forma como Cristiano Ronaldo gere as críticas - CNN Portugal",
       "link": "https://cnnportugal.iol.pt/videos/normalmente-nao-reage-a-forma-como-cristiano-ronaldo-gere-as-criticas/6a40d3230cf27cac6fcf66a6",
       "source": "CNN Portugal",
@@ -63,7 +105,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 14,
-      "fetched_at": "2026-06-28T10:33:46.050955+00:00",
+      "fetched_at": "2026-06-28T14:56:42.995932+00:00",
       "id": "70c23fd438cafa3d"
     },
     {
@@ -84,7 +126,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 12,
-      "fetched_at": "2026-06-28T10:35:19.383535+00:00",
+      "fetched_at": "2026-06-28T14:58:26.141876+00:00",
       "id": "75a953db3812276c"
     },
     {
@@ -109,6 +151,27 @@
       "id": "8f22b82d932404f9"
     },
     {
+      "title": "10 Consumer Insights Trends - Small Business Trends",
+      "link": "https://smallbiztrends.com/consumer-insights-trends/",
+      "source": "Small Business Trends",
+      "lang": "en",
+      "region": "world",
+      "category": "pesquisa",
+      "kind": "noticia",
+      "published": "2026-06-28",
+      "raw_summary": "Discover the latest consumer insights trends shaping the market landscape. Explore ten key trends that reveal changing consumer behaviors, preferences, and expectations, empowering businesses to make informed decisions and stay ahead of the curve.",
+      "title_pt": "10 Tendências do Consumer Insights - Tendências para Pequenas Empresas",
+      "summary_pt": "Descubra as últimas tendências de insights do consumidor que moldam o cenário do mercado.",
+      "angle_pt": "",
+      "pme_pt": "PME: dados de consumo/tendências para decidir com base em evidência.",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 11,
+      "fetched_at": "2026-06-28T14:58:13.277547+00:00",
+      "id": "4837bea2a3ef1f62"
+    },
+    {
       "title": "Final winners announced for Glass: The Lion for Change, Dan Wieden Titanium Lions, Film Lions, Sustainable Development Goals Lions and Grand Prix for Good - Campaign Brief WA",
       "link": "https://wa.campaignbrief.com/final-winners-announced-for-glass-the-lion-for-change-dan-wieden-titanium-lions-film-lions-sustainable-development-goals-lions-and-grand-prix-for-good/",
       "source": "Campaign Brief WA",
@@ -126,8 +189,29 @@
       "link_kelly": "",
       "authors": "",
       "score": 9,
-      "fetched_at": "2026-06-28T10:34:43.020213+00:00",
+      "fetched_at": "2026-06-28T14:57:43.138017+00:00",
       "id": "d350e85ce952356e"
+    },
+    {
+      "title": "A Brand-Building Adventure For Small Business Owners - City Lifestyle",
+      "link": "https://citylifestyle.com/articles/a-brand-building-adventure-for-small-business-owners",
+      "source": "City Lifestyle",
+      "lang": "en",
+      "region": "world",
+      "category": "branding",
+      "kind": "noticia",
+      "published": "2026-06-28",
+      "raw_summary": "Share article For small business owners, creating content can feel unnatural and easy to overlook. Photos, video, social posts, and website images often get pushed aside between serving customers and running the business.",
+      "title_pt": "Uma aventura de construção de marca para proprietários de pequenas empresas - City Lifestyle",
+      "summary_pt": "Compartilhe artigo Para proprietários de pequenas empresas, a criação de conteúdo pode parecer pouco natural e fácil de ignorar.",
+      "angle_pt": "",
+      "pme_pt": "PME: lições de construção de marca aplicáveis a negócios pequenos e médios.",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 9,
+      "fetched_at": "2026-06-28T14:57:33.483203+00:00",
+      "id": "c22cda7a33e442c2"
     }
   ]
 }
