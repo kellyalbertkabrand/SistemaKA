@@ -1,6 +1,6 @@
 {
   "date": "2026-06-29",
-  "generated_at": "2026-06-29T16:44:15.149248+00:00",
+  "generated_at": "2026-06-29T20:17:27.247871+00:00",
   "count": 40,
   "items": [
     {
@@ -21,7 +21,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 22,
-      "fetched_at": "2026-06-29T16:40:41.483739+00:00",
+      "fetched_at": "2026-06-29T20:14:31.831845+00:00",
       "id": "0fd5dc4c1c6caa92"
     },
     {
@@ -42,7 +42,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 20,
-      "fetched_at": "2026-06-29T16:40:43.962520+00:00",
+      "fetched_at": "2026-06-29T20:14:42.885805+00:00",
       "id": "045f66075b348876"
     },
     {
@@ -105,7 +105,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 18,
-      "fetched_at": "2026-06-29T16:40:42.325361+00:00",
+      "fetched_at": "2026-06-29T20:14:33.726932+00:00",
       "id": "0f9156abc6a01648"
     },
     {
@@ -126,7 +126,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 18,
-      "fetched_at": "2026-06-29T16:42:36.096624+00:00",
+      "fetched_at": "2026-06-29T20:16:38.159871+00:00",
       "id": "e57b477214b5c96c"
     },
     {
@@ -147,7 +147,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 18,
-      "fetched_at": "2026-06-29T16:42:36.097050+00:00",
+      "fetched_at": "2026-06-29T20:16:38.160320+00:00",
       "id": "441816415ba7fed1"
     },
     {
@@ -168,7 +168,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 17,
-      "fetched_at": "2026-06-29T16:41:43.745184+00:00",
+      "fetched_at": "2026-06-29T20:15:40.577693+00:00",
       "id": "1404ce42f0b4396e"
     },
     {
@@ -231,7 +231,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 16,
-      "fetched_at": "2026-06-29T16:42:36.097549+00:00",
+      "fetched_at": "2026-06-29T20:16:38.160841+00:00",
       "id": "a844e72b73329e12"
     },
     {
@@ -252,8 +252,29 @@
       "link_kelly": "",
       "authors": "",
       "score": 16,
-      "fetched_at": "2026-06-29T16:40:43.611826+00:00",
+      "fetched_at": "2026-06-29T20:14:35.092417+00:00",
       "id": "b6d36e632ae23664"
+    },
+    {
+      "title": "MBRF une marketing com ciência para pesquisar e lançar mais produtos de alto valor proteico - Estadão",
+      "link": "https://www.estadao.com.br/midia-mkt/mbrf-une-marketing-com-ciencia-para-pesquisar-e-lancar-mais-produtos-de-alto-valor-proteico/",
+      "source": "Estadão",
+      "lang": "pt",
+      "region": "BR",
+      "category": "posicionamento",
+      "kind": "noticia",
+      "published": "2026-06-29",
+      "raw_summary": "Manoel Martins, VP de marketing do grupo resultante da união de BRF e Marfrig, fala em entrevista sobre a inovação de marcas como Sadia, Perdigão e Bassi e como a empresa reage à mudança de comportamento dos consumidores",
+      "title_pt": "",
+      "summary_pt": "Manoel Martins, VP de marketing do grupo resultante da união de BRF e Marfrig, fala em entrevista sobre a inovação de marcas como Sadia, Perdigão e Bassi e como a empresa reage à mudança de comportamento dos consumidores",
+      "angle_pt": "",
+      "pme_pt": "PME: como se posicionar e se diferenciar no seu mercado.",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 16,
+      "fetched_at": "2026-06-29T20:14:33.007080+00:00",
+      "id": "b4e75d41718f8320"
     },
     {
       "title": "Personal branding with Bernard Kelvin CLIVE: You have a great product — but you're losing customers because of this one gap - The Business & Financial Times",
@@ -264,16 +285,16 @@
       "category": "pme",
       "kind": "noticia",
       "published": "2026-06-29",
-      "raw_summary": "Personal branding with Bernard Kelvin CLIVE: You have a great product — but you're losing customers because of this one gap The Business & Financial Times",
+      "raw_summary": "There is an unknown connection issue between Cloudflare and the origin web server. As a result, the web page can not be displayed.",
       "title_pt": "Marca pessoal com Bernard Kelvin CLIVE: Você tem um ótimo produto - mas está perdendo clientes por causa dessa lacuna - The Business & Financial Times",
-      "summary_pt": "Marca pessoal com Bernard Kelvin CLIVE: Você tem um ótimo produto – mas está perdendo clientes por causa dessa lacuna The Business & Financial Times",
+      "summary_pt": "Há um problema de conexão desconhecido entre o Cloudflare e o servidor web de origem. Como resultado, a página da web não pode ser exibida.",
       "angle_pt": "",
       "pme_pt": "PME: branding aplicado à realidade de quem tem pouco orçamento e precisa se diferenciar.",
       "roteiro_pt": "",
       "link_kelly": "",
       "authors": "",
       "score": 15,
-      "fetched_at": "2026-06-29T16:42:17.662270+00:00",
+      "fetched_at": "2026-06-29T20:16:17.574541+00:00",
       "id": "e5edf4e877af9ede"
     },
     {
@@ -315,7 +336,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 14,
-      "fetched_at": "2026-06-29T16:42:36.097459+00:00",
+      "fetched_at": "2026-06-29T20:16:38.160747+00:00",
       "id": "9bc7bdd8128ea47b"
     },
     {
@@ -336,7 +357,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 14,
-      "fetched_at": "2026-06-29T16:41:32.371758+00:00",
+      "fetched_at": "2026-06-29T20:15:27.151945+00:00",
       "id": "5c4e7efeeb357150"
     },
     {
@@ -357,7 +378,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 14,
-      "fetched_at": "2026-06-29T16:41:34.954797+00:00",
+      "fetched_at": "2026-06-29T20:15:30.358516+00:00",
       "id": "3644b1f06ded50cf"
     },
     {
@@ -378,7 +399,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 14,
-      "fetched_at": "2026-06-29T16:42:37.175081+00:00",
+      "fetched_at": "2026-06-29T20:16:39.351547+00:00",
       "id": "92ddc31e7a5b0216"
     },
     {
@@ -399,7 +420,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 13,
-      "fetched_at": "2026-06-29T16:41:46.162369+00:00",
+      "fetched_at": "2026-06-29T20:15:43.083002+00:00",
       "id": "19c0e5249bead410"
     },
     {
@@ -441,7 +462,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 13,
-      "fetched_at": "2026-06-29T16:41:44.106780+00:00",
+      "fetched_at": "2026-06-29T20:15:40.980162+00:00",
       "id": "a4b2949c282171ce"
     },
     {
@@ -483,8 +504,50 @@
       "link_kelly": "",
       "authors": "",
       "score": 13,
-      "fetched_at": "2026-06-29T16:42:11.188058+00:00",
+      "fetched_at": "2026-06-29T20:16:14.671914+00:00",
       "id": "1701b59ac81e3706"
+    },
+    {
+      "title": "Greece Chamber unveils new brand identity - Rochester Business Journal",
+      "link": "https://rbj.net/2026/06/29/greece-regional-chamber-unveils-new-brand-identity-board/",
+      "source": "Rochester Business Journal",
+      "lang": "en",
+      "region": "world",
+      "category": "posicionamento",
+      "kind": "noticia",
+      "published": "2026-06-29",
+      "raw_summary": "Greece Chamber unveils new brand identity Rochester Business Journal",
+      "title_pt": "Câmara da Grécia revela nova identidade de marca - Rochester Business Journal",
+      "summary_pt": "Câmara da Grécia revela nova identidade de marca Rochester Business Journal",
+      "angle_pt": "",
+      "pme_pt": "PME: como se posicionar e se diferenciar no seu mercado.",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 13,
+      "fetched_at": "2026-06-29T20:15:37.427288+00:00",
+      "id": "3b752c1716d6318e"
+    },
+    {
+      "title": "Travel insurance provider Faye unveils new brand identity - Travel Weekly",
+      "link": "https://www.travelweekly.com/Travel-News/Travel-Agent-Issues/Travel-insurance-provider-Faye-unveils-new-brand-identity",
+      "source": "Travel Weekly",
+      "lang": "en",
+      "region": "world",
+      "category": "posicionamento",
+      "kind": "noticia",
+      "published": "2026-06-29",
+      "raw_summary": "Travel insurance provider Faye unveils new brand identity Travel Weekly",
+      "title_pt": "Provedora de seguros de viagens Faye revela nova identidade de marca - Travel Weekly",
+      "summary_pt": "Provedora de seguros de viagens Faye revela nova identidade de marca Travel Weekly",
+      "angle_pt": "",
+      "pme_pt": "PME: como se posicionar e se diferenciar no seu mercado.",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 13,
+      "fetched_at": "2026-06-29T20:15:37.726086+00:00",
+      "id": "fb1ed0c3afd88d53"
     },
     {
       "title": "Para a Visa, a Copa do Mundo não é apenas vitrine de marca. Virou um produto - Exame",
@@ -525,7 +588,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 12,
-      "fetched_at": "2026-06-29T16:42:36.097638+00:00",
+      "fetched_at": "2026-06-29T20:16:38.160940+00:00",
       "id": "cb6b1df96f87a2fc"
     },
     {
@@ -546,7 +609,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 12,
-      "fetched_at": "2026-06-29T16:42:36.097888+00:00",
+      "fetched_at": "2026-06-29T20:16:38.161216+00:00",
       "id": "3c639ac49c01e82f"
     },
     {
@@ -609,7 +672,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 12,
-      "fetched_at": "2026-06-29T16:40:45.447974+00:00",
+      "fetched_at": "2026-06-29T20:14:37.105247+00:00",
       "id": "35150db56c021f58"
     },
     {
@@ -630,7 +693,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 12,
-      "fetched_at": "2026-06-29T16:40:53.808290+00:00",
+      "fetched_at": "2026-06-29T20:14:48.315843+00:00",
       "id": "a91c4f8db53d0528"
     },
     {
@@ -651,7 +714,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 12,
-      "fetched_at": "2026-06-29T16:42:36.096550+00:00",
+      "fetched_at": "2026-06-29T20:16:38.159793+00:00",
       "id": "39d6484664827097"
     },
     {
@@ -672,7 +735,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 12,
-      "fetched_at": "2026-06-29T16:42:36.096784+00:00",
+      "fetched_at": "2026-06-29T20:16:38.160037+00:00",
       "id": "bba4f3b084b4caa6"
     },
     {
@@ -693,7 +756,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 12,
-      "fetched_at": "2026-06-29T16:42:36.096879+00:00",
+      "fetched_at": "2026-06-29T20:16:38.160144+00:00",
       "id": "ceaf2c66e8c46081"
     },
     {
@@ -714,134 +777,71 @@
       "link_kelly": "",
       "authors": "",
       "score": 12,
-      "fetched_at": "2026-06-29T16:42:36.096967+00:00",
+      "fetched_at": "2026-06-29T20:16:38.160236+00:00",
       "id": "776f90c84b9c8b73"
     },
     {
-      "title": "Ferrari troca diretor comercial após estreia polêmica do elétrico Luce - Quatro Rodas",
-      "link": "https://quatrorodas.abril.com.br/noticias/ferrari-troca-diretor-comercial-apos-estreia-polemica-do-eletrico-luce/",
-      "source": "Quatro Rodas",
+      "title": "Minor Hotels assina o primeiro Colbert Collection na Ásia e um novo resort Avani em Koh Phangan - VOENEWS",
+      "link": "https://voenews.com.br/minor-hotels-assina-o-primeiro-colbert-collection-na-asia-e-um-novo-resort-avani-em-koh-phangan/",
+      "source": "VOENEWS",
       "lang": "pt",
       "region": "BR",
-      "category": "polemica",
+      "category": "posicionamento",
       "kind": "noticia",
       "published": "2026-06-29",
-      "raw_summary": "Ex-CEO da BMW Itália assume área de marketing e comercial em meio às críticas ao primeiro carro elétrico da marca italiana",
+      "raw_summary": "Dupla assinatura com o Rasa Group reforça a presença da Minor Hotels no sul da Tailândia nos segmentos de lifestyle premium e de marca soft A Minor Hotels, grupo hoteleiro internacional com mais de 640 propriedades em operação e em desenvolvimento em 63 países, anuncia a assinatura de dois novos resorts na Tailândia em colaboração",
       "title_pt": "",
-      "summary_pt": "Ex-CEO da BMW Itália assume área de marketing e comercial em meio às críticas ao primeiro carro elétrico da marca italiana",
+      "summary_pt": "Dupla assinatura com o Rasa Group reforça a presença da Minor Hotels no sul da Tailândia nos segmentos de lifestyle premium e de marca soft A Minor Hotels, grupo hoteleiro…",
       "angle_pt": "",
-      "pme_pt": "PME: o que aprender sobre reputação e gestão de crise da marca.",
+      "pme_pt": "PME: como se posicionar e se diferenciar no seu mercado.",
       "roteiro_pt": "",
       "link_kelly": "",
       "authors": "",
-      "score": 11,
-      "fetched_at": "2026-06-29T16:41:08.073523+00:00",
-      "id": "06464f5ce15a4bea"
+      "score": 12,
+      "fetched_at": "2026-06-29T20:14:35.596464+00:00",
+      "id": "102715d64908b97d"
     },
     {
-      "title": "Marketing Research Experts Urge Brands To Read The Market Using Consumer Intelligence, AI - Brand Communicator",
-      "link": "https://brandcom.ng/2026/06/29/marketing-research-experts-urge-brands-to-read-the-market-using-consumer-intelligence-ai/",
-      "source": "Brand Communicator",
-      "lang": "en",
-      "region": "world",
+      "title": "Nunca foi tão importante proteger sua marca no e-commerce - E-Commerce Brasil",
+      "link": "https://www.ecommercebrasil.com.br/noticias/nunca-foi-tao-importante-proteger-sua-marca-no-e-commerce",
+      "source": "E-Commerce Brasil",
+      "lang": "pt",
+      "region": "BR",
       "category": "pesquisa",
       "kind": "noticia",
       "published": "2026-06-29",
-      "raw_summary": "Researchers under the aegis of the Nigerian Marketing Research Association (NiMRA) have urged brands and other organisations to deepen their use of consumer intelligence and artificial intelligence as they seek to remain competitive in a fast-changing market. The association said businesses can no longer rely on guesswork as economic pressure continues to reshape consumer behaviour.",
-      "title_pt": "Especialistas em pesquisa de marketing incentivam as marcas a ler o mercado usando inteligência do consumidor e IA - comunicador de marca",
-      "summary_pt": "Investigadores sob a égide da Associação Nigeriana de Investigação de Marketing (NiMRA) instaram as marcas e outras organizações a aprofundarem a utilização da inteligência do…",
+      "raw_summary": "A Branddi oferece a solução integrada que o mercado precisa: Blindagem de Marca. Com monitoramento 24/7 e atuação ponta a ponta, protegemos contra:",
+      "title_pt": "",
+      "summary_pt": "A Branddi oferece a solução integrada que o mercado precisa: Blindagem de Marca. Com monitoramento 24/7 e atuação ponta a ponta, protegemos contra:",
       "angle_pt": "",
       "pme_pt": "PME: dados de consumo/tendências para decidir com base em evidência.",
       "roteiro_pt": "",
       "link_kelly": "",
       "authors": "",
-      "score": 11,
-      "fetched_at": "2026-06-29T16:42:32.590065+00:00",
-      "id": "eb377233ef11a8f8"
+      "score": 12,
+      "fetched_at": "2026-06-29T20:15:25.438549+00:00",
+      "id": "95fa962cd9695e1d"
     },
     {
-      "title": "Social first deixou de ser apenas canal e virou um modo de construção de marca - Propmark",
-      "link": "https://propmark.com.br/digital/social-first-deixou-de-ser-apenas-canal-e-virou-um-modo-de-construcao-de-marca/",
+      "title": "Pesquisa mostra que criatividade supera patrocínio oficial na relevância das marcas durante a Copa do Mundo",
+      "link": "https://propmark.com.br/mercado/pesquisa-mostra-que-criatividade-supera-patrocinio-oficial-na-relevancia-das-marcas-durante-a-copa-do-mundo/",
       "source": "Propmark",
       "lang": "pt",
       "region": "BR",
-      "category": "branding",
+      "category": "campanha",
       "kind": "noticia",
       "published": "2026-06-29",
-      "raw_summary": "Fernanda Grams e Gustavo Leite, da BETC Havas, observam que o futuro é a dissolução das fronteiras entre social, entretenimento e comércio",
+      "raw_summary": "35% dos brasileiros consideram as campanhas criativas como o principal elemento que legitima uma marca a participar da conversa sobre a Copa",
       "title_pt": "",
-      "summary_pt": "Fernanda Grams e Gustavo Leite, da BETC Havas, observam que o futuro é a dissolução das fronteiras entre social, entretenimento e comércio",
+      "summary_pt": "35% dos brasileiros consideram as campanhas criativas como o principal elemento que legitima uma marca a participar da conversa sobre a Copa",
       "angle_pt": "",
-      "pme_pt": "PME: lições de construção de marca aplicáveis a negócios pequenos e médios.",
+      "pme_pt": "PME: ideias de campanha que dá para adaptar com poucos recursos.",
       "roteiro_pt": "",
       "link_kelly": "",
       "authors": "",
-      "score": 10,
-      "fetched_at": "2026-06-29T16:40:54.331551+00:00",
-      "id": "80a3466d0aed6cea"
-    },
-    {
-      "title": "“Brasil Pode Voltar a Ser o Maior Mercado da Tupperware”, Diz CEO da Nova Dona da Marca - Forbes Brasil",
-      "link": "https://forbes.com.br/forbes-money/2026/06/brasil-pode-voltar-a-ser-o-maior-mercado-da-tupperware-diz-ceo-da-nova-dona-da-marca/",
-      "source": "Forbes Brasil",
-      "lang": "pt",
-      "region": "BR",
-      "category": "pesquisa",
-      "kind": "noticia",
-      "published": "2026-06-29",
-      "raw_summary": "Após crise global da marca, BeFra aposta no modelo que fez a Betterware crescer no México: venda direta, tecnologia, inovação e rede de consultores digitalizada",
-      "title_pt": "",
-      "summary_pt": "Após crise global da marca, BeFra aposta no modelo que fez a Betterware crescer no México: venda direta, tecnologia, inovação e rede de consultores digitalizada",
-      "angle_pt": "",
-      "pme_pt": "PME: dados de consumo/tendências para decidir com base em evidência.",
-      "roteiro_pt": "",
-      "link_kelly": "",
-      "authors": "",
-      "score": 10,
-      "fetched_at": "2026-06-29T16:41:32.728133+00:00",
-      "id": "26cd3555eebb105c"
-    },
-    {
-      "title": "A IA escolhe a resposta. Sua marca está nela? - Meio e Mensagem",
-      "link": "https://www.meioemensagem.com.br/patrocinado/np-digital/a-ia-escolhe-a-resposta-sua-marca-esta-nela",
-      "source": "Meio e Mensagem",
-      "lang": "pt",
-      "region": "BR",
-      "category": "pesquisa",
-      "kind": "noticia",
-      "published": "2026-06-29",
-      "raw_summary": "Um cliente abriu o ChatGPT, descreveu exatamente o produto que a sua empresa vende e pediu uma recomendação. A IA comparou opções, resumiu prós e contras",
-      "title_pt": "",
-      "summary_pt": "Um cliente abriu o ChatGPT, descreveu exatamente o produto que a sua empresa vende e pediu uma recomendação. A IA comparou opções, resumiu prós e contras",
-      "angle_pt": "",
-      "pme_pt": "PME: dados de consumo/tendências para decidir com base em evidência.",
-      "roteiro_pt": "",
-      "link_kelly": "",
-      "authors": "",
-      "score": 10,
-      "fetched_at": "2026-06-29T16:41:39.154056+00:00",
-      "id": "dd94c02f09aa5813"
-    },
-    {
-      "title": "Anuário Datafolha Top of Mind chega à 19ª edição com 25 categorias e disputas acirradas entre marcas - O POVO+",
-      "link": "https://mais.opovo.com.br/reportagens-especiais/top-of-mind/2026/06/29/anuario-datafolha-top-of-mind-chega-a-19-edicao-com-25-categorias-e-disputas-acirradas-entre-marcas.html",
-      "source": "O POVO+",
-      "lang": "pt",
-      "region": "BR",
-      "category": "pesquisa",
-      "kind": "noticia",
-      "published": "2026-06-29",
-      "raw_summary": "Pesquisa ouviu moradores de Fortaleza para identificar as marcas mais lembradas em segmentos do consumo e dos serviços",
-      "title_pt": "",
-      "summary_pt": "Pesquisa ouviu moradores de Fortaleza para identificar as marcas mais lembradas em segmentos do consumo e dos serviços",
-      "angle_pt": "",
-      "pme_pt": "PME: dados de consumo/tendências para decidir com base em evidência.",
-      "roteiro_pt": "",
-      "link_kelly": "",
-      "authors": "",
-      "score": 10,
-      "fetched_at": "2026-06-29T12:42:59.278959+00:00",
-      "id": "4a46fa3512a65334"
+      "score": 12,
+      "fetched_at": "2026-06-29T20:16:39.351167+00:00",
+      "id": "97ebb09181aa871f"
     }
   ]
 }
