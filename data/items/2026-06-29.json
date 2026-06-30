@@ -1,6 +1,6 @@
 {
   "date": "2026-06-29",
-  "generated_at": "2026-06-30T11:22:39.116453+00:00",
+  "generated_at": "2026-06-30T15:43:45.419020+00:00",
   "count": 40,
   "items": [
     {
@@ -21,7 +21,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 22,
-      "fetched_at": "2026-06-30T11:18:29.485748+00:00",
+      "fetched_at": "2026-06-30T15:39:45.071779+00:00",
       "id": "0fd5dc4c1c6caa92"
     },
     {
@@ -42,7 +42,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 22,
-      "fetched_at": "2026-06-30T11:18:28.010566+00:00",
+      "fetched_at": "2026-06-30T15:39:39.667904+00:00",
       "id": "5ab974a046db9f3a"
     },
     {
@@ -126,7 +126,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 18,
-      "fetched_at": "2026-06-30T11:18:30.841271+00:00",
+      "fetched_at": "2026-06-30T15:39:47.291621+00:00",
       "id": "0f9156abc6a01648"
     },
     {
@@ -147,7 +147,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 18,
-      "fetched_at": "2026-06-30T11:20:28.124430+00:00",
+      "fetched_at": "2026-06-30T15:42:10.181157+00:00",
       "id": "e57b477214b5c96c"
     },
     {
@@ -252,7 +252,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 17,
-      "fetched_at": "2026-06-30T11:19:25.366441+00:00",
+      "fetched_at": "2026-06-30T15:40:56.939557+00:00",
       "id": "f228864bd239057f"
     },
     {
@@ -273,7 +273,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 17,
-      "fetched_at": "2026-06-30T11:19:27.333990+00:00",
+      "fetched_at": "2026-06-30T15:40:59.414576+00:00",
       "id": "db991098317ab5c7"
     },
     {
@@ -294,7 +294,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 17,
-      "fetched_at": "2026-06-30T11:19:27.881631+00:00",
+      "fetched_at": "2026-06-30T15:41:00.176590+00:00",
       "id": "0c0e1f351982ff63"
     },
     {
@@ -315,7 +315,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 17,
-      "fetched_at": "2026-06-30T11:19:28.212584+00:00",
+      "fetched_at": "2026-06-30T15:41:00.942442+00:00",
       "id": "f410563267f3921c"
     },
     {
@@ -378,7 +378,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 16,
-      "fetched_at": "2026-06-30T11:18:30.399201+00:00",
+      "fetched_at": "2026-06-30T15:39:46.625764+00:00",
       "id": "b4e75d41718f8320"
     },
     {
@@ -399,8 +399,29 @@
       "link_kelly": "",
       "authors": "",
       "score": 15,
-      "fetched_at": "2026-06-29T20:16:17.574541+00:00",
+      "fetched_at": "2026-06-30T15:41:47.181868+00:00",
       "id": "e5edf4e877af9ede"
+    },
+    {
+      "title": "Good move by EACC to bar leaders from personal branding of public projects - Daily Nation",
+      "link": "https://nation.africa/kenya/blogs-opinion/blogs/good-move-by-eacc-to-bar-leaders-from-personal-branding-of-public-projects-5513014",
+      "source": "Daily Nation",
+      "lang": "en",
+      "region": "world",
+      "category": "pme",
+      "kind": "noticia",
+      "published": "2026-06-29",
+      "raw_summary": "Good move by EACC to bar leaders from personal branding of public projects Daily Nation",
+      "title_pt": "Boa jogada da EACC para impedir que líderes tenham marcas pessoais em projetos públicos - Daily Nation",
+      "summary_pt": "Boa jogada da EACC para impedir que líderes tenham marcas pessoais em projetos públicos Daily Nation",
+      "angle_pt": "",
+      "pme_pt": "PME: branding aplicado à realidade de quem tem pouco orçamento e precisa se diferenciar.",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 15,
+      "fetched_at": "2026-06-30T15:41:47.948713+00:00",
+      "id": "6e444b3f1b71a765"
     },
     {
       "title": "Senac EAD apresenta novo curso Técnico em Marketing - Jornal Integração",
@@ -462,7 +483,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 14,
-      "fetched_at": "2026-06-30T11:19:18.618245+00:00",
+      "fetched_at": "2026-06-30T15:40:55.362713+00:00",
       "id": "5c4e7efeeb357150"
     },
     {
@@ -630,7 +651,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 13,
-      "fetched_at": "2026-06-30T11:19:26.552807+00:00",
+      "fetched_at": "2026-06-30T15:40:59.110574+00:00",
       "id": "3b752c1716d6318e"
     },
     {
@@ -651,7 +672,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 13,
-      "fetched_at": "2026-06-30T11:19:27.647356+00:00",
+      "fetched_at": "2026-06-30T15:40:59.842893+00:00",
       "id": "fb1ed0c3afd88d53"
     },
     {
@@ -798,7 +819,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 12,
-      "fetched_at": "2026-06-30T11:18:38.327302+00:00",
+      "fetched_at": "2026-06-30T15:39:50.528265+00:00",
       "id": "a91c4f8db53d0528"
     },
     {
@@ -819,29 +840,8 @@
       "link_kelly": "",
       "authors": "",
       "score": 12,
-      "fetched_at": "2026-06-30T11:20:28.124359+00:00",
+      "fetched_at": "2026-06-30T15:42:10.181054+00:00",
       "id": "39d6484664827097"
-    },
-    {
-      "title": "Cannes Lions 2026: o que os vencedores de Glass revelam?",
-      "link": "https://www.meioemensagem.com.br/womentowatch/cannes-lions-2026-o-que-os-vencedores-de-glass-revelam",
-      "source": "Meio & Mensagem",
-      "lang": "pt",
-      "region": "BR",
-      "category": "campanha",
-      "kind": "noticia",
-      "published": "2026-06-29",
-      "raw_summary": "Por muito tempo, a categoria Glass: The Lion for Change foi marcada por campanhas que denunciavam desigualdades ou buscavam ampliar a representação de grupos historicamente minorizados. Os vencedores da edição de 2026, porém, parecem apontar para uma evolução da premiação. Uma mudança que tem sido desenhada ao longo dos 11 anos da categoria, dos quais os últimos dois foram de ampliação do reconhecimento para temas como raça, deficiência, sexualidade e desigualdade social, é que os... O post Cannes Lions 2026: o que os vencedores de Glass revelam? apareceu primeiro em Meio e Mensagem - Marketing, Mídia e Comunicação .",
-      "title_pt": "",
-      "summary_pt": "Por muito tempo, a categoria Glass: The Lion for Change foi marcada por campanhas que denunciavam desigualdades ou buscavam ampliar a representação de grupos historicamente minorizados.",
-      "angle_pt": "",
-      "pme_pt": "PME: ideias de campanha que dá para adaptar com poucos recursos.",
-      "roteiro_pt": "",
-      "link_kelly": "",
-      "authors": "",
-      "score": 12,
-      "fetched_at": "2026-06-30T11:20:28.124583+00:00",
-      "id": "bba4f3b084b4caa6"
     }
   ]
 }
