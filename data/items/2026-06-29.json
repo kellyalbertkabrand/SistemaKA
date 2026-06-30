@@ -1,6 +1,6 @@
 {
   "date": "2026-06-29",
-  "generated_at": "2026-06-30T15:43:45.419020+00:00",
+  "generated_at": "2026-06-30T20:20:14.079299+00:00",
   "count": 40,
   "items": [
     {
@@ -21,7 +21,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 22,
-      "fetched_at": "2026-06-30T15:39:45.071779+00:00",
+      "fetched_at": "2026-06-30T20:16:35.038426+00:00",
       "id": "0fd5dc4c1c6caa92"
     },
     {
@@ -42,7 +42,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 22,
-      "fetched_at": "2026-06-30T15:39:39.667904+00:00",
+      "fetched_at": "2026-06-30T20:16:31.224259+00:00",
       "id": "5ab974a046db9f3a"
     },
     {
@@ -107,27 +107,6 @@
       "score": 18,
       "fetched_at": "2026-06-29T12:44:04.467001+00:00",
       "id": "685e7da275eb8d11"
-    },
-    {
-      "title": "Como o Marketing de Experiência e o “Luxo Silencioso” estão ditando o Novo Comportamento do Consumidor - Acontecendo Aqui",
-      "link": "https://acontecendoaqui.com.br/marketing/como-o-marketing-de-experiencia-e-o-luxo-silencioso-estao-ditando-o-novo-comportamento-do-consumidor/",
-      "source": "Acontecendo Aqui",
-      "lang": "pt",
-      "region": "BR",
-      "category": "posicionamento",
-      "kind": "noticia",
-      "published": "2026-06-29",
-      "raw_summary": "Como o Marketing de Experiência e o “Luxo Silencioso” estão ditando o Novo Comportamento do Consumidor Acontecendo Aqui",
-      "title_pt": "",
-      "summary_pt": "Como o Marketing de Experiência e o “Luxo Silencioso” estão ditando o Novo Comportamento do Consumidor Acontecendo Aqui",
-      "angle_pt": "",
-      "pme_pt": "PME: como se posicionar e se diferenciar no seu mercado.",
-      "roteiro_pt": "",
-      "link_kelly": "",
-      "authors": "",
-      "score": 18,
-      "fetched_at": "2026-06-30T15:39:47.291621+00:00",
-      "id": "0f9156abc6a01648"
     },
     {
       "title": "Cannes Lions? Prazer, Live Marketing",
@@ -252,7 +231,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 17,
-      "fetched_at": "2026-06-30T15:40:56.939557+00:00",
+      "fetched_at": "2026-06-30T20:17:49.942253+00:00",
       "id": "f228864bd239057f"
     },
     {
@@ -273,7 +252,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 17,
-      "fetched_at": "2026-06-30T15:40:59.414576+00:00",
+      "fetched_at": "2026-06-30T20:17:55.000632+00:00",
       "id": "db991098317ab5c7"
     },
     {
@@ -378,7 +357,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 16,
-      "fetched_at": "2026-06-30T15:39:46.625764+00:00",
+      "fetched_at": "2026-06-30T20:16:39.383565+00:00",
       "id": "b4e75d41718f8320"
     },
     {
@@ -399,7 +378,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 15,
-      "fetched_at": "2026-06-30T15:41:47.181868+00:00",
+      "fetched_at": "2026-06-30T20:18:46.697297+00:00",
       "id": "e5edf4e877af9ede"
     },
     {
@@ -420,8 +399,29 @@
       "link_kelly": "",
       "authors": "",
       "score": 15,
-      "fetched_at": "2026-06-30T15:41:47.948713+00:00",
+      "fetched_at": "2026-06-30T20:18:47.283401+00:00",
       "id": "6e444b3f1b71a765"
+    },
+    {
+      "title": "Como o Marketing de Experiência e o “Luxo Silencioso” estão ditando o Novo Comportamento do Consumidor - Acontecendo Aqui",
+      "link": "https://acontecendoaqui.com.br/marketing/como-o-marketing-de-experiencia-e-o-luxo-silencioso-estao-ditando-o-novo-comportamento-do-consumidor/",
+      "source": "Acontecendo Aqui",
+      "lang": "pt",
+      "region": "BR",
+      "category": "pesquisa",
+      "kind": "noticia",
+      "published": "2026-06-29",
+      "raw_summary": "Como o Marketing de Experiência e o “Luxo Silencioso” estão ditando o Novo Comportamento do Consumidor Acontecendo Aqui",
+      "title_pt": "",
+      "summary_pt": "Como o Marketing de Experiência e o “Luxo Silencioso” estão ditando o Novo Comportamento do Consumidor Acontecendo Aqui",
+      "angle_pt": "",
+      "pme_pt": "PME: dados de consumo/tendências para decidir com base em evidência.",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 14,
+      "fetched_at": "2026-06-30T20:17:47.526429+00:00",
+      "id": "0f9156abc6a01648"
     },
     {
       "title": "Senac EAD apresenta novo curso Técnico em Marketing - Jornal Integração",
@@ -483,7 +483,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 14,
-      "fetched_at": "2026-06-30T15:40:55.362713+00:00",
+      "fetched_at": "2026-06-30T20:17:47.890456+00:00",
       "id": "5c4e7efeeb357150"
     },
     {
@@ -651,7 +651,7 @@
       "link_kelly": "",
       "authors": "",
       "score": 13,
-      "fetched_at": "2026-06-30T15:40:59.110574+00:00",
+      "fetched_at": "2026-06-30T20:17:52.372256+00:00",
       "id": "3b752c1716d6318e"
     },
     {
@@ -672,8 +672,29 @@
       "link_kelly": "",
       "authors": "",
       "score": 13,
-      "fetched_at": "2026-06-30T15:40:59.842893+00:00",
+      "fetched_at": "2026-06-30T20:17:55.357758+00:00",
       "id": "fb1ed0c3afd88d53"
+    },
+    {
+      "title": "Westeck Windows & Doors Unveils New Brand Identity - Window + Door magazine",
+      "link": "https://www.windowanddoor.com/news/westeck-windows-doors-unveils-new-brand-identity",
+      "source": "Window + Door magazine",
+      "lang": "en",
+      "region": "world",
+      "category": "posicionamento",
+      "kind": "noticia",
+      "published": "2026-06-29",
+      "raw_summary": "Westeck Windows & Doors, a British Columbia-based manufacturer of windows, entry doors and patio openings serving architects, builders and developers across Alberta and the Pacific Northwest, announced the launch of a refreshed brand identity and redesigned digital experience.",
+      "title_pt": "Westeck Windows & Doors revela nova identidade de marca - revista Window + Door",
+      "summary_pt": "Westeck Windows & Doors, fabricante de janelas, portas de entrada e aberturas de pátio com sede na Colúmbia Britânica que atende arquitetos, construtores e incorporadores em…",
+      "angle_pt": "",
+      "pme_pt": "PME: como se posicionar e se diferenciar no seu mercado.",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 13,
+      "fetched_at": "2026-06-30T20:17:53.874021+00:00",
+      "id": "88ed42e3dba24011"
     },
     {
       "title": "Para a Visa, a Copa do Mundo não é apenas vitrine de marca. Virou um produto - Exame",
@@ -819,29 +840,8 @@
       "link_kelly": "",
       "authors": "",
       "score": 12,
-      "fetched_at": "2026-06-30T15:39:50.528265+00:00",
+      "fetched_at": "2026-06-30T20:16:45.857694+00:00",
       "id": "a91c4f8db53d0528"
-    },
-    {
-      "title": "Papa Leão",
-      "link": "https://www.meioemensagem.com.br/cannes/diario-cannes/papa-leao",
-      "source": "Meio & Mensagem",
-      "lang": "pt",
-      "region": "BR",
-      "category": "campanha",
-      "kind": "noticia",
-      "published": "2026-06-29",
-      "raw_summary": "Depois de uma semana de sol na moleira, toneladas de inspiração e muito debate sobre inteligência artificial aplicada à nossa indústria, o festival mais legal sob a perspectiva de um criativo chegou ao fim. Pra não passar batido no tema que envolve agentes e prompts, destaco a genial campanha de Lego – “Everyone Wants a Piece” – na minha opinião, a melhor ideia de Copa do Mundo, não apenas por reunir as maiores estrelas do... O post Papa Leão apareceu primeiro em Meio e Mensagem - Marketing, Mídia e Comunicação .",
-      "title_pt": "",
-      "summary_pt": "Depois de uma semana de sol na moleira, toneladas de inspiração e muito debate sobre inteligência artificial aplicada à nossa indústria, o festival mais legal sob a perspectiva de um criativo chegou ao fim.",
-      "angle_pt": "",
-      "pme_pt": "PME: ideias de campanha que dá para adaptar com poucos recursos.",
-      "roteiro_pt": "",
-      "link_kelly": "",
-      "authors": "",
-      "score": 12,
-      "fetched_at": "2026-06-30T15:42:10.181054+00:00",
-      "id": "39d6484664827097"
     }
   ]
 }
