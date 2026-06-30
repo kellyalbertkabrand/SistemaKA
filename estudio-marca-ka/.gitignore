@@ -1,0 +1,25 @@
+# dependencies
+node_modules/
+
+# build
+dist/
+dist-ssr/
+
+# artefatos do tsc -b
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+
+# env (segredos — nunca versionar)
+.env
+.env.local
+.env.*.local
+
+# capacitor (geradas por `cap add`)
+/ios/
+/android/
+
+# logs / editor
+*.log
+.DS_Store
+.vscode/

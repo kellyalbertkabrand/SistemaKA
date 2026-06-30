@@ -1,0 +1,299 @@
+/* ============================================================
+   Estúdio de Marca — KA · tema base (derivado do protótipo HTML)
+   ============================================================ */
+:root {
+  --bg-1: #f8f7f2;
+  --bg-3: #e8e4db;
+  --bege: #e8dfce;
+  --essencia: #3d6b7e;
+  --cta-hover: #2e5566;
+  --dourado: #b89b6a;
+  --dourado-c: #d4c49e;
+  --dourado-soft: rgba(184, 155, 106, 0.12);
+  --marinho: #152535;
+  --preto: #0f1923;
+  --t-900: #0f1923;
+  --t-700: #2d2d2d;
+  --t-500: #6a6a6a;
+  --t-400: #8c8a82;
+  --t-inv: #f4f1eb;
+  --erro: #b23a3a;
+  --heading: 'Playfair Display', Georgia, serif;
+  --body: 'Montserrat', system-ui, sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--body);
+  background: var(--bg-1);
+  color: var(--t-900);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--essencia);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--heading);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.eyebrow {
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--dourado);
+}
+
+/* ---- Barra superior do app ---- */
+.app-top {
+  background: var(--marinho);
+  color: var(--t-inv);
+  padding: 0.9rem 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--dourado);
+}
+.app-top__brand {
+  font-family: var(--heading);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.app-top__brand span {
+  color: var(--dourado-c);
+  font-style: italic;
+}
+.app-top__tag {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--dourado-c);
+}
+.app-top__right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.app-top__user {
+  font-size: 0.72rem;
+  color: rgba(244, 241, 235, 0.78);
+}
+
+/* ---- Botões ---- */
+.btn {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  color: #fff;
+  background: var(--essencia);
+  border: none;
+  border-radius: 100px;
+  padding: 0.8rem 1.4rem;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.btn:hover {
+  background: var(--cta-hover);
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--dourado-c);
+  border: 1px solid rgba(212, 196, 158, 0.5);
+  padding: 0.45rem 1rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.btn--ghost:hover {
+  background: rgba(212, 196, 158, 0.12);
+}
+
+/* ---- Campos de formulário ---- */
+.field {
+  margin-bottom: 1.1rem;
+}
+.field label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--t-700);
+  margin-bottom: 0.45rem;
+}
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  font-family: var(--body);
+  font-size: 0.9rem;
+  color: var(--t-900);
+  background: var(--bg-1);
+  border: 1px solid rgba(15, 25, 35, 0.12);
+  border-radius: 8px;
+  padding: 0.7rem 0.8rem;
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--essencia);
+}
+
+/* ---- Login ---- */
+.auth-wrap {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: radial-gradient(circle at 20% 15%, rgba(184, 155, 106, 0.07), transparent 40%),
+    radial-gradient(circle at 85% 80%, rgba(61, 107, 126, 0.07), transparent 45%), var(--bg-1);
+}
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 16px 50px rgba(15, 25, 35, 0.1);
+  padding: 2.2rem 2rem;
+}
+.auth-card__brand {
+  font-family: var(--heading);
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 0.2rem;
+}
+.auth-card__brand span {
+  font-style: italic;
+  color: var(--dourado);
+}
+.auth-card__sub {
+  text-align: center;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--t-400);
+  margin-bottom: 1.8rem;
+}
+.auth-error {
+  background: rgba(178, 58, 58, 0.08);
+  color: var(--erro);
+  font-size: 0.78rem;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 1rem;
+}
+.auth-banner {
+  background: var(--dourado-soft);
+  color: var(--t-700);
+  font-size: 0.74rem;
+  border: 1px solid rgba(184, 155, 106, 0.3);
+  border-radius: 8px;
+  padding: 0.7rem 0.85rem;
+  margin-bottom: 1.2rem;
+  line-height: 1.5;
+}
+.auth-card .btn {
+  width: 100%;
+  margin-top: 0.3rem;
+}
+
+/* ---- Páginas internas ---- */
+.page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1.4rem 4rem;
+}
+.page__head {
+  margin-bottom: 1.6rem;
+}
+.page__head h1 {
+  font-size: 1.6rem;
+}
+.page__head p {
+  color: var(--t-500);
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+}
+.card {
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 14px;
+  padding: 1.4rem 1.5rem;
+  margin-bottom: 1.1rem;
+}
+.card h3 {
+  font-size: 1.05rem;
+  margin-bottom: 0.4rem;
+}
+.card p {
+  font-size: 0.85rem;
+  color: var(--t-500);
+}
+.muted-tag {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--dourado);
+  background: var(--dourado-soft);
+  border-radius: 100px;
+  padding: 0.25rem 0.7rem;
+  margin-top: 0.7rem;
+}
+
+/* ---- Estados utilitários ---- */
+.center-screen {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 2rem;
+  color: var(--t-500);
+}
+.spin {
+  width: 34px;
+  height: 34px;
+  border: 3px solid var(--dourado-soft);
+  border-top-color: var(--dourado);
+  border-radius: 50%;
+  animation: sp 1s linear infinite;
+  margin: 0 auto 1rem;
+}
+@keyframes sp {
+  to {
+    transform: rotate(360deg);
+  }
+}
