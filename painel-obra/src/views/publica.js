@@ -11,28 +11,41 @@ export async function renderPublica(container, slug) {
     return;
   }
 
-  const { data: obra, error } = await supabase
-    .from('obras')
-    .select('id, nome, cliente, orcamento, slug, publicado')
-    .eq('slug', slug)
-    .eq('publicado', true)
-    .maybeSingle();
+  let obra, etapas, lancamentos;
+  try {
+    const obraRes = await comTimeout(
+      supabase
+        .from('obras')
+        .select('id, nome, cliente, orcamento, slug, publicado')
+        .eq('slug', slug)
+        .eq('publicado', true)
+        .maybeSingle(),
+    );
 
-  if (error || !obra) {
+    if (obraRes.error) throw obraRes.error;
+    obra = obraRes.data;
+
+    if (!obra) {
+      container.innerHTML = telaSimples(
+        'Obra não encontrada',
+        'Este link não está disponível. Confira com o seu arquiteto.'
+      );
+      return;
+    }
+
+    const [etapasRes, lancRes] = await Promise.all([
+      comTimeout(supabase.from('etapas').select('*').eq('obra_id', obra.id).order('created_at')),
+      comTimeout(supabase.from('lancamentos').select('*').eq('obra_id', obra.id).order('data', { ascending: false })),
+    ]);
+    etapas = etapasRes.data || [];
+    lancamentos = lancRes.data || [];
+  } catch (e) {
     container.innerHTML = telaSimples(
-      'Obra não encontrada',
-      'Este link não está disponível. Confira com o seu arquiteto.'
+      'Não foi possível carregar',
+      'Detalhe: ' + (e?.message || e)
     );
     return;
   }
-
-  const [etapasRes, lancRes] = await Promise.all([
-    supabase.from('etapas').select('*').eq('obra_id', obra.id).order('created_at'),
-    supabase.from('lancamentos').select('*').eq('obra_id', obra.id).order('data', { ascending: false }),
-  ]);
-
-  const etapas = etapasRes.data || [];
-  const lancamentos = lancRes.data || [];
 
   const executado = lancamentos.reduce((t, l) => t + Number(l.valor || 0), 0);
   const saldo = Number(obra.orcamento || 0) - executado;
@@ -121,6 +134,17 @@ function barraEtapa(nome, orcado, realizado) {
 
 function num(rotulo, valor, cls = '') {
   return `<div class="pub-num"><small>${rotulo}</small><strong class="${cls}">${valor}</strong></div>`;
+}
+
+// Corre a consulta do Supabase contra um tempo-limite, para a página nunca
+// ficar presa em "Carregando…". Se estourar, cai no catch e mostra a mensagem.
+function comTimeout(promise, ms = 12000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('tempo esgotado ao falar com o banco')), ms)
+    ),
+  ]);
 }
 
 function telaSimples(titulo, texto) {
