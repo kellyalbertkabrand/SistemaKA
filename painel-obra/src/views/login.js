@@ -1,5 +1,5 @@
 import { supabase } from '../supabaseClient.js';
-import { logoPlaceholder } from '../lib/marca.js';
+import { caixaLogo } from '../lib/marca.js';
 
 // Tela de acesso da arquiteta. O usuário é criado no Supabase
 // (Authentication -> Users) — este piloto não tem cadastro aberto.
@@ -7,8 +7,7 @@ export function renderLogin(container) {
   container.innerHTML = `
     <div class="auth-wrap">
       <div class="card auth-card">
-        <div class="auth-marca">${logoPlaceholder('logo-ph-login', 'Logotipo')}</div>
-        <p class="auth-escritorio">Schramm Arquitetura e Engenharia</p>
+        <div class="auth-marca">${caixaLogo('caixa-logo-login')}</div>
         <h1 class="logo">Painel de Controle<br>de Obras</h1>
         <p class="muted">Acesso Exclusivo do Escritório</p>
         <form id="form-login" novalidate>

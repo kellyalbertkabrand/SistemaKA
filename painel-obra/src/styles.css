@@ -97,6 +97,17 @@ code { background: #efe9df; padding: 1px 5px; border-radius: 6px; font-size: .85
 .logo-ph-sm { width: 54px; height: 54px; font-size: .46rem; padding: .25rem; }
 .logo-ph-login { width: 100%; max-width: 240px; height: 72px; font-size: .62rem; margin: 0 auto .3rem; }
 
+/* Caixa cinza claro com "LOGOTIPO" + nome do escritório (login e cliente) */
+.caixa-logo {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4rem;
+  background: #f3f2f0; border: 1px solid #e3e1dd; border-radius: 10px;
+  padding: 1.1rem 1.4rem; text-align: center;
+}
+.caixa-logo-marca { font-family: var(--fonte-ui); font-weight: 700; letter-spacing: .2em; font-size: .78rem; color: var(--muted); }
+.caixa-logo-nome { font-family: var(--fonte-ui); font-weight: 600; letter-spacing: .1em; font-size: .6rem; color: var(--tinta); }
+.caixa-logo-login { width: 100%; max-width: 270px; margin: 0 auto; }
+.caixa-logo-cliente { min-width: 260px; }
+
 .marca { display: inline-flex; align-items: center; gap: .7rem; }
 .marca-txt { display: flex; flex-direction: column; text-align: left; }
 .marca-nome { font-family: var(--fonte-ui); font-weight: 700; letter-spacing: .26em; font-size: 1.15rem; color: var(--tinta); line-height: 1; }
@@ -111,10 +122,7 @@ code { background: #efe9df; padding: 1px 5px; border-radius: 6px; font-size: .85
 .logo { font-family: var(--fonte); }
 /* Login mais harmônico: tamanhos próximos entre si */
 .auth-card .logo { font-size: 1.4rem; font-weight: 600; line-height: 1.25; margin: .5rem 0 .2rem; text-transform: uppercase; letter-spacing: .02em; }
-.auth-escritorio { font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin: .5rem 0 .2rem; }
 .auth-card > .muted { font-size: .9rem; }
-/* Espaço do logo: fundo cinza claro, borda e texto neutros */
-.auth-card .logo-ph-login { height: 64px; font-size: .66rem; letter-spacing: .1em; background: #eeedeb; border-color: #d8d5d0; color: #8a8278; }
 /* Botão ENTRAR: caixa alta, centralizado, oval */
 .auth-card form .btn-primary { justify-content: center; text-transform: uppercase; letter-spacing: .12em; font-weight: 600; border-radius: 999px; padding: .75rem 1rem; }
 .auth-card form { display: grid; gap: .8rem; margin-top: 1.3rem; text-align: left; }
@@ -197,16 +205,15 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: -1
    Página pública do cliente
    ========================================================================= */
 .publica { max-width: 760px; margin: 0 auto; padding: 0 1.1rem 4rem; }
-/* Cabeçalho do cliente com tom próprio, para destacar */
-.pub-hero {
-  text-align: center;
-  padding: 2.8rem 1.5rem 2.2rem;
-  margin-top: 1.2rem;
+/* Cabeçalho do logo: banda própria, separada do restante dos textos */
+.pub-logo-header {
+  text-align: center; padding: 1.8rem 1.2rem; margin-top: 1.2rem;
   background: linear-gradient(180deg, #f7ebe3, #f4f1ea);
-  border: 1px solid #edd9cc;
-  border-top: 4px solid var(--acento);
+  border: 1px solid #edd9cc; border-top: 4px solid var(--acento);
   border-radius: var(--raio);
 }
+/* Bloco com nome da obra e cliente, à parte do cabeçalho do logo */
+.pub-hero { text-align: center; padding: 2rem 1rem 1.2rem; }
 .pub-marca { text-transform: uppercase; letter-spacing: .18em; font-size: .72rem; color: var(--acento); margin: 0 0 .5rem; }
 .pub-hero h1 { font-size: 2.1rem; }
 .pub-cliente { font-size: 1rem; color: var(--muted); margin: .3rem 0 0; }

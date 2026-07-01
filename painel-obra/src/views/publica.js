@@ -1,7 +1,7 @@
 import { supabase } from '../supabaseClient.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
-import { marcaSchramm } from '../lib/marca.js';
+import { caixaLogo } from '../lib/marca.js';
 
 // Página pública do cliente (só leitura), acessada por /obra/{slug}.
 // Mostra o andamento da obra com visual limpo — e NADA interno.
@@ -68,12 +68,15 @@ export async function renderPublica(container, slug) {
 
   container.innerHTML = `
     <div class="publica">
-      <header class="pub-hero">
-        ${marcaSchramm()}
+      <header class="pub-logo-header">
+        ${caixaLogo('caixa-logo-cliente')}
+      </header>
+
+      <section class="pub-hero">
         <p class="pub-marca">Acompanhamento de obra</p>
         <h1>${esc(obra.nome)}</h1>
         ${obra.cliente ? `<p class="pub-cliente">Cliente: ${esc(obra.cliente)}</p>` : ''}
-      </header>
+      </section>
 
       <section class="pub-resumo">
         <div class="anel" style="--p:${Math.min(andamento, 100)}">
