@@ -1,6 +1,7 @@
 import { supabase } from '../supabaseClient.js';
 import { navegar } from '../main.js';
 import { moeda, pct, slugify, esc } from '../lib/format.js';
+import { emblemaSchramm } from '../lib/marca.js';
 
 // Lista de obras + cadastro de nova obra (com etapas opcionais).
 export async function renderObras(container) {
@@ -38,9 +39,12 @@ export async function renderObras(container) {
   container.innerHTML = `
     <div class="app">
       <header class="topo">
-        <div>
-          <h1 class="logo">Painel de Obra</h1>
-          <p class="muted">Suas obras em acompanhamento</p>
+        <div class="topo-marca">
+          ${emblemaSchramm('emblema-mini')}
+          <div>
+            <h1 class="logo">Painel de Obra</h1>
+            <p class="muted">Schramm · Arquitetura e Engenharia</p>
+          </div>
         </div>
         <button class="btn btn-ghost" id="sair">Sair</button>
       </header>

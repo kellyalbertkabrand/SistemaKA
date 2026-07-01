@@ -9,8 +9,8 @@
   --tinta: #2a2622;
   --muted: #8a8278;
   --linha: #e7e1d6;
-  --acento: #c0623f;       /* terracota */
-  --acento-escuro: #a14e30;
+  --acento: #c65a2e;       /* terracota Schramm */
+  --acento-escuro: #a8481f;
   --ok: #3c7a52;
   --pend: #c08a2f;
   --neg: #c0392b;
@@ -84,6 +84,19 @@ code { background: #efe9df; padding: 1px 5px; border-radius: 6px; font-size: .85
 .app { max-width: 920px; margin: 0 auto; padding: 1.5rem 1.1rem 4rem; }
 .row-between { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
 .row-end { display: flex; justify-content: flex-end; align-items: center; gap: .6rem; }
+
+/* ---- Marca Schramm ---- */
+.emblema { color: var(--acento); display: block; }
+.marca { display: inline-flex; align-items: center; gap: .7rem; }
+.marca-emblema { width: 46px; height: 46px; }
+.marca-txt { display: flex; flex-direction: column; text-align: left; }
+.marca-nome { font-family: var(--fonte-ui); font-weight: 700; letter-spacing: .26em; font-size: 1.15rem; color: var(--tinta); line-height: 1; }
+.marca-sub { font-family: var(--fonte-ui); text-transform: uppercase; letter-spacing: .15em; font-size: .58rem; color: var(--muted); margin-top: .35rem; }
+.pub-hero .marca { justify-content: center; margin-bottom: 1.4rem; }
+.topo-marca { display: flex; align-items: center; gap: .7rem; }
+.emblema-mini { width: 34px; height: 34px; }
+.auth-marca { display: flex; justify-content: center; margin-bottom: .5rem; }
+.emblema-login { width: 46px; height: 46px; }
 
 /* ---- Login / telas centrais ---- */
 .auth-wrap { min-height: 100vh; display: grid; place-items: center; padding: 1.2rem; }
