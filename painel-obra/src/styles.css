@@ -86,17 +86,23 @@ code { background: #efe9df; padding: 1px 5px; border-radius: 6px; font-size: .85
 .row-end { display: flex; justify-content: flex-end; align-items: center; gap: .6rem; }
 
 /* ---- Marca Schramm ---- */
-.emblema { color: var(--acento); display: block; }
+/* Placeholder do logo (até chegar o arquivo oficial do escritório) */
+.logo-ph {
+  display: inline-flex; align-items: center; justify-content: center; text-align: center;
+  border: 1.5px dashed var(--acento); border-radius: 8px; color: var(--acento);
+  font-family: var(--fonte-ui); font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; line-height: 1.15; padding: .35rem .45rem; flex: none;
+}
+.logo-ph-lg { width: 96px; height: 96px; font-size: .62rem; }
+.logo-ph-sm { width: 54px; height: 54px; font-size: .46rem; padding: .25rem; }
+
 .marca { display: inline-flex; align-items: center; gap: .7rem; }
-.marca-emblema { width: 46px; height: 46px; }
 .marca-txt { display: flex; flex-direction: column; text-align: left; }
 .marca-nome { font-family: var(--fonte-ui); font-weight: 700; letter-spacing: .26em; font-size: 1.15rem; color: var(--tinta); line-height: 1; }
 .marca-sub { font-family: var(--fonte-ui); text-transform: uppercase; letter-spacing: .15em; font-size: .58rem; color: var(--muted); margin-top: .35rem; }
 .pub-hero .marca { justify-content: center; margin-bottom: 1.4rem; }
 .topo-marca { display: flex; align-items: center; gap: .7rem; }
-.emblema-mini { width: 34px; height: 34px; }
 .auth-marca { display: flex; justify-content: center; margin-bottom: .5rem; }
-.emblema-login { width: 46px; height: 46px; }
 
 /* ---- Login / telas centrais ---- */
 .auth-wrap { min-height: 100vh; display: grid; place-items: center; padding: 1.2rem; }
@@ -182,7 +188,16 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: -1
    Página pública do cliente
    ========================================================================= */
 .publica { max-width: 760px; margin: 0 auto; padding: 0 1.1rem 4rem; }
-.pub-hero { text-align: center; padding: 3rem 1rem 2rem; }
+/* Cabeçalho do cliente com tom próprio, para destacar */
+.pub-hero {
+  text-align: center;
+  padding: 2.8rem 1.5rem 2.2rem;
+  margin-top: 1.2rem;
+  background: linear-gradient(180deg, #f7ebe3, #f4f1ea);
+  border: 1px solid #edd9cc;
+  border-top: 4px solid var(--acento);
+  border-radius: var(--raio);
+}
 .pub-marca { text-transform: uppercase; letter-spacing: .18em; font-size: .72rem; color: var(--acento); margin: 0 0 .5rem; }
 .pub-hero h1 { font-size: 2.1rem; }
 .pub-cliente { font-size: 1rem; color: var(--muted); margin: .3rem 0 0; }
@@ -212,11 +227,6 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: -1
 .pub-num strong.val-ok { color: var(--ok); }     /* pago = verde */
 .pub-num strong.val-pend { color: var(--neg); }   /* pendente = vermelho */
 .pub-nota { font-size: .74rem; color: var(--muted); margin: .2rem 0 0; }
-
-/* Croqui discreto (marca d'água) — fundo transparente, sobre a própria página */
-.pub-croqui { padding: .4rem 0 0; margin-top: 1rem; text-align: center; }
-.pub-croqui .croqui { width: 100%; max-width: 340px; height: auto; color: var(--acento); opacity: .38; }
-.pub-croqui-legenda { display: block; margin-top: .1rem; font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); opacity: .75; }
 
 .pub-bloco { margin-top: 1.8rem; }
 .pub-bloco h2 { margin-bottom: .9rem; }

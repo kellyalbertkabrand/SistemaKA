@@ -76,11 +76,6 @@ export async function renderPublica(container, slug) {
         <p class="pub-tagline">Acompanhe sua obra com clareza, do alicerce ao acabamento.</p>
       </header>
 
-      <section class="pub-croqui">
-        ${croquiCasa()}
-        <span class="pub-croqui-legenda">Projeto da sua obra</span>
-      </section>
-
       <section class="pub-resumo">
         <div class="anel" style="--p:${Math.min(andamento, 100)}">
           <div class="anel-centro">
@@ -146,33 +141,6 @@ function listaTimeline(lancamentos) {
         </div>
       </li>`).join('')}
   </ul>`;
-}
-
-// Croqui (desenho de linha) da casa — elevação frontal, no tom terracota.
-// Serve como "projeto da obra" enquanto não houver um croqui real por obra.
-function croquiCasa() {
-  return `<svg class="croqui" viewBox="0 0 420 210" fill="none"
-    stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
-    stroke-linejoin="round" aria-hidden="true">
-    <line x1="14" y1="186" x2="406" y2="186"/>
-    <circle cx="58" cy="52" r="13"/>
-    <rect x="92" y="92" width="168" height="94"/>
-    <path d="M78 94 L176 46 L274 94 Z"/>
-    <path d="M224 62 L224 40 L240 40 L240 76"/>
-    <rect x="258" y="122" width="74" height="64"/>
-    <path d="M250 124 L295 96 L340 124"/>
-    <rect x="150" y="138" width="32" height="48"/>
-    <circle cx="175" cy="162" r="1.6"/>
-    <rect x="110" y="112" width="28" height="28"/>
-    <line x1="124" y1="112" x2="124" y2="140"/>
-    <line x1="110" y1="126" x2="138" y2="126"/>
-    <rect x="204" y="112" width="28" height="28"/>
-    <line x1="218" y1="112" x2="218" y2="140"/>
-    <line x1="204" y1="126" x2="232" y2="126"/>
-    <rect x="278" y="140" width="24" height="24"/>
-    <line x1="366" y1="186" x2="366" y2="146"/>
-    <circle cx="366" cy="128" r="22"/>
-  </svg>`;
 }
 
 function barraEtapa(nome, orcado, realizado) {

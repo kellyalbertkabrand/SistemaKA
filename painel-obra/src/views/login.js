@@ -1,5 +1,5 @@
 import { supabase } from '../supabaseClient.js';
-import { emblemaSchramm } from '../lib/marca.js';
+import { logoPlaceholder } from '../lib/marca.js';
 
 // Tela de acesso da arquiteta. O usuário é criado no Supabase
 // (Authentication -> Users) — este piloto não tem cadastro aberto.
@@ -7,7 +7,7 @@ export function renderLogin(container) {
   container.innerHTML = `
     <div class="auth-wrap">
       <div class="card auth-card">
-        <div class="auth-marca">${emblemaSchramm('emblema-login')}</div>
+        <div class="auth-marca">${logoPlaceholder('logo-ph-sm')}</div>
         <h1 class="logo">Painel de Obra</h1>
         <p class="muted">Schramm · Arquitetura e Engenharia</p>
         <form id="form-login" novalidate>
