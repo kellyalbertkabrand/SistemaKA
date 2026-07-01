@@ -213,12 +213,10 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: -1
 .pub-num strong.val-pend { color: var(--neg); }   /* pendente = vermelho */
 .pub-nota { font-size: .74rem; color: var(--muted); margin: .2rem 0 0; }
 
-.pub-croqui {
-  background: var(--card); border: 1px solid var(--linha); border-radius: var(--raio);
-  box-shadow: var(--sombra); padding: 1.6rem 1.2rem 1.2rem; margin-top: 1.4rem; text-align: center;
-}
-.pub-croqui .croqui { width: 100%; max-width: 420px; height: auto; color: var(--acento); }
-.pub-croqui-legenda { display: block; margin-top: .5rem; font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+/* Croqui discreto (marca d'água) — fundo transparente, sobre a própria página */
+.pub-croqui { padding: .4rem 0 0; margin-top: 1rem; text-align: center; }
+.pub-croqui .croqui { width: 100%; max-width: 340px; height: auto; color: var(--acento); opacity: .38; }
+.pub-croqui-legenda { display: block; margin-top: .1rem; font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); opacity: .75; }
 
 .pub-bloco { margin-top: 1.8rem; }
 .pub-bloco h2 { margin-bottom: .9rem; }
