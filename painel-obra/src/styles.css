@@ -247,7 +247,10 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: -1
 .tl-base { display: flex; justify-content: space-between; gap: 1rem; font-size: .85rem; margin-top: .15rem; }
 .tl-status { display: inline-flex; align-items: center; gap: .5rem; white-space: nowrap; color: var(--muted); }
 
-.pub-rodape { text-align: center; margin-top: 2.5rem; }
+.pub-rodape { text-align: center; margin-top: 2.5rem; padding-top: 1.4rem; border-top: 1px solid var(--linha); }
+.pub-rodape-nome { font-size: .74rem; font-weight: 700; letter-spacing: .14em; color: var(--tinta); margin: 0 0 .3rem; }
+.pub-rodape .muted { font-size: .76rem; margin: .15rem 0 0; }
+.pub-rodape-nota { margin-top: .7rem !important; opacity: .8; }
 .pub-vazio { text-align: center; padding: 5rem 1rem; }
 
 /* ---- Responsivo ---- */

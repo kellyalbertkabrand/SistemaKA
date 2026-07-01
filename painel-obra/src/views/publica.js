@@ -110,7 +110,9 @@ export async function renderPublica(container, slug) {
       </section>
 
       <footer class="pub-rodape">
-        <p class="muted">Atualizado em tempo real pelo seu arquiteto.</p>
+        <p class="pub-rodape-nome">SCHRAMM ARQUITETURA E ENGENHARIA</p>
+        <p class="muted">Rua Dr. Luiz Bastos do Prado, 2093 - 504 - Centro, Gravataí - RS, 94010-021</p>
+        <p class="muted pub-rodape-nota">Atualizado em tempo real pelo escritório.</p>
       </footer>
     </div>`;
 
