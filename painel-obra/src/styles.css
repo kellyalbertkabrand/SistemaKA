@@ -95,6 +95,7 @@ code { background: #efe9df; padding: 1px 5px; border-radius: 6px; font-size: .85
 }
 .logo-ph-lg { width: 96px; height: 96px; font-size: .62rem; }
 .logo-ph-sm { width: 54px; height: 54px; font-size: .46rem; padding: .25rem; }
+.logo-ph-login { width: 100%; max-width: 240px; height: 72px; font-size: .62rem; margin: 0 auto .3rem; }
 
 .marca { display: inline-flex; align-items: center; gap: .7rem; }
 .marca-txt { display: flex; flex-direction: column; text-align: left; }

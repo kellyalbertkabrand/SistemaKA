@@ -3,8 +3,8 @@
 // claro ("LOGO DO ESCRITÓRIO"). Quando o logo oficial chegar (PNG/SVG),
 // basta trocar logoPlaceholder por uma <img> aqui.
 
-export function logoPlaceholder(classe = '') {
-  return `<div class="logo-ph ${classe}">LOGO DO ESCRITÓRIO</div>`;
+export function logoPlaceholder(classe = '', texto = 'LOGO DO ESCRITÓRIO') {
+  return `<div class="logo-ph ${classe}">${texto}</div>`;
 }
 
 // Lockup do cabeçalho do cliente: placeholder do logo + nome + assinatura.
