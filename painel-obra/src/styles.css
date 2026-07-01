@@ -103,8 +103,8 @@ code { background: #efe9df; padding: 1px 5px; border-radius: 6px; font-size: .85
   background: #f3f2f0; border: 1px solid #e3e1dd; border-radius: 10px;
   padding: 1.1rem 1.4rem; text-align: center;
 }
-.caixa-logo-marca { font-family: var(--fonte-ui); font-weight: 700; letter-spacing: .2em; font-size: .78rem; color: var(--muted); }
-.caixa-logo-nome { font-family: var(--fonte-ui); font-weight: 600; letter-spacing: .1em; font-size: .6rem; color: var(--tinta); }
+.caixa-logo-marca,
+.caixa-logo-nome { font-family: var(--fonte-ui); font-weight: 500; letter-spacing: .14em; font-size: .64rem; color: #c7c4bf; }
 .caixa-logo-login { width: 100%; max-width: 270px; margin: 0 auto; }
 .caixa-logo-cliente { min-width: 260px; }
 
