@@ -1,7 +1,7 @@
 import { supabase } from '../supabaseClient.js';
 import { navegar } from '../main.js';
 import { moeda, dataBR, pct, esc } from '../lib/format.js';
-import { reconhecimentoDisponivel, ouvir } from '../lib/voice.js';
+import { reconhecimentoDisponivel, ouvir, parar } from '../lib/voice.js';
 
 // Detalhe interno de uma obra: KPIs, lançamento por voz/IA, etapas e lançamentos.
 export async function renderObra(container, obraId) {
@@ -249,27 +249,41 @@ function configurarLancamento(container, obra, etapas, recarregar) {
     });
   }
 
-  // Botão de microfone
+  // Botão de microfone — grava continuamente até clicar em "Parar".
   let rec = null;
+
+  const resetMic = () => {
+    rec = null;
+    btnMic.classList.remove('gravando');
+    btnMic.textContent = '🎤 Falar';
+  };
+
   btnMic.addEventListener('click', () => {
-    if (rec) { rec.stop(); rec = null; return; }
-    setStatus('Ouvindo… fale o lançamento.');
+    // Já está gravando -> encerra e manda pra IA.
+    if (rec) {
+      setStatus('Processando o que você falou…');
+      parar(rec);
+      return;
+    }
+    // Começa a gravar.
+    setStatus('Ouvindo… fale à vontade e clique em "Parar" quando terminar.');
     btnMic.classList.add('gravando');
-    btnMic.textContent = '● Ouvindo';
+    btnMic.textContent = '■ Parar';
     rec = ouvir({
-      onResultado: (texto) => {
-        inputTexto.value = texto;
-        interpretar(texto);
+      onParcial: (texto) => {
+        inputTexto.value = texto; // mostra o texto aparecendo ao vivo
       },
       onErro: (err) => {
-        setStatus(err === 'not-allowed'
+        resetMic();
+        setStatus(err === 'not-allowed' || err === 'service-not-allowed'
           ? 'Permita o microfone no navegador para usar a voz.'
           : 'Não foi possível ouvir. Use o campo de texto.', 'erro');
       },
-      onFim: () => {
-        rec = null;
-        btnMic.classList.remove('gravando');
-        btnMic.textContent = '🎤 Falar';
+      onFim: (textoFinal) => {
+        resetMic();
+        const texto = (textoFinal || inputTexto.value || '').trim();
+        if (texto) interpretar(texto);
+        else setStatus('Não captei nada. Tente de novo ou digite.', 'erro');
       },
     });
   });
