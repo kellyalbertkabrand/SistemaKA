@@ -72,8 +72,7 @@ export async function renderPublica(container, slug) {
         ${marcaSchramm()}
         <p class="pub-marca">Acompanhamento de obra</p>
         <h1>${esc(obra.nome)}</h1>
-        ${obra.cliente ? `<p class="pub-cliente">${esc(obra.cliente)}</p>` : ''}
-        <p class="pub-tagline">Acompanhe sua obra com clareza, do alicerce ao acabamento.</p>
+        ${obra.cliente ? `<p class="pub-cliente">Cliente: ${esc(obra.cliente)}</p>` : ''}
       </header>
 
       <section class="pub-resumo">

@@ -93,7 +93,7 @@ code { background: #efe9df; padding: 1px 5px; border-radius: 6px; font-size: .85
   font-family: var(--fonte-ui); font-weight: 600; letter-spacing: .06em;
   text-transform: uppercase; line-height: 1.15; padding: .35rem .45rem; flex: none;
 }
-.logo-ph-lg { width: 96px; height: 96px; font-size: .62rem; }
+.logo-ph-lg { width: 104px; height: 104px; font-size: .62rem; background: #fff; box-shadow: var(--sombra); }
 .logo-ph-sm { width: 54px; height: 54px; font-size: .46rem; padding: .25rem; }
 .logo-ph-login { width: 100%; max-width: 240px; height: 72px; font-size: .62rem; margin: 0 auto .3rem; }
 
