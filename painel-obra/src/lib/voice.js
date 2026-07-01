@@ -1,6 +1,6 @@
 // Reconhecimento de voz pelo navegador (Web Speech API), em pt-BR.
-// Modo contínuo e ACUMULATIVO: fica ouvindo e vai juntando tudo que a
-// arquiteta fala (sem apagar o anterior nas pausas), até ela clicar em "Parar".
+// Modo contínuo e ACUMULATIVO: junta cada frase confirmada assim que ela
+// fecha e nunca descarta o que já foi dito — nem nas pausas/reinícios.
 // Funciona bem no Chrome (desktop e Android). Onde não houver suporte,
 // o painel oferece o campo de texto como alternativa.
 
@@ -8,8 +8,12 @@ export function reconhecimentoDisponivel() {
   return Boolean(window.SpeechRecognition || window.webkitSpeechRecognition);
 }
 
+function juntar(a, b) {
+  return `${a} ${b}`.replace(/\s+/g, ' ').trim();
+}
+
 // Inicia a escuta contínua.
-//   onParcial(texto)  -> texto acumulado ao vivo (o que ela já falou até agora)
+//   onParcial(texto)  -> texto acumulado ao vivo
 //   onFim(textoFinal) -> chamado quando encerra (clique em "Parar")
 //   onErro(codigo)
 // Retorna o objeto de reconhecimento (use parar(rec) para encerrar).
@@ -21,44 +25,43 @@ export function ouvir({ onParcial, onFim, onErro } = {}) {
   }
   const rec = new SR();
   rec.lang = 'pt-BR';
-  rec.continuous = true;       // não para na primeira pausa
-  rec.interimResults = true;   // mostra o texto aparecendo enquanto fala
+  rec.continuous = true;
+  rec.interimResults = true;
 
-  // "confirmado" guarda tudo o que já foi capturado em pausas/reinícios
-  // anteriores. "sessao" é o que está sendo dito agora nesta rodada.
-  let confirmado = '';
-  let sessao = '';
+  let acumulado = ''; // tudo que já foi confirmado (persiste entre reinícios)
+  let provisorio = ''; // o que está sendo dito agora (ainda não confirmado)
 
-  const textoAtual = () => (confirmado + ' ' + sessao).replace(/\s+/g, ' ').trim();
+  const mostrar = () => onParcial && onParcial(juntar(acumulado, provisorio));
 
   rec.onresult = (e) => {
-    // Reconstrói o texto da sessão atual inteiro (final + provisório),
-    // então nada do que ela já falou nesta rodada se perde.
-    let s = '';
-    for (let i = 0; i < e.results.length; i++) {
-      s += e.results[i][0].transcript;
-      if (e.results[i].isFinal) s += ' ';
+    provisorio = '';
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const trecho = e.results[i][0].transcript;
+      if (e.results[i].isFinal) {
+        acumulado = juntar(acumulado, trecho); // confirma e nunca mais apaga
+      } else {
+        provisorio += trecho;
+      }
     }
-    sessao = s;
-    onParcial && onParcial(textoAtual());
+    mostrar();
   };
 
   rec.onend = () => {
-    // Fecha a rodada: move tudo que foi capturado para "confirmado".
-    confirmado = textoAtual();
-    sessao = '';
+    // Antes de reiniciar/terminar, confirma o que estava no provisório,
+    // para não perder a última palavra dita antes de uma pausa.
+    if (provisorio) {
+      acumulado = juntar(acumulado, provisorio);
+      provisorio = '';
+    }
     if (rec._parar) {
-      onFim && onFim(confirmado);
+      onFim && onFim(acumulado);
     } else {
-      // O Chrome encerra sozinho após um silêncio — reiniciamos para manter
-      // a escuta contínua, sem perder o que já foi dito.
-      try { rec.start(); } catch { onFim && onFim(confirmado); }
+      try { rec.start(); } catch { onFim && onFim(acumulado); }
     }
   };
 
   rec.onerror = (e) => {
     const err = e.error || 'erro';
-    // "no-speech"/"aborted" são normais em pausas; o onend cuida do reinício.
     if (err !== 'no-speech' && err !== 'aborted') {
       onErro && onErro(err);
     }
