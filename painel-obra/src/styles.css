@@ -213,6 +213,13 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: -1
 .pub-num strong.val-pend { color: var(--neg); }   /* pendente = vermelho */
 .pub-nota { font-size: .74rem; color: var(--muted); margin: .2rem 0 0; }
 
+.pub-croqui {
+  background: var(--card); border: 1px solid var(--linha); border-radius: var(--raio);
+  box-shadow: var(--sombra); padding: 1.6rem 1.2rem 1.2rem; margin-top: 1.4rem; text-align: center;
+}
+.pub-croqui .croqui { width: 100%; max-width: 420px; height: auto; color: var(--acento); }
+.pub-croqui-legenda { display: block; margin-top: .5rem; font-size: .68rem; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
+
 .pub-bloco { margin-top: 1.8rem; }
 .pub-bloco h2 { margin-bottom: .9rem; }
 .pub-etapas { display: grid; gap: 1rem; }
