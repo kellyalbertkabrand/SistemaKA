@@ -38,7 +38,19 @@ async function rotear() {
   }
 
   // 2) Rotas internas — exigem login da arquiteta.
-  const { data: { session } } = await supabase.auth.getSession();
+  // Protege contra travamento (ex.: banco gratuito "acordando"): se a
+  // verificação de sessão demorar demais ou falhar, cai no login em vez de
+  // deixar a tela em branco.
+  let session = null;
+  try {
+    const res = await Promise.race([
+      supabase.auth.getSession(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 8000)),
+    ]);
+    session = res?.data?.session ?? null;
+  } catch {
+    session = null;
+  }
   if (!session) {
     return renderLogin(app);
   }

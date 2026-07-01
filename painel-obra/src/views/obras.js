@@ -6,13 +6,19 @@ import { moeda, pct, slugify, esc } from '../lib/format.js';
 export async function renderObras(container) {
   container.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
 
-  const { data: obras, error } = await supabase
-    .from('obras')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    container.innerHTML = `<div class="app"><p class="erro" style="display:block">${esc(error.message)}</p></div>`;
+  let obras;
+  try {
+    const res = await Promise.race([
+      supabase.from('obras').select('*').order('created_at', { ascending: false }),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('tempo esgotado ao falar com o banco')), 12000)),
+    ]);
+    if (res.error) throw res.error;
+    obras = res.data || [];
+  } catch (e) {
+    container.innerHTML = `<div class="app">
+      <p class="erro" style="display:block">Não foi possível carregar as obras. ${esc(e?.message || e)}</p>
+      <button class="btn btn-primary" onclick="location.reload()">Tentar de novo</button>
+    </div>`;
     return;
   }
 
