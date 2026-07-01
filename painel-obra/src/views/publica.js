@@ -48,8 +48,11 @@ export async function renderPublica(container, slug) {
     return;
   }
 
-  const executado = lancamentos.reduce((t, l) => t + Number(l.valor || 0), 0);
-  const saldo = Number(obra.orcamento || 0) - executado;
+  const soma = (arr) => arr.reduce((t, l) => t + Number(l.valor || 0), 0);
+  const executado = soma(lancamentos);
+  const pago = soma(lancamentos.filter((l) => l.status === 'pago'));
+  const pendente = soma(lancamentos.filter((l) => l.status === 'pendente'));
+  const saldo = Number(obra.orcamento || 0) - executado; // desconta pago + pendente
   const andamento = pct(executado, obra.orcamento);
 
   // Realizado por etapa
@@ -80,8 +83,10 @@ export async function renderPublica(container, slug) {
         </div>
         <div class="pub-numeros">
           ${num('Orçamento', moeda(obra.orcamento))}
-          ${num('Executado', moeda(executado))}
+          ${num('Pago', moeda(pago), 'val-ok')}
+          ${num('Pendente', moeda(pendente), 'val-pend')}
           ${num('Saldo disponível', moeda(saldo), saldo < 0 ? 'neg' : '')}
+          <p class="pub-nota">O saldo já desconta o que está pago e o que está pendente.</p>
         </div>
       </section>
 

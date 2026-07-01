@@ -196,6 +196,9 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: -1
 .pub-num { display: flex; flex-direction: column; }
 .pub-num small { color: var(--muted); font-size: .76rem; }
 .pub-num strong { font-size: 1.25rem; font-family: var(--fonte); }
+.pub-num strong.val-ok { color: var(--ok); }     /* pago = verde */
+.pub-num strong.val-pend { color: var(--neg); }   /* pendente = vermelho */
+.pub-nota { font-size: .74rem; color: var(--muted); margin: .2rem 0 0; }
 
 .pub-bloco { margin-top: 1.8rem; }
 .pub-bloco h2 { margin-bottom: .9rem; }
