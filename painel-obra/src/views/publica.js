@@ -1,5 +1,6 @@
 import { supabase } from '../supabaseClient.js';
-import { moeda, dataBR, pct, esc } from '../lib/format.js';
+import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
+import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 
 // Página pública do cliente (só leitura), acessada por /obra/{slug}.
 // Mostra o andamento da obra com visual limpo — e NADA interno.
@@ -95,28 +96,44 @@ export async function renderPublica(container, slug) {
       </section>
 
       <section class="pub-bloco">
-        <h2>Últimas atualizações</h2>
-        ${lancamentos.length === 0
-          ? `<p class="muted">Ainda não há lançamentos.</p>`
-          : `<ul class="pub-timeline">
-              ${lancamentos.slice(0, 12).map((l) => `
-                <li>
-                  <div class="tl-topo">
-                    <span class="tl-etapa">${esc(l.etapa)}</span>
-                    <span class="tl-valor">${moeda(l.valor)}</span>
-                  </div>
-                  <div class="tl-base">
-                    <span>${esc(l.descricao || '')}</span>
-                    <span class="muted">${dataBR(l.data)} · ${esc(l.status)}</span>
-                  </div>
-                </li>`).join('')}
-            </ul>`}
+        <div class="row-between">
+          <h2>Atualizações</h2>
+          ${lancamentos.length ? seletorOrdem('pub-ord', 'data') : ''}
+        </div>
+        <div id="pub-lista">${listaTimeline(ordenarLancamentos(lancamentos, 'data'))}</div>
       </section>
 
       <footer class="pub-rodape">
         <p class="muted">Atualizado em tempo real pelo seu arquiteto.</p>
       </footer>
     </div>`;
+
+  // Reordenar a lista de atualizações também no painel do cliente.
+  const selPub = container.querySelector('#pub-ord');
+  if (selPub) {
+    selPub.addEventListener('change', () => {
+      container.querySelector('#pub-lista').innerHTML = listaTimeline(
+        ordenarLancamentos(lancamentos, selPub.value)
+      );
+    });
+  }
+}
+
+function listaTimeline(lancamentos) {
+  if (!lancamentos.length) return `<p class="muted">Ainda não há lançamentos.</p>`;
+  return `<ul class="pub-timeline">
+    ${lancamentos.map((l) => `
+      <li>
+        <div class="tl-topo">
+          <span class="tl-etapa">${esc(l.etapa)}</span>
+          <span class="tl-valor">${moeda(l.valor)}</span>
+        </div>
+        <div class="tl-base">
+          <span>${esc(l.descricao || '')}</span>
+          <span class="tl-status">${dataBR(l.data)} ${pillStatus(l.status)}</span>
+        </div>
+      </li>`).join('')}
+  </ul>`;
 }
 
 function barraEtapa(nome, orcado, realizado) {

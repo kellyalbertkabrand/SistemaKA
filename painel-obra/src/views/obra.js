@@ -1,7 +1,8 @@
 import { supabase } from '../supabaseClient.js';
 import { navegar } from '../main.js';
-import { moeda, dataBR, pct, esc } from '../lib/format.js';
+import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
 import { reconhecimentoDisponivel, ouvir, parar } from '../lib/voice.js';
+import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 
 // Detalhe interno de uma obra: KPIs, lançamento por voz/IA, etapas e lançamentos.
 export async function renderObra(container, obraId) {
@@ -96,8 +97,11 @@ export async function renderObra(container, obraId) {
       </section>
 
       <section class="card">
-        <h2>Lançamentos</h2>
-        <div id="tabela-lancamentos">${tabelaLancamentos(lancamentos)}</div>
+        <div class="row-between">
+          <h2>Lançamentos</h2>
+          ${lancamentos.length ? seletorOrdem('ord-lanc', 'data') : ''}
+        </div>
+        <div id="tabela-lancamentos">${tabelaLancamentos(ordenarLancamentos(lancamentos, 'data'))}</div>
       </section>
     </div>`;
 
@@ -146,12 +150,20 @@ export async function renderObra(container, obraId) {
     });
   });
 
-  // ---- Excluir lançamentos ----
-  container.querySelectorAll('[data-del-lanc]').forEach((b) => {
-    b.addEventListener('click', async () => {
-      await supabase.from('lancamentos').delete().eq('id', b.getAttribute('data-del-lanc'));
-      recarregar();
+  // ---- Lançamentos: ordenar + excluir ----
+  const tabelaLancEl = container.querySelector('#tabela-lancamentos');
+  const selOrd = container.querySelector('#ord-lanc');
+  if (selOrd) {
+    selOrd.addEventListener('change', () => {
+      tabelaLancEl.innerHTML = tabelaLancamentos(ordenarLancamentos(lancamentos, selOrd.value));
     });
+  }
+  // Delegação: sobrevive à re-renderização da tabela ao reordenar.
+  tabelaLancEl.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-del-lanc]');
+    if (!b) return;
+    await supabase.from('lancamentos').delete().eq('id', b.getAttribute('data-del-lanc'));
+    recarregar();
   });
 }
 
@@ -359,7 +371,7 @@ function tabelaLancamentos(lancamentos) {
             <td>${esc(l.etapa)}</td>
             <td>${esc(l.descricao || '')}</td>
             <td class="num">${moeda(l.valor)}</td>
-            <td><span class="pill ${l.status === 'pago' ? 'pill-pago' : 'pill-pend'}">${esc(l.status)}</span></td>
+            <td>${pillStatus(l.status)}</td>
             <td class="acoes"><button class="btn btn-x" data-del-lanc="${esc(l.id)}" title="Excluir">×</button></td>
           </tr>`).join('')}
       </tbody>

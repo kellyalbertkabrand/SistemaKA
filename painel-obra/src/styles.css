@@ -157,9 +157,13 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: -1
 .tabela td { padding: .55rem .5rem; border-bottom: 1px solid #f1ece2; vertical-align: middle; }
 .tabela .num { text-align: right; white-space: nowrap; }
 .tabela .acoes { text-align: right; width: 1%; }
-.pill { font-size: .72rem; padding: .12rem .55rem; border-radius: 999px; text-transform: capitalize; }
-.pill-pago { background: #e7f0e9; color: var(--ok); }
-.pill-pend { background: #faf0db; color: var(--pend); }
+.pill { display: inline-flex; align-items: center; gap: .35rem; font-size: .72rem; padding: .12rem .55rem; border-radius: 999px; text-transform: capitalize; white-space: nowrap; }
+.pill .dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex: none; }
+.pill-pago { background: #e7f0e9; color: var(--ok); }   /* verde = pago */
+.pill-pend { background: #f7e3e1; color: var(--neg); }  /* vermelho = pendente */
+
+/* Seletor de ordenação (usado nos dois painéis) */
+.ordenar { width: auto; font-size: .82rem; padding: .4rem .6rem; border-radius: 8px; background: #fff; }
 
 /* =========================================================================
    Página pública do cliente
@@ -204,6 +208,7 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: -1
 .tl-etapa { font-weight: 600; }
 .tl-valor { font-family: var(--fonte); }
 .tl-base { display: flex; justify-content: space-between; gap: 1rem; font-size: .85rem; margin-top: .15rem; }
+.tl-status { display: inline-flex; align-items: center; gap: .5rem; white-space: nowrap; color: var(--muted); }
 
 .pub-rodape { text-align: center; margin-top: 2.5rem; }
 .pub-vazio { text-align: center; padding: 5rem 1rem; }

@@ -28,6 +28,12 @@ export function slugify(texto) {
     .replace(/^-+|-+$/g, '');
 }
 
+// Pílula de status com sinalzinho: verde = pago, vermelho = pendente.
+export function pillStatus(status) {
+  const pago = status === 'pago';
+  return `<span class="pill ${pago ? 'pill-pago' : 'pill-pend'}"><span class="dot"></span>${esc(status)}</span>`;
+}
+
 // Escapa texto antes de jogar em innerHTML (evita HTML quebrado/injeção).
 export function esc(texto) {
   return String(texto ?? '')
