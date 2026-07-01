@@ -110,9 +110,10 @@ code { background: #efe9df; padding: 1px 5px; border-radius: 6px; font-size: .85
 .auth-card { width: 100%; max-width: 380px; text-align: center; }
 .logo { font-family: var(--fonte); }
 /* Login mais harmônico: tamanhos próximos entre si */
-.auth-card .logo { font-size: 1.3rem; font-weight: 600; line-height: 1.25; margin: .6rem 0 .15rem; }
+.auth-card .logo { font-size: 1.3rem; font-weight: 600; line-height: 1.25; margin: .6rem 0 .15rem; text-transform: uppercase; letter-spacing: .02em; }
 .auth-card > .muted { font-size: .9rem; }
-.auth-card .logo-ph-login { height: 64px; font-size: .66rem; letter-spacing: .08em; }
+/* Espaço do logo: fundo cinza claro, borda e texto neutros */
+.auth-card .logo-ph-login { height: 64px; font-size: .66rem; letter-spacing: .08em; background: #eeedeb; border-color: #d8d5d0; color: #8a8278; }
 .auth-card form { display: grid; gap: .8rem; margin-top: 1.3rem; text-align: left; }
 label { display: grid; gap: .3rem; font-size: .85rem; color: var(--muted); }
 input, select {

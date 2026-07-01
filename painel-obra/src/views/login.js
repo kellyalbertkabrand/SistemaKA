@@ -7,9 +7,9 @@ export function renderLogin(container) {
   container.innerHTML = `
     <div class="auth-wrap">
       <div class="card auth-card">
-        <div class="auth-marca">${logoPlaceholder('logo-ph-login', 'Espaço para o logotipo do escritório')}</div>
+        <div class="auth-marca">${logoPlaceholder('logo-ph-login', 'Logotipo do escritório')}</div>
         <h1 class="logo">Painel de Controle de Obras</h1>
-        <p class="muted">Acesso da arquiteta</p>
+        <p class="muted">Acesso do Escritório</p>
         <form id="form-login" novalidate>
           <label>E-mail
             <input type="email" id="email" required autocomplete="email" />
