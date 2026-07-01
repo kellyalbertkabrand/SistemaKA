@@ -40,10 +40,34 @@ export async function renderObra(container, obraId) {
         <div>
           <a class="voltar" data-link href="/">← Obras</a>
           <h1>${esc(obra.nome)}</h1>
-          <p class="muted">${esc(obra.cliente || 'Sem cliente definido')}</p>
+          <p class="muted">${esc(obra.cliente || 'Sem cliente definido')}
+            <button class="btn btn-mini" id="abrir-editar">✎ Editar obra</button>
+          </p>
         </div>
         <button class="btn btn-ghost" id="sair">Sair</button>
       </header>
+
+      <form id="form-editar" class="card" hidden>
+        <div class="form-grid">
+          <label>Nome da obra
+            <input id="ed-nome" value="${esc(obra.nome)}" />
+          </label>
+          <label>Cliente
+            <input id="ed-cliente" value="${esc(obra.cliente || '')}" />
+          </label>
+          <label>Orçamento total (R$)
+            <input id="ed-orcamento" type="number" min="0" step="0.01" value="${Number(obra.orcamento || 0)}" />
+          </label>
+        </div>
+        <p class="muted" style="font-size:.8rem;margin:.2rem 0 0">
+          Ao mudar o orçamento total, o saldo é recalculado automaticamente.
+        </p>
+        <div class="row-end">
+          <button type="button" class="btn btn-ghost" id="ed-cancelar">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar alterações</button>
+        </div>
+        <p class="erro" id="ed-erro" hidden></p>
+      </form>
 
       <section class="kpis">
         ${kpi('Orçado', moeda(obra.orcamento))}
@@ -110,6 +134,38 @@ export async function renderObra(container, obraId) {
 
   container.querySelector('#sair').addEventListener('click', async () => {
     await supabase.auth.signOut();
+  });
+
+  // ---- Editar obra (nome, cliente, orçamento total) ----
+  const abrirEditar = container.querySelector('#abrir-editar');
+  const formEditar = container.querySelector('#form-editar');
+  const edErro = container.querySelector('#ed-erro');
+  abrirEditar.addEventListener('click', () => {
+    formEditar.hidden = !formEditar.hidden;
+    if (!formEditar.hidden) container.querySelector('#ed-nome').focus();
+  });
+  container.querySelector('#ed-cancelar').addEventListener('click', () => {
+    formEditar.hidden = true;
+  });
+  formEditar.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    edErro.hidden = true;
+    const nome = container.querySelector('#ed-nome').value.trim();
+    const cliente = container.querySelector('#ed-cliente').value.trim() || null;
+    const orcamento = Number(container.querySelector('#ed-orcamento').value || 0);
+    if (!nome) { edErro.textContent = 'Dê um nome à obra.'; edErro.hidden = false; return; }
+    const btn = formEditar.querySelector('button[type="submit"]');
+    btn.disabled = true; btn.textContent = 'Salvando…';
+    const { error } = await supabase
+      .from('obras')
+      .update({ nome, cliente, orcamento })
+      .eq('id', obra.id);
+    if (error) {
+      btn.disabled = false; btn.textContent = 'Salvar alterações';
+      edErro.textContent = error.message; edErro.hidden = false;
+      return;
+    }
+    recarregar();
   });
 
   // ---- Link do cliente ----
