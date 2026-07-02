@@ -19,7 +19,7 @@ export function DemoStudio() {
           Estúdio de <span>Marca</span>
         </div>
         <div className="app-top__tag">
-          {templates[0]?.clienteNome ?? slug} · demonstração
+          {templates[0]?.clienteNome ?? slug}
         </div>
       </header>
 

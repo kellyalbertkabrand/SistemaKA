@@ -15,8 +15,9 @@ export default function App() {
         <Routes>
           <Route path="/" element={<RootRedirect />} />
           <Route path="/login" element={<Login />} />
-          {/* Demonstração pública dos layouts (sem login) — ex.: /ver/shapes */}
+          {/* Estúdio público por marca — ex.: /shapes, /aa (e alias /ver/:slug) */}
           <Route path="/ver/:slug" element={<DemoStudio />} />
+          <Route path="/:slug" element={<DemoStudio />} />
           <Route
             path="/admin"
             element={
