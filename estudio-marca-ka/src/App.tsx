@@ -4,8 +4,7 @@ import { ProtectedRoute } from './components/ProtectedRoute'
 import { RootRedirect } from './pages/RootRedirect'
 import { Login } from './pages/Login'
 import { DemoStudio } from './pages/DemoStudio'
-import { AdminHome } from './pages/AdminHome'
-import { EstudioHome } from './pages/EstudioHome'
+import { Studio } from './pages/Studio'
 import { NotFound } from './pages/NotFound'
 
 export default function App() {
@@ -21,7 +20,7 @@ export default function App() {
             path="/admin"
             element={
               <ProtectedRoute papel="admin">
-                <AdminHome />
+                <Studio />
               </ProtectedRoute>
             }
           />
@@ -29,7 +28,7 @@ export default function App() {
             path="/estudio"
             element={
               <ProtectedRoute papel="cliente">
-                <EstudioHome />
+                <Studio />
               </ProtectedRoute>
             }
           />
