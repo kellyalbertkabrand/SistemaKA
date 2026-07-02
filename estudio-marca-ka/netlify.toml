@@ -1,0 +1,17 @@
+# Deploy do app "Estúdio de Marca — KA" (separado do site de notícias em Python).
+# Ao conectar este diretório como um site próprio no Netlify, use:
+#   Base directory:    estudio-marca-ka
+#   Build command:     npm run build
+#   Publish directory: estudio-marca-ka/dist
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA: todas as rotas caem no index.html (React Router cuida do resto).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
