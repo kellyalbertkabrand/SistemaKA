@@ -104,6 +104,9 @@
   font-size: 41px;
   line-height: 1.5;
   white-space: pre-line;
+  /* quebra palavras longas sem espaço em vez de estourar o card */
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .shapes-fb.fmt-card .quote {
   font-size: 38px;

@@ -74,5 +74,7 @@ export interface Usuario {
   email: string
   papel: UsuarioPapel
   cliente_id: string | null
+  /** Marca (slug do template) que este login de cliente enxerga. */
+  cliente_slug: string | null
   criado_em: string
 }

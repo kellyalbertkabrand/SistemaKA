@@ -4,6 +4,7 @@ import { ProtectedRoute } from './components/ProtectedRoute'
 import { RootRedirect } from './pages/RootRedirect'
 import { Login } from './pages/Login'
 import { DemoStudio } from './pages/DemoStudio'
+import { AdminPanel } from './pages/AdminPanel'
 import { Studio } from './pages/Studio'
 import { NotFound } from './pages/NotFound'
 
@@ -20,7 +21,7 @@ export default function App() {
             path="/admin"
             element={
               <ProtectedRoute papel="admin">
-                <Studio />
+                <AdminPanel />
               </ProtectedRoute>
             }
           />

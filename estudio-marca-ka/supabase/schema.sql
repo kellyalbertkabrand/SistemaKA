@@ -122,12 +122,15 @@ create index if not exists pecas_cliente_idx on public.pecas_geradas(cliente_id)
 
 -- usuarios (vincula auth.users a um papel e, se cliente, a um cliente) --------
 create table if not exists public.usuarios (
-  id         uuid primary key references auth.users(id) on delete cascade,
-  email      text not null,
-  papel      usuario_papel not null default 'cliente',
-  cliente_id uuid references public.clientes(id) on delete set null,
-  criado_em  timestamptz not null default now()
+  id           uuid primary key references auth.users(id) on delete cascade,
+  email        text not null,
+  papel        usuario_papel not null default 'cliente',
+  cliente_id   uuid references public.clientes(id) on delete set null,
+  cliente_slug text, -- marca (slug do template) que este login de cliente enxerga
+  criado_em    timestamptz not null default now()
 );
+-- garante a coluna em bancos criados antes desta versão
+alter table public.usuarios add column if not exists cliente_slug text;
 create index if not exists usuarios_cliente_idx on public.usuarios(cliente_id);
 
 -- ---------------------------------------------------------------------------
