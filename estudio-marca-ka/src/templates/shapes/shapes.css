@@ -1,0 +1,118 @@
+/* Fonte licenciada Montilla — servida a partir de /public/clientes/shapes/fonts */
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 300;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-300.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 400;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-400.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 500;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-500.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 600;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-600.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 700;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-700.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* ---- Card de feedback Shapes (fiel ao template-card.html oficial) ---- */
+.shapes-fb {
+  --orange: #ff7829;
+  --ink: #131313;
+  --gold: #f4b24e;
+  --brandfont: 'Montilla', system-ui, sans-serif;
+  position: relative;
+  width: 1080px;
+  overflow: hidden;
+  background: var(--orange);
+  font-family: var(--brandfont);
+}
+.shapes-fb .bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+.shapes-fb .content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 120px 92px;
+  z-index: 2;
+}
+.shapes-fb .logo {
+  width: 120px;
+  height: auto;
+  display: block;
+  margin-bottom: 34px;
+}
+.shapes-fb .kicker {
+  color: #fff;
+  font-weight: 700;
+  font-size: 40px;
+  letter-spacing: 9px;
+  text-transform: uppercase;
+  margin-bottom: 34px;
+}
+.shapes-fb .cardbox {
+  width: 100%;
+  background: #fff;
+  border-radius: 34px;
+  padding: 56px 58px;
+}
+.shapes-fb .stars {
+  color: var(--gold);
+  font-size: 48px;
+  letter-spacing: 6px;
+  line-height: 1;
+  font-family: system-ui, sans-serif;
+}
+.shapes-fb .stars .off {
+  color: #e3e3e3;
+}
+.shapes-fb .quote {
+  margin-top: 30px;
+  font-family: var(--brandfont);
+  font-weight: 400;
+  color: var(--ink);
+  font-size: 41px;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+.shapes-fb.fmt-card .quote {
+  font-size: 38px;
+}
+.shapes-fb .who {
+  color: #fff;
+  font-weight: 300;
+  font-size: 30px;
+  letter-spacing: 6px;
+  text-transform: lowercase;
+  margin-top: 36px;
+}

@@ -1,0 +1,91 @@
+.editor {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+@media (max-width: 820px) {
+  .editor {
+    grid-template-columns: 1fr;
+  }
+}
+
+.editor__panel {
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 14px;
+  padding: 1.4rem 1.4rem 1.6rem;
+}
+
+.editor__hint {
+  font-size: 0.7rem;
+  color: var(--t-500);
+  margin-top: 0.4rem;
+  line-height: 1.45;
+}
+
+/* segmentos (formato) */
+.seg {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.seg button {
+  flex: 1;
+  min-width: fit-content;
+  font-family: var(--body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.5rem 0.4rem;
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  background: #fff;
+  border-radius: 7px;
+  cursor: pointer;
+  color: var(--t-700);
+  transition: 0.15s;
+}
+.seg button.on {
+  background: var(--marinho);
+  color: var(--t-inv);
+  border-color: var(--marinho);
+}
+
+/* estrelas (input) */
+.stars-input {
+  display: flex;
+  gap: 0.3rem;
+}
+.stars-input button {
+  font-size: 1.7rem;
+  line-height: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #d8d4cb;
+  transition: 0.1s;
+}
+.stars-input button.on {
+  color: #f4b24e;
+}
+
+/* palco */
+.editor__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 1rem 0;
+}
+.editor__scaler {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 16px 50px rgba(15, 25, 35, 0.18);
+}
+.editor__label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--t-400);
+}

@@ -1,0 +1,85 @@
+import type { ComponentType } from 'react'
+import type { FormatoPeca } from '../lib/database.types'
+
+// ============================================================================
+// Sistema de templates ("moldes com campos").
+//
+// Cada layout validado pela KA vira um Template: uma marca (cliente), um ou
+// mais formatos suportados e uma lista de CAMPOS que o cliente preenche
+// (texto, imagem, estrelas, seleção…). O componente `render` desenha a arte
+// no tamanho real (1080px de largura) a partir dos valores dos campos.
+// ============================================================================
+
+export type CampoTipo = 'texto' | 'textarea' | 'imagem' | 'estrelas' | 'select'
+
+export interface CampoBase {
+  id: string
+  label: string
+  tipo: CampoTipo
+  ajuda?: string
+  obrigatorio?: boolean
+}
+
+export interface CampoTexto extends CampoBase {
+  tipo: 'texto' | 'textarea'
+  placeholder?: string
+  padrao?: string
+  maxLen?: number
+}
+
+export interface CampoImagem extends CampoBase {
+  tipo: 'imagem'
+}
+
+export interface CampoEstrelas extends CampoBase {
+  tipo: 'estrelas'
+  padrao?: number
+}
+
+export interface CampoSelect extends CampoBase {
+  tipo: 'select'
+  opcoes: { valor: string; rotulo: string }[]
+  padrao?: string
+}
+
+export type Campo = CampoTexto | CampoImagem | CampoEstrelas | CampoSelect
+
+/** Dimensões reais (px) de cada formato suportado pelo template. */
+export interface FormatoDef {
+  formato: FormatoPeca
+  rotulo: string
+  largura: number
+  altura: number
+}
+
+/** Valores preenchidos pelo cliente, indexados por `campo.id`. */
+export type ValoresPeca = Record<string, string | number>
+
+export interface RenderProps {
+  valores: ValoresPeca
+  formato: FormatoDef
+}
+
+export interface Template {
+  id: string
+  clienteSlug: string
+  clienteNome: string
+  nome: string
+  descricao: string
+  formatos: FormatoDef[]
+  campos: Campo[]
+  /** Componente que desenha a arte em tamanho real. */
+  render: ComponentType<RenderProps>
+}
+
+/** Preenche os valores iniciais a partir dos padrões dos campos. */
+export function valoresPadrao(campos: Campo[]): ValoresPeca {
+  const v: ValoresPeca = {}
+  for (const c of campos) {
+    if (c.tipo === 'estrelas') v[c.id] = c.padrao ?? 5
+    else if (c.tipo === 'select') v[c.id] = c.padrao ?? c.opcoes[0]?.valor ?? ''
+    else if (c.tipo === 'texto' || c.tipo === 'textarea') v[c.id] = c.padrao ?? ''
+    else v[c.id] = ''
+  }
+  return v
+}
