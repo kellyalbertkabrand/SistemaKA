@@ -82,39 +82,61 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
   )
 }
 
-// 4 · Forma função emoção — fundo escuro + foto + texto e concha ao lado.
+// 4 · Forma função emoção — fundo escuro + foto + texto e concha.
+// No feed/quadrado fica lado a lado; no story empilha (texto em cima, foto
+// embaixo, tudo centralizado e maior).
 export function ShapesFormaCard({ valores, formato }: RenderProps) {
   const cor = String(valores.cor_fundo || '#010101')
   const foto = String(valores.foto || '')
   const texto = String(valores.texto || '')
   const forma = String(valores.forma || 'shape-blob1')
   const tinta = corContraste(cor)
-  const caixa = caixaFoto(formato.largura - 606, formato.altura - 192, ratioForma(forma), Number(valores.foto_area))
+  const story = formato.formato === 'story'
+  const caixa = story
+    ? caixaFoto(formato.largura - 192, formato.altura - 600, ratioForma(forma), Number(valores.foto_area))
+    : caixaFoto(formato.largura - 606, formato.altura - 192, ratioForma(forma), Number(valores.foto_area))
+
+  const blob = (
+    <div
+      className="foto-blob"
+      style={{
+        width: caixa.largura,
+        height: caixa.altura,
+        clipPath: `url(#${forma})`,
+        WebkitClipPath: `url(#${forma})`,
+      }}
+    >
+      {foto ? (
+        <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+      ) : (
+        <div className="foto-ph">Sua foto aqui</div>
+      )}
+    </div>
+  )
+  const lado = (
+    <div className="lado">
+      <img className="logo" src={tinta === '#FFFFFF' ? BRANCO : PRETO} alt="Shapes" crossOrigin="anonymous" />
+      {texto && <div className="texto">{texto}</div>}
+    </div>
+  )
+
   return (
     <div
-      className="shapes-forma"
+      className={`shapes-forma ${story ? 'empilhado' : ''}`}
       style={{ width: formato.largura, height: formato.altura, background: cor, color: tinta }}
     >
       <ShapesClips />
-      <div
-        className="foto-blob"
-        style={{
-          width: caixa.largura,
-          height: caixa.altura,
-          clipPath: `url(#${forma})`,
-          WebkitClipPath: `url(#${forma})`,
-        }}
-      >
-        {foto ? (
-          <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
-        ) : (
-          <div className="foto-ph">Sua foto aqui</div>
-        )}
-      </div>
-      <div className="lado">
-        <img className="logo" src={tinta === '#FFFFFF' ? BRANCO : PRETO} alt="Shapes" crossOrigin="anonymous" />
-        {texto && <div className="texto">{texto}</div>}
-      </div>
+      {story ? (
+        <>
+          {lado}
+          {blob}
+        </>
+      ) : (
+        <>
+          {blob}
+          {lado}
+        </>
+      )}
     </div>
   )
 }

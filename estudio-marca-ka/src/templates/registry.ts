@@ -1,6 +1,7 @@
 import type { Template } from './types'
 import { ShapesFeedbackCard } from './shapes/FeedbackCard'
 import { ShapesProdutoCard } from './shapes/ProdutoCard'
+import { ShapesFraseCard } from './shapes/FraseCard'
 import {
   ShapesCapaCard,
   ShapesCoresCard,
@@ -172,6 +173,44 @@ export const TEMPLATES: Template[] = [
       },
     ],
     render: ShapesCapaCard,
+  },
+  {
+    id: 'shapes-frase',
+    clienteSlug: 'shapes',
+    clienteNome: 'Shapes',
+    nome: 'Frase + foto',
+    descricao:
+      'Fundo creme com uma frase em cima, a foto no meio (tamanho ajustável) e ' +
+      'uma frase embaixo. Sem logotipo. Itálico com *asteriscos*.',
+    formatos: FORMATOS,
+    campos: [
+      {
+        id: 'texto_cima',
+        label: 'Texto de cima',
+        tipo: 'textarea',
+        placeholder: 'Ex.: Não cria apenas objetos,',
+        ajuda: 'Para itálico, use *asteriscos*: ex. *sensorial*.',
+        padrao: 'Não cria apenas objetos,',
+      },
+      {
+        id: 'foto',
+        label: 'Foto',
+        tipo: 'imagem',
+        obrigatorio: true,
+        areaPadrao: 100,
+        ajuda: 'Use "Tamanho da foto" para aumentar ou diminuir o espaço da imagem.',
+      },
+      {
+        id: 'texto_baixo',
+        label: 'Texto de baixo',
+        tipo: 'textarea',
+        placeholder: 'Ex.: cria experiências sensoriais.',
+        padrao: 'cria experiências sensoriais.',
+      },
+      { id: 'cor_fundo', label: 'Cor de fundo', tipo: 'cor', padrao: '#F1E9DA', opcoes: SWATCHES },
+      { id: 'cor_fonte', label: 'Cor do texto', tipo: 'cor', padrao: '#131313', opcoes: SWATCHES },
+    ],
+    render: ShapesFraseCard,
   },
   {
     id: 'shapes-cores',

@@ -125,10 +125,20 @@ margens. Enquadramento (posição/zoom) fica em `foto_x`, `foto_y`, `foto_zoom`
    OU cor escolhida; estrelas; card branco). Tem campo `cor_fundo` cuja 1ª
    amostra é a textura laranja (`url(...)`, padrão).
 2. **shapes-produto** — Post de Produto (foto em forma + cor de fundo + texto).
-3. **shapes-capa** — Capa (foto tela cheia + título + logo).
-4. **shapes-cores** — Diversas cores (fundo claro + foto em forma + rótulos).
-5. **shapes-forma** — Forma função emoção (fundo escuro + foto + texto lateral).
-6. **shapes-cta** — CTA (foto desfocada + forma colorida + "acesse a loja").
+3. **shapes-capa** — Capa (foto redimensionável revelando a cor de fundo +
+   título + logo). Campos `cor_fundo` e `cor_fonte`; título e logo seguem a cor
+   do texto. `foto_area` controla o tamanho (100% = tela cheia).
+4. **shapes-frase** — Frase + foto (carrossel 03): fundo creme, texto em cima,
+   foto no meio (redimensionável, moldura 76%×66%), texto embaixo. **Sem logo.**
+   Itálico com `*asteriscos*`. Campos `cor_fundo`/`cor_fonte`. `areaPadrao: 100`.
+5. **shapes-cores** — Diversas cores (fundo claro + foto em forma + rótulos).
+6. **shapes-forma** — Forma função emoção (fundo escuro + foto + texto/concha).
+   No feed/quadrado fica lado a lado; **no story empilha** (texto+concha em
+   cima, foto embaixo, centralizado e maior) — ramo `formato.formato === 'story'`.
+7. **shapes-cta** — CTA (foto desfocada + forma colorida + "acesse a loja").
+
+> `foto_area` é semeado por `valoresPadrao` (companheiro `${id}_area`); um campo
+> `imagem` pode definir `areaPadrao` para o tamanho inicial da foto.
 
 ---
 
