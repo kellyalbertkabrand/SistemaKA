@@ -10,6 +10,14 @@ import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import type { Usuario } from '../lib/database.types'
 
+// Admin(s) "de bootstrap": estes e-mails são tratados como KA/admin mesmo que
+// o papel ainda não esteja gravado em public.usuarios. Facilita o primeiro
+// acesso da KA. Pode sobrescrever via VITE_ADMIN_EMAILS (lista separada por vírgula).
+const ADMIN_EMAILS = (import.meta.env.VITE_ADMIN_EMAILS ?? 'kellyalbertka@gmail.com')
+  .split(',')
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean)
+
 interface AuthState {
   session: Session | null
   /** Perfil do usuário em `public.usuarios` (papel + cliente_id). */
@@ -76,7 +84,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       session,
       perfil,
       loading,
-      isAdmin: perfil?.papel === 'admin',
+      isAdmin:
+        perfil?.papel === 'admin' ||
+        ADMIN_EMAILS.includes(session?.user.email?.toLowerCase() ?? ''),
       async signIn(email, password) {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         return { error: error?.message ?? null }
