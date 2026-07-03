@@ -196,7 +196,7 @@ Function do Supabase (Fase 6). service_role e senha do banco são **secretos**.
 
 ## 8. Git / fluxo
 
-- Branch de trabalho atual: **`claude/new-session-empjyr`**.
+- Branch de trabalho atual: **`claude/internal-dashboard-visual-bzenia`**.
 - Rodar `git` a partir da **raiz do repo** (`/home/user/SistemaKA`), não de
   dentro de `estudio-marca-ka/` (senão `pathspec did not match`).
 - Push: `git push -u origin <branch>`.
@@ -224,6 +224,10 @@ Function do Supabase (Fase 6). service_role e senha do banco são **secretos**.
 - Caixa da foto sempre na proporção nativa da forma (clip não distorce).
 - Comentários e UI em **português** (público é a KA e os clientes dela).
 - Preferir cores/tokens da marca; primária = laranja `#FF7829`.
+- **Painel interno em grade visual:** cards de cliente com capa/logo/paleta da
+  marca (`src/templates/marcas.ts`) e cards de template com **miniatura ao
+  vivo** (`MiniPreview.tsx` renderiza a arte real com os valores padrão e
+  reduz com `transform: scale`). Estilos em `src/styles/painel.css`.
 
 ---
 
@@ -254,8 +258,12 @@ estudio-marca-ka/
     │   ├── exportar.ts             # baixarPng / baixarZip (assinado)
     │   ├── assinatura.ts           # metadados iTXt no PNG
     │   ├── supabase.ts, api.ts, storage.ts, database.types.ts
+    ├── styles/
+    │   ├── global.css              # tema base (KA)
+    │   └── painel.css              # grades do painel (clientes + templates)
     ├── components/
     │   ├── BrandStudio.tsx         # estúdio por marca ("o que criar?")
+    │   ├── MiniPreview.tsx         # miniatura ao vivo de template (scale)
     │   ├── EditorPeca.tsx          # editor de peça única
     │   ├── Carrossel.tsx           # construtor de carrossel (até 10 slides)
     │   ├── CamposEditor.tsx        # controles a partir de `campos`
@@ -268,6 +276,7 @@ estudio-marca-ka/
     └── templates/
         ├── types.ts                # interface Template + valoresPadrao
         ├── registry.ts             # TODOS os templates
+        ├── marcas.ts               # visual da marca p/ cards do painel
         ├── formas.ts               # 3 formas + caixaContida/caixaFoto
         ├── imagem.ts               # estiloImagem (posição/zoom)
         └── shapes/

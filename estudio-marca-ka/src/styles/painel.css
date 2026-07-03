@@ -1,0 +1,262 @@
+/* ============================================================
+   Painel interno — grades de clientes e de templates
+   ============================================================ */
+
+/* ---- Botão "voltar" para páginas claras (contraste correto) ---- */
+.btn--voltar {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--essencia);
+  background: transparent;
+  border: 1px solid rgba(61, 107, 126, 0.35);
+  border-radius: 100px;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.btn--voltar:hover {
+  background: rgba(61, 107, 126, 0.08);
+  border-color: var(--essencia);
+}
+
+/* ---- Grade de clientes (Painel KA) ---- */
+.grade-clientes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1.3rem;
+}
+.cliente-card {
+  font-family: var(--body);
+  text-align: left;
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+.cliente-card:hover,
+.cliente-card:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(15, 25, 35, 0.14);
+  border-color: var(--dourado-c);
+}
+.cliente-card:focus-visible {
+  outline: 2px solid var(--dourado);
+  outline-offset: 2px;
+}
+.cliente-card__capa {
+  height: 132px;
+  display: grid;
+  place-items: center;
+  background-size: cover;
+  background-position: center;
+}
+.cliente-card__capa img {
+  max-height: 46px;
+  max-width: 58%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.25));
+}
+.cliente-card__capa span {
+  font-family: var(--heading);
+  font-size: 1.3rem;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+.cliente-card__corpo {
+  padding: 1.1rem 1.25rem 1.2rem;
+}
+.cliente-card__corpo h3 {
+  font-size: 1.15rem;
+  margin-bottom: 0.15rem;
+}
+.cliente-card__tagline {
+  font-size: 0.78rem;
+  color: var(--t-500);
+  margin-bottom: 0.7rem;
+  line-height: 1.45;
+}
+.cliente-card__paleta {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+}
+.cliente-card__paleta span {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(15, 25, 35, 0.12);
+}
+.cliente-card__rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(15, 25, 35, 0.07);
+  padding-top: 0.85rem;
+}
+.cliente-card__qtd {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--t-400);
+}
+.cliente-card__cta {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--essencia);
+}
+
+/* ---- Grade de templates (estúdio da marca) ---- */
+.grade-templates {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+  gap: 1.3rem;
+}
+.tpl-card {
+  font-family: var(--body);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+.tpl-card:hover,
+.tpl-card:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(15, 25, 35, 0.14);
+  border-color: var(--dourado-c);
+}
+.tpl-card:focus-visible {
+  outline: 2px solid var(--dourado);
+  outline-offset: 2px;
+}
+.tpl-card__thumb {
+  position: relative;
+  aspect-ratio: 1080 / 1350;
+  background: var(--bg-3);
+  overflow: hidden;
+}
+.tpl-card__corpo {
+  padding: 0.95rem 1.1rem 1.05rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+.tpl-card__corpo h3 {
+  font-size: 0.98rem;
+  line-height: 1.3;
+}
+.tpl-card__corpo p {
+  font-size: 0.76rem;
+  color: var(--t-500);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tpl-card__meta {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.tpl-card__meta span {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--t-400);
+  background: var(--bg-1);
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 100px;
+  padding: 0.2rem 0.55rem;
+}
+
+/* Miniatura ao vivo (arte real em escala) */
+.mini-preview {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+.mini-preview__zoom {
+  transform-origin: top left;
+}
+
+/* Card especial "Montar carrossel": leque de slides sobre fundo marinho */
+.tpl-card--carrossel .tpl-card__thumb {
+  background: radial-gradient(circle at 75% 20%, rgba(184, 155, 106, 0.28), transparent 55%),
+    var(--marinho);
+}
+.tpl-deck {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.tpl-deck__slide {
+  position: absolute;
+  width: 46%;
+  aspect-ratio: 4 / 5;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transition: transform 0.25s ease;
+}
+.tpl-deck__slide:nth-child(1) {
+  background: var(--dourado-c);
+  transform: rotate(-10deg) translateX(-26%);
+  opacity: 0.85;
+}
+.tpl-deck__slide:nth-child(2) {
+  background: var(--bege);
+  transform: rotate(9deg) translateX(26%);
+  opacity: 0.9;
+}
+.tpl-deck__slide:nth-child(3) {
+  background: #fff;
+  transform: rotate(-2deg);
+  display: grid;
+  place-items: center;
+  font-family: var(--heading);
+  font-size: 1.6rem;
+  color: var(--marinho);
+}
+.tpl-card--carrossel:hover .tpl-deck__slide:nth-child(1) {
+  transform: rotate(-14deg) translateX(-34%);
+}
+.tpl-card--carrossel:hover .tpl-deck__slide:nth-child(2) {
+  transform: rotate(13deg) translateX(34%);
+}
+.tpl-deck__tag {
+  position: absolute;
+  bottom: 0.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--dourado-c);
+}
