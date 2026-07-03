@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
 import { ProtectedRoute } from './components/ProtectedRoute'
-import { RootRedirect } from './pages/RootRedirect'
 import { Login } from './pages/Login'
 import { DemoStudio } from './pages/DemoStudio'
 import { AdminPanel } from './pages/AdminPanel'
@@ -13,11 +12,15 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<RootRedirect />} />
-          <Route path="/login" element={<Login />} />
+          {/* Painel da KA — aberto, sem login (uso interno da KA) */}
+          <Route path="/" element={<AdminPanel />} />
+          <Route path="/ka" element={<AdminPanel />} />
+
           {/* Estúdio público por marca — ex.: /shapes, /aa (e alias /ver/:slug) */}
           <Route path="/ver/:slug" element={<DemoStudio />} />
-          <Route path="/:slug" element={<DemoStudio />} />
+
+          {/* Fluxo autenticado (para o futuro: logins de cliente) */}
+          <Route path="/login" element={<Login />} />
           <Route
             path="/admin"
             element={
@@ -34,6 +37,9 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Marca por slug (deixe por último: rota dinâmica) */}
+          <Route path="/:slug" element={<DemoStudio />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
