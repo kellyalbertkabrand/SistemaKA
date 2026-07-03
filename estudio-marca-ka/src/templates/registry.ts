@@ -1,4 +1,4 @@
-import type { Template } from './types'
+import type { Template, Campo } from './types'
 import { ShapesFeedbackCard } from './shapes/FeedbackCard'
 import { ShapesProdutoCard } from './shapes/ProdutoCard'
 import { ShapesFraseCard } from './shapes/FraseCard'
@@ -12,6 +12,23 @@ import { PALETA_SHAPES } from './shapes/cores'
 
 // Paleta oficial da Shapes (primárias + gama secundária) para os fundos.
 const SWATCHES = PALETA_SHAPES
+
+// Campo padrão "Cor do logo": logo nas 3 cores da marca (preto/branco/laranja),
+// ou automático (segue o fundo). Usado em todos os cards com logo.
+function campoCorLogo(): Campo {
+  return {
+    id: 'cor_logo',
+    label: 'Cor do logo',
+    tipo: 'select',
+    padrao: 'auto',
+    opcoes: [
+      { valor: 'auto', rotulo: 'Automático (segue o fundo)' },
+      { valor: 'preto', rotulo: 'Preto' },
+      { valor: 'branco', rotulo: 'Branco' },
+      { valor: 'laranja', rotulo: 'Laranja' },
+    ],
+  }
+}
 
 // Fundo laranja texturizado original do card de feedback (valor especial:
 // uma imagem em vez de cor sólida). Mantido como opção/padrão.
@@ -91,6 +108,7 @@ export const TEMPLATES: Template[] = [
         opcoes: SWATCHES_FEEDBACK,
       },
       { id: 'cor_fonte', label: 'Cor do texto', tipo: 'cor', padrao: '#FFFFFF', opcoes: SWATCHES },
+      campoCorLogo(),
     ],
     render: ShapesFeedbackCard,
   },
@@ -133,6 +151,7 @@ export const TEMPLATES: Template[] = [
         ajuda: 'Texto curto. Use quebras de linha para separar as palavras.',
         padrao: 'design\nautoral',
       },
+      campoCorLogo(),
     ],
     render: ShapesProdutoCard,
   },
@@ -173,6 +192,7 @@ export const TEMPLATES: Template[] = [
         placeholder: 'Ex.: LUMINÁRIA CACTUS',
         padrao: 'LUMINÁRIA CACTUS',
       },
+      campoCorLogo(),
     ],
     render: ShapesCapaCard,
   },
@@ -240,6 +260,7 @@ export const TEMPLATES: Template[] = [
         ajuda: 'Uma característica por linha.',
         padrao: 'diversas cores\ndesmontável',
       },
+      campoCorLogo(),
     ],
     render: ShapesCoresCard,
   },
@@ -269,6 +290,7 @@ export const TEMPLATES: Template[] = [
         ajuda: 'Uma palavra por linha funciona bem.',
         padrao: 'forma\nfunção\nemoção',
       },
+      campoCorLogo(),
     ],
     render: ShapesFormaCard,
   },
@@ -305,6 +327,7 @@ export const TEMPLATES: Template[] = [
         ajuda: 'Use quebra de linha para separar em duas linhas.',
         padrao: 'entregamos para\ntodo Brasil',
       },
+      campoCorLogo(),
     ],
     render: ShapesCtaCard,
   },

@@ -41,6 +41,19 @@ export const CORES_SECUNDARIAS: Amostra[] = [
 // Paleta completa para os seletores de cor de fundo.
 export const PALETA_SHAPES: Amostra[] = [...CORES_PRIMARIAS, ...CORES_SECUNDARIAS]
 
+// Logo da Shapes nas 3 cores da marca (preto, branco, laranja #E37037).
+// `corLogo`: 'auto' (segue o fundo), 'preto', 'branco' ou 'laranja'.
+export function logoShapes(corLogo: string, corFundo: string): string {
+  const base = '/clientes/shapes/'
+  let escolha = corLogo || 'auto'
+  if (escolha === 'auto') {
+    escolha = corContraste(corFundo) === '#FFFFFF' ? 'branco' : 'preto'
+  }
+  if (escolha === 'laranja') return `${base}shapes-logo-laranja.png`
+  if (escolha === 'preto') return `${base}shapes-logo-preto.png`
+  return `${base}shapes-logo-branco.png`
+}
+
 // Preto ou branco da marca, o que tiver mais contraste com o fundo — para
 // logo e texto continuarem legíveis em qualquer cor da gama.
 export function corContraste(fundo: string): '#010101' | '#FFFFFF' {

@@ -1,5 +1,5 @@
 import type { RenderProps } from '../types'
-import { corContraste } from './cores'
+import { logoShapes } from './cores'
 import './shapes.css'
 
 const TEXTURA_LARANJA = 'url(/clientes/shapes/fundo-shapes.jpg)'
@@ -14,8 +14,7 @@ export function ShapesFeedbackCard({ valores, formato }: RenderProps) {
   const corFundo = String(valores.cor_fundo || TEXTURA_LARANJA)
   const isTextura = corFundo.startsWith('url(')
   const corFonte = String(valores.cor_fonte || '#FFFFFF')
-  // logo segue o fundo: textura (laranja) => branca; senão, contraste da cor.
-  const logoContraste = isTextura ? '#FFFFFF' : corContraste(corFundo)
+  const logoUrl = logoShapes(String(valores.cor_logo || 'auto'), corFundo)
 
   return (
     <div
@@ -32,11 +31,7 @@ export function ShapesFeedbackCard({ valores, formato }: RenderProps) {
       <div className="content">
         <img
           className="logo"
-          src={
-            logoContraste === '#FFFFFF'
-              ? '/clientes/shapes/shapes-logo-branco.png'
-              : '/clientes/shapes/shapes-logo-preto.png'
-          }
+          src={logoUrl}
           alt="Shapes"
           crossOrigin="anonymous"
         />

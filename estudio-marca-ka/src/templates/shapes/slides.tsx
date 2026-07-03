@@ -1,12 +1,9 @@
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
 import { ratioForma, caixaFoto, FORMAS } from '../formas'
-import { corContraste } from './cores'
+import { logoShapes } from './cores'
 import { ShapesClips } from './ShapesClips'
 import './shapes.css'
-
-const BRANCO = '/clientes/shapes/shapes-logo-branco.png'
-const PRETO = '/clientes/shapes/shapes-logo-preto.png'
 
 // 1 · Capa — foto (tamanho ajustável) + título grande + logo.
 // A foto vai de 60% a 100% do card; abaixo de 100% aparece a cor de fundo em volta.
@@ -15,8 +12,7 @@ export function ShapesCapaCard({ valores, formato }: RenderProps) {
   const titulo = String(valores.titulo || '')
   const corFundo = String(valores.cor_fundo || '#EDE9DE')
   const corFonte = String(valores.cor_fonte || '#131313')
-  // logo segue o fundo: fundo claro => logo preta; fundo escuro => logo branca.
-  const logoSrc = corContraste(corFundo) === '#FFFFFF' ? BRANCO : PRETO
+  const logoSrc = logoShapes(String(valores.cor_logo || 'auto'), corFundo)
 
   const areaRaw = Number(valores.foto_area)
   const fator = Math.min(100, Math.max(60, Number.isFinite(areaRaw) ? areaRaw : 92)) / 100
@@ -51,7 +47,7 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
   const texto = String(valores.texto || '')
   const forma = String(valores.forma || 'shape-blob1')
   const corFonte = String(valores.cor_fonte || '#131313')
-  const logoContraste = corContraste(cor) // logo segue o fundo
+  const logoUrl = logoShapes(String(valores.cor_logo || 'auto'), cor)
   const caixa = caixaFoto(formato.largura - 192, formato.altura - 500, ratioForma(forma), Number(valores.foto_area))
   return (
     <div
@@ -59,7 +55,7 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
       style={{ width: formato.largura, height: formato.altura, background: cor, color: corFonte }}
     >
       <ShapesClips />
-      <img className="logo" src={logoContraste === '#FFFFFF' ? BRANCO : PRETO} alt="Shapes" crossOrigin="anonymous" />
+      <img className="logo" src={logoUrl} alt="Shapes" crossOrigin="anonymous" />
       <div className="blob-wrap">
         <div
           className="foto-blob"
@@ -91,7 +87,7 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
   const texto = String(valores.texto || '')
   const forma = String(valores.forma || 'shape-blob1')
   const corFonte = String(valores.cor_fonte || '#FFFFFF')
-  const logoContraste = corContraste(cor) // logo segue o fundo
+  const logoUrl = logoShapes(String(valores.cor_logo || 'auto'), cor)
   const story = formato.formato === 'story'
   const caixa = story
     ? caixaFoto(formato.largura - 192, formato.altura - 600, ratioForma(forma), Number(valores.foto_area))
@@ -116,7 +112,7 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
   )
   const lado = (
     <div className="lado">
-      <img className="logo" src={logoContraste === '#FFFFFF' ? BRANCO : PRETO} alt="Shapes" crossOrigin="anonymous" />
+      <img className="logo" src={logoUrl} alt="Shapes" crossOrigin="anonymous" />
       {texto && <div className="texto">{texto}</div>}
     </div>
   )
@@ -152,7 +148,7 @@ export function ShapesCtaCard({ valores, formato }: RenderProps) {
   const sub = String(valores.texto_sub || '')
   const extra = String(valores.texto_extra || '')
   const corFonte = String(valores.cor_fonte || '#FFFFFF')
-  const logoContraste = corContraste(cor) // logo/concha segue a cor da forma
+  const logoUrl = logoShapes(String(valores.cor_logo || 'auto'), cor)
   const f = FORMAS.find((x) => x.id === forma) ?? FORMAS[0]
   // "Tamanho da foto" (foto_area) controla o tamanho da forma neste card.
   const areaRaw = Number(valores.foto_area)
@@ -173,7 +169,7 @@ export function ShapesCtaCard({ valores, formato }: RenderProps) {
         </svg>
       </div>
       <div className="centro">
-        <img className="icone" src={logoContraste === '#FFFFFF' ? BRANCO : PRETO} alt="Shapes" crossOrigin="anonymous" />
+        <img className="icone" src={logoUrl} alt="Shapes" crossOrigin="anonymous" />
         {botao && <div className="botao">{botao}</div>}
         {sub && <div className="sub">{sub}</div>}
         {extra && <div className="extra">{extra}</div>}
