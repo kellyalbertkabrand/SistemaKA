@@ -152,7 +152,10 @@ export function ShapesCtaCard({ valores, formato }: RenderProps) {
   const extra = String(valores.texto_extra || '')
   const tinta = corContraste(cor)
   const f = FORMAS.find((x) => x.id === forma) ?? FORMAS[0]
-  const blobW = Math.round(formato.largura * 0.86)
+  // "Tamanho da foto" (foto_area) controla o tamanho da forma neste card.
+  const areaRaw = Number(valores.foto_area)
+  const fator = Math.min(120, Math.max(60, Number.isFinite(areaRaw) ? areaRaw : 100)) / 100
+  const blobW = Math.round(formato.largura * 0.86 * fator)
   const blobH = Math.round(blobW / f.ratio)
 
   return (

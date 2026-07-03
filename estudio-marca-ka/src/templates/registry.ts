@@ -276,8 +276,14 @@ export const TEMPLATES: Template[] = [
     descricao: 'Fechamento do carrossel — foto de fundo, forma orgânica colorida (semi-transparente), concha, botão e chamada para a loja.',
     formatos: FORMATOS,
     campos: [
-      { id: 'foto', label: 'Foto de fundo', tipo: 'imagem' },
-      { id: 'forma', label: 'Forma', tipo: 'forma', padrao: 'shape-blob1' },
+      {
+        id: 'foto',
+        label: 'Foto de fundo',
+        tipo: 'imagem',
+        areaPadrao: 100,
+        ajuda: 'Aqui "Tamanho da foto" controla o tamanho da forma orgânica.',
+      },
+      { id: 'forma', label: 'Forma (o texto fica dentro)', tipo: 'forma', padrao: 'shape-blob1' },
       {
         id: 'cor_fundo',
         label: 'Cor da forma',
@@ -287,7 +293,13 @@ export const TEMPLATES: Template[] = [
       },
       { id: 'texto_botao', label: 'Texto do botão', tipo: 'texto', padrao: 'ACESSE A LOJA' },
       { id: 'texto_sub', label: 'Subtexto', tipo: 'texto', padrao: 'no botão abaixo' },
-      { id: 'texto_extra', label: 'Linha extra', tipo: 'texto', padrao: 'entregamos para todo Brasil' },
+      {
+        id: 'texto_extra',
+        label: 'Linha extra',
+        tipo: 'textarea',
+        ajuda: 'Use quebra de linha para separar em duas linhas.',
+        padrao: 'entregamos para\ntodo Brasil',
+      },
     ],
     render: ShapesCtaCard,
   },
