@@ -3,6 +3,7 @@ import type { FormatoDef, Template, ValoresPeca } from '../templates/types'
 import { valoresPadrao } from '../templates/types'
 import { CamposEditor } from './CamposEditor'
 import { baixarPng, baixarZip } from '../lib/exportar'
+import { metaPadrao } from '../lib/assinatura'
 import './carrossel.css'
 
 const MAX_SLIDES = 10
@@ -42,6 +43,7 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   const slide = slides[sel]
   const template = porId(slide.templateId)
   const slug = templates[0]?.clienteSlug ?? 'peca'
+  const clienteNome = templates[0]?.clienteNome
 
   const previewW = 320
   const escala = previewW / formato.largura
@@ -87,7 +89,7 @@ export function Carrossel({ templates }: { templates: Template[] }) {
     if (!node) return
     setBaixando(true)
     try {
-      await baixarPng(node, `${slug}-carrossel-slide${sel + 1}`)
+      await baixarPng(node, `${slug}-carrossel-slide${sel + 1}`, 2, metaPadrao({ cliente: clienteNome, titulo: 'Carrossel' }))
     } catch (e) {
       alert('Não consegui gerar o PNG.\n' + (e as Error).message)
     } finally {
@@ -102,7 +104,7 @@ export function Carrossel({ templates }: { templates: Template[] }) {
         .map((_, i) => nodeRefs.current[i])
         .filter((n): n is HTMLDivElement => !!n)
         .map((node, i) => ({ node, nome: `slide${i + 1}` }))
-      await baixarZip(itens, `${slug}-carrossel`)
+      await baixarZip(itens, `${slug}-carrossel`, 2, metaPadrao({ cliente: clienteNome, titulo: 'Carrossel' }))
     } catch (e) {
       alert('Não consegui gerar o zip.\n' + (e as Error).message)
     } finally {

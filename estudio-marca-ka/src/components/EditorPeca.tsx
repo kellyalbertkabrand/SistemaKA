@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import type { Template, ValoresPeca, FormatoDef } from '../templates/types'
 import { valoresPadrao } from '../templates/types'
 import { baixarPng } from '../lib/exportar'
+import { metaPadrao } from '../lib/assinatura'
 import { CamposEditor } from './CamposEditor'
 import './editor.css'
 
@@ -35,7 +36,12 @@ export function EditorPeca({ template }: { template: Template }) {
     if (!artRef.current) return
     setBaixando(true)
     try {
-      await baixarPng(artRef.current, `${template.clienteSlug}-${template.id}-${formato.formato}`)
+      await baixarPng(
+        artRef.current,
+        `${template.clienteSlug}-${template.id}-${formato.formato}`,
+        2,
+        metaPadrao({ cliente: template.clienteNome, titulo: template.nome }),
+      )
     } catch (e) {
       alert('Não consegui gerar o PNG agora. Tente novamente.\n' + (e as Error).message)
     } finally {
