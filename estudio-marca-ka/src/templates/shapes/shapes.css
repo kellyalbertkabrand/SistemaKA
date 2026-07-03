@@ -165,7 +165,7 @@
   margin-bottom: 34px;
 }
 .shapes-fb .kicker {
-  color: #fff;
+  color: inherit;
   font-weight: 700;
   font-size: 40px;
   letter-spacing: 9px;
@@ -204,7 +204,7 @@
   font-size: 38px;
 }
 .shapes-fb .who {
-  color: #fff;
+  color: inherit;
   font-weight: 500;
   font-size: 34px;
   letter-spacing: 6px;

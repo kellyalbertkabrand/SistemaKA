@@ -1,23 +1,41 @@
 import type { RenderProps } from '../types'
+import { corContraste } from './cores'
 import './shapes.css'
 
+const TEXTURA_LARANJA = 'url(/clientes/shapes/fundo-shapes.jpg)'
+
 // Card de depoimento da Shapes — reprodução fiel do template-card.html oficial.
-// Campos preenchidos pelo cliente: estrelas, depoimento (quote) e nome (who).
+// Campos preenchidos pelo cliente: estrelas, depoimento (quote), nome (who) e
+// cor de fundo (textura laranja padrão ou qualquer cor da marca).
 export function ShapesFeedbackCard({ valores, formato }: RenderProps) {
   const estrelas = Math.max(0, Math.min(5, Number(valores.stars ?? 5)))
   const quote = String(valores.quote ?? '')
   const who = String(valores.who ?? '')
+  const corFundo = String(valores.cor_fundo || TEXTURA_LARANJA)
+  const isTextura = corFundo.startsWith('url(')
+  // Na textura (laranja) a tinta é branca; em cor sólida, contraste automático.
+  const tinta = isTextura ? '#FFFFFF' : corContraste(corFundo)
 
   return (
     <div
       className={`shapes-fb fmt-${formato.formato}`}
-      style={{ width: formato.largura, height: formato.altura }}
+      style={{
+        width: formato.largura,
+        height: formato.altura,
+        color: tinta,
+        background: isTextura
+          ? `${TEXTURA_LARANJA} center / cover no-repeat, #ff7829`
+          : corFundo,
+      }}
     >
-      <img className="bg" src="/clientes/shapes/fundo-shapes.jpg" alt="" crossOrigin="anonymous" />
       <div className="content">
         <img
           className="logo"
-          src="/clientes/shapes/shapes-logo-branco.png"
+          src={
+            tinta === '#FFFFFF'
+              ? '/clientes/shapes/shapes-logo-branco.png'
+              : '/clientes/shapes/shapes-logo-preto.png'
+          }
           alt="Shapes"
           crossOrigin="anonymous"
         />

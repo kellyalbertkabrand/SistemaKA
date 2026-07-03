@@ -149,6 +149,9 @@
   cursor: pointer;
   padding: 0;
 }
+.cor-input .swatch.on {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--essencia);
+}
 
 /* palco */
 .editor__stage {

@@ -133,8 +133,12 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
                   <button
                     key={o.valor}
                     type="button"
-                    className="swatch"
-                    style={{ background: o.valor }}
+                    className={`swatch ${valores[c.id] === o.valor ? 'on' : ''}`}
+                    style={
+                      o.valor.startsWith('url(')
+                        ? { background: `${o.valor} center / cover no-repeat` }
+                        : { background: o.valor }
+                    }
                     title={o.rotulo ?? o.valor}
                     onClick={() => onSet(c.id, o.valor)}
                   />

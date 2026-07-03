@@ -12,6 +12,16 @@ import { PALETA_SHAPES } from './shapes/cores'
 // Paleta oficial da Shapes (primárias + gama secundária) para os fundos.
 const SWATCHES = PALETA_SHAPES
 
+// Fundo laranja texturizado original do card de feedback (valor especial:
+// uma imagem em vez de cor sólida). Mantido como opção/padrão.
+const TEXTURA_LARANJA = 'url(/clientes/shapes/fundo-shapes.jpg)'
+
+// Amostras de fundo do card de feedback: textura laranja + paleta da marca.
+const SWATCHES_FEEDBACK = [
+  { valor: TEXTURA_LARANJA, rotulo: 'Laranja (textura)' },
+  ...PALETA_SHAPES,
+]
+
 // Dimensões dos 3 formatos (todos os modelos usam as mesmas).
 const FORMATOS = [
   { formato: 'post' as const, rotulo: 'Feed 4:5', largura: 1080, altura: 1350 },
@@ -70,6 +80,14 @@ export const TEMPLATES: Template[] = [
         placeholder: 'nome da cliente',
         ajuda: 'Primeiro nome + inicial, ou @ do Instagram.',
         padrao: 'nome da cliente',
+      },
+      {
+        id: 'cor_fundo',
+        label: 'Cor de fundo',
+        tipo: 'cor',
+        padrao: TEXTURA_LARANJA,
+        ajuda: 'A textura laranja é o padrão. Escolha uma cor da marca nas amostras ou qualquer cor no seletor — o texto se ajusta sozinho.',
+        opcoes: SWATCHES_FEEDBACK,
       },
     ],
     render: ShapesFeedbackCard,
