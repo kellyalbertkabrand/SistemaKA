@@ -1,17 +1,22 @@
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
 import { ratioForma, caixaContida } from '../formas'
+import { corContraste } from './cores'
 import { ShapesClips } from './ShapesClips'
 import './shapes.css'
+
+const LOGO_BRANCO = '/clientes/shapes/shapes-logo-branco.png'
+const LOGO_PRETO = '/clientes/shapes/shapes-logo-preto.png'
 
 // Post de produto da Shapes — fundo colorido (configurável), foto do produto
 // numa forma orgânica e um texto curto, no estilo do carrossel de produto.
 // Campos: foto (imagem), cor de fundo (cor) e texto.
 export function ShapesProdutoCard({ valores, formato }: RenderProps) {
-  const cor = String(valores.cor_fundo || '#3E4A2C')
+  const cor = String(valores.cor_fundo || '#FF7829')
   const foto = String(valores.foto || '')
   const texto = String(valores.texto || '')
   const forma = String(valores.forma || 'shape-blob1')
+  const tinta = corContraste(cor)
 
   // caixa da foto com a proporção nativa da forma (contain), para o clip não esticar.
   const pad = 96
@@ -24,12 +29,12 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
   return (
     <div
       className={`shapes-prod fmt-${formato.formato}`}
-      style={{ width: formato.largura, height: formato.altura, background: cor }}
+      style={{ width: formato.largura, height: formato.altura, background: cor, color: tinta }}
     >
       <ShapesClips />
       <img
         className="logo"
-        src="/clientes/shapes/shapes-logo-branco.png"
+        src={tinta === '#FFFFFF' ? LOGO_BRANCO : LOGO_PRETO}
         alt="Shapes"
         crossOrigin="anonymous"
       />

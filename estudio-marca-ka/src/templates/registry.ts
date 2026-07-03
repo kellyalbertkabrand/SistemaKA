@@ -7,17 +7,10 @@ import {
   ShapesFormaCard,
   ShapesCtaCard,
 } from './shapes/slides'
+import { PALETA_SHAPES } from './shapes/cores'
 
-// Paleta de fundo comum (amostras) usada pelos modelos de produto da Shapes.
-const SWATCHES = [
-  { valor: '#3E4A2C', rotulo: 'Verde Shapes' },
-  { valor: '#131313', rotulo: 'Preto' },
-  { valor: '#FF7829', rotulo: 'Laranja' },
-  { valor: '#F2EFE9', rotulo: 'Claro' },
-  { valor: '#D9C7A8', rotulo: 'Bege' },
-  { valor: '#F2B950', rotulo: 'Amarelo' },
-  { valor: '#8A8A8A', rotulo: 'Cinza' },
-]
+// Paleta oficial da Shapes (primárias + gama secundária) para os fundos.
+const SWATCHES = PALETA_SHAPES
 
 // Dimensões dos 3 formatos (todos os modelos usam as mesmas).
 const FORMATOS = [
@@ -107,16 +100,9 @@ export const TEMPLATES: Template[] = [
         id: 'cor_fundo',
         label: 'Cor de fundo',
         tipo: 'cor',
-        padrao: '#3E4A2C',
-        ajuda: 'Escolha uma cor (o verde é o padrão) ou clique numa das amostras.',
-        opcoes: [
-          { valor: '#3E4A2C', rotulo: 'Verde Shapes' },
-          { valor: '#131313', rotulo: 'Preto' },
-          { valor: '#FF7829', rotulo: 'Laranja' },
-          { valor: '#D9C7A8', rotulo: 'Bege' },
-          { valor: '#F2B950', rotulo: 'Amarelo' },
-          { valor: '#8A8A8A', rotulo: 'Cinza' },
-        ],
+        padrao: '#FF7829',
+        ajuda: 'Escolha uma cor da marca nas amostras ou qualquer cor no seletor — a Shapes tem liberdade cromática.',
+        opcoes: SWATCHES,
       },
       {
         id: 'texto',
@@ -195,7 +181,7 @@ export const TEMPLATES: Template[] = [
         id: 'cor_fundo',
         label: 'Cor de fundo',
         tipo: 'cor',
-        padrao: '#131313',
+        padrao: '#010101',
         opcoes: SWATCHES,
       },
       { id: 'foto', label: 'Foto do produto', tipo: 'imagem', obrigatorio: true },

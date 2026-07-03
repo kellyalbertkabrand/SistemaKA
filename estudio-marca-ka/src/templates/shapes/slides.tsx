@@ -1,6 +1,7 @@
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
 import { ratioForma, caixaContida } from '../formas'
+import { corContraste } from './cores'
 import { ShapesClips } from './ShapesClips'
 import './shapes.css'
 
@@ -33,14 +34,15 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
   const foto = String(valores.foto || '')
   const texto = String(valores.texto || '')
   const forma = String(valores.forma || 'shape-blob1')
+  const tinta = corContraste(cor)
   const caixa = caixaContida(formato.largura - 192, formato.altura - 560, ratioForma(forma))
   return (
     <div
       className="shapes-cores"
-      style={{ width: formato.largura, height: formato.altura, background: cor }}
+      style={{ width: formato.largura, height: formato.altura, background: cor, color: tinta }}
     >
       <ShapesClips />
-      <img className="logo" src={PRETO} alt="Shapes" crossOrigin="anonymous" />
+      <img className="logo" src={tinta === '#FFFFFF' ? BRANCO : PRETO} alt="Shapes" crossOrigin="anonymous" />
       <div className="blob-wrap">
         <div
           className="foto-blob"
@@ -65,15 +67,16 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
 
 // 4 · Forma função emoção — fundo escuro + foto + texto e concha ao lado.
 export function ShapesFormaCard({ valores, formato }: RenderProps) {
-  const cor = String(valores.cor_fundo || '#131313')
+  const cor = String(valores.cor_fundo || '#010101')
   const foto = String(valores.foto || '')
   const texto = String(valores.texto || '')
   const forma = String(valores.forma || 'shape-blob1')
+  const tinta = corContraste(cor)
   const caixa = caixaContida(formato.largura - 606, formato.altura - 192, ratioForma(forma))
   return (
     <div
       className="shapes-forma"
-      style={{ width: formato.largura, height: formato.altura, background: cor }}
+      style={{ width: formato.largura, height: formato.altura, background: cor, color: tinta }}
     >
       <ShapesClips />
       <div
@@ -92,7 +95,7 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
         )}
       </div>
       <div className="lado">
-        <img className="logo" src={BRANCO} alt="Shapes" crossOrigin="anonymous" />
+        <img className="logo" src={tinta === '#FFFFFF' ? BRANCO : PRETO} alt="Shapes" crossOrigin="anonymous" />
         {texto && <div className="texto">{texto}</div>}
       </div>
     </div>
