@@ -1,5 +1,6 @@
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
+import { ratioForma, caixaContida } from '../formas'
 import { ShapesClips } from './ShapesClips'
 import './shapes.css'
 
@@ -11,6 +12,14 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
   const foto = String(valores.foto || '')
   const texto = String(valores.texto || '')
   const forma = String(valores.forma || 'shape-blob1')
+
+  // caixa da foto com a proporção nativa da forma (contain), para o clip não esticar.
+  const pad = 96
+  const caixa = caixaContida(
+    formato.largura - pad * 2,
+    formato.altura - 560,
+    ratioForma(forma),
+  )
 
   return (
     <div
@@ -25,12 +34,22 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
         crossOrigin="anonymous"
       />
 
-      <div className="foto-blob" style={{ clipPath: `url(#${forma})`, WebkitClipPath: `url(#${forma})` }}>
-        {foto ? (
-          <img src={foto} alt="" style={estiloImagem(valores, 'foto')} />
-        ) : (
-          <div className="foto-ph">Sua foto aqui</div>
-        )}
+      <div className="blob-wrap">
+        <div
+          className="foto-blob"
+          style={{
+            width: caixa.largura,
+            height: caixa.altura,
+            clipPath: `url(#${forma})`,
+            WebkitClipPath: `url(#${forma})`,
+          }}
+        >
+          {foto ? (
+            <img src={foto} alt="" style={estiloImagem(valores, 'foto')} />
+          ) : (
+            <div className="foto-ph">Sua foto aqui</div>
+          )}
+        </div>
       </div>
 
       {texto && <div className="texto">{texto}</div>}

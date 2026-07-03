@@ -1,5 +1,6 @@
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
+import { ratioForma, caixaContida } from '../formas'
 import { ShapesClips } from './ShapesClips'
 import './shapes.css'
 
@@ -32,6 +33,7 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
   const foto = String(valores.foto || '')
   const texto = String(valores.texto || '')
   const forma = String(valores.forma || 'shape-blob1')
+  const caixa = caixaContida(formato.largura - 192, formato.altura - 560, ratioForma(forma))
   return (
     <div
       className="shapes-cores"
@@ -39,12 +41,22 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
     >
       <ShapesClips />
       <img className="logo" src={PRETO} alt="Shapes" crossOrigin="anonymous" />
-      <div className="foto-blob" style={{ clipPath: `url(#${forma})`, WebkitClipPath: `url(#${forma})` }}>
-        {foto ? (
-          <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
-        ) : (
-          <div className="foto-ph">Sua foto aqui</div>
-        )}
+      <div className="blob-wrap">
+        <div
+          className="foto-blob"
+          style={{
+            width: caixa.largura,
+            height: caixa.altura,
+            clipPath: `url(#${forma})`,
+            WebkitClipPath: `url(#${forma})`,
+          }}
+        >
+          {foto ? (
+            <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+          ) : (
+            <div className="foto-ph">Sua foto aqui</div>
+          )}
+        </div>
       </div>
       {texto && <div className="labels">{texto}</div>}
     </div>
@@ -57,13 +69,22 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
   const foto = String(valores.foto || '')
   const texto = String(valores.texto || '')
   const forma = String(valores.forma || 'shape-blob1')
+  const caixa = caixaContida(formato.largura - 606, formato.altura - 192, ratioForma(forma))
   return (
     <div
       className="shapes-forma"
       style={{ width: formato.largura, height: formato.altura, background: cor }}
     >
       <ShapesClips />
-      <div className="foto-blob" style={{ clipPath: `url(#${forma})`, WebkitClipPath: `url(#${forma})` }}>
+      <div
+        className="foto-blob"
+        style={{
+          width: caixa.largura,
+          height: caixa.altura,
+          clipPath: `url(#${forma})`,
+          WebkitClipPath: `url(#${forma})`,
+        }}
+      >
         {foto ? (
           <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
         ) : (

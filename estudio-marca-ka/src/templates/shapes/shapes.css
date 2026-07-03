@@ -138,10 +138,15 @@
   display: block;
   flex: 0 0 auto;
 }
-.shapes-prod .foto-blob {
+.shapes-prod .blob-wrap {
   flex: 1 1 auto;
+  min-height: 0;
   margin: 56px 0;
-  border-radius: 46% 54% 55% 45% / 52% 46% 54% 48%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.shapes-prod .foto-blob {
   overflow: hidden;
   background: rgba(255, 255, 255, 0.12);
   display: flex;
@@ -246,10 +251,15 @@
   height: auto;
   flex: 0 0 auto;
 }
-.shapes-cores .foto-blob {
+.shapes-cores .blob-wrap {
   flex: 1 1 auto;
+  min-height: 0;
   margin: 50px 0;
-  border-radius: 46% 54% 55% 45% / 52% 46% 54% 48%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.shapes-cores .foto-blob {
   overflow: hidden;
   background: rgba(0, 0, 0, 0.06);
   display: flex;
@@ -257,6 +267,7 @@
 .shapes-cores .foto-blob img {
   width: 100%;
   height: 100%;
+  object-fit: cover;
 }
 .shapes-cores .foto-ph {
   margin: auto;
@@ -282,10 +293,7 @@
   padding: 96px;
 }
 .shapes-forma .foto-blob {
-  flex: 1 1 auto;
-  align-self: stretch;
-  margin: 60px 0;
-  border-radius: 46% 54% 55% 45% / 52% 46% 54% 48%;
+  flex: 0 0 auto;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.12);
   display: flex;
@@ -293,6 +301,7 @@
 .shapes-forma .foto-blob img {
   width: 100%;
   height: 100%;
+  object-fit: cover;
 }
 .shapes-forma .foto-ph {
   margin: auto;
