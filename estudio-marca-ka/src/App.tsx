@@ -6,6 +6,8 @@ import { DemoStudio } from './pages/DemoStudio'
 import { AdminPanel } from './pages/AdminPanel'
 import { Studio } from './pages/Studio'
 import { NotFound } from './pages/NotFound'
+import { OrcamentoPublico } from './pages/publico/OrcamentoPublico'
+import { ContratoPublico } from './pages/publico/ContratoPublico'
 
 export default function App() {
   return (
@@ -18,6 +20,10 @@ export default function App() {
 
           {/* Estúdio público por marca — ex.: /shapes, /aa (e alias /ver/:slug) */}
           <Route path="/ver/:slug" element={<DemoStudio />} />
+
+          {/* Links públicos enviados ao cliente (por token) */}
+          <Route path="/orcamento/:token" element={<OrcamentoPublico />} />
+          <Route path="/contrato/:token" element={<ContratoPublico />} />
 
           {/* Fluxo autenticado (para o futuro: logins de cliente) */}
           <Route path="/login" element={<Login />} />

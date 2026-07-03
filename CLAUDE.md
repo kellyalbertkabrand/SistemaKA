@@ -1,4 +1,4 @@
-# Estúdio de Marca — KA · Memória do Projeto
+# Sistema Visual de Publicações da Marca — KA · Memória do Projeto
 
 > Este arquivo é a **fonte de verdade** do projeto. O Claude Code o lê
 > automaticamente em qualquer sessão nova neste repositório. Se você (Kelly)
@@ -11,9 +11,11 @@
 
 ## 1. O que é
 
-**Estúdio de Marca — KA** é um app web **multi-cliente** da Kelly Albert (KA),
-designer de marca. Ele gera peças para redes sociais (feed, story, carrossel,
-card) **na identidade visual de cada cliente**.
+**Sistema Visual de Publicações da Marca** (antes "Estúdio de Marca — KA") é
+um app web **multi-cliente** da Kelly Albert (KA), designer de marca. Ele gera
+peças para redes sociais (feed, story, carrossel, card) **na identidade visual
+de cada cliente** e agora também **gerencia o negócio da KA**: fichas de
+clientes, acessos, orçamentos, contratos e cobranças (Mercado Pago).
 
 Modelo de uso pensado pela KA:
 
@@ -151,6 +153,36 @@ margens. Enquadramento (posição/zoom) fica em `foto_x`, `foto_y`, `foto_zoom`
 
 ---
 
+## 4b. Gestão interna (clientes, orçamentos, contratos, cobranças)
+
+O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamentos
+/ Contratos / Cobranças (**restritas** — exigem login admin, `GateAdmin.tsx`).
+
+- **Banco:** `supabase/gestao.sql` (rodar após `schema.sql`). Tabelas:
+  `orcamentos`, `contratos`, `cobrancas`, `modelos_contrato` + ficha do cliente
+  (colunas novas em `clientes`: responsavel, telefone, endereço, observações,
+  documento, mensalidade, dia_vencimento, cobranca_ativa, slug).
+- **Fluxo do orçamento:** KA monta (itens + valores) → envia link público
+  `/orcamento/:token` → cliente aprova (nome+CPF/CNPJ) → RPC
+  `responder_orcamento` gera **contrato** (do modelo com {{placeholders}}) e
+  **cobrança** automaticamente; recusa também é registrada.
+- **Contrato:** modelo editável na aba Contratos; link público
+  `/contrato/:token` com **aceite digital** (nome, documento, data/hora,
+  user-agent). Impressão → PDF pelo navegador (CSS @media print).
+- **Cobranças:** mensalidade por cliente (RPC `gerar_mensalidades`, idempotente
+  por competência; botão no painel ou pg_cron) + avulsas (de orçamento ou
+  manuais). Link de pagamento **Mercado Pago Checkout Pro** (cartão parcelado,
+  boleto, PIX) via Edge Function `mp-criar-cobranca`; `mp-webhook` marca paga
+  quando o MP aprova. Sem as functions publicadas, dá para colar link manual.
+- **Acessos:** aba Clientes & Acessos convida por e-mail (Edge Function
+  `convidar-usuario`, service_role só no servidor) e vincula/desvincula logins
+  à marca (`usuarios.cliente_id`/`cliente_slug`).
+- **Páginas públicas por token** usam RPCs `security definer`
+  (`*_por_token`) — anon nunca lê tabelas direto.
+- **Segredos** (só nas Edge Functions): `MP_ACCESS_TOKEN`, `APP_URL`. Setup
+  completo em `supabase/functions/README.md`.
+- Dev local: `?preview-gate` na URL pula o gate (só em `import.meta.env.DEV`).
+
 ## 5. Export de PNG: assinatura + SEO
 
 - **Assinatura KA** (`src/lib/assinatura.ts`): todo PNG exportado recebe
@@ -256,8 +288,10 @@ Function do Supabase (Fase 6). service_role e senha do banco são **secretos**.
 - [ ] Hex fechados da gama secundária (hoje aproximados).
 - [ ] `og:image` (imagem de capa para preview ao compartilhar o link).
 - [ ] Trazer 2º cliente (mapear marca, cores, fontes, formas, templates).
-- [ ] Painel Admin real (Fase 2): CRUD de clientes/templates via Supabase.
-- [ ] Login/brand por cliente ligado ao banco (`cliente_slug` em `usuarios`).
+- [x] Gestão interna: clientes, acessos, orçamentos, contratos, cobranças (jul/2026).
+- [ ] Painel Admin real (Fase 2): CRUD de templates via Supabase.
+- [ ] Rodar `gestao.sql` no Supabase + publicar as 3 Edge Functions + webhook MP.
+- [ ] E-mail automático com o boleto/link ao gerar cobrança (hoje: copiar link).
 - [ ] IA (Fase 6) só via Edge Function do Supabase (chave nunca no front).
 - [ ] Mais formatos/templates conforme a KA validar.
 
@@ -269,6 +303,7 @@ Function do Supabase (Fase 6). service_role e senha do banco são **secretos**.
 estudio-marca-ka/
 ├── index.html                      # SEO/OG/schema.org + fontes Google
 ├── netlify.toml, public/_redirects # config Netlify + SPA
+├── supabase/                       # schema.sql, gestao.sql, functions/ (MP)
 ├── public/clientes/shapes/         # fontes, logos, fundo, elementos/
 └── src/
     ├── App.tsx                     # rotas
@@ -277,9 +312,11 @@ estudio-marca-ka/
     │   ├── exportar.ts             # baixarPng / baixarZip (assinado)
     │   ├── assinatura.ts           # metadados iTXt no PNG
     │   ├── supabase.ts, api.ts, storage.ts, database.types.ts
+    │   ├── gestao.ts               # dados de orçamentos/contratos/cobranças
     ├── styles/
     │   ├── global.css              # tema base (KA)
-    │   └── painel.css              # grades do painel (clientes + templates)
+    │   ├── painel.css              # grades do painel (clientes + templates)
+    │   └── gestao.css              # abas, tabelas, fichas, páginas públicas
     ├── components/
     │   ├── BrandStudio.tsx         # estúdio por marca ("o que criar?")
     │   ├── MiniPreview.tsx         # miniatura ao vivo de template (scale)
@@ -288,7 +325,10 @@ estudio-marca-ka/
     │   ├── CamposEditor.tsx        # controles a partir de `campos`
     │   └── editor.css, carrossel.css
     ├── pages/
-    │   ├── AdminPanel.tsx          # painel da KA (lista clientes)
+    │   ├── AdminPanel.tsx          # painel da KA (abas estúdio + gestão)
+    │   ├── gestao/                 # GateAdmin, Clientes, Orçamentos,
+    │   │                           #   Contratos, Cobranças (admin)
+    │   ├── publico/                # OrcamentoPublico, ContratoPublico (token)
     │   ├── Studio.tsx              # área do cliente logado
     │   ├── DemoStudio.tsx          # rota pública por marca (/shapes)
     │   ├── Login.tsx, NotFound.tsx

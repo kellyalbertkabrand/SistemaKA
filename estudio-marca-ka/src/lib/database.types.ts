@@ -16,6 +16,100 @@ export interface Cliente {
   site: string | null
   status: ClienteStatus
   criado_em: string
+  /** Marca (slug dos templates) associada a este cliente. */
+  slug: string | null
+  // Ficha do cliente (dados cadastrais/contato)
+  responsavel: string | null
+  email_contato: string | null
+  telefone: string | null
+  endereco: string | null
+  cidade: string | null
+  observacoes: string | null
+  // Cobrança
+  email_cobranca: string | null
+  documento: string | null
+  valor_mensalidade: number | null
+  dia_vencimento: number
+  cobranca_ativa: boolean
+}
+
+// ---- Gestão: orçamentos, contratos e cobranças -----------------------------
+
+export type OrcamentoStatus = 'rascunho' | 'enviado' | 'aprovado' | 'recusado' | 'expirado'
+export type ContratoStatus = 'rascunho' | 'enviado' | 'assinado' | 'cancelado'
+export type CobrancaTipo = 'mensalidade' | 'avulsa'
+export type CobrancaStatus = 'pendente' | 'paga' | 'atrasada' | 'cancelada'
+
+export interface OrcamentoItem {
+  descricao: string
+  qtd: number
+  valor: number
+}
+
+export interface Orcamento {
+  id: string
+  cliente_id: string | null
+  destinatario_nome: string
+  destinatario_email: string | null
+  destinatario_documento: string | null
+  titulo: string
+  descricao: string | null
+  itens: OrcamentoItem[]
+  desconto: number
+  valor_total: number
+  condicoes: string | null
+  validade: string | null
+  status: OrcamentoStatus
+  token: string
+  modelo_contrato_id: string | null
+  contrato_id: string | null
+  cobranca_id: string | null
+  criado_em: string
+  enviado_em: string | null
+  respondido_em: string | null
+}
+
+export interface Contrato {
+  id: string
+  orcamento_id: string | null
+  cliente_id: string | null
+  titulo: string
+  conteudo: string
+  status: ContratoStatus
+  token: string
+  criado_em: string
+  enviado_em: string | null
+  assinado_em: string | null
+  assinatura_nome: string | null
+  assinatura_documento: string | null
+  assinatura_user_agent: string | null
+}
+
+export interface Cobranca {
+  id: string
+  cliente_id: string | null
+  orcamento_id: string | null
+  tipo: CobrancaTipo
+  descricao: string
+  valor: number
+  vencimento: string
+  competencia: string | null
+  status: CobrancaStatus
+  mp_preference_id: string | null
+  mp_payment_id: string | null
+  link_pagamento: string | null
+  boleto_url: string | null
+  boleto_linha_digitavel: string | null
+  pago_em: string | null
+  criado_em: string
+}
+
+export interface ModeloContrato {
+  id: string
+  nome: string
+  conteudo: string
+  padrao: boolean
+  criado_em: string
 }
 
 export interface KitMarca {
