@@ -261,6 +261,12 @@
   font-weight: 500;
   white-space: pre-line;
 }
+/* Story: centraliza logo e texto (foto já é centralizada). */
+.shapes-prod.fmt-story,
+.shapes-cores.fmt-story {
+  align-items: center;
+  text-align: center;
+}
 
 /* placeholder comum de foto */
 .shapes-capa .bg-ph,

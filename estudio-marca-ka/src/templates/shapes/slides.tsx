@@ -55,7 +55,7 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
   const caixa = caixaFoto(formato.largura - 192, formato.altura - 500, ratioForma(forma), Number(valores.foto_area))
   return (
     <div
-      className="shapes-cores"
+      className={`shapes-cores fmt-${formato.formato}`}
       style={{ width: formato.largura, height: formato.altura, background: cor, color: tinta }}
     >
       <ShapesClips />
