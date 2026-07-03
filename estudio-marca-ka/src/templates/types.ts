@@ -36,6 +36,8 @@ export interface CampoTexto extends CampoBase {
 
 export interface CampoImagem extends CampoBase {
   tipo: 'imagem'
+  /** Tamanho inicial da foto (%) no slider "Tamanho da foto". Padrão 92. */
+  areaPadrao?: number
 }
 
 export interface CampoEstrelas extends CampoBase {
@@ -106,6 +108,7 @@ export function valoresPadrao(campos: Campo[]): ValoresPeca {
     else if (c.tipo === 'cor') v[c.id] = c.padrao ?? '#000000'
     else if (c.tipo === 'forma') v[c.id] = c.padrao ?? 'shape-blob1'
     else if (c.tipo === 'texto' || c.tipo === 'textarea') v[c.id] = c.padrao ?? ''
+    else if (c.tipo === 'imagem') v[`${c.id}_area`] = c.areaPadrao ?? 92
     else v[c.id] = ''
   }
   return v
