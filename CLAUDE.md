@@ -219,6 +219,15 @@ publish `dist`, Node 20, redirect SPA `/* → /index.html 200`.
 > de cada push, é preciso ir no painel do Netlify e clicar em **Trigger deploy**
 > manualmente para o site no ar atualizar. Se algo "continua errado no ar",
 > quase sempre é isto.
+>
+> **Formas de publicar (jul/2026):** (1) sessões do Claude em ambiente com
+> rede liberada publicam direto via conector Netlify (deploy api); (2) o
+> workflow **`.github/workflows/publicar-app.yml`** builda `estudio-marca-ka/`
+> e publica via `netlify-cli` — depende do segredo `NETLIFY_AUTH_TOKEN` do
+> repositório, que em 03/07/2026 estava **vencido** (API respondia 401;
+> renovar em Netlify → User settings → Applications → New access token e
+> colar em GitHub → Settings → Secrets → Actions). Site id do app:
+> `620d408e-bb8a-49fb-a1da-ccf602320142`.
 
 **Variáveis de ambiente (Netlify + `.env.local`):**
 
