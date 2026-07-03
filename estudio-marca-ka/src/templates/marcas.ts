@@ -4,6 +4,7 @@
 // passam a vir do banco junto com os templates.
 
 import { CORES_PRIMARIAS, CORES_SECUNDARIAS } from './shapes/cores'
+import { PALETA_KA, COR_MARINHO } from './ka/cores'
 
 export interface MarcaVisual {
   /** Cor principal da marca (fallback da capa e detalhes). */
@@ -28,6 +29,11 @@ const MARCAS: Record<string, MarcaVisual> = {
       ...CORES_SECUNDARIAS.slice(0, 5).map((c) => c.valor),
     ],
     tagline: 'Objetos de decoração — forma, função e emoção.',
+  },
+  ka: {
+    corPrincipal: COR_MARINHO,
+    paleta: PALETA_KA,
+    tagline: 'Branding · Posicionamento · IA — os carrosséis da própria KA.',
   },
 }
 

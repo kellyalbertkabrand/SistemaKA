@@ -9,6 +9,15 @@ import {
   ShapesCtaCard,
 } from './shapes/slides'
 import { PALETA_SHAPES } from './shapes/cores'
+import {
+  KaCapaCard,
+  KaTextoCard,
+  KaPassoCard,
+  KaMidiaCard,
+  KaComentarioCard,
+  KaCtaCard,
+} from './ka/KaCards'
+import { FUNDOS_KA } from './ka/cores'
 
 // Paleta oficial da Shapes (primárias + gama secundária) para os fundos.
 const SWATCHES = PALETA_SHAPES
@@ -39,6 +48,30 @@ const SWATCHES_FEEDBACK = [
   { valor: TEXTURA_LARANJA, rotulo: 'Laranja (textura)' },
   ...PALETA_SHAPES,
 ]
+
+// ---- KA | Inteligência para Marcas ---------------------------------------
+// O padrão dos carrosséis da KA é travado: só feed 4:5 (1080×1350), só três
+// fundos oficiais, texto e destaque derivados do fundo (ver ka/cores.ts).
+
+const FORMATO_KA = [
+  { formato: 'post' as const, rotulo: 'Feed 4:5', largura: 1080, altura: 1350 },
+]
+
+// Campo padrão "Fundo": as três cores oficiais (a cor do texto acompanha).
+function campoFundoKA(padrao: string): Campo {
+  return {
+    id: 'cor_fundo',
+    label: 'Fundo',
+    tipo: 'select',
+    padrao,
+    ajuda: 'O padrão KA usa somente estes três fundos; a cor do texto acompanha.',
+    opcoes: FUNDOS_KA.map((f) => ({ valor: f.valor, rotulo: f.rotulo })),
+  }
+}
+
+const AJUDA_DESTAQUE =
+  'Para destacar uma palavra em caramelo (bold), use *asteriscos*. ' +
+  'Sem travessões (—): use vírgula, dois-pontos ou ponto.'
 
 // Dimensões dos 3 formatos (todos os modelos usam as mesmas).
 const FORMATOS = [
@@ -330,6 +363,207 @@ export const TEMPLATES: Template[] = [
       campoCorLogo(),
     ],
     render: ShapesCtaCard,
+  },
+
+  // ==== KA | Inteligência para Marcas ======================================
+  {
+    id: 'ka-capa',
+    clienteSlug: 'ka',
+    clienteNome: 'KA | Inteligência para Marcas',
+    nome: 'Capa (gancho)',
+    descricao:
+      'Card 1 do carrossel — o gancho em Playfair Display grande, no padrão ' +
+      'unificado da KA (cabeçalho, rodapé e fundos oficiais).',
+    formatos: FORMATO_KA,
+    campos: [
+      {
+        id: 'titulo',
+        label: 'Gancho (título grande)',
+        tipo: 'textarea',
+        obrigatorio: true,
+        placeholder: 'Ex.: Sua marca não é o que você diz. É o que *percebem.*',
+        ajuda: AJUDA_DESTAQUE + ' Quebre em linhas curtas.',
+        padrao: 'Sua marca não é\no que você diz.\nÉ o que *percebem.*',
+      },
+      campoFundoKA('marinho'),
+    ],
+    render: KaCapaCard,
+  },
+  {
+    id: 'ka-texto',
+    clienteSlug: 'ka',
+    clienteNome: 'KA | Inteligência para Marcas',
+    nome: 'Texto (desenvolvimento)',
+    descricao:
+      'Card de desenvolvimento — afirmação, virada ou insight. Título em ' +
+      'Playfair (opcional) e corpo em Montserrat com destaques em caramelo.',
+    formatos: FORMATO_KA,
+    campos: [
+      {
+        id: 'titulo',
+        label: 'Título (opcional)',
+        tipo: 'texto',
+        placeholder: 'Ex.: A virada',
+        padrao: '',
+      },
+      {
+        id: 'texto',
+        label: 'Texto',
+        tipo: 'textarea',
+        obrigatorio: true,
+        placeholder: 'O insight do card…',
+        ajuda: AJUDA_DESTAQUE,
+        padrao:
+          'Posicionamento não é um slogan bonito.\n\n' +
+          'É a decisão sobre qual espaço a sua marca ocupa na *mente de quem compra.*',
+      },
+      campoFundoKA('bege'),
+    ],
+    render: KaTextoCard,
+  },
+  {
+    id: 'ka-passo',
+    clienteSlug: 'ka',
+    clienteNome: 'KA | Inteligência para Marcas',
+    nome: 'Passo numerado',
+    descricao:
+      'Card de passo — número grande em caramelo acima do texto, para as ' +
+      'sequências didáticas do carrossel educativo.',
+    formatos: FORMATO_KA,
+    campos: [
+      {
+        id: 'numero',
+        label: 'Número do passo',
+        tipo: 'texto',
+        obrigatorio: true,
+        maxLen: 2,
+        padrao: '1',
+      },
+      {
+        id: 'texto',
+        label: 'Texto do passo',
+        tipo: 'textarea',
+        obrigatorio: true,
+        ajuda: AJUDA_DESTAQUE,
+        padrao: 'Defina o território que a sua marca pode *dominar.*',
+      },
+      campoFundoKA('bege'),
+    ],
+    render: KaPassoCard,
+  },
+  {
+    id: 'ka-midia',
+    clienteSlug: 'ka',
+    clienteNome: 'KA | Inteligência para Marcas',
+    nome: 'Mídia (notícias e análises)',
+    descricao:
+      'Card do carrossel de notícias — texto + área de mídia (imagem ou print) ' +
+      'como prova. Horizontal e quadrada: mídia embaixo; vertical: mídia à direita.',
+    formatos: FORMATO_KA,
+    campos: [
+      {
+        id: 'texto',
+        label: 'Texto',
+        tipo: 'textarea',
+        obrigatorio: true,
+        ajuda: AJUDA_DESTAQUE,
+        padrao: 'O case que *todo mundo* comentou esta semana:',
+      },
+      {
+        id: 'midia',
+        label: 'Imagem ou print',
+        tipo: 'imagem',
+        obrigatorio: true,
+        areaPadrao: 100,
+        ajuda: 'A mídia entra na proporção escolhida abaixo. Use "Tamanho da foto" para ajustar a área.',
+      },
+      {
+        id: 'proporcao',
+        label: 'Proporção da mídia',
+        tipo: 'select',
+        padrao: '16:9',
+        opcoes: [
+          { valor: '16:9', rotulo: 'Horizontal 16:9' },
+          { valor: '1:1', rotulo: 'Quadrada 1:1' },
+          { valor: '9:16', rotulo: 'Vertical 9:16 (texto à esquerda)' },
+        ],
+      },
+      campoFundoKA('bege'),
+    ],
+    render: KaMidiaCard,
+  },
+  {
+    id: 'ka-comentario',
+    clienteSlug: 'ka',
+    clienteNome: 'KA | Inteligência para Marcas',
+    nome: 'Comentário (box de print)',
+    descricao:
+      'Card do carrossel de notícias — texto em cima e card branco com ' +
+      '@usuário e o comentário, como um print de texto.',
+    formatos: FORMATO_KA,
+    campos: [
+      {
+        id: 'texto',
+        label: 'Texto',
+        tipo: 'textarea',
+        ajuda: AJUDA_DESTAQUE,
+        padrao: 'E a internet *não perdoou:*',
+      },
+      {
+        id: 'usuario',
+        label: '@ do usuário',
+        tipo: 'texto',
+        obrigatorio: true,
+        placeholder: '@usuario',
+        padrao: '@cliente',
+      },
+      {
+        id: 'comentario',
+        label: 'Comentário',
+        tipo: 'textarea',
+        obrigatorio: true,
+        placeholder: 'Cole aqui o comentário…',
+        padrao: 'Nunca vi uma marca se reposicionar tão rápido. Aula.',
+      },
+      campoFundoKA('marinho'),
+    ],
+    render: KaComentarioCard,
+  },
+  {
+    id: 'ka-cta',
+    clienteSlug: 'ka',
+    clienteNome: 'KA | Inteligência para Marcas',
+    nome: 'CTA (card 10)',
+    descricao:
+      'Fechamento de todo carrossel KA — fundo bege, frase, nome do produto ' +
+      'grande e botão pill "Link na minha bio" com contorno caramelo.',
+    formatos: FORMATO_KA,
+    campos: [
+      {
+        id: 'frase',
+        label: 'Frase',
+        tipo: 'textarea',
+        ajuda: AJUDA_DESTAQUE,
+        padrao:
+          'Se esse conteúdo te ajudou a enxergar a sua marca de outro jeito, ' +
+          'compartilhe e me siga para mais.',
+      },
+      {
+        id: 'produto',
+        label: 'Nome do produto',
+        tipo: 'texto',
+        obrigatorio: true,
+        placeholder: 'Ex.: Diagnóstico de Marca',
+        padrao: 'Diagnóstico de Marca',
+      },
+      {
+        id: 'botao',
+        label: 'Texto do botão',
+        tipo: 'texto',
+        padrao: 'Link na minha bio',
+      },
+    ],
+    render: KaCtaCard,
   },
 ]
 

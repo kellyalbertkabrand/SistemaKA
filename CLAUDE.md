@@ -23,7 +23,11 @@ Modelo de uso pensado pela KA:
   **anexa foto + escreve texto + escolhe formato** (story/carrossel/card/reels).
   Todo o design (cores, fontes, formas, logo) já vem travado no template.
 
-Cliente-piloto: **Shapes** (marca de objetos de decoração/luminárias).
+Clientes no sistema:
+
+- **Shapes** (piloto) — objetos de decoração/luminárias.
+- **KA | Inteligência para Marcas** — a marca da própria Kelly (carrosséis de
+  branding/posicionamento/IA). Ver seção 4b.
 
 ---
 
@@ -146,6 +150,51 @@ margens. Enquadramento (posição/zoom) fica em `foto_x`, `foto_y`, `foto_zoom`
 
 ---
 
+## 4b. A marca KA (assets em `public/clientes/ka/`, código em `src/templates/ka/`)
+
+Cliente = a própria **KA | Inteligência para Marcas**. Os templates reproduzem
+o **padrão visual unificado dos carrosséis da KA** (documento "Sistema de
+Carrosséis KA — Claude Code"; as 3 skills originais em Python ficam fora deste
+app — aqui é a versão web dos mesmos cards).
+
+- **Formato travado:** só Feed 4:5 (1080×1350), padding 80px, conteúdo
+  centralizado. Todo card tem **cabeçalho** ("**KA | Inteligência para Marcas**
+  · Branding · Posicionamento · IA", Montserrat maiúsculas, 1 linha, ~85% da
+  largura, parte da marca em bold 800) e **rodapé** ("KELLY ALBERT",
+  letter-spacing .4em, opacidade .58).
+- **Fundos travados em 3 cores** (campo `select`, não `cor` livre — o oposto
+  da liberdade cromática da Shapes): Bege `#F2EEE3`, Marinho `#152535`,
+  Caramelo `#C47830`. A **cor do texto deriva do fundo** (bege→marinho,
+  marinho→claro `#F4F1EB`, caramelo→papel) — ver `src/templates/ka/cores.ts`.
+  Detalhe (nunca fundo): Essência `#3D6B7E`, Mostarda `#E0B880`.
+- **Tipografia:** títulos Playfair Display, corpo Montserrat. Fontes
+  **variáveis** auto-hospedadas (`public/clientes/ka/fonts/*-var.woff2`,
+  3 arquivos, licença OFL, famílias 'Playfair KA'/'Montserrat KA' em `ka.css`)
+  — o export embute as fontes sem depender do CSS cross-origin do Google.
+- **Destaque:** `*asteriscos*` no texto viram `<strong>` peso 900 na cor de
+  destaque (caramelo; papel sobre fundo caramelo). Nunca itálico. Sem
+  travessões (—). Se a frase termina na palavra destacada, o ponto final entra
+  dentro dos asteriscos.
+
+### Templates KA (`registry.ts`) — os blocos dos carrosséis de 10 cards
+
+1. **ka-capa** — Capa (gancho), título grande em Playfair (106px).
+2. **ka-texto** — Desenvolvimento: título opcional + corpo Montserrat.
+3. **ka-passo** — Passo numerado: número grande caramelo acima do texto.
+4. **ka-midia** — Notícias/análises: texto + área de mídia em proporção fixa
+   (16:9 e 1:1 → mídia abaixo do texto; **9:16 → texto à esquerda, mídia à
+   direita**). O slider "Tamanho da foto" (`midia_area`) escala a área.
+5. **ka-comentario** — Texto + box branco de comentário (@usuário + fala).
+6. **ka-cta** — Card 10 (fecha TODO carrossel KA): fundo bege **travado**,
+   frase + nome do produto grande + botão pill "Link na minha bio" com
+   contorno caramelo.
+
+> Rota: `/ka` continua sendo o painel admin, então o estúdio público da KA é
+> **`/ver/ka`** (a rota dinâmica `/:slug` vem depois de `/ka` no App.tsx).
+> Para montar um carrossel completo: painel → cliente KA → Montar carrossel.
+
+---
+
 ## 5. Export de PNG: assinatura + SEO
 
 - **Assinatura KA** (`src/lib/assinatura.ts`): todo PNG exportado recebe
@@ -210,7 +259,7 @@ Function do Supabase (Fase 6). service_role e senha do banco são **secretos**.
 
 ## 8. Git / fluxo
 
-- Branch de trabalho atual: **`claude/internal-dashboard-visual-bzenia`**.
+- Branch de trabalho atual: **`claude/new-clients-system-enye24`**.
 - Rodar `git` a partir da **raiz do repo** (`/home/user/SistemaKA`), não de
   dentro de `estudio-marca-ka/` (senão `pathspec did not match`).
 - Push: `git push -u origin <branch>`.
@@ -219,8 +268,10 @@ Function do Supabase (Fase 6). service_role e senha do banco são **secretos**.
 
 ## 9. Gotchas do ambiente sandbox (para a IA)
 
-- **Egress bloqueado:** o sandbox não alcança netlify.app / supabase.co / DNS
-  externo. Não dá para verificar deploy no ar daqui — a KA verifica.
+- **Egress:** depende do ambiente. No sandbox antigo era bloqueado; no ambiente
+  remoto atual (Claude Code web) a rede sai por proxy e alcança, p.ex., o
+  Google Fonts. Testar com `curl` antes de assumir. Verificação do deploy no ar
+  continua com a KA.
 - **Verificação visual:** instalar `playwright-core` temporariamente, subir
   `vite preview`, usar o Chromium em
   `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`, tirar screenshot,
@@ -250,7 +301,11 @@ Function do Supabase (Fase 6). service_role e senha do banco são **secretos**.
 - [ ] Confirmar laranja oficial: `#FF7829` (vetor) vs `#E37037` (cartão).
 - [ ] Hex fechados da gama secundária (hoje aproximados).
 - [ ] `og:image` (imagem de capa para preview ao compartilhar o link).
-- [ ] Trazer 2º cliente (mapear marca, cores, fontes, formas, templates).
+- [x] Trazer 2º cliente → **KA** (carrosséis, ver seção 4b). Próximos clientes
+      seguem o mesmo caminho: assets em `public/clientes/<slug>/`, código em
+      `src/templates/<slug>/`, registro em `registry.ts` + `marcas.ts`.
+- [ ] KA: validar os 6 cards no ar e ajustar medidas finas se a KA quiser
+      (tamanhos vieram da spec do documento, não dos HTML originais das skills).
 - [ ] Painel Admin real (Fase 2): CRUD de clientes/templates via Supabase.
 - [ ] Login/brand por cliente ligado ao banco (`cliente_slug` em `usuarios`).
 - [ ] IA (Fase 6) só via Edge Function do Supabase (chave nunca no front).
@@ -265,6 +320,7 @@ estudio-marca-ka/
 ├── index.html                      # SEO/OG/schema.org + fontes Google
 ├── netlify.toml, public/_redirects # config Netlify + SPA
 ├── public/clientes/shapes/         # fontes, logos, fundo, elementos/
+├── public/clientes/ka/             # fonts/ (Playfair + Montserrat variáveis)
 └── src/
     ├── App.tsx                     # rotas
     ├── context/AuthContext.tsx     # sessão + admin por e-mail
@@ -293,9 +349,13 @@ estudio-marca-ka/
         ├── marcas.ts               # visual da marca p/ cards do painel
         ├── formas.ts               # 3 formas + caixaContida/caixaFoto
         ├── imagem.ts               # estiloImagem (posição/zoom)
-        └── shapes/
-            ├── cores.ts            # paleta + corContraste
-            ├── FeedbackCard.tsx, ProdutoCard.tsx, slides.tsx
-            ├── ShapesClips.tsx     # defs do clip-path
-            └── shapes.css
+        ├── shapes/
+        │   ├── cores.ts            # paleta + corContraste
+        │   ├── FeedbackCard.tsx, ProdutoCard.tsx, slides.tsx
+        │   ├── ShapesClips.tsx     # defs do clip-path
+        │   └── shapes.css
+        └── ka/
+            ├── cores.ts            # 3 fundos oficiais + texto/destaque derivados
+            ├── KaCards.tsx         # moldura comum + 6 cards do padrão KA
+            └── ka.css              # @font-face variáveis + estilos dos cards
 ```

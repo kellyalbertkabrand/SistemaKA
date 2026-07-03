@@ -1,0 +1,224 @@
+/* Fontes da KA (Google Fonts, licença OFL) auto-hospedadas em
+   /public/clientes/ka/fonts como fontes VARIÁVEIS — um arquivo por família
+   cobre todos os pesos, e o html-to-image embute no export sem depender de
+   CSS cross-origin do Google. */
+@font-face {
+  font-family: 'Montserrat KA';
+  font-weight: 100 900;
+  font-style: normal;
+  src: url('/clientes/ka/fonts/montserrat-var.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Playfair KA';
+  font-weight: 400 900;
+  font-style: normal;
+  src: url('/clientes/ka/fonts/playfair-var.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Playfair KA';
+  font-weight: 400 900;
+  font-style: italic;
+  src: url('/clientes/ka/fonts/playfair-var-italic.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* ---- Moldura comum: card 1080×1350, padding 80, cabeçalho + rodapé ---- */
+.ka-card {
+  --serif: 'Playfair KA', 'Playfair Display', serif;
+  --sans: 'Montserrat KA', 'Montserrat', sans-serif;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 80px;
+  font-family: var(--sans);
+}
+/* uma linha só, ocupando ~86% da largura do card (respiro dos dois lados) */
+.ka-card .ka-header {
+  flex: 0 0 auto;
+  align-self: center;
+  text-align: center;
+  white-space: nowrap;
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.5;
+}
+.ka-card .ka-header strong {
+  font-weight: 800;
+}
+.ka-card .ka-footer {
+  flex: 0 0 auto;
+  text-align: center;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em; /* compensa o letter-spacing da última letra p/ centralizar */
+  text-transform: uppercase;
+  opacity: 0.58;
+}
+/* miolo: conteúdo centralizado verticalmente entre cabeçalho e rodapé */
+.ka-card .ka-miolo {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+}
+
+/* destaque: sempre bold (peso 900), nunca itálico */
+.ka-card strong.ka-destaque {
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* ---- 1 · Capa (gancho) ---- */
+.ka-capa .titulo {
+  font-family: var(--serif);
+  font-size: 106px; /* ~10,6cqw, ajustado para caber linhas médias sem quebrar */
+  font-weight: 600;
+  line-height: 1.18;
+  white-space: pre-line;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+/* ---- 2 · Texto (desenvolvimento) ---- */
+.ka-texto .titulo {
+  font-family: var(--serif);
+  font-size: 76px;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 48px;
+  white-space: pre-line;
+  max-width: 90%;
+}
+.ka-texto .corpo,
+.ka-passo .corpo,
+.ka-midia .texto,
+.ka-comentario .texto {
+  font-size: 53px; /* 4,9cqw de 1080 */
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: pre-line;
+  max-width: 90%;
+  overflow-wrap: break-word;
+}
+
+/* ---- 3 · Passo numerado ---- */
+.ka-passo .numero {
+  font-family: var(--serif);
+  font-size: 200px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 40px;
+}
+
+/* ---- 4 · Mídia (notícias) ---- */
+.ka-midia .ka-miolo {
+  gap: 56px;
+}
+.ka-midia .midia-frame {
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.12);
+  position: relative;
+}
+.ka-midia .midia-frame img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.ka-midia .midia-ph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 32px;
+  opacity: 0.65;
+}
+.ka-midia .midia-ph .dim {
+  font-size: 22px;
+  opacity: 0.8;
+}
+/* vertical 9:16: texto à esquerda, mídia à direita, centralizados no meio */
+.ka-midia.vertical .ka-miolo {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  text-align: left;
+  gap: 64px;
+}
+.ka-midia.vertical .texto {
+  flex: 1 1 auto;
+}
+
+/* ---- 5 · Comentário (print de texto) ---- */
+.ka-comentario .ka-miolo {
+  gap: 64px;
+}
+.ka-comentario .box {
+  width: 92%;
+  background: #ffffff;
+  color: #152535;
+  border-radius: 24px;
+  padding: 56px 60px;
+  text-align: left;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.12);
+}
+.ka-comentario .box .usuario {
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 22px;
+}
+.ka-comentario .box .fala {
+  font-size: 44px;
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* ---- 6 · CTA (card 10, modelo do carrossel de desenhos) ---- */
+.ka-cta .frase {
+  font-size: 50px;
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: pre-line;
+  max-width: 86%;
+}
+.ka-cta .produto {
+  font-family: var(--serif);
+  font-size: 104px;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-top: 56px;
+  white-space: pre-line;
+  max-width: 92%;
+}
+.ka-cta .botao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 72px;
+  min-height: 108px;
+  padding: 0 76px;
+  border: 4px solid #c47830;
+  border-radius: 999px;
+  color: #c47830;
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1;
+}
