@@ -2,6 +2,7 @@ import type { Template, Campo } from './types'
 import { ShapesFeedbackCard } from './shapes/FeedbackCard'
 import { ShapesProdutoCard } from './shapes/ProdutoCard'
 import { ShapesFraseCard } from './shapes/FraseCard'
+import { ShapesGrafismoCard } from './shapes/GrafismoCard'
 import {
   ShapesCapaCard,
   ShapesCoresCard,
@@ -233,6 +234,45 @@ export const TEMPLATES: Template[] = [
       { id: 'cor_fonte', label: 'Cor do texto', tipo: 'cor', padrao: '#131313', opcoes: SWATCHES },
     ],
     render: ShapesFraseCard,
+  },
+  {
+    id: 'shapes-grafismo',
+    clienteSlug: 'shapes',
+    clienteNome: 'Shapes',
+    nome: 'Card com grafismo',
+    descricao:
+      'Fundo liso com as espirais da concha nas laterais (recoloríveis), texto ' +
+      'em cima e embaixo e a foto no centro (tamanho ajustável). Sem logotipo.',
+    formatos: FORMATOS,
+    campos: [
+      {
+        id: 'texto_cima',
+        label: 'Texto de cima',
+        tipo: 'textarea',
+        placeholder: 'Ex.: texto de cima',
+        ajuda: 'Para itálico, use *asteriscos*.',
+        padrao: 'texto de cima',
+      },
+      {
+        id: 'foto',
+        label: 'Foto',
+        tipo: 'imagem',
+        obrigatorio: true,
+        areaPadrao: 100,
+        ajuda: 'Use "Tamanho da foto" para aumentar ou diminuir o espaço da imagem.',
+      },
+      {
+        id: 'texto_baixo',
+        label: 'Texto de baixo',
+        tipo: 'textarea',
+        placeholder: 'Ex.: texto de baixo',
+        padrao: 'texto de baixo',
+      },
+      { id: 'cor_fundo', label: 'Cor de fundo', tipo: 'cor', padrao: '#FFFFFF', opcoes: SWATCHES },
+      { id: 'cor_grafismo', label: 'Cor dos grafismos', tipo: 'cor', padrao: '#DFC0DF', opcoes: SWATCHES },
+      { id: 'cor_fonte', label: 'Cor do texto', tipo: 'cor', padrao: '#131313', opcoes: SWATCHES },
+    ],
+    render: ShapesGrafismoCard,
   },
   {
     id: 'shapes-cores',

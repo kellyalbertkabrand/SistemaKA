@@ -133,6 +133,11 @@ margens. Enquadramento (posição/zoom) fica em `foto_x`, `foto_y`, `foto_zoom`
 4. **shapes-frase** — Frase + foto (carrossel 03): fundo creme, texto em cima,
    foto no meio (redimensionável, moldura 76%×66%), texto embaixo. **Sem logo.**
    Itálico com `*asteriscos*`. Campos `cor_fundo`/`cor_fonte`. `areaPadrao: 100`.
+4b. **shapes-grafismo** — Card com grafismo: fundo liso + espirais da concha nas
+   laterais (`elementos/grafismo-esq/dir.png`, **recoloríveis** via canvas
+   source-in em `GrafismoCard.tsx`) + texto cima/baixo + foto central
+   (moldura 498px, redimensionável). Campos `cor_fundo`/`cor_grafismo`/`cor_fonte`.
+   **Sem logo.**
 5. **shapes-cores** — Diversas cores (fundo claro + foto em forma + rótulos).
 6. **shapes-forma** — Forma função emoção (fundo escuro + foto + texto/concha).
    No feed/quadrado fica lado a lado; **no story empilha** (texto+concha em
