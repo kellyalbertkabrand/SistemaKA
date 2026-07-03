@@ -1,4 +1,5 @@
 import { toPng } from 'html-to-image'
+import JSZip from 'jszip'
 
 /**
  * Exporta um nó (a arte em tamanho real) para PNG de alta resolução.
@@ -23,4 +24,35 @@ export async function baixarPng(node: HTMLElement, nome: string, escala = 2): Pr
   a.download = `${nome}.png`
   a.href = dataUrl
   a.click()
+}
+
+/**
+ * Exporta vários nós (slides do carrossel) para um único .zip de PNGs.
+ */
+export async function baixarZip(
+  itens: { node: HTMLElement; nome: string }[],
+  zipNome: string,
+  escala = 2,
+): Promise<void> {
+  if (document.fonts?.ready) await document.fonts.ready
+
+  const zip = new JSZip()
+  for (const { node, nome } of itens) {
+    const dataUrl = await toPng(node, {
+      pixelRatio: escala,
+      cacheBust: true,
+      width: node.offsetWidth,
+      height: node.offsetHeight,
+      style: { transform: 'none', margin: '0' },
+    })
+    zip.file(`${nome}.png`, dataUrl.split(',')[1], { base64: true })
+  }
+
+  const blob = await zip.generateAsync({ type: 'blob' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.download = `${zipNome}.zip`
+  a.href = url
+  a.click()
+  URL.revokeObjectURL(url)
 }

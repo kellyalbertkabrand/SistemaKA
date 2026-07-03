@@ -1,4 +1,5 @@
 import type { RenderProps } from '../types'
+import { estiloImagem } from '../imagem'
 import './shapes.css'
 
 // Post de produto da Shapes — fundo colorido (configurável), foto do produto
@@ -23,7 +24,7 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
 
       <div className="foto-blob">
         {foto ? (
-          <img src={foto} alt="" />
+          <img src={foto} alt="" style={estiloImagem(valores, 'foto')} />
         ) : (
           <div className="foto-ph">Sua foto aqui</div>
         )}

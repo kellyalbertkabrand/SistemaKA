@@ -2,6 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import type { Template, ValoresPeca, FormatoDef } from '../templates/types'
 import { valoresPadrao } from '../templates/types'
 import { baixarPng } from '../lib/exportar'
+import { CamposEditor } from './CamposEditor'
 import './editor.css'
 
 // Editor de peça: formulário (à esquerda) + pré-visualização ao vivo (à direita),
@@ -20,13 +21,6 @@ export function EditorPeca({ template }: { template: Template }) {
 
   function set(id: string, valor: string | number) {
     setValores((v) => ({ ...v, [id]: valor }))
-  }
-
-  function handleImagem(id: string, file: File | undefined) {
-    if (!file) return
-    const reader = new FileReader()
-    reader.onload = () => set(id, reader.result as string)
-    reader.readAsDataURL(file)
   }
 
   const podeBaixar = useMemo(
@@ -69,100 +63,7 @@ export function EditorPeca({ template }: { template: Template }) {
           </div>
         </div>
 
-        {template.campos.map((c) => (
-          <div className="field" key={c.id}>
-            <label htmlFor={c.id}>{c.label}</label>
-
-            {c.tipo === 'texto' && (
-              <input
-                id={c.id}
-                type="text"
-                value={String(valores[c.id] ?? '')}
-                placeholder={c.placeholder}
-                maxLength={c.maxLen}
-                onChange={(e) => set(c.id, e.target.value)}
-              />
-            )}
-
-            {c.tipo === 'textarea' && (
-              <textarea
-                id={c.id}
-                rows={5}
-                value={String(valores[c.id] ?? '')}
-                placeholder={c.placeholder}
-                maxLength={c.maxLen}
-                onChange={(e) => set(c.id, e.target.value)}
-              />
-            )}
-
-            {c.tipo === 'estrelas' && (
-              <div className="stars-input" role="radiogroup" aria-label={c.label}>
-                {[1, 2, 3, 4, 5].map((n) => (
-                  <button
-                    key={n}
-                    type="button"
-                    className={n <= Number(valores[c.id] ?? 0) ? 'on' : ''}
-                    aria-label={`${n} estrela${n > 1 ? 's' : ''}`}
-                    onClick={() => set(c.id, n)}
-                  >
-                    ★
-                  </button>
-                ))}
-              </div>
-            )}
-
-            {c.tipo === 'select' && (
-              <select
-                id={c.id}
-                value={String(valores[c.id] ?? '')}
-                onChange={(e) => set(c.id, e.target.value)}
-              >
-                {c.opcoes.map((o) => (
-                  <option key={o.valor} value={o.valor}>
-                    {o.rotulo}
-                  </option>
-                ))}
-              </select>
-            )}
-
-            {c.tipo === 'imagem' && (
-              <div className="img-input">
-                <input
-                  id={c.id}
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImagem(c.id, e.target.files?.[0])}
-                />
-                {valores[c.id] && (
-                  <img className="img-preview" src={String(valores[c.id])} alt="pré-visualização" />
-                )}
-              </div>
-            )}
-
-            {c.tipo === 'cor' && (
-              <div className="cor-input">
-                <input
-                  id={c.id}
-                  type="color"
-                  value={String(valores[c.id] || '#000000')}
-                  onChange={(e) => set(c.id, e.target.value)}
-                />
-                {c.opcoes?.map((o) => (
-                  <button
-                    key={o.valor}
-                    type="button"
-                    className="swatch"
-                    style={{ background: o.valor }}
-                    title={o.rotulo ?? o.valor}
-                    onClick={() => set(c.id, o.valor)}
-                  />
-                ))}
-              </div>
-            )}
-
-            {c.ajuda && <p className="editor__hint">{c.ajuda}</p>}
-          </div>
-        ))}
+        <CamposEditor campos={template.campos} valores={valores} onSet={set} />
 
         <button className="btn" disabled={!podeBaixar || baixando} onClick={handleDownload}>
           {baixando ? 'Gerando PNG…' : 'Baixar PNG'}

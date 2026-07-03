@@ -81,6 +81,31 @@
   border: 1px solid rgba(15, 25, 35, 0.12);
 }
 
+/* ajuste de enquadramento da foto */
+.ajuste-foto {
+  margin-top: 0.7rem;
+  padding: 0.7rem 0.8rem;
+  background: var(--bg-1);
+  border: 1px solid rgba(15, 25, 35, 0.1);
+  border-radius: 8px;
+}
+.ajuste-foto label {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--t-500);
+  margin: 0.5rem 0 0.15rem;
+}
+.ajuste-foto label:first-child {
+  margin-top: 0;
+}
+.ajuste-foto input[type='range'] {
+  width: 100%;
+  accent-color: var(--essencia);
+}
+
 /* seletor de cor + amostras */
 .cor-input {
   display: flex;
