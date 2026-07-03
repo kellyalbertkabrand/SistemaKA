@@ -58,6 +58,17 @@ export function Carrossel({ templates }: { templates: Template[] }) {
     setSel((cur) => Math.max(0, cur > i ? cur - 1 : cur === i ? Math.min(i, slides.length - 2) : cur))
   }
 
+  function mover(i: number, dir: -1 | 1) {
+    const j = i + dir
+    if (j < 0 || j >= slides.length) return
+    setSlides((s) => {
+      const c = [...s]
+      ;[c[i], c[j]] = [c[j], c[i]]
+      return c
+    })
+    setSel((cur) => (cur === i ? j : cur === j ? i : cur))
+  }
+
   function trocarTemplate(id: string) {
     const t = porId(id)
     setSlides((s) =>
@@ -149,16 +160,40 @@ export function Carrossel({ templates }: { templates: Template[] }) {
                 </div>
                 <span className="thumb__n">{i + 1}</span>
                 {slides.length > 1 && (
-                  <button
-                    className="thumb__x"
-                    title="Remover slide"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      removeSlide(i)
-                    }}
-                  >
-                    ×
-                  </button>
+                  <>
+                    <div className="thumb__move">
+                      <button
+                        title="Mover para cima"
+                        disabled={i === 0}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          mover(i, -1)
+                        }}
+                      >
+                        ▲
+                      </button>
+                      <button
+                        title="Mover para baixo"
+                        disabled={i === slides.length - 1}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          mover(i, 1)
+                        }}
+                      >
+                        ▼
+                      </button>
+                    </div>
+                    <button
+                      className="thumb__x"
+                      title="Remover slide"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        removeSlide(i)
+                      }}
+                    >
+                      ×
+                    </button>
+                  </>
                 )}
               </div>
             )
