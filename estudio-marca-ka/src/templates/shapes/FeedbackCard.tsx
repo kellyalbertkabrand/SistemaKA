@@ -13,8 +13,9 @@ export function ShapesFeedbackCard({ valores, formato }: RenderProps) {
   const who = String(valores.who ?? '')
   const corFundo = String(valores.cor_fundo || TEXTURA_LARANJA)
   const isTextura = corFundo.startsWith('url(')
-  // Na textura (laranja) a tinta é branca; em cor sólida, contraste automático.
-  const tinta = isTextura ? '#FFFFFF' : corContraste(corFundo)
+  const corFonte = String(valores.cor_fonte || '#FFFFFF')
+  // logo segue o fundo: textura (laranja) => branca; senão, contraste da cor.
+  const logoContraste = isTextura ? '#FFFFFF' : corContraste(corFundo)
 
   return (
     <div
@@ -22,7 +23,7 @@ export function ShapesFeedbackCard({ valores, formato }: RenderProps) {
       style={{
         width: formato.largura,
         height: formato.altura,
-        color: tinta,
+        color: corFonte,
         background: isTextura
           ? `${TEXTURA_LARANJA} center / cover no-repeat, #ff7829`
           : corFundo,
@@ -32,7 +33,7 @@ export function ShapesFeedbackCard({ valores, formato }: RenderProps) {
         <img
           className="logo"
           src={
-            tinta === '#FFFFFF'
+            logoContraste === '#FFFFFF'
               ? '/clientes/shapes/shapes-logo-branco.png'
               : '/clientes/shapes/shapes-logo-preto.png'
           }

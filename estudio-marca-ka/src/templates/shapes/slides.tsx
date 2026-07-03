@@ -15,9 +15,8 @@ export function ShapesCapaCard({ valores, formato }: RenderProps) {
   const titulo = String(valores.titulo || '')
   const corFundo = String(valores.cor_fundo || '#EDE9DE')
   const corFonte = String(valores.cor_fonte || '#131313')
-  // texto claro => logo branca; texto escuro => logo preta.
-  const fonteEscura = corContraste(corFonte) === '#FFFFFF'
-  const logoSrc = fonteEscura ? PRETO : BRANCO
+  // logo segue o fundo: fundo claro => logo preta; fundo escuro => logo branca.
+  const logoSrc = corContraste(corFundo) === '#FFFFFF' ? BRANCO : PRETO
 
   const areaRaw = Number(valores.foto_area)
   const fator = Math.min(100, Math.max(60, Number.isFinite(areaRaw) ? areaRaw : 92)) / 100
@@ -51,15 +50,16 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
   const foto = String(valores.foto || '')
   const texto = String(valores.texto || '')
   const forma = String(valores.forma || 'shape-blob1')
-  const tinta = corContraste(cor)
+  const corFonte = String(valores.cor_fonte || '#131313')
+  const logoContraste = corContraste(cor) // logo segue o fundo
   const caixa = caixaFoto(formato.largura - 192, formato.altura - 500, ratioForma(forma), Number(valores.foto_area))
   return (
     <div
       className={`shapes-cores fmt-${formato.formato}`}
-      style={{ width: formato.largura, height: formato.altura, background: cor, color: tinta }}
+      style={{ width: formato.largura, height: formato.altura, background: cor, color: corFonte }}
     >
       <ShapesClips />
-      <img className="logo" src={tinta === '#FFFFFF' ? BRANCO : PRETO} alt="Shapes" crossOrigin="anonymous" />
+      <img className="logo" src={logoContraste === '#FFFFFF' ? BRANCO : PRETO} alt="Shapes" crossOrigin="anonymous" />
       <div className="blob-wrap">
         <div
           className="foto-blob"
@@ -90,7 +90,8 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
   const foto = String(valores.foto || '')
   const texto = String(valores.texto || '')
   const forma = String(valores.forma || 'shape-blob1')
-  const tinta = corContraste(cor)
+  const corFonte = String(valores.cor_fonte || '#FFFFFF')
+  const logoContraste = corContraste(cor) // logo segue o fundo
   const story = formato.formato === 'story'
   const caixa = story
     ? caixaFoto(formato.largura - 192, formato.altura - 600, ratioForma(forma), Number(valores.foto_area))
@@ -115,7 +116,7 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
   )
   const lado = (
     <div className="lado">
-      <img className="logo" src={tinta === '#FFFFFF' ? BRANCO : PRETO} alt="Shapes" crossOrigin="anonymous" />
+      <img className="logo" src={logoContraste === '#FFFFFF' ? BRANCO : PRETO} alt="Shapes" crossOrigin="anonymous" />
       {texto && <div className="texto">{texto}</div>}
     </div>
   )
@@ -123,7 +124,7 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
   return (
     <div
       className={`shapes-forma ${story ? 'empilhado' : ''}`}
-      style={{ width: formato.largura, height: formato.altura, background: cor, color: tinta }}
+      style={{ width: formato.largura, height: formato.altura, background: cor, color: corFonte }}
     >
       <ShapesClips />
       {story ? (
@@ -150,7 +151,8 @@ export function ShapesCtaCard({ valores, formato }: RenderProps) {
   const botao = String(valores.texto_botao || '')
   const sub = String(valores.texto_sub || '')
   const extra = String(valores.texto_extra || '')
-  const tinta = corContraste(cor)
+  const corFonte = String(valores.cor_fonte || '#FFFFFF')
+  const logoContraste = corContraste(cor) // logo/concha segue a cor da forma
   const f = FORMAS.find((x) => x.id === forma) ?? FORMAS[0]
   // "Tamanho da foto" (foto_area) controla o tamanho da forma neste card.
   const areaRaw = Number(valores.foto_area)
@@ -159,7 +161,7 @@ export function ShapesCtaCard({ valores, formato }: RenderProps) {
   const blobH = Math.round(blobW / f.ratio)
 
   return (
-    <div className="shapes-cta" style={{ width: formato.largura, height: formato.altura, color: tinta }}>
+    <div className="shapes-cta" style={{ width: formato.largura, height: formato.altura, color: corFonte }}>
       {foto ? (
         <img className="bg" src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
       ) : (
@@ -171,7 +173,7 @@ export function ShapesCtaCard({ valores, formato }: RenderProps) {
         </svg>
       </div>
       <div className="centro">
-        <img className="icone" src={tinta === '#FFFFFF' ? BRANCO : PRETO} alt="Shapes" crossOrigin="anonymous" />
+        <img className="icone" src={logoContraste === '#FFFFFF' ? BRANCO : PRETO} alt="Shapes" crossOrigin="anonymous" />
         {botao && <div className="botao">{botao}</div>}
         {sub && <div className="sub">{sub}</div>}
         {extra && <div className="extra">{extra}</div>}

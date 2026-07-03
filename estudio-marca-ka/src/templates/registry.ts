@@ -87,9 +87,10 @@ export const TEMPLATES: Template[] = [
         label: 'Cor de fundo',
         tipo: 'cor',
         padrao: TEXTURA_LARANJA,
-        ajuda: 'A textura laranja é o padrão. Escolha uma cor da marca nas amostras ou qualquer cor no seletor — o texto se ajusta sozinho.',
+        ajuda: 'A textura laranja é o padrão. Escolha uma cor da marca nas amostras ou qualquer cor no seletor.',
         opcoes: SWATCHES_FEEDBACK,
       },
+      { id: 'cor_fonte', label: 'Cor do texto', tipo: 'cor', padrao: '#FFFFFF', opcoes: SWATCHES },
     ],
     render: ShapesFeedbackCard,
   },
@@ -123,6 +124,7 @@ export const TEMPLATES: Template[] = [
         ajuda: 'Escolha uma cor da marca nas amostras ou qualquer cor no seletor — a Shapes tem liberdade cromática.',
         opcoes: SWATCHES,
       },
+      { id: 'cor_fonte', label: 'Cor do texto', tipo: 'cor', padrao: '#FFFFFF', opcoes: SWATCHES },
       {
         id: 'texto',
         label: 'Texto',
@@ -227,6 +229,7 @@ export const TEMPLATES: Template[] = [
         padrao: '#F2EFE9',
         opcoes: SWATCHES,
       },
+      { id: 'cor_fonte', label: 'Cor do texto', tipo: 'cor', padrao: '#131313', opcoes: SWATCHES },
       { id: 'foto', label: 'Foto do produto', tipo: 'imagem', obrigatorio: true },
       { id: 'forma', label: 'Forma da foto', tipo: 'forma', padrao: 'shape-blob2' },
       {
@@ -255,6 +258,7 @@ export const TEMPLATES: Template[] = [
         padrao: '#010101',
         opcoes: SWATCHES,
       },
+      { id: 'cor_fonte', label: 'Cor do texto', tipo: 'cor', padrao: '#FFFFFF', opcoes: SWATCHES },
       { id: 'foto', label: 'Foto do produto', tipo: 'imagem', obrigatorio: true },
       { id: 'forma', label: 'Forma da foto', tipo: 'forma', padrao: 'shape-blob3' },
       {
@@ -291,6 +295,7 @@ export const TEMPLATES: Template[] = [
         padrao: '#363E31',
         opcoes: SWATCHES,
       },
+      { id: 'cor_fonte', label: 'Cor do texto', tipo: 'cor', padrao: '#FFFFFF', opcoes: SWATCHES },
       { id: 'texto_botao', label: 'Texto do botão', tipo: 'texto', padrao: 'ACESSE A LOJA' },
       { id: 'texto_sub', label: 'Subtexto', tipo: 'texto', padrao: 'no botão abaixo' },
       {

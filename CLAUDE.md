@@ -93,9 +93,11 @@ Admin é reconhecido por e-mail (allowlist `VITE_ADMIN_EMAILS`, padrão
 - **Gama secundária:** "liberdade cromática" — o cliente escolhe **qualquer**
   cor no seletor; a paleta serve de sugestão. Hex secundários são aproximados
   do slide (ajustar se a KA passar os valores fechados).
-- **Contraste automático** (`corContraste`): logo e texto viram preto/branco
-  conforme a luminância do fundo (limiar YIQ 160 — laranja fica com tinta
-  branca, como no card de feedback). Garante legibilidade em qualquer cor.
+- **Logo automático** (`corContraste`, limiar YIQ 160): em TODO card, o logo
+  segue o fundo — fundo claro → logo preto; fundo escuro → logo branco.
+- **Cor do texto manual**: todo card com texto tem um campo `cor_fonte`
+  (padrão combinando com o fundo inicial); o cliente muda a cor do texto à
+  vontade, independente do logo.
 
 ### As 3 formas orgânicas — `src/templates/shapes/formas.ts`
 

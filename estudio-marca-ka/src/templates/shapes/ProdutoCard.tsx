@@ -16,7 +16,8 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
   const foto = String(valores.foto || '')
   const texto = String(valores.texto || '')
   const forma = String(valores.forma || 'shape-blob1')
-  const tinta = corContraste(cor)
+  const corFonte = String(valores.cor_fonte || '#FFFFFF')
+  const logoContraste = corContraste(cor) // logo segue o fundo
 
   // caixa da foto com a proporção nativa da forma (contain), para o clip não
   // esticar; tamanho ajustável pelo slider "Tamanho da foto" (foto_area).
@@ -31,12 +32,12 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
   return (
     <div
       className={`shapes-prod fmt-${formato.formato}`}
-      style={{ width: formato.largura, height: formato.altura, background: cor, color: tinta }}
+      style={{ width: formato.largura, height: formato.altura, background: cor, color: corFonte }}
     >
       <ShapesClips />
       <img
         className="logo"
-        src={tinta === '#FFFFFF' ? LOGO_BRANCO : LOGO_PRETO}
+        src={logoContraste === '#FFFFFF' ? LOGO_BRANCO : LOGO_PRETO}
         alt="Shapes"
         crossOrigin="anonymous"
       />
