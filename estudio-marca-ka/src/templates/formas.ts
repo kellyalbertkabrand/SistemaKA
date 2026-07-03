@@ -49,3 +49,18 @@ export function caixaContida(
   }
   return { largura: Math.round(largura), altura: Math.round(altura) }
 }
+
+// Caixa da foto: contain no espaço disponível, escalada por `area` (60–100%),
+// controlada pelo slider "Tamanho da foto". Padrão 92%.
+export function caixaFoto(
+  dispLargura: number,
+  dispAltura: number,
+  ratio: number,
+  area: number | undefined,
+): { largura: number; altura: number } {
+  const base = caixaContida(dispLargura, dispAltura, ratio)
+  // `area` pode vir NaN (campo ainda não mexido) — usa 92% como padrão.
+  const pct = Number.isFinite(Number(area)) ? Number(area) : 92
+  const f = Math.min(100, Math.max(60, pct)) / 100
+  return { largura: Math.round(base.largura * f), altura: Math.round(base.altura * f) }
+}

@@ -1,6 +1,6 @@
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
-import { ratioForma, caixaContida } from '../formas'
+import { ratioForma, caixaFoto } from '../formas'
 import { corContraste } from './cores'
 import { ShapesClips } from './ShapesClips'
 import './shapes.css'
@@ -35,7 +35,7 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
   const texto = String(valores.texto || '')
   const forma = String(valores.forma || 'shape-blob1')
   const tinta = corContraste(cor)
-  const caixa = caixaContida(formato.largura - 192, formato.altura - 560, ratioForma(forma))
+  const caixa = caixaFoto(formato.largura - 192, formato.altura - 500, ratioForma(forma), Number(valores.foto_area))
   return (
     <div
       className="shapes-cores"
@@ -72,7 +72,7 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
   const texto = String(valores.texto || '')
   const forma = String(valores.forma || 'shape-blob1')
   const tinta = corContraste(cor)
-  const caixa = caixaContida(formato.largura - 606, formato.altura - 192, ratioForma(forma))
+  const caixa = caixaFoto(formato.largura - 606, formato.altura - 192, ratioForma(forma), Number(valores.foto_area))
   return (
     <div
       className="shapes-forma"

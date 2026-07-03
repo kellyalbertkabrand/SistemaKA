@@ -1,6 +1,6 @@
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
-import { ratioForma, caixaContida } from '../formas'
+import { ratioForma, caixaFoto } from '../formas'
 import { corContraste } from './cores'
 import { ShapesClips } from './ShapesClips'
 import './shapes.css'
@@ -18,12 +18,14 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
   const forma = String(valores.forma || 'shape-blob1')
   const tinta = corContraste(cor)
 
-  // caixa da foto com a proporção nativa da forma (contain), para o clip não esticar.
+  // caixa da foto com a proporção nativa da forma (contain), para o clip não
+  // esticar; tamanho ajustável pelo slider "Tamanho da foto" (foto_area).
   const pad = 96
-  const caixa = caixaContida(
+  const caixa = caixaFoto(
     formato.largura - pad * 2,
-    formato.altura - 560,
+    formato.altura - 500,
     ratioForma(forma),
+    Number(valores.foto_area),
   )
 
   return (

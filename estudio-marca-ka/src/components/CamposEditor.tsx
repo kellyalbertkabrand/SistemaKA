@@ -87,6 +87,16 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
                   accept="image/*"
                   onChange={(e) => handleImagem(c.id, e.target.files?.[0])}
                 />
+                <div className="ajuste-foto tamanho-foto">
+                  <label>Tamanho da foto</label>
+                  <input
+                    type="range"
+                    min={60}
+                    max={100}
+                    value={Number(valores[`${c.id}_area`] ?? 92)}
+                    onChange={(e) => onSet(`${c.id}_area`, Number(e.target.value))}
+                  />
+                </div>
                 {valores[c.id] && (
                   <>
                     <img className="img-preview" src={String(valores[c.id])} alt="pré-visualização" />
