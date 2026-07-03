@@ -41,6 +41,13 @@ jobs:
           npm ci
           npm run build
 
+      - name: Diagnóstico — sites visíveis para o token
+        run: |
+          curl -sS -H "Authorization: Bearer $NETLIFY_AUTH_TOKEN" \
+            "https://api.netlify.com/api/v1/sites?per_page=50" \
+            | python3 -c "import json,sys; [print(s['id'], '|', s['name'], '|', s.get('account_slug','')) for s in json.load(sys.stdin)]" \
+            || echo "(falha ao listar sites)"
+
       - name: Publicar no Netlify
         working-directory: estudio-marca-ka
         run: |
