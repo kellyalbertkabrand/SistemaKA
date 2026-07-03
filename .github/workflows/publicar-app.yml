@@ -41,13 +41,6 @@ jobs:
           npm ci
           npm run build
 
-      - name: Diagnóstico — sites visíveis para o token
-        run: |
-          curl -sS -H "Authorization: Bearer $NETLIFY_AUTH_TOKEN" \
-            "https://api.netlify.com/api/v1/sites?per_page=50" \
-            | python3 -c "import json,sys; [print(s['id'], '|', s['name'], '|', s.get('account_slug','')) for s in json.load(sys.stdin)]" \
-            || echo "(falha ao listar sites)"
-
       - name: Publicar no Netlify
         working-directory: estudio-marca-ka
         run: |
@@ -55,7 +48,19 @@ jobs:
             echo "::error::Falta o segredo NETLIFY_AUTH_TOKEN em Settings → Secrets → Actions."
             exit 1
           fi
-          npx -y netlify-cli@17 deploy \
+          # Sanitiza o token: remove quebras de linha/espaços e um eventual
+          # prefixo "Bearer " colado no valor do segredo.
+          TOKEN=$(printf '%s' "$NETLIFY_AUTH_TOKEN" | tr -d '\r\n')
+          TOKEN="${TOKEN#Bearer }"
+          TOKEN="${TOKEN# }"
+
+          echo "Sites visíveis para o token:"
+          curl -sS -H "Authorization: Bearer $TOKEN" \
+            "https://api.netlify.com/api/v1/sites?per_page=50" \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); print('ERRO DA API:', d) if isinstance(d, dict) else [print('-', s.get('id'), '|', s.get('name')) for s in d]" \
+            || true
+
+          NETLIFY_AUTH_TOKEN="$TOKEN" npx -y netlify-cli@17 deploy \
             --dir=dist \
             --site=620d408e-bb8a-49fb-a1da-ccf602320142 \
             --prod \
