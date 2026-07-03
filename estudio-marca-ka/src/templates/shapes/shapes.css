@@ -113,9 +113,9 @@
 }
 .shapes-fb .who {
   color: #fff;
-  font-weight: 300;
-  font-size: 30px;
+  font-weight: 500;
+  font-size: 34px;
   letter-spacing: 6px;
-  text-transform: lowercase;
+  text-transform: capitalize;
   margin-top: 36px;
 }
