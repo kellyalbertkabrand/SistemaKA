@@ -1,0 +1,365 @@
+/* ============================================================
+   Gestão interna — abas, tabelas, badges, formulários e fichas
+   ============================================================ */
+
+/* ---- Abas do painel ---- */
+.painel-abas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.6rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.1);
+  padding-bottom: 0.75rem;
+}
+.painel-aba {
+  font-family: var(--body);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--t-500);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 100px;
+  padding: 0.5rem 1.05rem;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.painel-aba:hover {
+  color: var(--t-900);
+  background: rgba(15, 25, 35, 0.05);
+}
+.painel-aba.ativa {
+  color: #fff;
+  background: var(--marinho);
+}
+
+/* ---- Barra de ações de uma seção ---- */
+.gestao-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+.gestao-acoes .espaco {
+  flex: 1;
+}
+
+/* ---- Tabela ---- */
+.tabela-wrap {
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 14px;
+  overflow-x: auto;
+}
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.tabela th {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--t-400);
+  text-align: left;
+  padding: 0.85rem 1rem 0.6rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.08);
+  white-space: nowrap;
+}
+.tabela td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.05);
+  vertical-align: middle;
+}
+.tabela tr:last-child td {
+  border-bottom: none;
+}
+.tabela tbody tr:hover {
+  background: rgba(184, 155, 106, 0.05);
+}
+.tabela .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.tabela .acoes {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ---- Badges de status ---- */
+.badge {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 100px;
+  padding: 0.28rem 0.7rem;
+  border: 1px solid transparent;
+}
+.badge--cinza {
+  color: var(--t-500);
+  background: rgba(15, 25, 35, 0.06);
+}
+.badge--azul {
+  color: var(--essencia);
+  background: rgba(61, 107, 126, 0.1);
+}
+.badge--verde {
+  color: #2e6b45;
+  background: rgba(46, 107, 69, 0.12);
+}
+.badge--dourado {
+  color: var(--dourado);
+  background: var(--dourado-soft);
+}
+.badge--vermelho {
+  color: var(--erro);
+  background: rgba(178, 58, 58, 0.1);
+}
+
+/* ---- Botões pequenos de linha ---- */
+.btn-mini {
+  font-family: var(--body);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--essencia);
+  background: transparent;
+  border: 1px solid rgba(61, 107, 126, 0.3);
+  border-radius: 100px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition: 0.15s;
+  margin-left: 0.35rem;
+}
+.btn-mini:hover {
+  background: rgba(61, 107, 126, 0.08);
+}
+.btn-mini--perigo {
+  color: var(--erro);
+  border-color: rgba(178, 58, 58, 0.3);
+}
+.btn-mini--perigo:hover {
+  background: rgba(178, 58, 58, 0.07);
+}
+.btn-mini:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* ---- Formulários em grade (ficha do cliente, orçamento) ---- */
+.form-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0 1rem;
+}
+.form-grade .campo-2 {
+  grid-column: span 2;
+}
+.form-grade .campo-toda {
+  grid-column: 1 / -1;
+}
+@media (max-width: 560px) {
+  .form-grade .campo-2 {
+    grid-column: auto;
+  }
+}
+
+/* ---- Itens do orçamento ---- */
+.itens-orcamento {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.item-orcamento {
+  display: grid;
+  grid-template-columns: 1fr 70px 120px 34px;
+  gap: 0.5rem;
+  align-items: center;
+}
+.item-orcamento input {
+  width: 100%;
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(15, 25, 35, 0.12);
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+  background: var(--bg-1);
+}
+.item-orcamento .remover {
+  border: none;
+  background: transparent;
+  color: var(--erro);
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.orcamento-total {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 0.7rem;
+  font-size: 0.85rem;
+  color: var(--t-500);
+  margin: 0.6rem 0 1rem;
+}
+.orcamento-total strong {
+  font-family: var(--heading);
+  font-size: 1.35rem;
+  color: var(--t-900);
+}
+
+/* ---- Aviso/nota ---- */
+.nota {
+  background: var(--dourado-soft);
+  border: 1px solid rgba(184, 155, 106, 0.3);
+  color: var(--t-700);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 1.1rem;
+}
+.nota code {
+  font-size: 0.72rem;
+  background: rgba(15, 25, 35, 0.06);
+  border-radius: 4px;
+  padding: 0.05rem 0.3rem;
+}
+.erro-msg {
+  background: rgba(178, 58, 58, 0.08);
+  color: var(--erro);
+  font-size: 0.8rem;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 1rem;
+}
+
+/* ---- Página pública (orçamento/contrato) ---- */
+.pub-wrap {
+  min-height: 100vh;
+  background: var(--bg-1);
+  padding: 2.2rem 1.2rem 4rem;
+}
+.pub-doc {
+  max-width: 720px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 18px 50px rgba(15, 25, 35, 0.08);
+  padding: 2.4rem 2.2rem;
+}
+.pub-doc__head {
+  border-bottom: 2px solid var(--dourado);
+  padding-bottom: 1.2rem;
+  margin-bottom: 1.6rem;
+}
+.pub-doc__head h1 {
+  font-size: 1.5rem;
+  margin-top: 0.3rem;
+}
+.pub-doc__meta {
+  font-size: 0.78rem;
+  color: var(--t-500);
+  margin-top: 0.4rem;
+}
+.pub-doc pre.conteudo {
+  font-family: var(--body);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  color: var(--t-700);
+}
+.pub-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+  margin: 1rem 0;
+}
+.pub-tabela th {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--t-400);
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.12);
+}
+.pub-tabela td {
+  padding: 0.55rem 0.6rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.06);
+}
+.pub-tabela .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pub-total {
+  text-align: right;
+  margin: 1rem 0 1.4rem;
+  font-size: 0.9rem;
+  color: var(--t-500);
+}
+.pub-total strong {
+  font-family: var(--heading);
+  font-size: 1.5rem;
+  color: var(--t-900);
+  margin-left: 0.6rem;
+}
+.pub-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.6rem;
+}
+.btn--recusar {
+  background: transparent;
+  color: var(--erro);
+  border: 1px solid rgba(178, 58, 58, 0.35);
+}
+.btn--recusar:hover {
+  background: rgba(178, 58, 58, 0.07);
+}
+.pub-assinado {
+  background: rgba(46, 107, 69, 0.1);
+  border: 1px solid rgba(46, 107, 69, 0.25);
+  color: #2e6b45;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-top: 1.4rem;
+}
+.pub-rodape {
+  text-align: center;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--t-400);
+  margin-top: 1.6rem;
+}
+
+/* ---- Impressão (contrato/orçamento → PDF pelo navegador) ---- */
+@media print {
+  body {
+    background: #fff;
+  }
+  .nao-imprimir {
+    display: none !important;
+  }
+  .pub-wrap {
+    padding: 0;
+  }
+  .pub-doc {
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    max-width: none;
+    padding: 0;
+  }
+}

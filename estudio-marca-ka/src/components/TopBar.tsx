@@ -5,7 +5,7 @@ export function TopBar() {
   return (
     <header className="app-top">
       <div className="app-top__brand">
-        Estúdio de <span>Marca</span>
+        Sistema Visual de <span>Publicações da Marca</span>
       </div>
       <div className="app-top__right">
         {session ? (

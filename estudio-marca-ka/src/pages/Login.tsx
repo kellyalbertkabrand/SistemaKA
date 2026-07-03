@@ -30,9 +30,9 @@ export function Login() {
     <div className="auth-wrap">
       <div className="auth-card">
         <div className="auth-card__brand">
-          Estúdio de <span>Marca</span>
+          Publicações da <span>Marca</span>
         </div>
-        <div className="auth-card__sub">Inteligência para Marcas · KA</div>
+        <div className="auth-card__sub">Sistema Visual · KA</div>
 
         {!supabaseConfigured && (
           <div className="auth-banner">
