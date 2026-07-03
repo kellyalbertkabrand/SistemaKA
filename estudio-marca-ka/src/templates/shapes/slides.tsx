@@ -1,6 +1,6 @@
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
-import { ratioForma, caixaFoto } from '../formas'
+import { ratioForma, caixaFoto, FORMAS } from '../formas'
 import { corContraste } from './cores'
 import { ShapesClips } from './ShapesClips'
 import './shapes.css'
@@ -141,23 +141,34 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
   )
 }
 
-// 5 · CTA — foto desfocada + forma colorida + chamada para a loja.
+// 5 · CTA "acesse a loja" — foto de fundo + forma orgânica colorida
+// (semi-transparente) + concha, botão bordado e chamadas.
 export function ShapesCtaCard({ valores, formato }: RenderProps) {
   const foto = String(valores.foto || '')
-  const cor = String(valores.cor_fundo || '#3E4A2C')
+  const cor = String(valores.cor_fundo || '#363E31')
+  const forma = String(valores.forma || 'shape-blob1')
   const botao = String(valores.texto_botao || '')
   const sub = String(valores.texto_sub || '')
   const extra = String(valores.texto_extra || '')
+  const tinta = corContraste(cor)
+  const f = FORMAS.find((x) => x.id === forma) ?? FORMAS[0]
+  const blobW = Math.round(formato.largura * 0.86)
+  const blobH = Math.round(blobW / f.ratio)
+
   return (
-    <div className="shapes-cta" style={{ width: formato.largura, height: formato.altura }}>
+    <div className="shapes-cta" style={{ width: formato.largura, height: formato.altura, color: tinta }}>
       {foto ? (
         <img className="bg" src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
       ) : (
-        <div className="bg" style={{ background: '#6c6c6c' }} />
+        <div className="bg-ph">Sua foto aqui</div>
       )}
-      <div className="blob" style={{ background: cor }} />
+      <div className="blob" style={{ width: blobW, height: blobH }}>
+        <svg viewBox="0 0 1 1" preserveAspectRatio="none" aria-hidden>
+          <path d={f.d} fill={cor} fillOpacity={0.82} />
+        </svg>
+      </div>
       <div className="centro">
-        <img className="icone" src={BRANCO} alt="Shapes" crossOrigin="anonymous" />
+        <img className="icone" src={tinta === '#FFFFFF' ? BRANCO : PRETO} alt="Shapes" crossOrigin="anonymous" />
         {botao && <div className="botao">{botao}</div>}
         {sub && <div className="sub">{sub}</div>}
         {extra && <div className="extra">{extra}</div>}

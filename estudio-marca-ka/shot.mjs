@@ -1,0 +1,11 @@
+import { chromium } from 'playwright-core';
+const b = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+const p = await b.newPage({ viewport: { width: 1500, height: 1100 } });
+await p.goto('http://localhost:4202/shapes', { waitUntil: 'networkidle' });
+await p.waitForTimeout(800);
+await p.getByText('CTA (acesse', { exact: false }).first().click();
+await p.waitForTimeout(600);
+await p.locator('.editor__scaler').first().screenshot({ path: '/tmp/cta-feed.png' });
+await p.getByRole('button', { name: /Story/i }).click(); await p.waitForTimeout(400);
+await p.locator('.editor__scaler').first().screenshot({ path: '/tmp/cta-story.png' });
+await b.close();

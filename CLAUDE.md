@@ -135,7 +135,9 @@ margens. Enquadramento (posição/zoom) fica em `foto_x`, `foto_y`, `foto_zoom`
 6. **shapes-forma** — Forma função emoção (fundo escuro + foto + texto/concha).
    No feed/quadrado fica lado a lado; **no story empilha** (texto+concha em
    cima, foto embaixo, centralizado e maior) — ramo `formato.formato === 'story'`.
-7. **shapes-cta** — CTA (foto desfocada + forma colorida + "acesse a loja").
+7. **shapes-cta** — CTA "acesse a loja": foto de fundo (sem blur) + **forma
+   orgânica** semi-transparente (`fillOpacity` 0.82, 86% da largura, cor
+   `#363E31` padrão, forma selecionável) + concha + botão bordado + chamadas.
 
 > `foto_area` é semeado por `valoresPadrao` (companheiro `${id}_area`); um campo
 > `imagem` pode definir `areaPadrao` para o tamanho inicial da foto.
