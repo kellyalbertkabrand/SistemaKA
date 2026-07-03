@@ -164,3 +164,214 @@
   font-weight: 500;
   white-space: pre-line;
 }
+
+/* placeholder comum de foto */
+.shapes-capa .bg-ph,
+.shapes-cores .foto-ph,
+.shapes-forma .foto-ph,
+.shapes-cta .bg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Montilla', system-ui, sans-serif;
+  font-size: 34px;
+}
+
+/* ---- 1 · Capa ---- */
+.shapes-capa {
+  position: relative;
+  overflow: hidden;
+  font-family: 'Montilla', system-ui, sans-serif;
+}
+.shapes-capa .bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.shapes-capa .bg-ph {
+  position: absolute;
+  inset: 0;
+  background: #e8e2d6;
+  color: #9a927f;
+}
+.shapes-capa .titulo {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 90px;
+  font-size: 92px;
+  line-height: 1.1;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #131313;
+  z-index: 2;
+}
+.shapes-capa .logo {
+  position: absolute;
+  right: 70px;
+  bottom: 66px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 2;
+}
+.shapes-capa .logo img {
+  width: 74px;
+  height: auto;
+}
+.shapes-capa .logo span {
+  font-size: 46px;
+  font-weight: 500;
+  color: #131313;
+}
+
+/* ---- 3 · Diversas cores ---- */
+.shapes-cores {
+  position: relative;
+  overflow: hidden;
+  font-family: 'Montilla', system-ui, sans-serif;
+  color: #131313;
+  display: flex;
+  flex-direction: column;
+  padding: 96px;
+}
+.shapes-cores .logo {
+  width: 84px;
+  height: auto;
+  flex: 0 0 auto;
+}
+.shapes-cores .foto-blob {
+  flex: 1 1 auto;
+  margin: 50px 0;
+  border-radius: 46% 54% 55% 45% / 52% 46% 54% 48%;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.06);
+  display: flex;
+}
+.shapes-cores .foto-blob img {
+  width: 100%;
+  height: 100%;
+}
+.shapes-cores .foto-ph {
+  margin: auto;
+  color: rgba(19, 19, 19, 0.45);
+}
+.shapes-cores .labels {
+  flex: 0 0 auto;
+  font-size: 60px;
+  line-height: 1.25;
+  font-weight: 500;
+  white-space: pre-line;
+}
+
+/* ---- 4 · Forma função emoção ---- */
+.shapes-forma {
+  position: relative;
+  overflow: hidden;
+  font-family: 'Montilla', system-ui, sans-serif;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 64px;
+  padding: 96px;
+}
+.shapes-forma .foto-blob {
+  flex: 1 1 auto;
+  align-self: stretch;
+  margin: 60px 0;
+  border-radius: 46% 54% 55% 45% / 52% 46% 54% 48%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+}
+.shapes-forma .foto-blob img {
+  width: 100%;
+  height: 100%;
+}
+.shapes-forma .foto-ph {
+  margin: auto;
+}
+.shapes-forma .lado {
+  flex: 0 0 auto;
+  width: 350px;
+}
+.shapes-forma .lado .logo {
+  width: 92px;
+  height: auto;
+  display: block;
+  margin-bottom: 34px;
+}
+.shapes-forma .texto {
+  font-size: 70px;
+  line-height: 1.14;
+  font-weight: 500;
+  white-space: pre-line;
+}
+
+/* ---- 5 · CTA ---- */
+.shapes-cta {
+  position: relative;
+  overflow: hidden;
+  font-family: 'Montilla', system-ui, sans-serif;
+  color: #fff;
+}
+.shapes-cta .bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  filter: blur(7px) brightness(0.85);
+}
+.shapes-cta .blob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 66%;
+  border-radius: 46% 54% 60% 40% / 55% 48% 52% 45%;
+  opacity: 0.92;
+  z-index: 1;
+}
+.shapes-cta .centro {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 26px;
+  padding: 0 130px;
+  z-index: 2;
+}
+.shapes-cta .icone {
+  width: 148px;
+  height: auto;
+}
+.shapes-cta .botao {
+  border: 2px solid #fff;
+  border-radius: 10px;
+  padding: 22px 46px;
+  font-size: 52px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.shapes-cta .sub {
+  font-size: 40px;
+  font-weight: 400;
+  margin-top: -6px;
+}
+.shapes-cta .extra {
+  font-size: 44px;
+  font-style: italic;
+  font-weight: 500;
+  margin-top: 12px;
+}

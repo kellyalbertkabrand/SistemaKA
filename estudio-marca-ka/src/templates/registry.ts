@@ -1,6 +1,30 @@
 import type { Template } from './types'
 import { ShapesFeedbackCard } from './shapes/FeedbackCard'
 import { ShapesProdutoCard } from './shapes/ProdutoCard'
+import {
+  ShapesCapaCard,
+  ShapesCoresCard,
+  ShapesFormaCard,
+  ShapesCtaCard,
+} from './shapes/slides'
+
+// Paleta de fundo comum (amostras) usada pelos modelos de produto da Shapes.
+const SWATCHES = [
+  { valor: '#3E4A2C', rotulo: 'Verde Shapes' },
+  { valor: '#131313', rotulo: 'Preto' },
+  { valor: '#FF7829', rotulo: 'Laranja' },
+  { valor: '#F2EFE9', rotulo: 'Claro' },
+  { valor: '#D9C7A8', rotulo: 'Bege' },
+  { valor: '#F2B950', rotulo: 'Amarelo' },
+  { valor: '#8A8A8A', rotulo: 'Cinza' },
+]
+
+// Dimensões dos 3 formatos (todos os modelos usam as mesmas).
+const FORMATOS = [
+  { formato: 'post' as const, rotulo: 'Feed 4:5', largura: 1080, altura: 1350 },
+  { formato: 'story' as const, rotulo: 'Story 9:16', largura: 1080, altura: 1920 },
+  { formato: 'card' as const, rotulo: 'Quadrado 1:1', largura: 1080, altura: 1080 },
+]
 
 // ============================================================================
 // Registro de templates validados pela KA.
@@ -103,6 +127,108 @@ export const TEMPLATES: Template[] = [
       },
     ],
     render: ShapesProdutoCard,
+  },
+  {
+    id: 'shapes-capa',
+    clienteSlug: 'shapes',
+    clienteNome: 'Shapes',
+    nome: 'Capa (foto + título)',
+    descricao: 'Capa do carrossel — foto em tela cheia com título grande e a logo.',
+    formatos: FORMATOS,
+    campos: [
+      {
+        id: 'foto',
+        label: 'Foto (tela cheia)',
+        tipo: 'imagem',
+        obrigatorio: true,
+        ajuda: 'A foto ocupa o fundo inteiro. Use os controles para enquadrar.',
+      },
+      {
+        id: 'titulo',
+        label: 'Título',
+        tipo: 'texto',
+        obrigatorio: true,
+        placeholder: 'Ex.: LUMINÁRIA CACTUS',
+        padrao: 'LUMINÁRIA CACTUS',
+      },
+    ],
+    render: ShapesCapaCard,
+  },
+  {
+    id: 'shapes-cores',
+    clienteSlug: 'shapes',
+    clienteNome: 'Shapes',
+    nome: 'Diversas cores (fundo claro)',
+    descricao: 'Fundo claro, foto do produto em forma orgânica e rótulos curtos.',
+    formatos: FORMATOS,
+    campos: [
+      {
+        id: 'cor_fundo',
+        label: 'Cor de fundo',
+        tipo: 'cor',
+        padrao: '#F2EFE9',
+        opcoes: SWATCHES,
+      },
+      { id: 'foto', label: 'Foto do produto', tipo: 'imagem', obrigatorio: true },
+      {
+        id: 'texto',
+        label: 'Rótulos',
+        tipo: 'textarea',
+        placeholder: 'diversas cores\ndesmontável',
+        ajuda: 'Uma característica por linha.',
+        padrao: 'diversas cores\ndesmontável',
+      },
+    ],
+    render: ShapesCoresCard,
+  },
+  {
+    id: 'shapes-forma',
+    clienteSlug: 'shapes',
+    clienteNome: 'Shapes',
+    nome: 'Forma função emoção (fundo escuro)',
+    descricao: 'Fundo escuro, foto em forma orgânica e um texto ao lado com a concha.',
+    formatos: FORMATOS,
+    campos: [
+      {
+        id: 'cor_fundo',
+        label: 'Cor de fundo',
+        tipo: 'cor',
+        padrao: '#131313',
+        opcoes: SWATCHES,
+      },
+      { id: 'foto', label: 'Foto do produto', tipo: 'imagem', obrigatorio: true },
+      {
+        id: 'texto',
+        label: 'Texto',
+        tipo: 'textarea',
+        placeholder: 'forma\nfunção\nemoção',
+        ajuda: 'Uma palavra por linha funciona bem.',
+        padrao: 'forma\nfunção\nemoção',
+      },
+    ],
+    render: ShapesFormaCard,
+  },
+  {
+    id: 'shapes-cta',
+    clienteSlug: 'shapes',
+    clienteNome: 'Shapes',
+    nome: 'CTA (acesse a loja)',
+    descricao: 'Fechamento do carrossel — foto desfocada, forma colorida e chamada para a loja.',
+    formatos: FORMATOS,
+    campos: [
+      { id: 'foto', label: 'Foto de fundo (desfocada)', tipo: 'imagem' },
+      {
+        id: 'cor_fundo',
+        label: 'Cor da forma',
+        tipo: 'cor',
+        padrao: '#3E4A2C',
+        opcoes: SWATCHES,
+      },
+      { id: 'texto_botao', label: 'Texto do botão', tipo: 'texto', padrao: 'ACESSE A LOJA' },
+      { id: 'texto_sub', label: 'Subtexto', tipo: 'texto', padrao: 'no botão abaixo' },
+      { id: 'texto_extra', label: 'Linha extra', tipo: 'texto', padrao: 'entregamos para todo Brasil' },
+    ],
+    render: ShapesCtaCard,
   },
 ]
 
