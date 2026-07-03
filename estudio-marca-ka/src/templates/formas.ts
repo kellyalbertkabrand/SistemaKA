@@ -60,7 +60,8 @@ export function caixaFoto(
 ): { largura: number; altura: number } {
   const base = caixaContida(dispLargura, dispAltura, ratio)
   // `area` pode vir NaN (campo ainda não mexido) — usa 92% como padrão.
+  // Acima de 100% a foto cresce um pouco além do espaço "seguro" (avança nas margens).
   const pct = Number.isFinite(Number(area)) ? Number(area) : 92
-  const f = Math.min(100, Math.max(60, pct)) / 100
+  const f = Math.min(120, Math.max(60, pct)) / 100
   return { largura: Math.round(base.largura * f), altura: Math.round(base.altura * f) }
 }

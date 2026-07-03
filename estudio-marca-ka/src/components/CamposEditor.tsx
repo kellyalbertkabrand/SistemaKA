@@ -92,7 +92,7 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
                   <input
                     type="range"
                     min={60}
-                    max={100}
+                    max={120}
                     value={Number(valores[`${c.id}_area`] ?? 92)}
                     onChange={(e) => onSet(`${c.id}_area`, Number(e.target.value))}
                   />
