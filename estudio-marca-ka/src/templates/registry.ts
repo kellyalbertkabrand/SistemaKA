@@ -1,5 +1,6 @@
 import type { Template } from './types'
 import { ShapesFeedbackCard } from './shapes/FeedbackCard'
+import { ShapesProdutoCard } from './shapes/ProdutoCard'
 
 // ============================================================================
 // Registro de templates validados pela KA.
@@ -55,6 +56,53 @@ export const TEMPLATES: Template[] = [
       },
     ],
     render: ShapesFeedbackCard,
+  },
+  {
+    id: 'shapes-produto',
+    clienteSlug: 'shapes',
+    clienteNome: 'Shapes',
+    nome: 'Post de Produto',
+    descricao:
+      'Post de produto no estilo do carrossel da Shapes — fundo colorido, ' +
+      'foto do produto em forma orgânica e um texto curto.',
+    formatos: [
+      { formato: 'post', rotulo: 'Feed 4:5', largura: 1080, altura: 1350 },
+      { formato: 'story', rotulo: 'Story 9:16', largura: 1080, altura: 1920 },
+      { formato: 'card', rotulo: 'Quadrado 1:1', largura: 1080, altura: 1080 },
+    ],
+    campos: [
+      {
+        id: 'foto',
+        label: 'Foto do produto',
+        tipo: 'imagem',
+        obrigatorio: true,
+        ajuda: 'Envie uma foto do produto (JPG ou PNG). Fica dentro da forma orgânica.',
+      },
+      {
+        id: 'cor_fundo',
+        label: 'Cor de fundo',
+        tipo: 'cor',
+        padrao: '#3E4A2C',
+        ajuda: 'Escolha uma cor (o verde é o padrão) ou clique numa das amostras.',
+        opcoes: [
+          { valor: '#3E4A2C', rotulo: 'Verde Shapes' },
+          { valor: '#131313', rotulo: 'Preto' },
+          { valor: '#FF7829', rotulo: 'Laranja' },
+          { valor: '#D9C7A8', rotulo: 'Bege' },
+          { valor: '#F2B950', rotulo: 'Amarelo' },
+          { valor: '#8A8A8A', rotulo: 'Cinza' },
+        ],
+      },
+      {
+        id: 'texto',
+        label: 'Texto',
+        tipo: 'textarea',
+        placeholder: 'Ex.: design\nautoral',
+        ajuda: 'Texto curto. Use quebras de linha para separar as palavras.',
+        padrao: 'design\nautoral',
+      },
+    ],
+    render: ShapesProdutoCard,
   },
 ]
 

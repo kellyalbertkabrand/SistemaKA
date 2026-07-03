@@ -22,6 +22,13 @@ export function EditorPeca({ template }: { template: Template }) {
     setValores((v) => ({ ...v, [id]: valor }))
   }
 
+  function handleImagem(id: string, file: File | undefined) {
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => set(id, reader.result as string)
+    reader.readAsDataURL(file)
+  }
+
   const podeBaixar = useMemo(
     () =>
       template.campos
@@ -116,6 +123,41 @@ export function EditorPeca({ template }: { template: Template }) {
                   </option>
                 ))}
               </select>
+            )}
+
+            {c.tipo === 'imagem' && (
+              <div className="img-input">
+                <input
+                  id={c.id}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleImagem(c.id, e.target.files?.[0])}
+                />
+                {valores[c.id] && (
+                  <img className="img-preview" src={String(valores[c.id])} alt="pré-visualização" />
+                )}
+              </div>
+            )}
+
+            {c.tipo === 'cor' && (
+              <div className="cor-input">
+                <input
+                  id={c.id}
+                  type="color"
+                  value={String(valores[c.id] || '#000000')}
+                  onChange={(e) => set(c.id, e.target.value)}
+                />
+                {c.opcoes?.map((o) => (
+                  <button
+                    key={o.valor}
+                    type="button"
+                    className="swatch"
+                    style={{ background: o.valor }}
+                    title={o.rotulo ?? o.valor}
+                    onClick={() => set(c.id, o.valor)}
+                  />
+                ))}
+              </div>
             )}
 
             {c.ajuda && <p className="editor__hint">{c.ajuda}</p>}

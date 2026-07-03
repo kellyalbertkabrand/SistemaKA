@@ -68,6 +68,44 @@
   color: #f4b24e;
 }
 
+/* upload de imagem */
+.img-input input[type='file'] {
+  font-size: 0.8rem;
+}
+.img-preview {
+  display: block;
+  margin-top: 0.6rem;
+  max-width: 100%;
+  max-height: 140px;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 25, 35, 0.12);
+}
+
+/* seletor de cor + amostras */
+.cor-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.cor-input input[type='color'] {
+  width: 44px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+}
+.cor-input .swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(15, 25, 35, 0.15);
+  cursor: pointer;
+  padding: 0;
+}
+
 /* palco */
 .editor__stage {
   display: flex;
