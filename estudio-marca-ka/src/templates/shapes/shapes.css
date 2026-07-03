@@ -1,9 +1,45 @@
-/* Fonte licenciada Montilla — servida a partir de /public/clientes/shapes/fonts */
+/* Fonte licenciada Montilla — família oficial completa (woff2), servida a
+   partir de /public/clientes/shapes/fonts. O navegador só baixa o peso usado. */
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 100;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-100.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 100;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-100i.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 200;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-200.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 200;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-200i.woff2') format('woff2');
+  font-display: swap;
+}
 @font-face {
   font-family: 'Montilla';
   font-weight: 300;
   font-style: normal;
   src: url('/clientes/shapes/fonts/montilla-300.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 300;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-300i.woff2') format('woff2');
   font-display: swap;
 }
 @font-face {
@@ -15,9 +51,23 @@
 }
 @font-face {
   font-family: 'Montilla';
+  font-weight: 400;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-400i.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
   font-weight: 500;
   font-style: normal;
   src: url('/clientes/shapes/fonts/montilla-500.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 500;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-500i.woff2') format('woff2');
   font-display: swap;
 }
 @font-face {
@@ -29,9 +79,51 @@
 }
 @font-face {
   font-family: 'Montilla';
+  font-weight: 600;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-600i.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
   font-weight: 700;
   font-style: normal;
   src: url('/clientes/shapes/fonts/montilla-700.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 700;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-700i.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 800;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-800.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 800;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-800i.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 900;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-900.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 900;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-900i.woff2') format('woff2');
   font-display: swap;
 }
 
