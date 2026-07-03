@@ -138,15 +138,29 @@ export const TEMPLATES: Template[] = [
     clienteSlug: 'shapes',
     clienteNome: 'Shapes',
     nome: 'Capa (foto + título)',
-    descricao: 'Capa do carrossel — foto em tela cheia com título grande e a logo.',
+    descricao: 'Capa do carrossel — foto com título grande e a logo; a foto pode ocupar o card todo ou aparecer menor, revelando a cor de fundo.',
     formatos: FORMATOS,
     campos: [
       {
         id: 'foto',
-        label: 'Foto (tela cheia)',
+        label: 'Foto',
         tipo: 'imagem',
         obrigatorio: true,
-        ajuda: 'A foto ocupa o fundo inteiro. Use os controles para enquadrar.',
+        ajuda: 'Use "Tamanho da foto" para a foto ocupar o card todo (100%) ou aparecer menor, mostrando a cor de fundo em volta.',
+      },
+      {
+        id: 'cor_fundo',
+        label: 'Cor de fundo',
+        tipo: 'cor',
+        padrao: '#EDE9DE',
+        opcoes: SWATCHES,
+      },
+      {
+        id: 'cor_fonte',
+        label: 'Cor do texto',
+        tipo: 'cor',
+        padrao: '#131313',
+        opcoes: SWATCHES,
       },
       {
         id: 'titulo',

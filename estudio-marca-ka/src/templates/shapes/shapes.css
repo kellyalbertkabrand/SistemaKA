@@ -281,6 +281,14 @@
   overflow: hidden;
   font-family: 'Montilla', system-ui, sans-serif;
 }
+/* moldura da foto: centralizada; abaixo de 100% revela a cor de fundo em volta */
+.shapes-capa .foto-frame {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+}
 .shapes-capa .bg {
   position: absolute;
   inset: 0;
@@ -290,8 +298,8 @@
 .shapes-capa .bg-ph {
   position: absolute;
   inset: 0;
-  background: #e8e2d6;
-  color: #9a927f;
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.4);
 }
 .shapes-capa .titulo {
   position: absolute;
@@ -306,7 +314,7 @@
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #131313;
+  color: inherit;
   z-index: 2;
 }
 .shapes-capa .logo {
@@ -325,7 +333,7 @@
 .shapes-capa .logo span {
   font-size: 46px;
   font-weight: 500;
-  color: #131313;
+  color: inherit;
 }
 
 /* ---- 3 · Diversas cores ---- */

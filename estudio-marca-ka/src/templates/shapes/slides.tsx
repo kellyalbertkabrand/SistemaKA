@@ -8,20 +8,37 @@ import './shapes.css'
 const BRANCO = '/clientes/shapes/shapes-logo-branco.png'
 const PRETO = '/clientes/shapes/shapes-logo-preto.png'
 
-// 1 · Capa — foto em tela cheia + título grande + logo.
+// 1 · Capa — foto (tamanho ajustável) + título grande + logo.
+// A foto vai de 60% a 100% do card; abaixo de 100% aparece a cor de fundo em volta.
 export function ShapesCapaCard({ valores, formato }: RenderProps) {
   const foto = String(valores.foto || '')
   const titulo = String(valores.titulo || '')
+  const corFundo = String(valores.cor_fundo || '#EDE9DE')
+  const corFonte = String(valores.cor_fonte || '#131313')
+  // texto claro => logo branca; texto escuro => logo preta.
+  const fonteEscura = corContraste(corFonte) === '#FFFFFF'
+  const logoSrc = fonteEscura ? PRETO : BRANCO
+
+  const areaRaw = Number(valores.foto_area)
+  const fator = Math.min(100, Math.max(60, Number.isFinite(areaRaw) ? areaRaw : 92)) / 100
+  const frameW = Math.round(formato.largura * fator)
+  const frameH = Math.round(formato.altura * fator)
+
   return (
-    <div className="shapes-capa" style={{ width: formato.largura, height: formato.altura }}>
-      {foto ? (
-        <img className="bg" src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
-      ) : (
-        <div className="bg-ph">Sua foto aqui</div>
-      )}
+    <div
+      className="shapes-capa"
+      style={{ width: formato.largura, height: formato.altura, background: corFundo, color: corFonte }}
+    >
+      <div className="foto-frame" style={{ width: frameW, height: frameH }}>
+        {foto ? (
+          <img className="bg" src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+        ) : (
+          <div className="bg-ph">Sua foto aqui</div>
+        )}
+      </div>
       {titulo && <div className="titulo">{titulo}</div>}
       <div className="logo">
-        <img src={PRETO} alt="" crossOrigin="anonymous" />
+        <img src={logoSrc} alt="" crossOrigin="anonymous" />
         <span>shapes</span>
       </div>
     </div>
