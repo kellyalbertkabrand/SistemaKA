@@ -1,5 +1,6 @@
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
+import { ShapesClips } from './ShapesClips'
 import './shapes.css'
 
 // Post de produto da Shapes — fundo colorido (configurável), foto do produto
@@ -9,12 +10,14 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
   const cor = String(valores.cor_fundo || '#3E4A2C')
   const foto = String(valores.foto || '')
   const texto = String(valores.texto || '')
+  const forma = String(valores.forma || 'shape-blob1')
 
   return (
     <div
       className={`shapes-prod fmt-${formato.formato}`}
       style={{ width: formato.largura, height: formato.altura, background: cor }}
     >
+      <ShapesClips />
       <img
         className="logo"
         src="/clientes/shapes/shapes-logo-branco.png"
@@ -22,7 +25,7 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
         crossOrigin="anonymous"
       />
 
-      <div className="foto-blob">
+      <div className="foto-blob" style={{ clipPath: `url(#${forma})`, WebkitClipPath: `url(#${forma})` }}>
         {foto ? (
           <img src={foto} alt="" style={estiloImagem(valores, 'foto')} />
         ) : (

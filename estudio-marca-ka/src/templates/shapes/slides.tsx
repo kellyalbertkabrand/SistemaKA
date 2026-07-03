@@ -1,5 +1,6 @@
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
+import { ShapesClips } from './ShapesClips'
 import './shapes.css'
 
 const BRANCO = '/clientes/shapes/shapes-logo-branco.png'
@@ -30,13 +31,15 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
   const cor = String(valores.cor_fundo || '#F2EFE9')
   const foto = String(valores.foto || '')
   const texto = String(valores.texto || '')
+  const forma = String(valores.forma || 'shape-blob1')
   return (
     <div
       className="shapes-cores"
       style={{ width: formato.largura, height: formato.altura, background: cor }}
     >
+      <ShapesClips />
       <img className="logo" src={PRETO} alt="Shapes" crossOrigin="anonymous" />
-      <div className="foto-blob">
+      <div className="foto-blob" style={{ clipPath: `url(#${forma})`, WebkitClipPath: `url(#${forma})` }}>
         {foto ? (
           <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
         ) : (
@@ -53,12 +56,14 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
   const cor = String(valores.cor_fundo || '#131313')
   const foto = String(valores.foto || '')
   const texto = String(valores.texto || '')
+  const forma = String(valores.forma || 'shape-blob1')
   return (
     <div
       className="shapes-forma"
       style={{ width: formato.largura, height: formato.altura, background: cor }}
     >
-      <div className="foto-blob">
+      <ShapesClips />
+      <div className="foto-blob" style={{ clipPath: `url(#${forma})`, WebkitClipPath: `url(#${forma})` }}>
         {foto ? (
           <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
         ) : (

@@ -106,6 +106,25 @@
   accent-color: var(--essencia);
 }
 
+/* seletor de forma (as 3 formas Shapes) */
+.forma-input {
+  display: flex;
+  gap: 0.6rem;
+}
+.forma-op {
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 10px;
+  background: #fff;
+  padding: 0.35rem;
+  cursor: pointer;
+  color: #c9c4b8;
+  line-height: 0;
+}
+.forma-op.on {
+  border-color: var(--essencia);
+  color: var(--marinho);
+}
+
 /* seletor de cor + amostras */
 .cor-input {
   display: flex;

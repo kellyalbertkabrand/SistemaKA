@@ -1,4 +1,5 @@
 import type { Campo, ValoresPeca } from '../templates/types'
+import { FORMAS } from '../templates/formas'
 
 interface Props {
   campos: Campo[]
@@ -137,6 +138,24 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
                     title={o.rotulo ?? o.valor}
                     onClick={() => onSet(c.id, o.valor)}
                   />
+                ))}
+              </div>
+            )}
+
+            {c.tipo === 'forma' && (
+              <div className="forma-input">
+                {FORMAS.map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    className={`forma-op ${valores[c.id] === f.id ? 'on' : ''}`}
+                    title={f.label}
+                    onClick={() => onSet(c.id, f.id)}
+                  >
+                    <svg viewBox="0 0 1 1" width="46" height="46" aria-hidden>
+                      <path d={f.d} fill="currentColor" />
+                    </svg>
+                  </button>
                 ))}
               </div>
             )}

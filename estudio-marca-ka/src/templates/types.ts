@@ -10,7 +10,14 @@ import type { FormatoPeca } from '../lib/database.types'
 // no tamanho real (1080px de largura) a partir dos valores dos campos.
 // ============================================================================
 
-export type CampoTipo = 'texto' | 'textarea' | 'imagem' | 'estrelas' | 'select' | 'cor'
+export type CampoTipo =
+  | 'texto'
+  | 'textarea'
+  | 'imagem'
+  | 'estrelas'
+  | 'select'
+  | 'cor'
+  | 'forma'
 
 export interface CampoBase {
   id: string
@@ -49,7 +56,18 @@ export interface CampoCor extends CampoBase {
   opcoes?: { valor: string; rotulo?: string }[]
 }
 
-export type Campo = CampoTexto | CampoImagem | CampoEstrelas | CampoSelect | CampoCor
+export interface CampoForma extends CampoBase {
+  tipo: 'forma'
+  padrao?: string
+}
+
+export type Campo =
+  | CampoTexto
+  | CampoImagem
+  | CampoEstrelas
+  | CampoSelect
+  | CampoCor
+  | CampoForma
 
 /** Dimensões reais (px) de cada formato suportado pelo template. */
 export interface FormatoDef {
@@ -86,6 +104,7 @@ export function valoresPadrao(campos: Campo[]): ValoresPeca {
     if (c.tipo === 'estrelas') v[c.id] = c.padrao ?? 5
     else if (c.tipo === 'select') v[c.id] = c.padrao ?? c.opcoes[0]?.valor ?? ''
     else if (c.tipo === 'cor') v[c.id] = c.padrao ?? '#000000'
+    else if (c.tipo === 'forma') v[c.id] = c.padrao ?? 'shape-blob1'
     else if (c.tipo === 'texto' || c.tipo === 'textarea') v[c.id] = c.padrao ?? ''
     else v[c.id] = ''
   }

@@ -102,6 +102,7 @@ export const TEMPLATES: Template[] = [
         obrigatorio: true,
         ajuda: 'Envie uma foto do produto (JPG ou PNG). Fica dentro da forma orgânica.',
       },
+      { id: 'forma', label: 'Forma da foto', tipo: 'forma', padrao: 'shape-blob1' },
       {
         id: 'cor_fundo',
         label: 'Cor de fundo',
@@ -170,6 +171,7 @@ export const TEMPLATES: Template[] = [
         opcoes: SWATCHES,
       },
       { id: 'foto', label: 'Foto do produto', tipo: 'imagem', obrigatorio: true },
+      { id: 'forma', label: 'Forma da foto', tipo: 'forma', padrao: 'shape-blob2' },
       {
         id: 'texto',
         label: 'Rótulos',
@@ -197,6 +199,7 @@ export const TEMPLATES: Template[] = [
         opcoes: SWATCHES,
       },
       { id: 'foto', label: 'Foto do produto', tipo: 'imagem', obrigatorio: true },
+      { id: 'forma', label: 'Forma da foto', tipo: 'forma', padrao: 'shape-blob3' },
       {
         id: 'texto',
         label: 'Texto',
