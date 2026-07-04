@@ -23,6 +23,13 @@
   src: url('/clientes/ka/fonts/playfair-var-italic.woff2') format('woff2');
   font-display: swap;
 }
+@font-face {
+  font-family: 'Outfit KA';
+  font-weight: 100 900;
+  font-style: normal;
+  src: url('/clientes/ka/fonts/outfit-var.woff2') format('woff2');
+  font-display: swap;
+}
 
 /* ---- Moldura comum: card 1080×1350, padding 80, cabeçalho + rodapé ---- */
 .ka-card {
@@ -207,6 +214,103 @@
   white-space: pre-line;
   max-width: 92%;
 }
+/* ---- 7 · Card de Feedback (review estilo Google) ----
+   Medidas fiéis ao gerador oficial da skill card-feedback-ka. Este card usa a
+   fonte Outfit e logo KA em imagem — não usa a moldura dos carrosséis. */
+.ka-fb {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 80px 92px;
+  font-family: 'Outfit KA', 'Outfit', sans-serif;
+}
+.ka-fb .main {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.ka-fb .logo {
+  height: 74px;
+  width: auto;
+  object-fit: contain;
+  align-self: flex-start;
+  margin-bottom: 32px;
+}
+.ka-fb .rotulo {
+  font-weight: 700;
+  font-size: 56px;
+  letter-spacing: 13px;
+  text-transform: uppercase;
+  margin-bottom: 44px;
+}
+.ka-fb .box {
+  background: #fff;
+  border-radius: 34px;
+  padding: 58px 60px;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.16);
+}
+.ka-fb .head {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  margin-bottom: 30px;
+}
+.ka-fb .av {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c47830, #152535);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 600;
+  font-size: 40px;
+}
+.ka-fb .nm {
+  font-weight: 600;
+  font-size: 38px;
+  color: #202124;
+  line-height: 1.15;
+}
+.ka-fb .rl {
+  font-weight: 400;
+  font-size: 27px;
+  color: #80868b;
+  margin-top: 5px;
+}
+.ka-fb .stars {
+  color: #fbbc04; /* dourado do Google */
+  font-size: 46px;
+  letter-spacing: 7px;
+  line-height: 1;
+  margin-bottom: 26px;
+}
+.ka-fb .depo {
+  font-weight: 400;
+  font-size: 33px;
+  line-height: 1.5;
+  color: #5f6368;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.ka-fb .footer {
+  flex: 0 0 auto;
+  text-align: center;
+  font-weight: 500;
+  font-size: 27px;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+  text-transform: uppercase;
+  opacity: 0.58;
+  padding-top: 26px;
+}
+
 .ka-cta .botao {
   display: flex;
   align-items: center;

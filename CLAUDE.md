@@ -188,6 +188,16 @@ app — aqui é a versão web dos mesmos cards).
 6. **ka-cta** — Card 10 (fecha TODO carrossel KA): fundo bege **travado**,
    frase + nome do produto grande + botão pill "Link na minha bio" com
    contorno caramelo.
+7. **ka-feedback** — Card de Feedback (prova social, skill `card-feedback-ka`):
+   review estilo Google — logo KA em PNG (branca/preta conforme o fundo,
+   `ka-branco.png`/`ka-preto.png`), rótulo "FEEDBACK ;)" editável, box branco
+   (radius 34) com avatar em gradiente caramelo→marinho (inicial do nome,
+   sobrescrevível), nome + subtítulo, estrelas no dourado do Google `#FBBC04`
+   e depoimento cinza `#5F6368`. **Fonte Outfit** (variável, auto-hospedada em
+   `fonts/outfit-var.woff2`) — este card NÃO usa a moldura dos carrosséis
+   (sem cabeçalho-fita; rodapé próprio em Outfit). Fundo padrão caramelo;
+   medidas fiéis ao `gerar_feedback.py` da skill. Depoimento sempre REAL,
+   sem data.
 
 > Rota: `/ka` continua sendo o painel admin, então o estúdio público da KA é
 > **`/ver/ka`** (a rota dinâmica `/:slug` vem depois de `/ka` no App.tsx).
@@ -320,7 +330,7 @@ estudio-marca-ka/
 ├── index.html                      # SEO/OG/schema.org + fontes Google
 ├── netlify.toml, public/_redirects # config Netlify + SPA
 ├── public/clientes/shapes/         # fontes, logos, fundo, elementos/
-├── public/clientes/ka/             # fonts/ (Playfair + Montserrat variáveis)
+├── public/clientes/ka/             # fonts/ (Playfair/Montserrat/Outfit var.) + logos ka-branco/preto.png
 └── src/
     ├── App.tsx                     # rotas
     ├── context/AuthContext.tsx     # sessão + admin por e-mail

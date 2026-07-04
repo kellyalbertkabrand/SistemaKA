@@ -32,6 +32,7 @@ const MARCAS: Record<string, MarcaVisual> = {
   },
   ka: {
     corPrincipal: COR_MARINHO,
+    logo: '/clientes/ka/ka-branco.png',
     paleta: PALETA_KA,
     tagline: 'Branding · Posicionamento · IA — os carrosséis da própria KA.',
   },

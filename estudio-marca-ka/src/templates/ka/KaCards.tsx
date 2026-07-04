@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
-import { hexFundoKA, corTextoKA, corDestaqueKA } from './cores'
+import { hexFundoKA, corTextoKA, corDestaqueKA, COR_MARINHO } from './cores'
 import './ka.css'
 
 // ============================================================================
@@ -157,6 +157,49 @@ export function KaComentarioCard({ valores, formato }: RenderProps) {
         {comentario && <div className="fala">{comentario}</div>}
       </div>
     </KaFrame>
+  )
+}
+
+// 7 · Card de Feedback — prova social no modelo de review do Google (skill
+// card-feedback-ka): logo KA + "FEEDBACK ;)" + box branco com avatar, nome,
+// estrelas douradas e o depoimento. Fonte Outfit; não usa a moldura dos
+// carrosséis. Em fundo bege, logo e textos externos ficam escuros.
+export function KaFeedbackCard({ valores, formato }: RenderProps) {
+  const fundo = String(valores.cor_fundo || 'caramelo')
+  const nome = String(valores.nome || '')
+  const subtitulo = String(valores.subtitulo || '')
+  const texto = String(valores.texto || '')
+  const rotulo = String(valores.rotulo || '')
+  const nota = Math.max(1, Math.min(5, Number(valores.nota) || 5))
+  const inicial = (String(valores.inicial || '').trim() || nome.trim().slice(0, 1)).toUpperCase()
+
+  const escuro = fundo !== 'bege'
+  const fg = escuro ? '#FFFFFF' : COR_MARINHO
+  const logo = escuro ? '/clientes/ka/ka-branco.png' : '/clientes/ka/ka-preto.png'
+  const stars = '★'.repeat(nota) + '☆'.repeat(5 - nota)
+
+  return (
+    <div
+      className="ka-fb"
+      style={{ width: formato.largura, height: formato.altura, background: hexFundoKA(fundo), color: fg }}
+    >
+      <div className="main">
+        <img className="logo" src={logo} alt="KA" crossOrigin="anonymous" />
+        {rotulo && <div className="rotulo">{rotulo}</div>}
+        <div className="box">
+          <div className="head">
+            <div className="av">{inicial}</div>
+            <div>
+              {nome && <div className="nm">{nome}</div>}
+              {subtitulo && <div className="rl">{subtitulo}</div>}
+            </div>
+          </div>
+          <div className="stars">{stars}</div>
+          {texto && <div className="depo">{texto}</div>}
+        </div>
+      </div>
+      <div className="footer">Kelly Albert</div>
+    </div>
   )
 }
 

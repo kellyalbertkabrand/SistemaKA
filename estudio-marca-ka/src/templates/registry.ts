@@ -16,6 +16,7 @@ import {
   KaMidiaCard,
   KaComentarioCard,
   KaCtaCard,
+  KaFeedbackCard,
 } from './ka/KaCards'
 import { FUNDOS_KA } from './ka/cores'
 
@@ -564,6 +565,60 @@ export const TEMPLATES: Template[] = [
       },
     ],
     render: KaCtaCard,
+  },
+  {
+    id: 'ka-feedback',
+    clienteSlug: 'ka',
+    clienteNome: 'KA | Inteligência para Marcas',
+    nome: 'Card de Feedback (review)',
+    descricao:
+      'Prova social no modelo de review do Google — logo KA, "FEEDBACK ;)", ' +
+      'box branco com avatar, nome, estrelas douradas e o depoimento real.',
+    formatos: FORMATO_KA,
+    campos: [
+      {
+        id: 'nome',
+        label: 'Nome do cliente',
+        tipo: 'texto',
+        obrigatorio: true,
+        placeholder: 'Como o cliente aparece na avaliação',
+        padrao: 'SABRE Odonto Gravataí',
+      },
+      {
+        id: 'subtitulo',
+        label: 'Subtítulo (opcional)',
+        tipo: 'texto',
+        placeholder: 'Ex.: Odontologia · Gravataí',
+        ajuda: 'Segmento e/ou cidade do cliente.',
+        padrao: 'Odontologia · Gravataí',
+      },
+      {
+        id: 'texto',
+        label: 'Depoimento',
+        tipo: 'textarea',
+        obrigatorio: true,
+        placeholder: 'Cole aqui o depoimento real (Google, WhatsApp ou DM)…',
+        ajuda: 'Transcreva o depoimento REAL — limpe só erros óbvios de digitação. Sem data.',
+        padrao:
+          'Nós do grupo SABRE somos muito gratos pela experiência maravilhosa ' +
+          'que tivemos com a Kelly e tudo aquilo que ela nos ensinou. É uma ' +
+          'profissional muito capacitada e de excelência. Obrigada por ' +
+          'participar e nos auxiliar em um momento tão importante para nós! ' +
+          'Recomendamos muito!',
+      },
+      { id: 'nota', label: 'Nota (estrelas)', tipo: 'estrelas', padrao: 5 },
+      {
+        id: 'inicial',
+        label: 'Letra do avatar (opcional)',
+        tipo: 'texto',
+        maxLen: 2,
+        placeholder: 'Vazio = 1ª letra do nome',
+        padrao: '',
+      },
+      { id: 'rotulo', label: 'Rótulo do topo', tipo: 'texto', padrao: 'FEEDBACK ;)' },
+      campoFundoKA('caramelo'),
+    ],
+    render: KaFeedbackCard,
   },
 ]
 
