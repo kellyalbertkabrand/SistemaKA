@@ -214,6 +214,34 @@ app — aqui é a versão web dos mesmos cards).
 
 ## 4c. Gestão interna (clientes, orçamentos, contratos, cobranças)
 
+> ⚠️ **BACKEND MIGRADO PARA O FIREBASE (jul/2026).** Depois de uma queda do
+> Supabase, a KA optou pelo **Firebase** (plano grátis Spark). A camada de dados
+> foi reescrita mantendo as MESMAS assinaturas de função, então as telas não
+> mudaram. Detalhes:
+>
+> - **Config pública:** `src/lib/firebase.ts` (projeto `estudio-de-marcas-ka`).
+>   As chaves do front (apiKey Firebase, anon do Supabase) são **públicas por
+>   design** — a segurança vem das *Regras* do Firestore.
+> - **`src/lib/api.ts` e `src/lib/gestao.ts`** agora usam **Firestore**
+>   (coleções com os mesmos nomes das antigas tabelas). A lógica que era RPC no
+>   servidor (responder orçamento → gera contrato + cobrança; gerar
+>   mensalidades) roda no cliente; tokens dos links públicos são gerados no
+>   navegador (`crypto.randomUUID`).
+> - **Auth:** `src/context/AuthContext.tsx` usa **Firebase Auth** (login Google
+>   1 clique + e-mail/senha). Perfil em `usuarios/{uid}`; convites pendentes em
+>   `convites/{email}` vinculam o login à marca no 1º acesso.
+> - **Regras do Firestore:** `estudio-marca-ka/firebase/firestore.rules` (modo
+>   teste = tudo liberado; modo produção = só a KA + leitura pública por token).
+>   Colar no Console → Firestore → Regras.
+> - **Netlify:** o `netlify.toml` desliga a *detecção inteligente* do secret
+>   scanner (`SECRETS_SCAN_SMART_DETECTION_ENABLED=false`), que bloqueava o build
+>   confundindo as chaves públicas com segredos. Auto-publish ligado no branch
+>   `estudiodemarca`.
+> - **Mercado Pago:** link automático precisa de Cloud Function (plano Blaze);
+>   por enquanto `gerarLinkMercadoPago` avisa para colar o link manualmente.
+> - Supabase (`src/lib/supabase.ts`, `supabase/`) continua no repo como legado,
+>   sem ser importado (tree-shaken do bundle).
+
 O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamentos
 / Contratos / Cobranças (**restritas** — exigem login admin, `GateAdmin.tsx`).
 
