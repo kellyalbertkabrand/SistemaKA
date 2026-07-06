@@ -1,7 +1,7 @@
 {
   "date": "2026-04-02",
-  "generated_at": "2026-07-05T10:29:42.005488+00:00",
-  "count": 1,
+  "generated_at": "2026-07-06T12:17:49.261149+00:00",
+  "count": 2,
   "items": [
     {
       "title": "Leo Dias revela ameaça de boicote da parte de Virginia Fonseca; entenda - band.com.br",
@@ -14,15 +14,36 @@
       "published": "2026-04-02",
       "raw_summary": "Leo Dias revela ameaça de boicote por parte de Virginia Fonseca após cobertura de nova polêmica com Zé Felipe; entenda. Assista ao trecho do #MelhorDaTarde desta quinta-feira, 02/04, na Band.",
       "title_pt": "",
-      "summary_pt": "Colunista expõe tentativa de influenciadora de boicotar cobertura jornalística.",
+      "summary_pt": "Influencer ameaça boicote a colunista após cobertura de polêmica.",
       "angle_pt": "",
       "pme_pt": "",
       "roteiro_pt": "",
       "link_kelly": "",
       "authors": "",
       "score": 9,
-      "fetched_at": "2026-07-05T10:26:19.523561+00:00",
+      "fetched_at": "2026-07-06T12:13:07.326073+00:00",
       "id": "96f3d1272fdc2291"
+    },
+    {
+      "title": "Virginia Fonseca toma decisão polêmica sobre escola dos filhos após Zé Felipe criticar rotina - Terra",
+      "link": "https://www.terra.com.br/diversao/gente/virginia-fonseca-toma-decisao-polemica-sobre-escola-dos-filhos-apos-ze-felipe-criticar-rotina,1b916e0fb3eb3fbcfa3103c396929056qed14gg3.html",
+      "source": "Terra",
+      "lang": "pt",
+      "region": "BR",
+      "category": "influencer",
+      "kind": "noticia",
+      "published": "2026-04-02",
+      "raw_summary": "Influenciadora se pronuncia após comentário do cantor sobre a frequência escolar das crianças e revela como será o retorno à rotina após viagem internacional",
+      "title_pt": "",
+      "summary_pt": "Influencer muda decisão sobre vida pessoal dos filhos após crítica pública do cônjuge.",
+      "angle_pt": "",
+      "pme_pt": "",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 9,
+      "fetched_at": "2026-07-06T12:13:08.364728+00:00",
+      "id": "3e248c3a0a486a6c"
     }
   ]
 }
