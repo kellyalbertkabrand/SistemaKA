@@ -8,7 +8,13 @@ import {
   vincularUsuario,
   desvincularUsuario,
 } from '../../lib/api'
-import { convidarUsuario, formatarBRL, salvarFichaCliente, type FichaCliente } from '../../lib/gestao'
+import {
+  convidarUsuario,
+  formatarBRL,
+  linkPublicoCadastro,
+  salvarFichaCliente,
+  type FichaCliente,
+} from '../../lib/gestao'
 
 // Clientes & Acessos: ficha completa de cada cliente (dados cadastrais,
 // cobrança/mensalidade) + quem tem login vinculado à marca.
@@ -17,6 +23,13 @@ export function GestaoClientes() {
   const [sel, setSel] = useState<Cliente | null>(null)
   const [erro, setErro] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
+  const [msg, setMsg] = useState<string | null>(null)
+
+  async function copiarLinkCadastro() {
+    await navigator.clipboard.writeText(linkPublicoCadastro())
+    setMsg('Link de cadastro copiado! Envie ao cliente para ele preencher a ficha.')
+    setTimeout(() => setMsg(null), 5000)
+  }
 
   async function recarregar() {
     try {
@@ -63,11 +76,15 @@ export function GestaoClientes() {
     <>
       <div className="gestao-acoes">
         <span className="espaco" />
+        <button className="btn--voltar" onClick={() => void copiarLinkCadastro()}>
+          Copiar link de cadastro
+        </button>
         <button className="btn" onClick={() => void novoCliente()}>
           + Novo cliente
         </button>
       </div>
 
+      {msg && <div className="nota">{msg}</div>}
       {erro && <div className="erro-msg">{erro}</div>}
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
 

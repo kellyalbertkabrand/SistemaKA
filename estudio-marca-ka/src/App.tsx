@@ -8,6 +8,7 @@ import { Studio } from './pages/Studio'
 import { NotFound } from './pages/NotFound'
 import { OrcamentoPublico } from './pages/publico/OrcamentoPublico'
 import { ContratoPublico } from './pages/publico/ContratoPublico'
+import { CadastroPublico } from './pages/publico/CadastroPublico'
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
           {/* Links públicos enviados ao cliente (por token) */}
           <Route path="/orcamento/:token" element={<OrcamentoPublico />} />
           <Route path="/contrato/:token" element={<ContratoPublico />} />
+          <Route path="/cadastro" element={<CadastroPublico />} />
 
           {/* Fluxo autenticado (para o futuro: logins de cliente) */}
           <Route path="/login" element={<Login />} />

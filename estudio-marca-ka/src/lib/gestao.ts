@@ -120,6 +120,42 @@ export async function convidarUsuario(
   })
 }
 
+/**
+ * Cadastro público: o próprio cliente preenche a ficha dele pelo link
+ * `/cadastro`, criando um registro na coleção `clientes` (aparece na aba
+ * Clientes da KA). Marcado com `origem: 'auto-cadastro'`.
+ */
+export async function cadastrarClientePublico(
+  dados: FichaCliente & { nome_marca: string },
+): Promise<void> {
+  const novo = limpar({
+    nome_marca: dados.nome_marca,
+    instagram_handle: dados.instagram_handle ?? null,
+    segmento: dados.segmento ?? null,
+    site: dados.site ?? null,
+    status: 'ativo',
+    slug: null,
+    responsavel: dados.responsavel ?? null,
+    email_contato: dados.email_contato ?? null,
+    telefone: dados.telefone ?? null,
+    endereco: dados.endereco ?? null,
+    cidade: dados.cidade ?? null,
+    observacoes: dados.observacoes ?? null,
+    email_cobranca: dados.email_cobranca ?? dados.email_contato ?? null,
+    documento: dados.documento ?? null,
+    valor_mensalidade: null,
+    dia_vencimento: 10,
+    cobranca_ativa: false,
+    origem: 'auto-cadastro',
+    criado_em: agora(),
+  })
+  await addDoc(collection(db, 'clientes'), novo)
+}
+
+export function linkPublicoCadastro(): string {
+  return `${window.location.origin}/cadastro`
+}
+
 // ---- Orçamentos -------------------------------------------------------------
 
 export async function listarOrcamentos(): Promise<Orcamento[]> {
