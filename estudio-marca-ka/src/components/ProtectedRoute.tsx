@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { Loading } from './Loading'
+import { ACESSO_ABERTO } from '../lib/config'
 
 interface Props {
   children: ReactNode
@@ -11,6 +12,9 @@ interface Props {
 
 export function ProtectedRoute({ children, papel }: Props) {
   const { session, perfil, loading, isAdmin } = useAuth()
+
+  // MODO TESTE: acesso liberado, sem login (ver lib/config.ts).
+  if (ACESSO_ABERTO) return <>{children}</>
 
   if (loading) return <Loading texto="Verificando acesso…" />
   if (!session) return <Navigate to="/login" replace />
