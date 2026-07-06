@@ -213,15 +213,19 @@ function EditorModelo({ aoVoltar }: { aoVoltar: () => void }) {
   async function salvar() {
     setSalvando(true)
     setErro(null)
+    setMsg(null)
     try {
-      await salvarModeloContrato({
+      const salvo = await salvarModeloContrato({
         ...(modelo ? { id: modelo.id } : {}),
         nome,
         conteudo,
         padrao: true,
       })
-      setMsg('Modelo salvo — os próximos contratos usam esta versão.')
-      setTimeout(() => setMsg(null), 3000)
+      // Guarda o modelo salvo para os próximos cliques atualizarem em vez de
+      // criar um novo (evita modelos duplicados).
+      setModelo(salvo)
+      setMsg('✓ Modelo salvo — os próximos contratos usam esta versão.')
+      setTimeout(() => setMsg(null), 4000)
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
     } finally {
@@ -260,9 +264,13 @@ function EditorModelo({ aoVoltar }: { aoVoltar: () => void }) {
             style={{ fontFamily: 'ui-monospace, monospace', fontSize: '0.8rem', lineHeight: 1.55 }}
           />
         </div>
-        <button className="btn" disabled={salvando || !conteudo.trim()} onClick={() => void salvar()}>
-          {salvando ? 'Salvando…' : 'Salvar modelo'}
-        </button>
+        <p style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', flexWrap: 'wrap', marginTop: '0.4rem' }}>
+          <button className="btn" disabled={salvando || !conteudo.trim()} onClick={() => void salvar()}>
+            {salvando ? 'Salvando…' : 'Salvar modelo'}
+          </button>
+          {msg && <span style={{ color: '#2e6b45', fontSize: '0.82rem' }}>{msg}</span>}
+          {erro && <span style={{ color: 'var(--erro)', fontSize: '0.82rem' }}>{erro}</span>}
+        </p>
       </div>
     </>
   )
