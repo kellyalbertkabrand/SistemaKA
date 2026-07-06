@@ -11,9 +11,10 @@ CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE DESIGN E LICENÇA DE USO DE SISTEMA
 Pelo presente instrumento particular, as partes abaixo qualificadas:
 
 CONTRATADA: Kelly Albert, sob a marca "KA | Inteligência para Marcas",
-inscrita no CPF/CNPJ nº [CPF/CNPJ da KA], com endereço em [endereço completo da
-KA], e-mail kellyalbertka@gmail.com, site kellyalbert.com.br, doravante
-denominada simplesmente CONTRATADA;
+inscrita no CNPJ nº 15.096.943/0001-37, com endereço na Rua Jaime Telles, 62,
+Bairro Petrópolis, Porto Alegre - RS, CEP 90460-030, e-mail
+kellyalbertka@gmail.com, site kellyalbert.com.br, doravante denominada
+simplesmente CONTRATADA;
 
 CONTRATANTE: {{cliente_nome}}, inscrito(a) no CPF/CNPJ nº {{cliente_documento}},
 doravante denominado(a) simplesmente CONTRATANTE;
@@ -100,7 +101,7 @@ CLÁUSULA 10ª — DAS DISPOSIÇÕES GERAIS
 entendimentos anteriores, e só pode ser alterado por escrito.
 10.2. A tolerância quanto a qualquer descumprimento não implica novação nem
 renúncia de direitos.
-10.3. Fica eleito o foro da comarca de [cidade/UF da KA] para dirimir quaisquer
+10.3. Fica eleito o foro da comarca de Porto Alegre - RS para dirimir quaisquer
 questões oriundas deste contrato, com renúncia a qualquer outro.
 
 E, por estarem assim justas e contratadas, as partes firmam o presente contrato,
