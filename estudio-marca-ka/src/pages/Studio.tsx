@@ -1,4 +1,4 @@
-import { TopBar } from '../components/TopBar'
+import { SiteHeader } from '../components/SiteHeader'
 import { useAuth } from '../context/AuthContext'
 import { BrandStudio } from '../components/BrandStudio'
 
@@ -9,7 +9,7 @@ export function Studio() {
 
   return (
     <>
-      <TopBar />
+      <SiteHeader />
       <div className="page">
         {slug ? (
           <BrandStudio slug={slug} />

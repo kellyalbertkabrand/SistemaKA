@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { TopBar } from '../components/TopBar'
+import { SiteHeader, type ItemMenu } from '../components/SiteHeader'
 import { clientesComTemplates } from '../templates/registry'
 import { marcaVisual } from '../templates/marcas'
 import { BrandStudio } from '../components/BrandStudio'
@@ -13,9 +13,10 @@ import '../styles/gestao.css'
 
 type Aba = 'estudio' | 'clientes' | 'orcamentos' | 'contratos' | 'cobrancas'
 
-const ABAS: { id: Aba; rotulo: string }[] = [
+// Rótulos curtos para o menu (estilo site: maiúsculas, poucos caracteres).
+const MENU: ItemMenu[] = [
   { id: 'estudio', rotulo: 'Estúdio' },
-  { id: 'clientes', rotulo: 'Clientes & Acessos' },
+  { id: 'clientes', rotulo: 'Clientes' },
   { id: 'orcamentos', rotulo: 'Orçamentos' },
   { id: 'contratos', rotulo: 'Contratos' },
   { id: 'cobrancas', rotulo: 'Cobranças' },
@@ -38,23 +39,15 @@ export function AdminPanel() {
 
   return (
     <>
-      <TopBar />
+      <SiteHeader
+        itens={MENU}
+        ativo={aba}
+        onSelecionar={(id) => {
+          setAba(id as Aba)
+          setSlug(null)
+        }}
+      />
       <div className="page">
-        <nav className="painel-abas" aria-label="Seções do painel">
-          {ABAS.map((a) => (
-            <button
-              key={a.id}
-              className={`painel-aba ${aba === a.id ? 'ativa' : ''}`}
-              onClick={() => {
-                setAba(a.id)
-                setSlug(null)
-              }}
-            >
-              {a.rotulo}
-            </button>
-          ))}
-        </nav>
-
         {aba === 'estudio' && slug ? (
           <>
             <p style={{ marginBottom: '1rem' }}>
