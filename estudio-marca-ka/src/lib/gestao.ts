@@ -351,6 +351,35 @@ export async function criarContrato(
   return comId<Contrato>(ref.id, novo)
 }
 
+/**
+ * Cria um contrato novo já a partir do MODELO padrão, preenchendo os campos do
+ * cliente ({{cliente_nome}}, {{cliente_documento}}, {{data}}). Usado pelo botão
+ * "Novo contrato" — sem precisar de orçamento.
+ */
+export async function criarContratoDoModelo(dados: {
+  cliente_nome: string
+  cliente_documento?: string
+  cliente_id?: string | null
+  titulo?: string
+}): Promise<Contrato> {
+  const modelos = await listarModelosContrato()
+  const modelo = modelos.find((m) => m.padrao) ?? modelos[0]
+  const quando = agora()
+  const corpo = modelo
+    ? preencherModelo(modelo.conteudo, {
+        cliente_nome: dados.cliente_nome,
+        cliente_documento: dados.cliente_documento ?? '',
+        data: formatarData(quando),
+      })
+    : `Contrato para ${dados.cliente_nome}.`
+  return criarContrato({
+    titulo: dados.titulo ?? `Contrato — ${dados.cliente_nome}`,
+    conteudo: corpo,
+    cliente_id: dados.cliente_id ?? null,
+    status: 'rascunho',
+  })
+}
+
 export async function atualizarContrato(
   id: string,
   dados: Partial<Pick<Contrato, 'titulo' | 'conteudo' | 'status' | 'enviado_em'>>,

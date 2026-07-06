@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import type { Contrato, ContratoStatus, ModeloContrato } from '../../lib/database.types'
 import {
   atualizarContrato,
+  criarContratoDoModelo,
   excluirContrato,
   listarContratos,
   linkPublicoContrato,
@@ -23,6 +24,7 @@ export function GestaoContratos() {
   const [lista, setLista] = useState<Contrato[]>([])
   const [vendo, setVendo] = useState<Contrato | null>(null)
   const [editandoModelo, setEditandoModelo] = useState(false)
+  const [criando, setCriando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
@@ -73,6 +75,19 @@ export function GestaoContratos() {
     return <EditorModelo aoVoltar={() => setEditandoModelo(false)} />
   }
 
+  if (criando) {
+    return (
+      <NovoContrato
+        aoVoltar={() => setCriando(false)}
+        aoCriar={(c) => {
+          setCriando(false)
+          void recarregar()
+          setVendo(c)
+        }}
+      />
+    )
+  }
+
   if (vendo) {
     return (
       <>
@@ -81,7 +96,7 @@ export function GestaoContratos() {
             ← Contratos
           </button>
           <button className="btn--voltar" onClick={() => window.print()}>
-            Imprimir / PDF
+            Salvar em PDF / Imprimir
           </button>
           <button className="btn--voltar" onClick={() => void copiarLink(vendo)}>
             Copiar link de assinatura
@@ -114,6 +129,9 @@ export function GestaoContratos() {
         <span className="espaco" />
         <button className="btn--voltar" onClick={() => setEditandoModelo(true)}>
           Editar modelo de contrato
+        </button>
+        <button className="btn" onClick={() => setCriando(true)}>
+          + Novo contrato
         </button>
       </div>
 
@@ -184,6 +202,87 @@ export function GestaoContratos() {
           </table>
         </div>
       )}
+    </>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Novo contrato: gera um contrato a partir do modelo padrão, preenchendo o
+// nome e o documento do cliente. Depois é só ver e salvar em PDF.
+// ---------------------------------------------------------------------------
+function NovoContrato({
+  aoVoltar,
+  aoCriar,
+}: {
+  aoVoltar: () => void
+  aoCriar: (c: Contrato) => void
+}) {
+  const [nome, setNome] = useState('')
+  const [documento, setDocumento] = useState('')
+  const [titulo, setTitulo] = useState('')
+  const [gerando, setGerando] = useState(false)
+  const [erro, setErro] = useState<string | null>(null)
+
+  async function gerar(e: FormEvent) {
+    e.preventDefault()
+    if (!nome.trim()) return
+    setGerando(true)
+    setErro(null)
+    try {
+      const c = await criarContratoDoModelo({
+        cliente_nome: nome.trim(),
+        cliente_documento: documento.trim() || undefined,
+        titulo: titulo.trim() || undefined,
+      })
+      aoCriar(c)
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : String(err))
+    } finally {
+      setGerando(false)
+    }
+  }
+
+  return (
+    <>
+      <p style={{ marginBottom: '1rem' }}>
+        <button className="btn--voltar" onClick={aoVoltar}>
+          ← Contratos
+        </button>
+      </p>
+      <div className="card">
+        <h3>Novo contrato</h3>
+        <p style={{ marginBottom: '0.9rem' }}>
+          O contrato é gerado a partir do <strong>modelo padrão</strong>, já com os seus dados. Aqui
+          você preenche só os dados do cliente; o resto (nome, CPF/CNPJ e data) entra sozinho no
+          texto. Depois de gerar, é só abrir e <strong>salvar em PDF</strong>.
+        </p>
+        {erro && <div className="erro-msg">{erro}</div>}
+        <form onSubmit={(e) => void gerar(e)}>
+          <div className="form-grade">
+            <div className="field">
+              <label>Nome do cliente (CONTRATANTE)</label>
+              <input value={nome} onChange={(e) => setNome(e.target.value)} required placeholder="Nome / razão social" />
+            </div>
+            <div className="field">
+              <label>CPF / CNPJ do cliente</label>
+              <input value={documento} onChange={(e) => setDocumento(e.target.value)} placeholder="000.000.000-00" />
+            </div>
+            <div className="field campo-toda">
+              <label>Título do contrato (opcional)</label>
+              <input
+                value={titulo}
+                onChange={(e) => setTitulo(e.target.value)}
+                placeholder="Ex.: Contrato — Marca do Cliente"
+              />
+            </div>
+          </div>
+          <p>
+            <button className="btn" type="submit" disabled={gerando || !nome.trim()}>
+              {gerando ? 'Gerando…' : 'Gerar contrato'}
+            </button>
+          </p>
+        </form>
+      </div>
     </>
   )
 }
