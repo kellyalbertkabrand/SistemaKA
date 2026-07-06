@@ -31,11 +31,7 @@ export function SiteHeader({ itens = [], ativo, onSelecionar }: Props) {
   return (
     <header className="ka-top">
       <a className="ka-logo" href="/" aria-label="KA — Inteligência para Marcas">
-        <span className="ka-logo__mono">KA</span>
-        <span className="ka-logo__sub">
-          <span>| INTELIGÊNCIA</span>
-          <span>| PARA MARCAS</span>
-        </span>
+        <img className="ka-logo__img" src="/logo-ka.png" alt="KA — Inteligência para Marcas" />
       </a>
 
       {temNav && (
