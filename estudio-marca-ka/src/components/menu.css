@@ -21,28 +21,12 @@
 .ka-logo {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
   text-decoration: none;
-  color: var(--ka-ink);
 }
-.ka-logo__mono {
-  font-family: 'Playfair Display', Georgia, serif;
-  font-size: 2.1rem;
-  line-height: 0.9;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-}
-.ka-logo__sub {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-size: 0.6rem;
-  font-weight: 400;
-  letter-spacing: 0.22em;
-  color: rgba(23, 38, 58, 0.72);
-  text-transform: uppercase;
-  padding-left: 0.55rem;
-  border-left: 1px solid rgba(23, 38, 58, 0.28);
+.ka-logo__img {
+  height: 42px;
+  width: auto;
+  display: block;
 }
 
 /* ---- Navegação (desktop) ---- */
@@ -122,6 +106,9 @@
 
 /* ---- Mobile: nav vira gaveta ---- */
 @media (max-width: 820px) {
+  .ka-logo__img {
+    height: 34px;
+  }
   .ka-burger {
     display: flex;
   }
