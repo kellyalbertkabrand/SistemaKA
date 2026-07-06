@@ -34,6 +34,12 @@ html,
 body,
 #root {
   min-height: 100%;
+  max-width: 100%;
+}
+/* Trava o deslize horizontal no celular sem quebrar o menu fixo (sticky).
+   overflow-x: clip não cria um container de rolagem como o 'hidden'. */
+html {
+  overflow-x: clip;
 }
 
 body {
@@ -168,6 +174,19 @@ h3 {
 .field textarea:focus {
   outline: none;
   border-color: var(--essencia);
+}
+
+/* No celular, campos com menos de 16px fazem o Safari dar zoom automático ao
+   focar (e a página passa a "correr" para os lados). 16px evita esse zoom. */
+@media (max-width: 640px) {
+  .field input,
+  .field select,
+  .field textarea,
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
 }
 
 /* ---- Login ---- */

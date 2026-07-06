@@ -370,7 +370,7 @@ function EditorModelo({ aoVoltar }: { aoVoltar: () => void }) {
             rows={22}
             value={conteudo}
             onChange={(e) => setConteudo(e.target.value)}
-            style={{ fontFamily: 'ui-monospace, monospace', fontSize: '0.8rem', lineHeight: 1.55 }}
+            style={{ fontFamily: 'ui-monospace, monospace', fontSize: '16px', lineHeight: 1.55 }}
           />
         </div>
         <p style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', flexWrap: 'wrap', marginTop: '0.4rem' }}>

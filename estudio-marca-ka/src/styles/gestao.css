@@ -164,8 +164,17 @@
   grid-column: 1 / -1;
 }
 @media (max-width: 560px) {
+  .form-grade {
+    grid-template-columns: 1fr; /* uma coluna no celular — nunca estoura */
+  }
   .form-grade .campo-2 {
     grid-column: auto;
+  }
+  .pub-wrap {
+    padding: 1.3rem 0.9rem 3rem;
+  }
+  .pub-doc {
+    padding: 1.6rem 1.2rem;
   }
 }
 

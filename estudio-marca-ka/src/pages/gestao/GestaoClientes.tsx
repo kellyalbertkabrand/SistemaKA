@@ -438,7 +438,7 @@ function Acessos({ cliente, slug }: { cliente: Cliente; slug: string | null }) {
           style={{
             flex: '1 1 240px',
             fontFamily: 'var(--body)',
-            fontSize: '0.9rem',
+            fontSize: '16px',
             border: '1px solid rgba(15,25,35,0.12)',
             borderRadius: 8,
             padding: '0.7rem 0.8rem',
