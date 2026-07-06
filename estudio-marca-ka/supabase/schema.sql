@@ -160,6 +160,8 @@ as $$
 $$;
 
 -- true se o usuário logado é admin.
+-- Admin por papel='admin' no usuarios OU pelo e-mail bootstrap da KA (mesmo
+-- padrão do front, VITE_ADMIN_EMAILS) — evita ter que promover a mão no teste.
 create or replace function public.is_admin()
 returns boolean
 language sql
@@ -167,7 +169,8 @@ stable
 security definer
 set search_path = public
 as $$
-  select coalesce(public.auth_papel() = 'admin', false);
+  select coalesce(public.auth_papel() = 'admin', false)
+      or coalesce(lower(auth.jwt() ->> 'email') = 'kellyalbertka@gmail.com', false);
 $$;
 
 -- ---------------------------------------------------------------------------
