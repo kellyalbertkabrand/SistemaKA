@@ -1,11 +1,10 @@
 import { useState, type FormEvent } from 'react'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { supabaseConfigured } from '../lib/supabase'
 import { Loading } from '../components/Loading'
 
 export function Login() {
-  const { session, loading, isAdmin, signIn } = useAuth()
+  const { session, loading, isAdmin, signIn, signInGoogle } = useAuth()
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [erro, setErro] = useState<string | null>(null)
@@ -26,6 +25,14 @@ export function Login() {
     // Em caso de sucesso, o onAuthStateChange redireciona via <Navigate> acima.
   }
 
+  async function entrarGoogle() {
+    setErro(null)
+    setEnviando(true)
+    const { error } = await signInGoogle()
+    setEnviando(false)
+    if (error) setErro(traduzErro(error))
+  }
+
   return (
     <div className="auth-wrap">
       <div className="auth-card">
@@ -34,14 +41,19 @@ export function Login() {
         </div>
         <div className="auth-card__sub">Sistema Visual · KA</div>
 
-        {!supabaseConfigured && (
-          <div className="auth-banner">
-            <strong>Configuração pendente.</strong> Defina <code>VITE_SUPABASE_URL</code> e{' '}
-            <code>VITE_SUPABASE_ANON_KEY</code> em <code>.env.local</code> para habilitar o login.
-          </div>
-        )}
-
         {erro && <div className="auth-error">{erro}</div>}
+
+        <button
+          type="button"
+          className="btn btn--google"
+          onClick={() => void entrarGoogle()}
+          disabled={enviando}
+          style={{ width: '100%', marginBottom: '1rem' }}
+        >
+          Entrar com o Google
+        </button>
+
+        <div className="auth-ou">ou com e-mail e senha</div>
 
         <form onSubmit={handleSubmit}>
           <div className="field">
@@ -66,7 +78,7 @@ export function Login() {
               required
             />
           </div>
-          <button className="btn" type="submit" disabled={enviando || !supabaseConfigured}>
+          <button className="btn" type="submit" disabled={enviando}>
             {enviando ? 'Entrando…' : 'Entrar'}
           </button>
         </form>

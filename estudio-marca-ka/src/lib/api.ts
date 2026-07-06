@@ -1,4 +1,16 @@
-import { supabase } from './supabase'
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  updateDoc,
+  where,
+} from 'firebase/firestore'
+import { db } from './firebase'
 import type {
   Cliente,
   ClienteStatus,
@@ -9,29 +21,36 @@ import type {
 } from './database.types'
 
 // ============================================================================
-// Camada de acesso a dados (admin). Toda leitura/escrita passa pela RLS do
-// Supabase — o admin enxerga tudo; o cliente, só o próprio cliente_id.
+// Camada de acesso a dados (admin) — agora no Firebase/Firestore.
+// Antes era Supabase; a interface pública (nomes/assinaturas) foi mantida para
+// as telas continuarem funcionando sem alteração.
+// As coleções seguem os mesmos nomes das antigas tabelas.
 // ============================================================================
+
+const agora = () => new Date().toISOString()
+
+/** Converte um DocumentSnapshot do Firestore no nosso formato { id, ...campos }. */
+function comId<T>(id: string, data: Record<string, unknown>): T {
+  return { id, ...data } as T
+}
+
+/** Remove chaves com `undefined` (o Firestore não aceita `undefined`). */
+function limpar<T extends Record<string, unknown>>(obj: T): T {
+  const out: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(obj)) if (v !== undefined) out[k] = v
+  return out as T
+}
 
 // ---- Clientes --------------------------------------------------------------
 
 export async function listarClientes(): Promise<Cliente[]> {
-  const { data, error } = await supabase
-    .from('clientes')
-    .select('*')
-    .order('criado_em', { ascending: false })
-  if (error) throw new Error(error.message)
-  return (data ?? []) as Cliente[]
+  const snap = await getDocs(query(collection(db, 'clientes'), orderBy('criado_em', 'desc')))
+  return snap.docs.map((d) => comId<Cliente>(d.id, d.data()))
 }
 
 export async function obterCliente(id: string): Promise<Cliente | null> {
-  const { data, error } = await supabase
-    .from('clientes')
-    .select('*')
-    .eq('id', id)
-    .maybeSingle()
-  if (error) throw new Error(error.message)
-  return (data as Cliente) ?? null
+  const d = await getDoc(doc(db, 'clientes', id))
+  return d.exists() ? comId<Cliente>(d.id, d.data()) : null
 }
 
 export type NovoCliente = Pick<
@@ -40,71 +59,74 @@ export type NovoCliente = Pick<
 > & { status?: ClienteStatus }
 
 export async function criarCliente(dados: NovoCliente): Promise<Cliente> {
-  const { data, error } = await supabase
-    .from('clientes')
-    .insert(dados)
-    .select('*')
-    .single()
-  if (error) throw new Error(error.message)
-  return data as Cliente
+  const novo = limpar({
+    nome_marca: dados.nome_marca,
+    instagram_handle: dados.instagram_handle ?? null,
+    segmento: dados.segmento ?? null,
+    site: dados.site ?? null,
+    status: dados.status ?? 'ativo',
+    slug: null,
+    responsavel: null,
+    email_contato: null,
+    telefone: null,
+    endereco: null,
+    cidade: null,
+    observacoes: null,
+    email_cobranca: null,
+    documento: null,
+    valor_mensalidade: null,
+    dia_vencimento: 10,
+    cobranca_ativa: false,
+    criado_em: agora(),
+  })
+  const ref = await addDoc(collection(db, 'clientes'), novo)
+  return comId<Cliente>(ref.id, novo)
 }
 
 export async function atualizarCliente(
   id: string,
   dados: Partial<NovoCliente>,
 ): Promise<Cliente> {
-  const { data, error } = await supabase
-    .from('clientes')
-    .update(dados)
-    .eq('id', id)
-    .select('*')
-    .single()
-  if (error) throw new Error(error.message)
-  return data as Cliente
+  await updateDoc(doc(db, 'clientes', id), limpar({ ...dados }))
+  const atualizado = await obterCliente(id)
+  if (!atualizado) throw new Error('Cliente não encontrado após atualizar.')
+  return atualizado
 }
 
 export async function definirStatusCliente(
   id: string,
   status: ClienteStatus,
 ): Promise<void> {
-  const { error } = await supabase.from('clientes').update({ status }).eq('id', id)
-  if (error) throw new Error(error.message)
+  await updateDoc(doc(db, 'clientes', id), { status })
 }
 
 // ---- Kit de Marca (1:1 com cliente) ---------------------------------------
+// Guardado como documento em `kit_marca` cujo id É o cliente_id.
 
 export async function obterKit(clienteId: string): Promise<KitMarca | null> {
-  const { data, error } = await supabase
-    .from('kit_marca')
-    .select('*')
-    .eq('cliente_id', clienteId)
-    .maybeSingle()
-  if (error) throw new Error(error.message)
-  return (data as KitMarca) ?? null
+  const d = await getDoc(doc(db, 'kit_marca', clienteId))
+  return d.exists() ? (d.data() as KitMarca) : null
 }
 
-// Upsert (cliente_id é a PK). `atualizado_em` é carimbado aqui.
 export async function salvarKit(kit: Partial<KitMarca> & { cliente_id: string }) {
-  const payload = { ...kit, atualizado_em: new Date().toISOString() }
-  const { data, error } = await supabase
-    .from('kit_marca')
-    .upsert(payload, { onConflict: 'cliente_id' })
-    .select('*')
-    .single()
-  if (error) throw new Error(error.message)
-  return data as KitMarca
+  const payload = limpar({ ...kit, atualizado_em: agora() })
+  await updateDoc(doc(db, 'kit_marca', kit.cliente_id), payload).catch(async () => {
+    // ainda não existe → cria com o id = cliente_id
+    const { setDoc } = await import('firebase/firestore')
+    await setDoc(doc(db, 'kit_marca', kit.cliente_id), payload)
+  })
+  return payload as KitMarca
 }
 
 // ---- Grafismos (N por cliente) --------------------------------------------
 
 export async function listarGrafismos(clienteId: string): Promise<Grafismo[]> {
-  const { data, error } = await supabase
-    .from('grafismos')
-    .select('*')
-    .eq('cliente_id', clienteId)
-    .order('criado_em', { ascending: false })
-  if (error) throw new Error(error.message)
-  return (data ?? []) as Grafismo[]
+  const snap = await getDocs(
+    query(collection(db, 'grafismos'), where('cliente_id', '==', clienteId)),
+  )
+  return snap.docs
+    .map((d) => comId<Grafismo>(d.id, d.data()))
+    .sort((a, b) => (a.criado_em < b.criado_em ? 1 : -1))
 }
 
 export async function adicionarGrafismo(
@@ -112,57 +134,41 @@ export async function adicionarGrafismo(
   arquivoUrl: string,
   tipo: GrafismoTipo,
 ): Promise<Grafismo> {
-  const { data, error } = await supabase
-    .from('grafismos')
-    .insert({ cliente_id: clienteId, arquivo_url: arquivoUrl, tipo })
-    .select('*')
-    .single()
-  if (error) throw new Error(error.message)
-  return data as Grafismo
+  const novo = { cliente_id: clienteId, arquivo_url: arquivoUrl, tipo, criado_em: agora() }
+  const ref = await addDoc(collection(db, 'grafismos'), novo)
+  return comId<Grafismo>(ref.id, novo)
 }
 
 export async function removerGrafismo(id: string): Promise<void> {
-  const { error } = await supabase.from('grafismos').delete().eq('id', id)
-  if (error) throw new Error(error.message)
+  await deleteDoc(doc(db, 'grafismos', id))
 }
 
 // ---- Acesso (usuarios) -----------------------------------------------------
+// Documentos em `usuarios` cujo id é o uid do Firebase Auth.
 
-// Usuários já vinculados a este cliente.
 export async function listarUsuariosDoCliente(clienteId: string): Promise<Usuario[]> {
-  const { data, error } = await supabase
-    .from('usuarios')
-    .select('*')
-    .eq('cliente_id', clienteId)
-    .order('criado_em', { ascending: true })
-  if (error) throw new Error(error.message)
-  return (data ?? []) as Usuario[]
+  const snap = await getDocs(
+    query(collection(db, 'usuarios'), where('cliente_id', '==', clienteId)),
+  )
+  return snap.docs
+    .map((d) => comId<Usuario>(d.id, d.data()))
+    .sort((a, b) => (a.criado_em > b.criado_em ? 1 : -1))
 }
 
-// Usuários "cliente" ainda sem cliente vinculado (candidatos a vincular).
 export async function listarUsuariosSemVinculo(): Promise<Usuario[]> {
-  const { data, error } = await supabase
-    .from('usuarios')
-    .select('*')
-    .eq('papel', 'cliente')
-    .is('cliente_id', null)
-    .order('criado_em', { ascending: true })
-  if (error) throw new Error(error.message)
-  return (data ?? []) as Usuario[]
+  const snap = await getDocs(
+    query(collection(db, 'usuarios'), where('cliente_id', '==', null)),
+  )
+  return snap.docs
+    .map((d) => comId<Usuario>(d.id, d.data()))
+    .filter((u) => u.papel === 'cliente')
+    .sort((a, b) => (a.criado_em > b.criado_em ? 1 : -1))
 }
 
 export async function vincularUsuario(usuarioId: string, clienteId: string): Promise<void> {
-  const { error } = await supabase
-    .from('usuarios')
-    .update({ cliente_id: clienteId, papel: 'cliente' })
-    .eq('id', usuarioId)
-  if (error) throw new Error(error.message)
+  await updateDoc(doc(db, 'usuarios', usuarioId), { cliente_id: clienteId, papel: 'cliente' })
 }
 
 export async function desvincularUsuario(usuarioId: string): Promise<void> {
-  const { error } = await supabase
-    .from('usuarios')
-    .update({ cliente_id: null })
-    .eq('id', usuarioId)
-  if (error) throw new Error(error.message)
+  await updateDoc(doc(db, 'usuarios', usuarioId), { cliente_id: null })
 }

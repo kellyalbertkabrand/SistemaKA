@@ -1,0 +1,64 @@
+rules_version = '2';
+
+// ============================================================================
+// Regras de segurança do Firestore — Sistema Visual de Publicações da Marca (KA)
+//
+// COMO USAR:
+//   Firebase Console → Firestore Database → aba "Regras" (Rules) → cole tudo →
+//   Publicar.
+//
+// Há DUAS versões abaixo. Deixe ATIVA apenas UMA (a outra fica comentada):
+//
+//   • MODO TESTE (padrão agora): tudo liberado — combina com o app em modo
+//     aberto (sem login). Bom para testar rápido. ⚠️ Qualquer pessoa com o
+//     endereço do projeto pode ler/gravar. Use só enquanto está testando.
+//
+//   • MODO PRODUÇÃO: leitura/gravação da gestão só para a KA logada
+//     (kellyalbertka@gmail.com). As páginas públicas por token (orçamento e
+//     contrato) continuam liberadas para leitura e para a resposta/assinatura.
+//     Troque para esta versão antes de usar com clientes de verdade.
+// ============================================================================
+
+// ------------------------- MODO TESTE (ATIVO) -------------------------------
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+
+// ----------------------- MODO PRODUÇÃO (comente o de cima e descomente este)
+// service cloud.firestore {
+//   match /databases/{database}/documents {
+//     function ehKA() {
+//       return request.auth != null
+//         && request.auth.token.email == 'kellyalbertka@gmail.com';
+//     }
+//
+//     // Gestão interna: só a KA.
+//     match /clientes/{id}      { allow read, write: if ehKA(); }
+//     match /usuarios/{id}      { allow read, write: if ehKA() || request.auth.uid == id; }
+//     match /convites/{id}      { allow read, write: if ehKA(); }
+//     match /kit_marca/{id}     { allow read, write: if ehKA(); }
+//     match /grafismos/{id}     { allow read, write: if ehKA(); }
+//     match /modelos_contrato/{id} { allow read, write: if ehKA(); }
+//
+//     // Orçamentos e contratos: a KA gerencia; o público responde/assina pelo
+//     // link (por token). Como o token está no próprio documento, a leitura
+//     // pública é liberada e a escrita pública fica restrita a poucos campos.
+//     match /orcamentos/{id} {
+//       allow read: if true;
+//       allow write: if ehKA();
+//     }
+//     match /contratos/{id} {
+//       allow read: if true;
+//       allow write: if ehKA()
+//         || (resource.data.status != 'assinado'); // assinatura pública única
+//     }
+//     match /cobrancas/{id} {
+//       allow read: if true;
+//       allow write: if ehKA();
+//     }
+//   }
+// }

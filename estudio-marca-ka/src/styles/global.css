@@ -228,6 +228,23 @@ h3 {
   width: 100%;
   margin-top: 0.3rem;
 }
+.btn--google {
+  background: #fff;
+  color: #17263a;
+  border: 1px solid rgba(23, 38, 58, 0.18);
+  font-weight: 600;
+}
+.btn--google:hover {
+  background: #f6f5f1;
+}
+.auth-ou {
+  text-align: center;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--t-400);
+  margin: 0.2rem 0 1rem;
+}
 
 /* ---- Páginas internas ---- */
 .page {

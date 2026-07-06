@@ -10,7 +10,7 @@ export function TopBar() {
       <div className="app-top__right">
         {session ? (
           <>
-            <span className="app-top__user">{session.user.email}</span>
+            <span className="app-top__user">{session.email}</span>
             <button className="btn btn--ghost" onClick={() => void signOut()}>
               Sair
             </button>
