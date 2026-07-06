@@ -31,6 +31,10 @@ export interface Cliente {
   valor_mensalidade: number | null
   dia_vencimento: number
   cobranca_ativa: boolean
+  /** Origem do registro: 'auto-cadastro' quando veio do link público /cadastro. */
+  origem?: string | null
+  /** false enquanto a KA ainda não abriu a ficha de um cadastro novo. */
+  revisado?: boolean
 }
 
 // ---- Gestão: orçamentos, contratos e cobranças -----------------------------

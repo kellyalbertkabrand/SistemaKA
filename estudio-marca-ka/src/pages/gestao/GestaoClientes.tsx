@@ -12,9 +12,15 @@ import {
   convidarUsuario,
   formatarBRL,
   linkPublicoCadastro,
+  marcarClienteRevisado,
   salvarFichaCliente,
   type FichaCliente,
 } from '../../lib/gestao'
+
+/** Cadastro que veio do link público e a KA ainda não abriu. */
+function ehNovo(c: Cliente): boolean {
+  return c.origem === 'auto-cadastro' && !c.revisado
+}
 
 // Clientes & Acessos: ficha completa de cada cliente (dados cadastrais,
 // cobrança/mensalidade) + quem tem login vinculado à marca.
@@ -30,6 +36,14 @@ export function GestaoClientes() {
     setMsg('Link de cadastro copiado! Envie ao cliente para ele preencher a ficha.')
     setTimeout(() => setMsg(null), 5000)
   }
+
+  // Abrir a ficha de um cadastro novo já o marca como visto (tira o "NOVO").
+  function abrir(c: Cliente) {
+    if (ehNovo(c)) void marcarClienteRevisado(c.id).catch(() => {})
+    setSel(c)
+  }
+
+  const novos = clientes.filter(ehNovo).length
 
   async function recarregar() {
     try {
@@ -84,6 +98,13 @@ export function GestaoClientes() {
         </button>
       </div>
 
+      {novos > 0 && (
+        <div className="nota" style={{ borderLeft: '3px solid #2e6b45' }}>
+          🔔 Você tem <strong>{novos}</strong>{' '}
+          {novos === 1 ? 'novo cadastro' : 'novos cadastros'} pelo link — marcados com{' '}
+          <span className="badge badge--verde">NOVO</span> na lista abaixo. Abra a ficha para revisar.
+        </div>
+      )}
       {msg && <div className="nota">{msg}</div>}
       {erro && <div className="erro-msg">{erro}</div>}
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
@@ -119,6 +140,11 @@ export function GestaoClientes() {
                     {c.slug && (
                       <span style={{ color: 'var(--t-400)', marginLeft: 6 }}>/{c.slug}</span>
                     )}
+                    {ehNovo(c) && (
+                      <span className="badge badge--verde" style={{ marginLeft: 8 }}>
+                        NOVO
+                      </span>
+                    )}
                   </td>
                   <td>{c.responsavel || '—'}</td>
                   <td>{c.telefone || c.email_contato || '—'}</td>
@@ -133,7 +159,7 @@ export function GestaoClientes() {
                     </span>
                   </td>
                   <td className="acoes">
-                    <button className="btn-mini" onClick={() => setSel(c)}>
+                    <button className="btn-mini" onClick={() => abrir(c)}>
                       Abrir ficha
                     </button>
                   </td>

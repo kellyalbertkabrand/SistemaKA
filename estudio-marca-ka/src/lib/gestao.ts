@@ -147,6 +147,7 @@ export async function cadastrarClientePublico(
     dia_vencimento: 10,
     cobranca_ativa: false,
     origem: 'auto-cadastro',
+    revisado: false,
     criado_em: agora(),
   })
   await addDoc(collection(db, 'clientes'), novo)
@@ -154,6 +155,11 @@ export async function cadastrarClientePublico(
 
 export function linkPublicoCadastro(): string {
   return `${window.location.origin}/cadastro`
+}
+
+/** Marca um cadastro novo como já visto pela KA (tira a etiqueta "NOVO"). */
+export async function marcarClienteRevisado(id: string): Promise<void> {
+  await updateDoc(doc(db, 'clientes', id), { revisado: true })
 }
 
 // ---- Orçamentos -------------------------------------------------------------
