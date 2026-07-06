@@ -225,12 +225,11 @@ function NovoContrato({
 
   async function gerar(e: FormEvent) {
     e.preventDefault()
-    if (!nome.trim()) return
     setGerando(true)
     setErro(null)
     try {
       const c = await criarContratoDoModelo({
-        cliente_nome: nome.trim(),
+        cliente_nome: nome.trim() || undefined,
         cliente_documento: documento.trim() || undefined,
         titulo: titulo.trim() || undefined,
       })
@@ -252,20 +251,31 @@ function NovoContrato({
       <div className="card">
         <h3>Novo contrato</h3>
         <p style={{ marginBottom: '0.9rem' }}>
-          O contrato é gerado a partir do <strong>modelo padrão</strong>, já com os seus dados. Aqui
-          você preenche só os dados do cliente; o resto (nome, CPF/CNPJ e data) entra sozinho no
-          texto. Depois de gerar, é só abrir e <strong>salvar em PDF</strong>.
+          O contrato é gerado a partir do <strong>modelo padrão</strong>, já com os seus dados. Há
+          duas formas de usar:
         </p>
+        <ul style={{ margin: '0 0 1rem 1.1rem', fontSize: '0.85rem', color: 'var(--t-600)', lineHeight: 1.6 }}>
+          <li>
+            <strong>Você preenche:</strong> digite o nome e o CPF/CNPJ do cliente abaixo e o texto
+            já sai completo.
+          </li>
+          <li>
+            <strong>O cliente preenche:</strong> deixe os campos <strong>em branco</strong> e clique
+            em gerar. Depois copie o <strong>link de assinatura</strong> e envie ao cliente — ele
+            preenche o nome e o CPF/CNPJ dele ao assinar, e esses dados entram no contrato
+            automaticamente.
+          </li>
+        </ul>
         {erro && <div className="erro-msg">{erro}</div>}
         <form onSubmit={(e) => void gerar(e)}>
           <div className="form-grade">
             <div className="field">
-              <label>Nome do cliente (CONTRATANTE)</label>
-              <input value={nome} onChange={(e) => setNome(e.target.value)} required placeholder="Nome / razão social" />
+              <label>Nome do cliente (opcional)</label>
+              <input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Deixe em branco p/ o cliente preencher" />
             </div>
             <div className="field">
-              <label>CPF / CNPJ do cliente</label>
-              <input value={documento} onChange={(e) => setDocumento(e.target.value)} placeholder="000.000.000-00" />
+              <label>CPF / CNPJ do cliente (opcional)</label>
+              <input value={documento} onChange={(e) => setDocumento(e.target.value)} placeholder="Deixe em branco p/ o cliente preencher" />
             </div>
             <div className="field campo-toda">
               <label>Título do contrato (opcional)</label>
@@ -277,7 +287,7 @@ function NovoContrato({
             </div>
           </div>
           <p>
-            <button className="btn" type="submit" disabled={gerando || !nome.trim()}>
+            <button className="btn" type="submit" disabled={gerando}>
               {gerando ? 'Gerando…' : 'Gerar contrato'}
             </button>
           </p>

@@ -357,7 +357,7 @@ export async function criarContrato(
  * "Novo contrato" — sem precisar de orçamento.
  */
 export async function criarContratoDoModelo(dados: {
-  cliente_nome: string
+  cliente_nome?: string
   cliente_documento?: string
   cliente_id?: string | null
   titulo?: string
@@ -365,18 +365,22 @@ export async function criarContratoDoModelo(dados: {
   const modelos = await listarModelosContrato()
   const modelo = modelos.find((m) => m.padrao) ?? modelos[0]
   const quando = agora()
+  const nome = dados.cliente_nome?.trim()
+  const documento = dados.cliente_documento?.trim()
+  // Se um campo do cliente não for informado, MANTÉM o {{placeholder}} no texto
+  // para o próprio cliente preencher ao assinar pelo link público.
   const corpo = modelo
     ? preencherModelo(modelo.conteudo, {
-        cliente_nome: dados.cliente_nome,
-        cliente_documento: dados.cliente_documento ?? '',
+        cliente_nome: nome || '{{cliente_nome}}',
+        cliente_documento: documento || '{{cliente_documento}}',
         data: formatarData(quando),
       })
-    : `Contrato para ${dados.cliente_nome}.`
+    : `Contrato para ${nome || '{{cliente_nome}}'}.`
   return criarContrato({
-    titulo: dados.titulo ?? `Contrato — ${dados.cliente_nome}`,
+    titulo: dados.titulo?.trim() || (nome ? `Contrato — ${nome}` : 'Contrato de Prestação de Serviços'),
     conteudo: corpo,
     cliente_id: dados.cliente_id ?? null,
-    status: 'rascunho',
+    status: 'enviado',
   })
 }
 
@@ -435,7 +439,13 @@ export async function assinarContrato(
   const c = await contratoPorTokenDoc(token)
   if (!c) throw new Error('Contrato não encontrado.')
   if (c.status === 'assinado') throw new Error('Este contrato já foi assinado.')
+  // Preenche no texto os dados que o cliente digitou ao assinar (caso a KA
+  // tenha deixado os {{placeholders}} para ele completar).
+  const corpoFinal = c.conteudo
+    .replace(/\{\{\s*cliente_nome\s*\}\}/g, nome)
+    .replace(/\{\{\s*cliente_documento\s*\}\}/g, documento)
   await updateDoc(doc(db, 'contratos', c.id), {
+    conteudo: corpoFinal,
     status: 'assinado',
     assinado_em: agora(),
     assinatura_nome: nome,
