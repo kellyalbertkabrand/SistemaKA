@@ -22,6 +22,9 @@
 
 * { box-sizing: border-box; }
 
+/* Impede rolagem horizontal (o layout "andando" de lado no celular) */
+html, body { max-width: 100%; overflow-x: hidden; }
+
 body {
   margin: 0;
   background: var(--bg);
@@ -269,4 +272,21 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: -1
   .form-grid { grid-template-columns: 1fr; }
   .pub-hero h1 { font-size: 1.7rem; }
   .tabela { font-size: .82rem; }
+
+  /* Nada empurra a página para os lados */
+  .app, .publica { overflow-x: hidden; }
+  .row-between { flex-wrap: wrap; }
+
+  /* Caixa do logo não força largura mínima */
+  .caixa-logo { max-width: 100%; }
+  .caixa-logo-cliente { min-width: 0; }
+
+  /* Tabelas largas rolam DENTRO do próprio bloco, sem mexer a página */
+  #tabela-lancamentos, #tabela-etapas { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  #tabela-lancamentos .tabela, #tabela-etapas .tabela { min-width: 480px; }
+
+  /* Campos e controles quebram linha em vez de estourar */
+  .lancar-controles .texto-livre { min-width: 0; }
+  .form-inline input { min-width: 0; }
+  .etapa-linha { flex-wrap: wrap; }
 }
