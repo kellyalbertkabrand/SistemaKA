@@ -157,11 +157,11 @@ export function EditorPeca({ template }: { template: Template }) {
 
           {feito && (
             <div className="export-feito">
-              <strong>✓ {feito === 'video' ? 'Vídeo baixado!' : 'Imagem baixada!'}</strong>
+              <strong>✓ Pronto!</strong>
               <div>
-                <strong>No iPhone:</strong> na tela que abriu, toque em <strong>“Mais…”</strong> →{' '}
-                {feito === 'video' ? '“Salvar em Vídeos”' : '“Salvar em Fotos”'} (ou “Salvar em
-                Arquivos”). Depois é só postar no Instagram.
+                <strong>No celular:</strong> na tela que abriu, toque em{' '}
+                <strong>{feito === 'video' ? '“Salvar vídeo”' : '“Salvar imagem”'}</strong> (ou
+                “Salvar em Fotos”/“Salvar em Arquivos”). Depois é só postar no Instagram.
               </div>
               <div style={{ marginTop: '0.35rem' }}>
                 <strong>No computador:</strong> o arquivo está na pasta <strong>Downloads</strong>.

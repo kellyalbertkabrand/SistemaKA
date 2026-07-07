@@ -16,6 +16,45 @@ const OPCOES_PNG = {
  * @param escala multiplicador de resolução (2 = 2160px de largura)
  * @param meta   metadados de assinatura (autor/URL/cliente/título)
  */
+/**
+ * Entrega o arquivo ao usuário. No CELULAR abre a folha de compartilhar
+ * (Web Share com arquivo) — no iPhone isso mostra "Salvar Imagem"/"Salvar
+ * Vídeo" e vai direto para o rolo/Fotos (o download por link não funciona no
+ * Safari). No computador, faz o download normal na pasta Downloads.
+ */
+export async function entregarArquivo(blob: Blob, nomeArquivo: string, titulo: string): Promise<void> {
+  const nav = navigator as Navigator & {
+    canShare?: (data?: unknown) => boolean
+    share?: (data?: unknown) => Promise<void>
+  }
+  const mobile = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches
+  if (mobile && nav.canShare && nav.share) {
+    const file = new File([blob], nomeArquivo, { type: blob.type || 'application/octet-stream' })
+    if (nav.canShare({ files: [file] })) {
+      try {
+        await nav.share({ files: [file], title: titulo })
+        return
+      } catch (e) {
+        if ((e as Error).name === 'AbortError') return // usuário cancelou
+        // qualquer outro erro: cai no download por link abaixo
+      }
+    }
+  }
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.download = nomeArquivo
+  a.href = url
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 4000)
+}
+
+/** Converte um data URL (ex.: PNG assinado) em Blob. */
+export async function dataUrlParaBlob(dataUrl: string): Promise<Blob> {
+  return (await fetch(dataUrl)).blob()
+}
+
 export async function baixarPng(
   node: HTMLElement,
   nome: string,
@@ -34,11 +73,7 @@ export async function baixarPng(
   })
 
   const assinado = assinarPngDataUrl(dataUrl, meta ?? metaPadrao())
-
-  const a = document.createElement('a')
-  a.download = `${nome}.png`
-  a.href = assinado
-  a.click()
+  await entregarArquivo(await dataUrlParaBlob(assinado), `${nome}.png`, nome)
 }
 
 /**

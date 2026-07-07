@@ -1,5 +1,6 @@
 import { toPng } from 'html-to-image'
 import { assinarPngDataUrl, metaPadrao, type MetaAssinatura } from './assinatura'
+import { entregarArquivo, dataUrlParaBlob } from './exportar'
 
 // ============================================================================
 // Exportação de VÍDEO. O card da KA vira um vídeo: desenhamos o vídeo do
@@ -206,10 +207,7 @@ export async function baixarMolduraPng(
   if (document.fonts?.ready) await document.fonts.ready
   const { canvas } = await molduraComJanela(node, escala)
   const assinado = assinarPngDataUrl(canvas.toDataURL('image/png'), meta ?? metaPadrao())
-  const a = document.createElement('a')
-  a.download = `${nome}.png`
-  a.href = assinado
-  a.click()
+  await entregarArquivo(await dataUrlParaBlob(assinado), `${nome}.png`, nome)
 }
 
 export async function baixarVideoDoCard(
@@ -338,9 +336,5 @@ export async function baixarVideoDoCard(
 
   const blob = new Blob(chunks, { type: mime?.startsWith('video/mp4') ? 'video/mp4' : 'video/webm' })
   const ext = mime?.startsWith('video/mp4') ? 'mp4' : 'webm'
-  const a = document.createElement('a')
-  a.download = `${nome}.${ext}`
-  a.href = URL.createObjectURL(blob)
-  a.click()
-  setTimeout(() => URL.revokeObjectURL(a.href), 4000)
+  await entregarArquivo(blob, `${nome}.${ext}`, nome)
 }

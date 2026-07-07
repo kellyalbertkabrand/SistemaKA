@@ -3,6 +3,7 @@ import { estiloImagem } from '../imagem'
 import { ratioForma, caixaFoto } from '../formas'
 import { logoShapes } from './cores'
 import { ShapesClips } from './ShapesClips'
+import { comEnfase } from './enfase'
 import './shapes.css'
 
 // Post de produto da Shapes — fundo colorido (configurável), foto do produto
@@ -57,7 +58,7 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
         </div>
       </div>
 
-      {texto && <div className="texto">{texto}</div>}
+      {texto && <div className="texto">{comEnfase(texto)}</div>}
     </div>
   )
 }

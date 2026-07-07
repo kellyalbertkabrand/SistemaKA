@@ -1,5 +1,6 @@
 import type { RenderProps } from '../types'
 import { logoShapes } from './cores'
+import { comEnfase } from './enfase'
 import './shapes.css'
 
 const TEXTURA_LARANJA = 'url(/clientes/shapes/fundo-shapes.jpg)'
@@ -44,7 +45,7 @@ export function ShapesFeedbackCard({ valores, formato }: RenderProps) {
               </span>
             ))}
           </div>
-          <div className="quote">{quote}</div>
+          <div className="quote">{comEnfase(quote)}</div>
         </div>
         <div className="who">{who}</div>
       </div>

@@ -3,6 +3,7 @@ import { estiloImagem } from '../imagem'
 import { ratioForma, caixaFoto, FORMAS } from '../formas'
 import { logoShapes } from './cores'
 import { ShapesClips } from './ShapesClips'
+import { comEnfase } from './enfase'
 import './shapes.css'
 
 // 1 · Capa — foto (tamanho ajustável) + título grande + logo.
@@ -31,7 +32,7 @@ export function ShapesCapaCard({ valores, formato }: RenderProps) {
           <div className="bg-ph">Sua foto aqui</div>
         )}
       </div>
-      {titulo && <div className="titulo">{titulo}</div>}
+      {titulo && <div className="titulo">{comEnfase(titulo)}</div>}
       <div className="logo">
         <img src={logoSrc} alt="" crossOrigin="anonymous" />
         <span>shapes</span>
@@ -73,7 +74,7 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
           )}
         </div>
       </div>
-      {texto && <div className="labels">{texto}</div>}
+      {texto && <div className="labels">{comEnfase(texto)}</div>}
     </div>
   )
 }
@@ -113,7 +114,7 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
   const lado = (
     <div className="lado">
       <img className="logo" src={logoUrl} alt="Shapes" crossOrigin="anonymous" />
-      {texto && <div className="texto">{texto}</div>}
+      {texto && <div className="texto">{comEnfase(texto)}</div>}
     </div>
   )
 
