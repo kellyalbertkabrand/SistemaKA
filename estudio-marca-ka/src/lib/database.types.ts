@@ -50,6 +50,53 @@ export interface OrcamentoItem {
   valor: number
 }
 
+/**
+ * Campos da PROPOSTA COMERCIAL no layout KA (documento com capa, seções
+ * numeradas, cards de investimento e aceite). Todos opcionais: seção sem
+ * conteúdo não aparece. `*asteriscos*` viram negrito nos textos.
+ */
+export interface PropostaCampos {
+  /** Frase sob o título, na capa. */
+  subtitulo?: string
+  /** Cidade/UF do cliente (ficha ENDEREÇO). */
+  cidade?: string
+  /** Seção 01 · Objeto da proposta. */
+  objeto?: string
+  /** Painel esquerdo da seção 02: 1ª linha TÍTULO, 2ª subtítulo, demais linhas = itens. */
+  painel_a?: string
+  /** Painel direito da seção 02 (mesmo formato). */
+  painel_b?: string
+  /** Box de destaque da seção 02: 1ª linha TÍTULO, resto = texto. */
+  destaque?: string
+  /** Seção 03 · Incluído na mensalidade: um ✓ por linha. */
+  incluso?: string
+  /** Box "Necessário da cliente" da seção 03. */
+  necessario?: string
+  /** Seção 04 · Prazo de implantação. */
+  prazo?: string
+  /** Seção 04 · Entrega. */
+  entrega?: string
+  /** Seção 05 · Fases futuras: uma por linha, "Nome | descrição". */
+  fases?: string
+  /** Card de implantação (seção 06). */
+  impl_titulo?: string
+  impl_valor?: string
+  impl_sub?: string
+  impl_desc?: string
+  /** Card de mensalidade (seção 06). */
+  mensal_titulo?: string
+  mensal_valor?: string
+  mensal_desc?: string
+  /** Régua de condições (seção 06). */
+  pagamento?: string
+  fidelidade?: string
+  reajuste?: string
+  /** Próximos passos, no box de aceite. */
+  proximos?: string
+  /** Cidade do rodapé (ex.: Porto Alegre, RS). */
+  cidade_rodape?: string
+}
+
 export interface Orcamento {
   id: string
   cliente_id: string | null
@@ -63,6 +110,8 @@ export interface Orcamento {
   valor_total: number
   condicoes: string | null
   validade: string | null
+  /** Proposta comercial no layout KA (null/ausente = documento simples). */
+  proposta?: PropostaCampos | null
   status: OrcamentoStatus
   token: string
   modelo_contrato_id: string | null

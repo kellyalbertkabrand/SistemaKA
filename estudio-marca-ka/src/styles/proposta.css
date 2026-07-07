@@ -1,0 +1,411 @@
+/* ============================================================================
+   PROPOSTA COMERCIAL no layout KA — documento público do orçamento.
+   Na tela: documento corrido num "papel" central. Na impressão: A4 com
+   quebras de página antes das seções principais (Baixar em PDF).
+   ========================================================================== */
+
+/* Fonte da KA auto-hospedada (mesmo arquivo dos templates) — garante o
+   documento fiel mesmo se o Google Fonts não carregar. */
+@font-face {
+  font-family: 'Montserrat KA';
+  font-weight: 100 900;
+  font-style: normal;
+  src: url('/clientes/ka/fonts/montserrat-var.woff2') format('woff2');
+  font-display: swap;
+}
+
+.prop-doc {
+  --p-marinho: #152535;
+  --p-caramelo: #c47830;
+  --p-creme: #f1efe9;
+  --p-cinza: #6b6b66;
+  --p-linha: #d9d5cb;
+  font-family: 'Montserrat KA', 'Montserrat', sans-serif;
+  color: var(--p-marinho);
+  background: #fff;
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 12mm 14mm 16mm;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(21, 37, 53, 0.12);
+}
+.prop-doc b {
+  font-weight: 700;
+}
+
+/* ---- capa ---- */
+.prop-topo {
+  background: var(--p-creme);
+  padding: 8mm 8mm 0;
+  margin: -4mm -6mm 0;
+  border-radius: 8px 8px 0 0;
+}
+.prop-topo__linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 7mm;
+}
+.prop-topo__logo {
+  height: 30px;
+  width: auto;
+}
+.prop-topo__doc {
+  text-align: right;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+  color: var(--p-cinza);
+  text-transform: uppercase;
+  line-height: 1.9;
+}
+.prop-topo__doc b {
+  color: var(--p-marinho);
+}
+.prop-capa {
+  padding: 0 0 7mm;
+}
+.prop-capa h1 {
+  font-size: 1.55rem;
+  font-weight: 800;
+  margin: 0 0 3mm;
+  line-height: 1.2;
+}
+.prop-capa p {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin: 0;
+}
+.prop-fichas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(30mm, 1fr));
+  border-top: 1px solid var(--p-linha);
+  margin: 0 -8mm;
+}
+.prop-ficha {
+  padding: 4mm 5mm;
+  border-right: 1px solid var(--p-linha);
+  text-align: center;
+}
+.prop-ficha:last-child {
+  border-right: 0;
+}
+.prop-ficha .rot {
+  font-size: 0.52rem;
+  letter-spacing: 0.22em;
+  color: var(--p-cinza);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 1.5mm;
+}
+.prop-ficha .val {
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.prop-ficha .val.menor {
+  font-size: 0.65rem;
+  font-weight: 500;
+}
+
+/* ---- seções ---- */
+.prop-secao {
+  margin-top: 9mm;
+}
+.prop-secao__titulo {
+  display: flex;
+  align-items: baseline;
+  gap: 3mm;
+  border-bottom: 2px solid var(--p-marinho);
+  padding-bottom: 2mm;
+  margin-bottom: 4mm;
+}
+.prop-secao__titulo .num {
+  color: var(--p-caramelo);
+  font-weight: 800;
+  font-size: 0.72rem;
+}
+.prop-secao__titulo h2 {
+  font-size: 1rem;
+  font-weight: 800;
+  margin: 0;
+}
+.prop-texto {
+  font-size: 0.78rem;
+  margin: 0;
+}
+
+/* ---- painéis (escopo) ---- */
+.prop-paineis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 5mm;
+}
+.prop-painel {
+  background: var(--p-creme);
+  padding: 5mm 5mm 4mm;
+  border-radius: 6px;
+}
+.prop-painel h3 {
+  color: var(--p-caramelo);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 0 0 1mm;
+}
+.prop-painel .sub {
+  font-size: 0.62rem;
+  color: var(--p-cinza);
+  margin-bottom: 3mm;
+}
+.prop-painel ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.prop-painel li {
+  padding-left: 5mm;
+  position: relative;
+  margin-bottom: 2.6mm;
+}
+.prop-painel li::before {
+  content: '◇';
+  position: absolute;
+  left: 0;
+  color: var(--p-caramelo);
+  font-size: 0.6rem;
+  top: 1px;
+}
+.prop-destaque {
+  background: #faf1e7;
+  border-left: 3px solid var(--p-caramelo);
+  padding: 4mm 5mm;
+  margin-top: 5mm;
+  border-radius: 0 6px 6px 0;
+}
+.prop-destaque h3 {
+  color: var(--p-caramelo);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 0 0 2mm;
+}
+
+/* ---- checklist ---- */
+.prop-checks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  column-gap: 8mm;
+}
+.prop-check {
+  display: flex;
+  gap: 2.5mm;
+  padding: 2.6mm 0;
+  border-bottom: 1px solid var(--p-linha);
+}
+.prop-check .ok {
+  color: var(--p-caramelo);
+  font-weight: 700;
+}
+.prop-aviso {
+  background: #faf1e7;
+  padding: 4mm 5mm;
+  margin-top: 5mm;
+  border-radius: 6px;
+}
+.prop-aviso h4 {
+  color: var(--p-caramelo);
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 0 0 1.5mm;
+}
+
+/* ---- fases ---- */
+.prop-fase {
+  display: grid;
+  grid-template-columns: 16mm 1fr 24mm;
+  border-bottom: 1px solid var(--p-linha);
+  padding: 3.4mm 0;
+  gap: 2mm;
+}
+.prop-fase .num {
+  color: var(--p-caramelo);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  padding-top: 2px;
+}
+.prop-fase h4 {
+  font-size: 0.78rem;
+  font-weight: 700;
+  margin: 0 0 0.8mm;
+}
+.prop-fase p {
+  margin: 0;
+}
+.prop-fase .sob {
+  font-size: 0.56rem;
+  letter-spacing: 0.14em;
+  color: var(--p-cinza);
+  font-weight: 600;
+  text-align: right;
+  padding-top: 2px;
+}
+
+/* ---- investimento ---- */
+.prop-invest {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 5mm;
+}
+.prop-card-preco {
+  background: var(--p-creme);
+  border-radius: 6px;
+  padding: 5mm;
+}
+.prop-card-preco.borda {
+  background: #fff;
+  border: 1.5px solid var(--p-caramelo);
+}
+.prop-card-preco h4 {
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  color: var(--p-cinza);
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 0 0 3mm;
+}
+.prop-card-preco .preco {
+  font-size: 1.45rem;
+  font-weight: 800;
+  margin-bottom: 1.5mm;
+  line-height: 1.15;
+}
+.prop-card-preco .detalhe {
+  font-weight: 700;
+  border-bottom: 1px dashed var(--p-linha);
+  padding-bottom: 2.5mm;
+  margin-bottom: 2.5mm;
+}
+.prop-card-preco p {
+  margin: 0;
+}
+.prop-condicoes {
+  margin-top: 5mm;
+  border-top: 1px solid var(--p-linha);
+}
+.prop-cond {
+  display: grid;
+  grid-template-columns: 40mm 1fr;
+  border-bottom: 1px solid var(--p-linha);
+  padding: 2.8mm 0;
+  gap: 3mm;
+}
+.prop-cond .rot {
+  font-size: 0.56rem;
+  letter-spacing: 0.18em;
+  color: var(--p-cinza);
+  font-weight: 600;
+  text-transform: uppercase;
+  padding-top: 2px;
+}
+
+/* ---- aceite e rodapé ---- */
+.prop-aceite {
+  background: var(--p-creme);
+  border-radius: 6px;
+  padding: 6mm 6mm 7mm;
+  margin-top: 9mm;
+}
+.prop-aceite h3 {
+  color: var(--p-caramelo);
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 0 0 2.5mm;
+}
+.prop-assinaturas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10mm;
+  margin-top: 9mm;
+}
+.prop-ass {
+  border-top: 1px solid var(--p-marinho);
+  padding-top: 1.5mm;
+}
+.prop-ass b {
+  display: block;
+  font-size: 0.75rem;
+}
+.prop-ass span {
+  font-size: 0.56rem;
+  letter-spacing: 0.18em;
+  color: var(--p-cinza);
+  font-weight: 600;
+}
+.prop-rodape {
+  display: flex;
+  justify-content: space-between;
+  gap: 4mm;
+  font-size: 0.54rem;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+  color: var(--p-cinza);
+  text-transform: uppercase;
+  border-top: 1px solid var(--p-linha);
+  padding-top: 2.5mm;
+  margin-top: 9mm;
+}
+
+/* ---- celular ---- */
+@media (max-width: 560px) {
+  .prop-doc {
+    padding: 6mm 5mm 8mm;
+    border-radius: 0;
+  }
+  .prop-topo {
+    margin: -2mm -3mm 0;
+  }
+  .prop-cond {
+    grid-template-columns: 1fr;
+    gap: 0.5mm;
+  }
+  .prop-fase {
+    grid-template-columns: 14mm 1fr;
+  }
+  .prop-fase .sob {
+    display: none;
+  }
+}
+
+/* ---- impressão (Baixar em PDF) ---- */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .prop-doc {
+    max-width: none;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 8mm 10mm;
+    font-size: 10.5px;
+  }
+  .prop-quebra {
+    page-break-before: always;
+  }
+  .prop-secao,
+  .prop-aceite,
+  .prop-card-preco,
+  .prop-painel {
+    page-break-inside: avoid;
+  }
+}

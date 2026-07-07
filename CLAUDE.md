@@ -292,6 +292,21 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
   `/orcamento/:token` → cliente aprova (nome+CPF/CNPJ) → RPC
   `responder_orcamento` gera **contrato** (do modelo com {{placeholders}}) e
   **cobrança** automaticamente; recusa também é registrada.
+- **Proposta no layout KA (jul/2026):** o editor de orçamento tem o bloco
+  opcional "Proposta no layout KA" (campo `proposta: PropostaCampos` no
+  orçamento; botão "Preencher com o modelo padrão" =
+  `modeloPropostaPadrao()` em `gestao.ts`, baseado na proposta Schramm/Shape
+  Design). Preenchido, o link público vira a **proposta comercial completa**
+  (`PropostaDoc.tsx` + `styles/proposta.css`): capa creme com a logo
+  `logo-ka.png`, ficha cliente/emissão/validade, seções numeradas em caramelo
+  (objeto, escopo em 2 painéis + destaque, mensalidade com ✓, prazo, fases
+  "Nome | descrição", investimento em 2 cards, aceite com próximos passos),
+  rodapé com nº/cidade. `*asteriscos*` = negrito; seção vazia não aparece;
+  impressão → PDF em A4 com quebras (`.prop-quebra`). Sem proposta, o link
+  mostra o documento simples (tabela) de antes. Preview do modelo em dev:
+  `/proposta-modelo` (rota só com `import.meta.env.DEV`). Aprovação/recusa
+  continuam iguais (contrato + cobrança saem dos ITENS — preencha os itens
+  mesmo usando a proposta).
 - **Contrato:** modelo editável na aba Contratos; link público
   `/contrato/:token` com **aceite digital** (nome, documento, data/hora,
   user-agent). Impressão → PDF pelo navegador (CSS @media print).
