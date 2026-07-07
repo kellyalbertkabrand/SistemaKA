@@ -138,7 +138,8 @@
   background: rgba(0, 0, 0, 0.12);
   position: relative;
 }
-.ka-midia .midia-frame img {
+.ka-midia .midia-frame img,
+.ka-midia .midia-frame video {
   width: 100%;
   height: 100%;
   display: block;

@@ -115,10 +115,13 @@ export function KaMidiaCard({ valores, formato }: RenderProps) {
   const prop = String(valores.proporcao || '16:9')
   const base = PROPORCOES[prop] ?? PROPORCOES['16:9']
 
-  const areaRaw = Number(valores.midia_area)
-  const fator = Math.min(120, Math.max(60, Number.isFinite(areaRaw) ? areaRaw : 100)) / 100
-  const w = Math.round(base.largura * fator)
-  const h = Math.round(base.altura * fator)
+  // Largura e altura da área controladas separadamente (40–140%).
+  const fLarg = Math.min(140, Math.max(40, Number(valores.midia_larg) || 100)) / 100
+  const fAlt = Math.min(140, Math.max(40, Number(valores.midia_alt) || 100)) / 100
+  const w = Math.round(base.largura * fLarg)
+  const h = Math.round(base.altura * fAlt)
+  const ehVideo = midia.startsWith('data:video')
+  const estiloMidia = { ...estiloImagem(valores, 'midia'), height: '100%' as const }
 
   return (
     <KaFrame
@@ -129,7 +132,11 @@ export function KaMidiaCard({ valores, formato }: RenderProps) {
       {texto && <div className="texto">{comDestaque(texto, corDestaqueKA(fundo))}</div>}
       <div className="midia-frame" style={{ width: w, height: h }}>
         {midia ? (
-          <img src={midia} alt="" style={{ ...estiloImagem(valores, 'midia'), height: '100%' }} crossOrigin="anonymous" />
+          ehVideo ? (
+            <video src={midia} style={estiloMidia} autoPlay muted loop playsInline />
+          ) : (
+            <img src={midia} alt="" style={estiloMidia} crossOrigin="anonymous" />
+          )
         ) : (
           <div className="midia-ph">
             <div>área da mídia ({prop})</div>

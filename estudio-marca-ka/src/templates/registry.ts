@@ -498,8 +498,8 @@ export const TEMPLATES: Template[] = [
     clienteNome: 'KA | Inteligência para Marcas',
     nome: 'Mídia (notícias e análises)',
     descricao:
-      'Card do carrossel de notícias — texto + área de mídia (imagem ou print) ' +
-      'como prova. Horizontal e quadrada: mídia embaixo; vertical: mídia à direita.',
+      'Card do carrossel de notícias — texto + área de mídia (imagem, print ou ' +
+      'vídeo) como prova. Horizontal e quadrada: mídia embaixo; vertical: mídia à direita.',
     formatos: FORMATO_KA,
     campos: [
       {
@@ -512,11 +512,14 @@ export const TEMPLATES: Template[] = [
       },
       {
         id: 'midia',
-        label: 'Imagem ou print',
+        label: 'Imagem, print ou vídeo',
         tipo: 'imagem',
         obrigatorio: true,
-        areaPadrao: 100,
-        ajuda: 'A mídia entra na proporção escolhida abaixo. Use "Tamanho da foto" para ajustar a área.',
+        aceitaVideo: true,
+        redimensionavel2d: true,
+        ajuda:
+          'Aceita foto/print OU vídeo (vertical inclusive). Ajuste a Largura e a Altura ' +
+          'da área nos controles. A proporção base vem do seletor abaixo.',
       },
       {
         id: 'proporcao',

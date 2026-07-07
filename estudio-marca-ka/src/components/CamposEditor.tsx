@@ -84,22 +84,47 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
                 <input
                   id={inputId}
                   type="file"
-                  accept="image/*"
+                  accept={c.aceitaVideo ? 'image/*,video/*' : 'image/*'}
                   onChange={(e) => handleImagem(c.id, e.target.files?.[0])}
                 />
-                <div className="ajuste-foto tamanho-foto">
-                  <label>Tamanho da foto</label>
-                  <input
-                    type="range"
-                    min={60}
-                    max={120}
-                    value={Number(valores[`${c.id}_area`] ?? 92)}
-                    onChange={(e) => onSet(`${c.id}_area`, Number(e.target.value))}
-                  />
-                </div>
+                {c.redimensionavel2d ? (
+                  <div className="ajuste-foto tamanho-foto">
+                    <label>Largura da área</label>
+                    <input
+                      type="range"
+                      min={40}
+                      max={140}
+                      value={Number(valores[`${c.id}_larg`] ?? 100)}
+                      onChange={(e) => onSet(`${c.id}_larg`, Number(e.target.value))}
+                    />
+                    <label>Altura da área</label>
+                    <input
+                      type="range"
+                      min={40}
+                      max={140}
+                      value={Number(valores[`${c.id}_alt`] ?? 100)}
+                      onChange={(e) => onSet(`${c.id}_alt`, Number(e.target.value))}
+                    />
+                  </div>
+                ) : (
+                  <div className="ajuste-foto tamanho-foto">
+                    <label>Tamanho da foto</label>
+                    <input
+                      type="range"
+                      min={60}
+                      max={120}
+                      value={Number(valores[`${c.id}_area`] ?? 92)}
+                      onChange={(e) => onSet(`${c.id}_area`, Number(e.target.value))}
+                    />
+                  </div>
+                )}
                 {valores[c.id] && (
                   <>
-                    <img className="img-preview" src={String(valores[c.id])} alt="pré-visualização" />
+                    {String(valores[c.id]).startsWith('data:video') ? (
+                      <video className="img-preview" src={String(valores[c.id])} autoPlay muted loop playsInline />
+                    ) : (
+                      <img className="img-preview" src={String(valores[c.id])} alt="pré-visualização" />
+                    )}
                     <div className="ajuste-foto">
                       <label>Posição horizontal</label>
                       <input
