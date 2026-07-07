@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
-import { hexFundoKA, corTextoKA, corDestaqueKA, COR_MARINHO } from './cores'
+import { hexFundoKA, corFonteKA, corDestaqueKA, ehFundoEscuroKA } from './cores'
 import './ka.css'
 
 // ============================================================================
@@ -27,11 +27,13 @@ function comDestaque(texto: string, cor: string) {
 // Moldura comum: fundo oficial, cor de texto derivada, cabeçalho e rodapé.
 function KaFrame({
   fundo,
+  corTexto,
   classe,
   formato,
   children,
 }: {
   fundo: string
+  corTexto?: string
   classe: string
   formato: RenderProps['formato']
   children: ReactNode
@@ -43,7 +45,7 @@ function KaFrame({
         width: formato.largura,
         height: formato.altura,
         background: hexFundoKA(fundo),
-        color: corTextoKA(fundo),
+        color: corTexto ?? corFonteKA('auto', fundo),
       }}
     >
       <div className="ka-header">
@@ -58,9 +60,10 @@ function KaFrame({
 // 1 · Capa — o gancho do carrossel, título grande em Playfair.
 export function KaCapaCard({ valores, formato }: RenderProps) {
   const fundo = String(valores.cor_fundo || 'marinho')
+  const cor = corFonteKA(valores.cor_fonte, fundo)
   const titulo = String(valores.titulo || '')
   return (
-    <KaFrame fundo={fundo} classe="ka-capa" formato={formato}>
+    <KaFrame fundo={fundo} corTexto={cor} classe="ka-capa" formato={formato}>
       {titulo && <div className="titulo">{comDestaque(titulo, corDestaqueKA(fundo))}</div>}
     </KaFrame>
   )
@@ -68,12 +71,13 @@ export function KaCapaCard({ valores, formato }: RenderProps) {
 
 // 2 · Texto — desenvolvimento (afirmação, virada, insight).
 export function KaTextoCard({ valores, formato }: RenderProps) {
-  const fundo = String(valores.cor_fundo || 'bege')
+  const fundo = String(valores.cor_fundo || 'papel')
+  const cor = corFonteKA(valores.cor_fonte, fundo)
   const titulo = String(valores.titulo || '')
   const texto = String(valores.texto || '')
   const destaque = corDestaqueKA(fundo)
   return (
-    <KaFrame fundo={fundo} classe="ka-texto" formato={formato}>
+    <KaFrame fundo={fundo} corTexto={cor} classe="ka-texto" formato={formato}>
       {titulo && <div className="titulo">{comDestaque(titulo, destaque)}</div>}
       {texto && <div className="corpo">{comDestaque(texto, destaque)}</div>}
     </KaFrame>
@@ -82,12 +86,13 @@ export function KaTextoCard({ valores, formato }: RenderProps) {
 
 // 3 · Passo numerado — número grande em caramelo acima do texto.
 export function KaPassoCard({ valores, formato }: RenderProps) {
-  const fundo = String(valores.cor_fundo || 'bege')
+  const fundo = String(valores.cor_fundo || 'papel')
+  const cor = corFonteKA(valores.cor_fonte, fundo)
   const numero = String(valores.numero || '')
   const texto = String(valores.texto || '')
   const destaque = corDestaqueKA(fundo)
   return (
-    <KaFrame fundo={fundo} classe="ka-passo" formato={formato}>
+    <KaFrame fundo={fundo} corTexto={cor} classe="ka-passo" formato={formato}>
       {numero && (
         <div className="numero" style={{ color: destaque }}>
           {numero}
@@ -109,7 +114,8 @@ const PROPORCOES: Record<string, { largura: number; altura: number }> = {
 // Horizontal e quadrada: texto em cima, mídia centralizada embaixo.
 // Vertical 9:16: texto à esquerda, mídia à direita.
 export function KaMidiaCard({ valores, formato }: RenderProps) {
-  const fundo = String(valores.cor_fundo || 'bege')
+  const fundo = String(valores.cor_fundo || 'papel')
+  const cor = corFonteKA(valores.cor_fonte, fundo)
   const texto = String(valores.texto || '')
   const midia = String(valores.midia || '')
   const prop = String(valores.proporcao || '16:9')
@@ -126,6 +132,7 @@ export function KaMidiaCard({ valores, formato }: RenderProps) {
   return (
     <KaFrame
       fundo={fundo}
+      corTexto={cor}
       classe={`ka-midia ${prop === '9:16' ? 'vertical' : ''}`}
       formato={formato}
     >
@@ -153,11 +160,12 @@ export function KaMidiaCard({ valores, formato }: RenderProps) {
 // 5 · Comentário — texto + card branco com @usuário e a fala (print de texto).
 export function KaComentarioCard({ valores, formato }: RenderProps) {
   const fundo = String(valores.cor_fundo || 'marinho')
+  const cor = corFonteKA(valores.cor_fonte, fundo)
   const texto = String(valores.texto || '')
   const usuario = String(valores.usuario || '')
   const comentario = String(valores.comentario || '')
   return (
-    <KaFrame fundo={fundo} classe="ka-comentario" formato={formato}>
+    <KaFrame fundo={fundo} corTexto={cor} classe="ka-comentario" formato={formato}>
       {texto && <div className="texto">{comDestaque(texto, corDestaqueKA(fundo))}</div>}
       <div className="box">
         {usuario && <div className="usuario">{usuario}</div>}
@@ -180,8 +188,8 @@ export function KaFeedbackCard({ valores, formato }: RenderProps) {
   const nota = Math.max(1, Math.min(5, Number(valores.nota) || 5))
   const inicial = (String(valores.inicial || '').trim() || nome.trim().slice(0, 1)).toUpperCase()
 
-  const escuro = fundo !== 'bege'
-  const fg = escuro ? '#FFFFFF' : COR_MARINHO
+  const escuro = ehFundoEscuroKA(fundo)
+  const fg = corFonteKA(valores.cor_fonte, fundo)
   const logo = escuro ? '/clientes/ka/ka-branco.png' : '/clientes/ka/ka-preto.png'
   const stars = '★'.repeat(nota) + '☆'.repeat(5 - nota)
 
@@ -213,12 +221,14 @@ export function KaFeedbackCard({ valores, formato }: RenderProps) {
 // 6 · CTA — card 10, sempre no modelo do carrossel de desenhos: fundo bege,
 // frase + nome do produto grande + botão pill de contorno caramelo.
 export function KaCtaCard({ valores, formato }: RenderProps) {
+  const fundo = String(valores.cor_fundo || 'papel')
+  const cor = corFonteKA(valores.cor_fonte, fundo)
   const frase = String(valores.frase || '')
   const produto = String(valores.produto || '')
   const botao = String(valores.botao || '')
   return (
-    <KaFrame fundo="bege" classe="ka-cta" formato={formato}>
-      {frase && <div className="frase">{comDestaque(frase, corDestaqueKA('bege'))}</div>}
+    <KaFrame fundo={fundo} corTexto={cor} classe="ka-cta" formato={formato}>
+      {frase && <div className="frase">{comDestaque(frase, corDestaqueKA(fundo))}</div>}
       {produto && <div className="produto">{produto}</div>}
       {botao && <div className="botao">{botao}</div>}
     </KaFrame>

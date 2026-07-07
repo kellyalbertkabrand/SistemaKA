@@ -59,15 +59,31 @@ const FORMATO_KA = [
   { formato: 'post' as const, rotulo: 'Feed 4:5', largura: 1080, altura: 1350 },
 ]
 
-// Campo padrão "Fundo": as três cores oficiais (a cor do texto acompanha).
+// Campo padrão "Cor de fundo": as 8 cores da paleta KA.
 function campoFundoKA(padrao: string): Campo {
   return {
     id: 'cor_fundo',
-    label: 'Fundo',
+    label: 'Cor de fundo',
     tipo: 'select',
     padrao,
-    ajuda: 'O padrão KA usa somente estes três fundos; a cor do texto acompanha.',
+    ajuda: 'Escolha uma das cores oficiais da paleta KA.',
     opcoes: FUNDOS_KA.map((f) => ({ valor: f.valor, rotulo: f.rotulo })),
+  }
+}
+
+// Campo padrão "Cor do texto": Automático (contraste com o fundo) OU uma cor
+// fixa da paleta KA. Vale para todos os cards da KA.
+function campoCorTextoKA(): Campo {
+  return {
+    id: 'cor_fonte',
+    label: 'Cor do texto',
+    tipo: 'select',
+    padrao: 'auto',
+    ajuda: 'Automático combina com o fundo. Ou escolha uma cor fixa da paleta.',
+    opcoes: [
+      { valor: 'auto', rotulo: 'Automático (combina com o fundo)' },
+      ...FUNDOS_KA.map((f) => ({ valor: f.valor, rotulo: f.rotulo })),
+    ],
   }
 }
 
@@ -427,6 +443,7 @@ export const TEMPLATES: Template[] = [
         padrao: 'Sua marca não é\no que você diz.\nÉ o que *percebem.*',
       },
       campoFundoKA('marinho'),
+      campoCorTextoKA(),
     ],
     render: KaCapaCard,
   },
@@ -458,7 +475,8 @@ export const TEMPLATES: Template[] = [
           'Posicionamento não é um slogan bonito.\n\n' +
           'É a decisão sobre qual espaço a sua marca ocupa na *mente de quem compra.*',
       },
-      campoFundoKA('bege'),
+      campoFundoKA('papel'),
+      campoCorTextoKA(),
     ],
     render: KaTextoCard,
   },
@@ -488,7 +506,8 @@ export const TEMPLATES: Template[] = [
         ajuda: AJUDA_DESTAQUE,
         padrao: 'Defina o território que a sua marca pode *dominar.*',
       },
-      campoFundoKA('bege'),
+      campoFundoKA('papel'),
+      campoCorTextoKA(),
     ],
     render: KaPassoCard,
   },
@@ -532,7 +551,8 @@ export const TEMPLATES: Template[] = [
           { valor: '9:16', rotulo: 'Vertical 9:16 (texto à esquerda)' },
         ],
       },
-      campoFundoKA('bege'),
+      campoFundoKA('papel'),
+      campoCorTextoKA(),
     ],
     render: KaMidiaCard,
   },
@@ -570,6 +590,7 @@ export const TEMPLATES: Template[] = [
         padrao: 'Nunca vi uma marca se reposicionar tão rápido. Aula.',
       },
       campoFundoKA('marinho'),
+      campoCorTextoKA(),
     ],
     render: KaComentarioCard,
   },
@@ -606,6 +627,8 @@ export const TEMPLATES: Template[] = [
         tipo: 'texto',
         padrao: 'Link na minha bio',
       },
+      campoFundoKA('papel'),
+      campoCorTextoKA(),
     ],
     render: KaCtaCard,
   },
@@ -660,6 +683,7 @@ export const TEMPLATES: Template[] = [
       },
       { id: 'rotulo', label: 'Rótulo do topo', tipo: 'texto', padrao: 'FEEDBACK ;)' },
       campoFundoKA('caramelo'),
+      campoCorTextoKA(),
     ],
     render: KaFeedbackCard,
   },

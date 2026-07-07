@@ -1,13 +1,16 @@
+/* Layout do editor: preview (o layout) EM CIMA e os controles (mudanças)
+   EMBAIXO, empilhados numa coluna só. */
 .editor {
-  display: grid;
-  grid-template-columns: 380px 1fr;
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
-  align-items: start;
+  align-items: stretch;
 }
-@media (max-width: 820px) {
-  .editor {
-    grid-template-columns: 1fr;
-  }
+.editor__stage {
+  order: 1;
+}
+.editor__panel {
+  order: 2;
 }
 
 .editor__panel {
