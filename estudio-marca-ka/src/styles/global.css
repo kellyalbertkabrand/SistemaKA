@@ -177,15 +177,17 @@ h3 {
 }
 
 /* No celular, campos com menos de 16px fazem o Safari dar zoom automático ao
-   focar (e a página passa a "correr" para os lados). 16px evita esse zoom. */
+   focar (e a página passa a "correr" para os lados). 16px evita esse zoom.
+   !important garante que nenhum estilo (inline ou específico) baixe disso. */
 @media (max-width: 640px) {
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea,
   .field input,
   .field select,
   .field textarea,
-  input,
-  select,
-  textarea {
-    font-size: 16px;
+  .item-orcamento input {
+    font-size: 16px !important;
   }
 }
 
