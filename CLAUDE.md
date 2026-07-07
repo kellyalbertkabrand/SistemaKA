@@ -210,6 +210,25 @@ app — aqui é a versão web dos mesmos cards).
 > **`/ver/ka`** (a rota dinâmica `/:slug` vem depois de `/ka` no App.tsx).
 > Para montar um carrossel completo: painel → cliente KA → Montar carrossel.
 
+### Card ka-midia em VÍDEO com áudio (receita fora do app — validada jul/2026)
+
+O export do app é PNG; quando a KA manda um vídeo para o card de notícias, o
+card vira um **MP4** (arte parada + vídeo rodando na moldura + áudio original),
+que o Instagram aceita como slide de carrossel. Receita (IA no sandbox):
+
+1. Exportar o PNG do `ka-midia` (proporção 9:16) pelo próprio app via
+   Playwright, preenchendo o campo de mídia com o 1º frame do vídeo
+   (o campo é obrigatório; o frame também vira a "capa" estática).
+2. Moldura 9:16 **medida** no card 1080×1350 (fator 100%): **x=550 y=271
+   450×800**, border-radius 18px (16:9: 920×517; 1:1: 680×680, medir se usar).
+3. ffmpeg completo: `pip install imageio-ffmpeg` (o ffmpeg do Playwright não
+   tem libx264/aac). Compor: PNG base 1080×1350 em loop + vídeo `scale=450:800`
+   + máscara PNG de cantos arredondados (PIL, radius 18) via `alphamerge` +
+   `overlay=550:271`; áudio `aac 160k` com `apad` e `-t <duração do vídeo>`
+   (atenção: áudio e vídeo da origem podem ter durações diferentes — usar a
+   do stream de vídeo, não `-shortest`). `-c:v libx264 -crf 18 -pix_fmt yuv420p`.
+4. Roadmap: botão "Exportar MP4" no template Mídia dentro do app.
+
 ---
 
 ## 4c. Gestão interna (clientes, orçamentos, contratos, cobranças)
