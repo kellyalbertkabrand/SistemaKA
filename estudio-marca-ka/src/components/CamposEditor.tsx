@@ -14,6 +14,8 @@ interface Props {
 export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
   function handleImagem(id: string, file: File | undefined) {
     if (!file) return
+    // Imagem OU vídeo viram data URL em `valores[id]`; o card decide como
+    // renderizar (o ka-midia mostra <video> quando é `data:video`).
     const reader = new FileReader()
     reader.onload = () => onSet(id, reader.result as string)
     reader.readAsDataURL(file)

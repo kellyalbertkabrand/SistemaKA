@@ -1,8 +1,8 @@
 import { useMemo, useRef, useState } from 'react'
 import type { Template, ValoresPeca, FormatoDef } from '../templates/types'
 import { valoresPadrao } from '../templates/types'
-import { baixarPng, baixarMolduraPng } from '../lib/exportar'
-import { baixarVideoDoCard, suportaGravacaoVideo } from '../lib/exportarVideo'
+import { baixarPng } from '../lib/exportar'
+import { baixarMolduraPng, baixarVideoDoCard, suportaGravacaoVideo } from '../lib/exportarVideo'
 import { metaPadrao } from '../lib/assinatura'
 import { CamposEditor } from './CamposEditor'
 import './editor.css'
@@ -117,7 +117,7 @@ export function EditorPeca({ template }: { template: Template }) {
             </button>
             {suportaGravacaoVideo() ? (
               <button className="btn" disabled={!podeBaixar || baixando} onClick={handleVideo}>
-                {statusVideo ?? 'Baixar vídeo pronto (.webm)'}
+                {statusVideo ?? 'Baixar vídeo pronto (com áudio)'}
               </button>
             ) : (
               <p className="editor__hint">

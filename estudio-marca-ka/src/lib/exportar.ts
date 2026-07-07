@@ -42,25 +42,6 @@ export async function baixarPng(
 }
 
 /**
- * Exporta a "moldura" do card (a arte com a área de mídia/vídeo TRANSPARENTE),
- * para a pessoa sobrepor ao próprio vídeo no CapCut/Instagram. Aplica a classe
- * `moldura-video` durante a rasterização (a janela do vídeo fica transparente).
- */
-export async function baixarMolduraPng(
-  node: HTMLElement,
-  nome: string,
-  escala = 2,
-  meta?: MetaAssinatura,
-): Promise<void> {
-  node.classList.add('moldura-video')
-  try {
-    await baixarPng(node, nome, escala, meta)
-  } finally {
-    node.classList.remove('moldura-video')
-  }
-}
-
-/**
  * Exporta vários nós (slides do carrossel) para um único .zip de PNGs assinados.
  */
 export async function baixarZip(
