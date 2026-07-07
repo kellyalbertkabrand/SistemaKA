@@ -210,11 +210,21 @@ app — aqui é a versão web dos mesmos cards).
 > **`/ver/ka`** (a rota dinâmica `/:slug` vem depois de `/ka` no App.tsx).
 > Para montar um carrossel completo: painel → cliente KA → Montar carrossel.
 
-### Card ka-midia em VÍDEO com áudio (receita fora do app — validada jul/2026)
+### Card ka-midia em VÍDEO com áudio
 
-O export do app é PNG; quando a KA manda um vídeo para o card de notícias, o
-card vira um **MP4** (arte parada + vídeo rodando na moldura + áudio original),
-que o Instagram aceita como slide de carrossel. Receita (IA no sandbox):
+**✅ JÁ ESTÁ NO APP (jul/2026):** o campo de mídia do `ka-midia` aceita vídeo
+(`aceitaVideo` em `CampoImagem`; `CamposEditor` extrai o 1º frame como capa em
+`valores[id]` e guarda o object URL em `valores[id_video]`). O `EditorPeca`
+mostra o botão **"Exportar MP4 (com áudio)"** → `baixarMp4` em
+`src/lib/exportar.ts`: arte via `toPng` + vídeo desenhado no canvas dentro da
+moldura (`.midia-frame`, cantos 18px, cover), áudio via
+`AudioContext → MediaStreamDestination`, gravação em TEMPO REAL com
+`MediaRecorder` (preferência H.264+AAC MP4; fallback WebM com aviso). O PNG
+continua funcionando (usa o 1º frame como capa).
+⚠️ O Chromium do sandbox não tem H.264 — para testar aqui, converter o vídeo
+de teste para WebM/VP9; no Chrome real da KA o MP4 H.264 sai direto.
+
+Receita manual equivalente (fallback/histórico — IA no sandbox):
 
 1. Exportar o PNG do `ka-midia` (proporção 9:16) pelo próprio app via
    Playwright, preenchendo o campo de mídia com o 1º frame do vídeo

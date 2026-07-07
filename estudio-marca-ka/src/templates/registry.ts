@@ -512,11 +512,14 @@ export const TEMPLATES: Template[] = [
       },
       {
         id: 'midia',
-        label: 'Imagem ou print',
+        label: 'Imagem, print ou vídeo',
         tipo: 'imagem',
         obrigatorio: true,
         areaPadrao: 100,
-        ajuda: 'A mídia entra na proporção escolhida abaixo. Use "Tamanho da foto" para ajustar a área.',
+        aceitaVideo: true,
+        ajuda:
+          'A mídia entra na proporção escolhida abaixo; "Tamanho da foto" ajusta a área. ' +
+          'Com um VÍDEO, o botão "Exportar MP4" gera o card em vídeo com o áudio original.',
       },
       {
         id: 'proporcao',

@@ -38,6 +38,10 @@ export interface CampoImagem extends CampoBase {
   tipo: 'imagem'
   /** Tamanho inicial da foto (%) no slider "Tamanho da foto". Padrão 92. */
   areaPadrao?: number
+  /** Aceita vídeo além de imagem (ex.: card de notícias da KA). O 1º frame
+   *  vira a capa estática (`valores[id]`) e o arquivo fica em
+   *  `valores[id_video]` para o export MP4. */
+  aceitaVideo?: boolean
 }
 
 export interface CampoEstrelas extends CampoBase {

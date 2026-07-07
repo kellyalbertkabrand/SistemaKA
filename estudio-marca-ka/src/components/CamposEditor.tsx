@@ -11,9 +11,42 @@ interface Props {
 
 // Renderiza os controles de formulário a partir dos campos declarados no template.
 // Reutilizado pelo editor de peça única e pelo construtor de carrossel.
+// Extrai o 1º frame de um vídeo como imagem (capa estática do card).
+function posterDeVideo(url: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const v = document.createElement('video')
+    v.muted = true
+    v.playsInline = true
+    v.preload = 'auto'
+    v.src = url
+    v.onloadeddata = () => {
+      const c = document.createElement('canvas')
+      c.width = v.videoWidth
+      c.height = v.videoHeight
+      c.getContext('2d')!.drawImage(v, 0, 0)
+      resolve(c.toDataURL('image/jpeg', 0.92))
+    }
+    v.onerror = () => reject(new Error('Não consegui ler o vídeo.'))
+  })
+}
+
 export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
-  function handleImagem(id: string, file: File | undefined) {
+  async function handleImagem(id: string, file: File | undefined) {
     if (!file) return
+    if (file.type.startsWith('video/')) {
+      // Vídeo: o 1º frame vira a capa (o card renderiza como imagem normal);
+      // o arquivo fica em `${id}_video` para o botão "Exportar MP4".
+      const url = URL.createObjectURL(file)
+      try {
+        onSet(id, await posterDeVideo(url))
+        onSet(`${id}_video`, url)
+      } catch (e) {
+        URL.revokeObjectURL(url)
+        alert((e as Error).message)
+      }
+      return
+    }
+    onSet(`${id}_video`, '') // trocar por imagem limpa o vídeo anterior
     const reader = new FileReader()
     reader.onload = () => onSet(id, reader.result as string)
     reader.readAsDataURL(file)
@@ -84,9 +117,14 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
                 <input
                   id={inputId}
                   type="file"
-                  accept="image/*"
+                  accept={c.aceitaVideo ? 'image/*,video/mp4,video/quicktime,video/webm' : 'image/*'}
                   onChange={(e) => handleImagem(c.id, e.target.files?.[0])}
                 />
+                {c.aceitaVideo && valores[`${c.id}_video`] ? (
+                  <p className="editor__hint">
+                    🎬 Vídeo carregado — a capa é o 1º frame; use "Exportar MP4" para o card em vídeo com áudio.
+                  </p>
+                ) : null}
                 <div className="ajuste-foto tamanho-foto">
                   <label>Tamanho da foto</label>
                   <input

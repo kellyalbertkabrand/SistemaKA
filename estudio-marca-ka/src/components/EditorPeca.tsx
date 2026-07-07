@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import type { Template, ValoresPeca, FormatoDef } from '../templates/types'
 import { valoresPadrao } from '../templates/types'
-import { baixarPng } from '../lib/exportar'
+import { baixarPng, baixarMp4 } from '../lib/exportar'
 import { metaPadrao } from '../lib/assinatura'
 import { CamposEditor } from './CamposEditor'
 import './editor.css'
@@ -12,6 +12,7 @@ export function EditorPeca({ template }: { template: Template }) {
   const [valores, setValores] = useState<ValoresPeca>(() => valoresPadrao(template.campos))
   const [formato, setFormato] = useState<FormatoDef>(template.formatos[0])
   const [baixando, setBaixando] = useState(false)
+  const [gravando, setGravando] = useState<number | null>(null)
   const artRef = useRef<HTMLDivElement>(null)
 
   const Render = template.render
@@ -32,6 +33,12 @@ export function EditorPeca({ template }: { template: Template }) {
     [template.campos, valores],
   )
 
+  // Campo de mídia com vídeo carregado → habilita o export MP4 (com áudio).
+  const videoUrl = useMemo(() => {
+    const campo = template.campos.find((c) => c.tipo === 'imagem' && c.aceitaVideo)
+    return campo ? String(valores[`${campo.id}_video`] || '') : ''
+  }, [template.campos, valores])
+
   async function handleDownload() {
     if (!artRef.current) return
     setBaixando(true)
@@ -46,6 +53,29 @@ export function EditorPeca({ template }: { template: Template }) {
       alert('Não consegui gerar o PNG agora. Tente novamente.\n' + (e as Error).message)
     } finally {
       setBaixando(false)
+    }
+  }
+
+  async function handleVideo() {
+    if (!artRef.current || !videoUrl) return
+    setGravando(0)
+    try {
+      const ext = await baixarMp4(
+        artRef.current,
+        videoUrl,
+        `${template.clienteSlug}-${template.id}-video`,
+        (s) => setGravando(s),
+      )
+      if (ext === 'webm') {
+        alert(
+          'Seu navegador gravou em WebM (o Instagram prefere MP4). ' +
+            'Use o Chrome atualizado para sair direto em MP4.',
+        )
+      }
+    } catch (e) {
+      alert('Não consegui gerar o vídeo agora. Tente novamente.\n' + (e as Error).message)
+    } finally {
+      setGravando(null)
     }
   }
 
@@ -71,10 +101,25 @@ export function EditorPeca({ template }: { template: Template }) {
 
         <CamposEditor campos={template.campos} valores={valores} onSet={set} />
 
-        <button className="btn" disabled={!podeBaixar || baixando} onClick={handleDownload}>
+        <button className="btn" disabled={!podeBaixar || baixando || gravando !== null} onClick={handleDownload}>
           {baixando ? 'Gerando PNG…' : 'Baixar PNG'}
         </button>
+        {videoUrl && (
+          <button
+            className="btn"
+            style={{ marginTop: '0.6rem' }}
+            disabled={!podeBaixar || baixando || gravando !== null}
+            onClick={handleVideo}
+          >
+            {gravando !== null ? `Gravando vídeo… ${gravando}s` : 'Exportar MP4 (com áudio)'}
+          </button>
+        )}
         {!podeBaixar && <p className="editor__hint">Preencha os campos obrigatórios para baixar.</p>}
+        {videoUrl && gravando === null && (
+          <p className="editor__hint">
+            O MP4 é gravado em tempo real (dura o tempo do vídeo). O PNG usa o 1º frame como capa.
+          </p>
+        )}
       </div>
 
       {/* ----- Palco / preview ----- */}
