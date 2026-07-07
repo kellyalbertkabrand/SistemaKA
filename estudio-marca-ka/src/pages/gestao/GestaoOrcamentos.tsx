@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import type { Cliente, Orcamento, OrcamentoItem, OrcamentoStatus } from '../../lib/database.types'
+import type {
+  Cliente,
+  Orcamento,
+  OrcamentoItem,
+  OrcamentoStatus,
+  PropostaCampos,
+} from '../../lib/database.types'
 import { listarClientes } from '../../lib/api'
 import {
   criarOrcamento,
@@ -9,6 +15,7 @@ import {
   listarOrcamentos,
   linkPublicoOrcamento,
   valorTotalOrcamento,
+  modeloPropostaPadrao,
   formatarBRL,
   formatarData,
   type NovoOrcamento,
@@ -192,6 +199,7 @@ function EditorOrcamento({
       valor_total: 0,
       condicoes: 'Pagamento à vista (boleto, PIX ou cartão) em até 7 dias após a aprovação.',
       validade: null,
+      proposta: null,
     },
   )
   const [salvando, setSalvando] = useState(false)
@@ -201,6 +209,11 @@ function EditorOrcamento({
 
   function campo<K extends keyof NovoOrcamento>(k: K, v: NovoOrcamento[K]) {
     setF((atual) => ({ ...atual, [k]: v }))
+  }
+
+  // Campos da proposta no layout KA (documento completo no link público).
+  function prop<K extends keyof PropostaCampos>(k: K, v: string) {
+    setF((atual) => ({ ...atual, proposta: { ...(atual.proposta ?? {}), [k]: v } }))
   }
 
   function mudarItem(i: number, patch: Partial<OrcamentoItem>) {
@@ -390,6 +403,124 @@ function EditorOrcamento({
               />
             </div>
           </div>
+
+          <h3 style={{ margin: '1rem 0 0.3rem' }}>Proposta no layout KA (opcional)</h3>
+          <p style={{ fontSize: '0.82rem', color: 'var(--t-500)', marginBottom: '0.7rem' }}>
+            Preenchendo este bloco, o link público vira a <strong>proposta comercial completa</strong>{' '}
+            (capa com a logo, seções numeradas, investimento e aceite), imprimível em PDF. Seção
+            deixada em branco não aparece. Use *asteriscos* para <strong>negrito</strong>.
+          </p>
+          <p style={{ marginBottom: '0.8rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="btn-mini"
+              onClick={() => campo('proposta', modeloPropostaPadrao())}
+            >
+              {f.proposta ? 'Repreencher com o modelo padrão' : 'Preencher com o modelo padrão'}
+            </button>
+            {f.proposta && (
+              <button type="button" className="btn-mini btn-mini--perigo" onClick={() => campo('proposta', null)}>
+                Remover proposta (voltar ao documento simples)
+              </button>
+            )}
+          </p>
+
+          {f.proposta && (
+            <div className="form-grade" style={{ marginBottom: '0.8rem' }}>
+              <div className="field campo-toda">
+                <label>Frase da capa (sob o título)</label>
+                <textarea rows={2} value={f.proposta.subtitulo ?? ''} onChange={(e) => prop('subtitulo', e.target.value)} />
+              </div>
+              <div className="field">
+                <label>Cidade/UF do cliente</label>
+                <input value={f.proposta.cidade ?? ''} onChange={(e) => prop('cidade', e.target.value)} placeholder="ex.: Curitiba/PR" />
+              </div>
+              <div className="field">
+                <label>Cidade do rodapé</label>
+                <input value={f.proposta.cidade_rodape ?? ''} onChange={(e) => prop('cidade_rodape', e.target.value)} placeholder="ex.: Porto Alegre, RS" />
+              </div>
+              <div className="field campo-toda">
+                <label>01 · Objeto da proposta</label>
+                <textarea rows={4} value={f.proposta.objeto ?? ''} onChange={(e) => prop('objeto', e.target.value)} />
+              </div>
+              <div className="field campo-2">
+                <label>02 · Painel esquerdo (1ª linha = título, 2ª = subtítulo, demais = itens)</label>
+                <textarea rows={7} value={f.proposta.painel_a ?? ''} onChange={(e) => prop('painel_a', e.target.value)} />
+              </div>
+              <div className="field campo-2">
+                <label>02 · Painel direito (mesmo formato)</label>
+                <textarea rows={7} value={f.proposta.painel_b ?? ''} onChange={(e) => prop('painel_b', e.target.value)} />
+              </div>
+              <div className="field campo-toda">
+                <label>02 · Box de destaque (1ª linha = título, resto = texto)</label>
+                <textarea rows={3} value={f.proposta.destaque ?? ''} onChange={(e) => prop('destaque', e.target.value)} />
+              </div>
+              <div className="field campo-2">
+                <label>03 · Incluído na mensalidade (um ✓ por linha)</label>
+                <textarea rows={6} value={f.proposta.incluso ?? ''} onChange={(e) => prop('incluso', e.target.value)} />
+              </div>
+              <div className="field campo-2">
+                <label>03 · Necessário da cliente</label>
+                <textarea rows={6} value={f.proposta.necessario ?? ''} onChange={(e) => prop('necessario', e.target.value)} />
+              </div>
+              <div className="field campo-2">
+                <label>04 · Prazo de implantação</label>
+                <textarea rows={2} value={f.proposta.prazo ?? ''} onChange={(e) => prop('prazo', e.target.value)} />
+              </div>
+              <div className="field campo-2">
+                <label>04 · Entrega</label>
+                <textarea rows={2} value={f.proposta.entrega ?? ''} onChange={(e) => prop('entrega', e.target.value)} />
+              </div>
+              <div className="field campo-toda">
+                <label>05 · Fases futuras (uma por linha: Nome | descrição)</label>
+                <textarea rows={3} value={f.proposta.fases ?? ''} onChange={(e) => prop('fases', e.target.value)} />
+              </div>
+              <div className="field">
+                <label>06 · Implantação — rótulo do card</label>
+                <input value={f.proposta.impl_titulo ?? ''} onChange={(e) => prop('impl_titulo', e.target.value)} />
+              </div>
+              <div className="field">
+                <label>06 · Implantação — valor em destaque</label>
+                <input value={f.proposta.impl_valor ?? ''} onChange={(e) => prop('impl_valor', e.target.value)} placeholder="ex.: 2× de R$ 1.250 no Pix" />
+              </div>
+              <div className="field">
+                <label>06 · Implantação — linha abaixo do valor</label>
+                <input value={f.proposta.impl_sub ?? ''} onChange={(e) => prop('impl_sub', e.target.value)} placeholder="ex.: Total: R$ 2.500." />
+              </div>
+              <div className="field">
+                <label>06 · Implantação — descrição</label>
+                <input value={f.proposta.impl_desc ?? ''} onChange={(e) => prop('impl_desc', e.target.value)} />
+              </div>
+              <div className="field">
+                <label>06 · Mensalidade — rótulo do card</label>
+                <input value={f.proposta.mensal_titulo ?? ''} onChange={(e) => prop('mensal_titulo', e.target.value)} />
+              </div>
+              <div className="field">
+                <label>06 · Mensalidade — valor em destaque</label>
+                <input value={f.proposta.mensal_valor ?? ''} onChange={(e) => prop('mensal_valor', e.target.value)} placeholder="ex.: R$ 420/mês" />
+              </div>
+              <div className="field campo-2">
+                <label>06 · Mensalidade — descrição (uma frase por linha)</label>
+                <textarea rows={2} value={f.proposta.mensal_desc ?? ''} onChange={(e) => prop('mensal_desc', e.target.value)} />
+              </div>
+              <div className="field campo-2">
+                <label>Forma de pagamento</label>
+                <textarea rows={2} value={f.proposta.pagamento ?? ''} onChange={(e) => prop('pagamento', e.target.value)} />
+              </div>
+              <div className="field">
+                <label>Fidelidade</label>
+                <input value={f.proposta.fidelidade ?? ''} onChange={(e) => prop('fidelidade', e.target.value)} />
+              </div>
+              <div className="field">
+                <label>Reajuste</label>
+                <input value={f.proposta.reajuste ?? ''} onChange={(e) => prop('reajuste', e.target.value)} />
+              </div>
+              <div className="field campo-toda">
+                <label>Próximos passos (no box de aceite)</label>
+                <textarea rows={2} value={f.proposta.proximos ?? ''} onChange={(e) => prop('proximos', e.target.value)} />
+              </div>
+            </div>
+          )}
 
           <div className="orcamento-total">
             Total do orçamento <strong>{formatarBRL(total)}</strong>

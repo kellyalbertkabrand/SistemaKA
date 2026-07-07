@@ -7,6 +7,7 @@ import {
   formatarData,
   type OrcamentoPublico as Orc,
 } from '../../lib/gestao'
+import { PropostaDoc } from './PropostaDoc'
 import '../../styles/gestao.css'
 
 // Página que o cliente/prospect abre pelo link enviado pela KA.
@@ -91,54 +92,71 @@ export function OrcamentoPublico() {
   }
 
   const aberto = orc.status === 'enviado'
+  const temProposta = !!orc.proposta && Object.values(orc.proposta).some((v) => String(v ?? '').trim())
 
+  // Com a proposta no layout KA preenchida, o documento vira a PROPOSTA
+  // COMERCIAL completa; senão, o orçamento simples de sempre (tabela).
   return (
     <div className="pub-wrap">
-      <div className="pub-doc">
-        <div className="pub-doc__head">
-          <div className="eyebrow">Orçamento · Kelly Albert — KA</div>
-          <h1>{orc.titulo}</h1>
-          <div className="pub-doc__meta">
-            Para {orc.destinatario_nome} · emitido em {formatarData(orc.criado_em)}
-            {orc.validade && <> · válido até {formatarData(orc.validade)}</>}
-          </div>
-        </div>
+      <div className="pub-doc" style={temProposta ? { padding: 0, background: 'transparent', boxShadow: 'none' } : undefined}>
+        {temProposta ? (
+          <PropostaDoc
+            dados={{
+              titulo: orc.titulo,
+              destinatario_nome: orc.destinatario_nome,
+              criado_em: orc.criado_em,
+              validade: orc.validade,
+              proposta: orc.proposta!,
+            }}
+          />
+        ) : (
+          <>
+            <div className="pub-doc__head">
+              <div className="eyebrow">Orçamento · Kelly Albert — KA</div>
+              <h1>{orc.titulo}</h1>
+              <div className="pub-doc__meta">
+                Para {orc.destinatario_nome} · emitido em {formatarData(orc.criado_em)}
+                {orc.validade && <> · válido até {formatarData(orc.validade)}</>}
+              </div>
+            </div>
 
-        {orc.descricao && <p style={{ marginBottom: '0.6rem' }}>{orc.descricao}</p>}
+            {orc.descricao && <p style={{ marginBottom: '0.6rem' }}>{orc.descricao}</p>}
 
-        <table className="pub-tabela">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th className="num">Qtd</th>
-              <th className="num">Valor</th>
-              <th className="num">Subtotal</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orc.itens.map((i, idx) => (
-              <tr key={idx}>
-                <td>{i.descricao}</td>
-                <td className="num">{i.qtd}</td>
-                <td className="num">{formatarBRL(i.valor)}</td>
-                <td className="num">{formatarBRL(i.qtd * i.valor)}</td>
-              </tr>
-            ))}
-            {orc.desconto > 0 && (
-              <tr>
-                <td colSpan={3}>Desconto</td>
-                <td className="num">− {formatarBRL(orc.desconto)}</td>
-              </tr>
+            <table className="pub-tabela">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th className="num">Qtd</th>
+                  <th className="num">Valor</th>
+                  <th className="num">Subtotal</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orc.itens.map((i, idx) => (
+                  <tr key={idx}>
+                    <td>{i.descricao}</td>
+                    <td className="num">{i.qtd}</td>
+                    <td className="num">{formatarBRL(i.valor)}</td>
+                    <td className="num">{formatarBRL(i.qtd * i.valor)}</td>
+                  </tr>
+                ))}
+                {orc.desconto > 0 && (
+                  <tr>
+                    <td colSpan={3}>Desconto</td>
+                    <td className="num">− {formatarBRL(orc.desconto)}</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            <div className="pub-total">
+              Total <strong>{formatarBRL(orc.valor_total)}</strong>
+            </div>
+
+            {orc.condicoes && (
+              <p style={{ fontSize: '0.82rem', color: 'var(--t-500)' }}>{orc.condicoes}</p>
             )}
-          </tbody>
-        </table>
-
-        <div className="pub-total">
-          Total <strong>{formatarBRL(orc.valor_total)}</strong>
-        </div>
-
-        {orc.condicoes && (
-          <p style={{ fontSize: '0.82rem', color: 'var(--t-500)' }}>{orc.condicoes}</p>
+          </>
         )}
 
         {erro && <div className="erro-msg" style={{ marginTop: '1rem' }}>{erro}</div>}

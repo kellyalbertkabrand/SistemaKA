@@ -21,6 +21,7 @@ import type {
   Orcamento,
   OrcamentoItem,
   OrcamentoStatus,
+  PropostaCampos,
 } from './database.types'
 
 // ============================================================================
@@ -182,6 +183,7 @@ export type NovoOrcamento = Pick<
   | 'valor_total'
   | 'condicoes'
   | 'validade'
+  | 'proposta'
 >
 
 export async function criarOrcamento(dados: NovoOrcamento): Promise<Orcamento> {
@@ -232,6 +234,7 @@ export interface OrcamentoPublico {
   valor_total: number
   condicoes: string | null
   validade: string | null
+  proposta: PropostaCampos | null
   status: OrcamentoStatus
   criado_em: string
   respondido_em: string | null
@@ -257,9 +260,85 @@ export async function orcamentoPorToken(token: string): Promise<OrcamentoPublico
     valor_total: o.valor_total,
     condicoes: o.condicoes,
     validade: o.validade,
+    proposta: o.proposta ?? null,
     status: o.status,
     criado_em: o.criado_em,
     respondido_em: o.respondido_em,
+  }
+}
+
+/**
+ * Modelo padrão da PROPOSTA no layout KA (baseado na proposta do Sistema
+ * Visual de Publicações da Marca). O botão "Preencher com o modelo" do editor
+ * usa isto; a KA então adapta os textos ao cliente.
+ */
+export function modeloPropostaPadrao(): PropostaCampos {
+  return {
+    subtitulo:
+      'Estúdio digital da marca para criar as artes das redes sociais na identidade ' +
+      'oficial: é só anexar a foto, escrever o texto e baixar a peça pronta para postar.',
+    cidade: '',
+    objeto:
+      'Implantação e operação contínua de um estúdio digital próprio da marca, acessado ' +
+      'pelo navegador, para produzir as publicações das redes sociais sempre dentro da identidade ' +
+      'visual oficial da marca. Todo o design já vem *travado nos templates aprovados*: cores, ' +
+      'fontes licenciadas, formas e logotipo. A criação do dia a dia se resume a anexar a foto, ' +
+      'escrever o texto e escolher o formato. O resultado sai em alta resolução, pronto para o Instagram.',
+    painel_a:
+      'Estúdio da marca\n' +
+      'Acesso exclusivo, pelo navegador\n' +
+      '*Templates oficiais* validados com a marca\n' +
+      '*3 formatos* por peça: Feed 4:5, Story 9:16 e Quadrado 1:1\n' +
+      '*Construtor de carrossel*: até 10 slides, reordenação e download em .zip\n' +
+      'Download em *PNG de alta resolução*, com assinatura digital de autoria da marca\n' +
+      'Funciona no *celular e no computador* (mobile e desktop), direto do navegador, sem instalar nada',
+    painel_b:
+      'Identidade protegida\n' +
+      'O design não desvia do manual, post após post\n' +
+      'Fontes licenciadas da marca hospedadas no próprio sistema\n' +
+      '*Paleta oficial* sempre à mão nas amostras\n' +
+      'O *logotipo troca de cor sozinho* conforme o fundo, em todos os cards\n' +
+      'Templates fiéis aos layouts aprovados, desenhados em tamanho real\n' +
+      'Qualquer pessoa da equipe cria *sem precisar saber design*',
+    destaque:
+      'Criação em minutos, design de estúdio\n' +
+      'A pessoa escolhe o modelo, anexa a foto e escreve o texto: o sistema monta a arte ' +
+      '*no padrão aprovado* e entrega o PNG pronto para postar. Sem montagem manual, sem retrabalho, ' +
+      'sem "quase na identidade". Consistência visual é o que constrói o reconhecimento da marca.',
+    incluso:
+      '*Hospedagem* do estúdio no ar, 24 horas\n' +
+      '*Certificado de segurança* (site sob HTTPS)\n' +
+      '*Fontes e elementos oficiais* da marca hospedados no sistema\n' +
+      '*Manutenção* e atualizações da plataforma\n' +
+      '*Pequenos ajustes* e melhorias contínuas nos templates\n' +
+      '*Suporte direto* com a KA\n' +
+      '*Monitoramento* e disponibilidade do serviço\n' +
+      '*Novos formatos* das peças atuais conforme as redes mudarem',
+    necessario:
+      '*Fotos dos produtos* em boa resolução para as peças. O logotipo e o manual da marca já ' +
+      'estão com a KA. Domínio próprio (URL) é *opcional*: o estúdio pode rodar em endereço ' +
+      'exclusivo dentro do domínio da KA, sem custo extra.',
+    prazo: '*Até 15 dias úteis* após a aprovação.',
+    entrega: 'Estúdio no ar com os templates e o carrossel, acesso criado e treinamento de uso feito.',
+    fases:
+      'Card com vídeo e áudio | O vídeo do produto entra dentro da arte, com o áudio original, pronto para o carrossel. Tecnologia já validada pela KA.\n' +
+      'Novos templates e formatos | Capa de Reels, anúncios, peças de datas sazonais e novos layouts conforme a marca lançar.',
+    impl_titulo: 'Valor da implantação em até 2×',
+    impl_valor: '2× de R$ 1.250 no Pix',
+    impl_sub: 'Total: R$ 2.500.',
+    impl_desc:
+      'Personalização completa com a identidade da marca, os templates oficiais validados e treinamento de uso.',
+    mensal_titulo: 'Mensalidade · Plano tudo incluído',
+    mensal_valor: 'R$ 420/mês',
+    mensal_desc:
+      'Hospedagem, infraestrutura, manutenção, suporte e pequenos ajustes.\nInício após a entrega da implantação.',
+    pagamento: 'Implantação em *até 2×* mais mensalidade recorrente via boleto ou Pix.',
+    fidelidade: 'Sem fidelidade. *Cancelável a qualquer momento*, sem multa.',
+    reajuste: 'Anual, pela variação do *IPCA* acumulado.',
+    proximos:
+      '1. aprovar esta proposta; 2. a KA coloca o estúdio no ar e agenda o treinamento. ' +
+      'Em até 15 dias úteis, a marca publica a primeira peça criada no próprio estúdio.',
+    cidade_rodape: 'Porto Alegre, RS',
   }
 }
 
