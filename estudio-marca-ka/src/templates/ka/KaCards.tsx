@@ -10,18 +10,27 @@ import './ka.css'
 // cabeçalho e rodapé fixos, três fundos oficiais e destaque em caramelo.
 // ============================================================================
 
-// Converte *destaque* em <strong> peso 900 na cor de destaque (nunca itálico).
-// Se a frase termina na palavra destacada, o ponto final entra no asterisco.
-function comDestaque(texto: string, cor: string) {
-  return texto.split('*').map((p, i) =>
-    i % 2 === 1 ? (
-      <strong key={i} className="ka-destaque" style={{ color: cor }}>
-        {p}
-      </strong>
-    ) : (
-      <span key={i}>{p}</span>
-    ),
-  )
+// Destaque (negrito na cor de destaque): a palavra/frase entre ASPAS vira
+// <strong>. Aceita aspas retas ("...") e curvas (“...”). Os *asteriscos*
+// continuam funcionando (compatibilidade com o que já estava escrito).
+const RE_DESTAQUE = /“([^”]+)”|"([^"]+)"|\*([^*]+)\*/g
+function comDestaque(texto: string, cor: string): ReactNode[] {
+  const nos: ReactNode[] = []
+  let ultimo = 0
+  let k = 0
+  let m: RegExpExecArray | null
+  RE_DESTAQUE.lastIndex = 0
+  while ((m = RE_DESTAQUE.exec(texto))) {
+    if (m.index > ultimo) nos.push(<span key={k++}>{texto.slice(ultimo, m.index)}</span>)
+    nos.push(
+      <strong key={k++} className="ka-destaque" style={{ color: cor }}>
+        {m[1] ?? m[2] ?? m[3]}
+      </strong>,
+    )
+    ultimo = RE_DESTAQUE.lastIndex
+  }
+  if (ultimo < texto.length) nos.push(<span key={k++}>{texto.slice(ultimo)}</span>)
+  return nos
 }
 
 // Moldura comum: fundo oficial, cor de texto derivada, cabeçalho e rodapé.

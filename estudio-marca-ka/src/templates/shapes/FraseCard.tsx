@@ -1,12 +1,25 @@
+import type { ReactNode } from 'react'
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
 import './shapes.css'
 
-// Converte *itálico* em <em> sem usar innerHTML (texto do próprio usuário).
-function comItalico(texto: string) {
-  return texto.split('*').map((p, i) =>
-    i % 2 === 1 ? <em key={i}>{p}</em> : <span key={i}>{p}</span>,
-  )
+// Ênfase no texto do usuário (sem innerHTML): ASPAS ("..." ou “...”) viram
+// negrito; *asteriscos* continuam virando itálico.
+const RE_ENFASE = /“([^”]+)”|"([^"]+)"|\*([^*]+)\*/g
+function comEnfase(texto: string): ReactNode[] {
+  const nos: ReactNode[] = []
+  let ultimo = 0
+  let k = 0
+  let m: RegExpExecArray | null
+  RE_ENFASE.lastIndex = 0
+  while ((m = RE_ENFASE.exec(texto))) {
+    if (m.index > ultimo) nos.push(<span key={k++}>{texto.slice(ultimo, m.index)}</span>)
+    if (m[3] !== undefined) nos.push(<em key={k++}>{m[3]}</em>)
+    else nos.push(<strong key={k++}>{m[1] ?? m[2]}</strong>)
+    ultimo = RE_ENFASE.lastIndex
+  }
+  if (ultimo < texto.length) nos.push(<span key={k++}>{texto.slice(ultimo)}</span>)
+  return nos
 }
 
 // Modelo "frase + foto" (carrossel 03): fundo creme, texto em cima, espaço da
@@ -32,7 +45,7 @@ export function ShapesFraseCard({ valores, formato }: RenderProps) {
     >
       {cima && (
         <div className="txt topo" style={{ top: Math.round(formato.altura * 0.075) }}>
-          {comItalico(cima)}
+          {comEnfase(cima)}
         </div>
       )}
 
@@ -59,7 +72,7 @@ export function ShapesFraseCard({ valores, formato }: RenderProps) {
 
       {baixo && (
         <div className="txt rodape" style={{ bottom: Math.round(formato.altura * 0.1) }}>
-          {comItalico(baixo)}
+          {comEnfase(baixo)}
         </div>
       )}
     </div>

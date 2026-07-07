@@ -92,8 +92,8 @@ function campoCorTextoKA(): Campo {
 }
 
 const AJUDA_DESTAQUE =
-  'Para destacar uma palavra em caramelo (bold), use *asteriscos*. ' +
-  'Sem travessões (—): use vírgula, dois-pontos ou ponto.'
+  'Para deixar uma palavra ou frase em negrito, coloque entre aspas. ' +
+  'Ex.: a marca é "percepção".'
 
 // Dimensões dos 3 formatos (todos os modelos usam as mesmas).
 const FORMATOS = [
@@ -266,7 +266,7 @@ export const TEMPLATES: Template[] = [
         label: 'Texto de cima',
         tipo: 'textarea',
         placeholder: 'Ex.: Não cria apenas objetos,',
-        ajuda: 'Para itálico, use *asteriscos*: ex. *sensorial*.',
+        ajuda: 'Aspas = negrito ("assim"). Asteriscos = itálico (*sensorial*).',
         padrao: 'Não cria apenas objetos,',
       },
       {
@@ -304,7 +304,7 @@ export const TEMPLATES: Template[] = [
         label: 'Texto de cima',
         tipo: 'textarea',
         placeholder: 'Ex.: texto de cima',
-        ajuda: 'Para itálico, use *asteriscos*.',
+        ajuda: 'Aspas = negrito ("assim"). Asteriscos = itálico (*assim*).',
         padrao: 'texto de cima',
       },
       {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { CSSProperties } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
 import './shapes.css'
@@ -7,11 +7,23 @@ import './shapes.css'
 const GRAF_ESQ = '/clientes/shapes/elementos/grafismo-esq.png'
 const GRAF_DIR = '/clientes/shapes/elementos/grafismo-dir.png'
 
-// Converte *itálico* em <em> sem usar innerHTML.
-function comItalico(texto: string) {
-  return texto.split('*').map((p, i) =>
-    i % 2 === 1 ? <em key={i}>{p}</em> : <span key={i}>{p}</span>,
-  )
+// Ênfase (sem innerHTML): ASPAS ("..." / “...”) viram negrito; *asteriscos*
+// viram itálico.
+const RE_ENFASE = /“([^”]+)”|"([^"]+)"|\*([^*]+)\*/g
+function comEnfase(texto: string): ReactNode[] {
+  const nos: ReactNode[] = []
+  let ultimo = 0
+  let k = 0
+  let m: RegExpExecArray | null
+  RE_ENFASE.lastIndex = 0
+  while ((m = RE_ENFASE.exec(texto))) {
+    if (m.index > ultimo) nos.push(<span key={k++}>{texto.slice(ultimo, m.index)}</span>)
+    if (m[3] !== undefined) nos.push(<em key={k++}>{m[3]}</em>)
+    else nos.push(<strong key={k++}>{m[1] ?? m[2]}</strong>)
+    ultimo = RE_ENFASE.lastIndex
+  }
+  if (ultimo < texto.length) nos.push(<span key={k++}>{texto.slice(ultimo)}</span>)
+  return nos
 }
 
 // Recolore um PNG (alpha) para a cor escolhida via canvas (source-in) e
@@ -75,7 +87,7 @@ export function ShapesGrafismoCard({ valores, formato }: RenderProps) {
 
       {cima && (
         <div className="txt topo" style={{ top: Math.round(formato.altura * 0.075) }}>
-          {comItalico(cima)}
+          {comEnfase(cima)}
         </div>
       )}
 
@@ -97,7 +109,7 @@ export function ShapesGrafismoCard({ valores, formato }: RenderProps) {
 
       {baixo && (
         <div className="txt rodape" style={{ bottom: Math.round(formato.altura * 0.075) }}>
-          {comItalico(baixo)}
+          {comEnfase(baixo)}
         </div>
       )}
     </div>
