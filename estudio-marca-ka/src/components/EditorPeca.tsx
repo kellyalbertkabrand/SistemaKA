@@ -27,9 +27,14 @@ export function EditorPeca({ template }: { template: Template }) {
   const nomeBase = () => `${template.clienteSlug}-${template.id}-${formato.formato}`
   const meta = () => metaPadrao({ cliente: template.clienteNome, titulo: template.nome })
 
-  // Escala do preview: cabe numa coluna de ~360px de largura.
-  const previewW = 360
-  const escala = previewW / formato.largura
+  // Escala do preview: limita LARGURA e ALTURA para o card fixo (sticky) não
+  // engolir a tela — importante no Story (9:16), que é bem alto. Assim sobra
+  // espaço para os controles logo abaixo.
+  const MAX_W = 340
+  const MAX_H = 380
+  const escala = Math.min(MAX_W / formato.largura, MAX_H / formato.altura)
+  const previewW = Math.round(formato.largura * escala)
+  const previewH = Math.round(formato.altura * escala)
 
   function set(id: string, valor: string | number) {
     setValores((v) => ({ ...v, [id]: valor }))
@@ -139,7 +144,7 @@ export function EditorPeca({ template }: { template: Template }) {
       <div className="editor__stage">
         <div
           className="editor__scaler"
-          style={{ width: previewW, height: formato.altura * escala }}
+          style={{ width: previewW, height: previewH }}
         >
           <div
             style={{
