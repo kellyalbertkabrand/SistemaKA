@@ -55,19 +55,23 @@ const SWATCHES_FEEDBACK = [
 // O padrão dos carrosséis da KA é travado: só feed 4:5 (1080×1350), só três
 // fundos oficiais, texto e destaque derivados do fundo (ver ka/cores.ts).
 
+// Formatos padrão de TODOS os layouts da KA: Feed, Story e Quadrado.
 const FORMATO_KA = [
   { formato: 'post' as const, rotulo: 'Feed 4:5', largura: 1080, altura: 1350 },
+  { formato: 'story' as const, rotulo: 'Story 9:16', largura: 1080, altura: 1920 },
+  { formato: 'card' as const, rotulo: 'Quadrado 1:1', largura: 1080, altura: 1080 },
 ]
 
-// Campo padrão "Cor de fundo": as 8 cores da paleta KA.
+// Campo padrão "Cor de fundo": todas as cores da paleta KA, em amostras (o
+// tipo 'paleta' mostra a cor de verdade e guarda a chave da cor).
 function campoFundoKA(padrao: string): Campo {
   return {
     id: 'cor_fundo',
     label: 'Cor de fundo',
-    tipo: 'select',
+    tipo: 'paleta',
     padrao,
-    ajuda: 'Escolha uma das cores oficiais da paleta KA.',
-    opcoes: FUNDOS_KA.map((f) => ({ valor: f.valor, rotulo: f.rotulo })),
+    ajuda: 'Clique numa cor da paleta oficial da KA.',
+    opcoes: FUNDOS_KA.map((f) => ({ valor: f.valor, rotulo: f.rotulo, cor: f.hex })),
   }
 }
 
@@ -77,12 +81,12 @@ function campoCorTextoKA(): Campo {
   return {
     id: 'cor_fonte',
     label: 'Cor do texto',
-    tipo: 'select',
+    tipo: 'paleta',
     padrao: 'auto',
-    ajuda: 'Automático combina com o fundo. Ou escolha uma cor fixa da paleta.',
+    ajuda: 'A primeira (A) é automática — combina com o fundo. Ou escolha uma cor fixa.',
     opcoes: [
       { valor: 'auto', rotulo: 'Automático (combina com o fundo)' },
-      ...FUNDOS_KA.map((f) => ({ valor: f.valor, rotulo: f.rotulo })),
+      ...FUNDOS_KA.map((f) => ({ valor: f.valor, rotulo: f.rotulo, cor: f.hex })),
     ],
   }
 }

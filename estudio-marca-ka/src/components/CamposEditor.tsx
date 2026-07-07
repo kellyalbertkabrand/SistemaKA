@@ -81,6 +81,27 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
               </select>
             )}
 
+            {c.tipo === 'paleta' && (
+              <div className="paleta-grid">
+                {c.opcoes.map((o) => {
+                  const ativo = String(valores[c.id] ?? '') === o.valor
+                  return (
+                    <button
+                      key={o.valor}
+                      type="button"
+                      className={`paleta-swatch ${ativo ? 'on' : ''} ${o.cor ? '' : 'auto'}`}
+                      title={o.rotulo}
+                      aria-label={o.rotulo}
+                      onClick={() => onSet(c.id, o.valor)}
+                      style={o.cor ? { background: o.cor } : undefined}
+                    >
+                      {o.cor ? '' : 'A'}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+
             {c.tipo === 'imagem' && (
               <div className="img-input">
                 <input

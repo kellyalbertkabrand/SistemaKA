@@ -157,6 +157,35 @@
 }
 
 /* palco */
+/* Paleta de cores (fundo/texto): amostras clicáveis mostrando a cor real. */
+.paleta-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.paleta-swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(15, 25, 35, 0.18);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.paleta-swatch:hover {
+  transform: scale(1.08);
+}
+.paleta-swatch.on {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--essencia, #3d6b7e);
+}
+.paleta-swatch.auto {
+  background: conic-gradient(from 220deg, #152535, #c47830, #f8f7f2, #3d6b7e, #152535);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
 .editor__stage {
   display: flex;
   flex-direction: column;

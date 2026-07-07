@@ -17,6 +17,7 @@ export type CampoTipo =
   | 'estrelas'
   | 'select'
   | 'cor'
+  | 'paleta'
   | 'forma'
 
 export interface CampoBase {
@@ -67,12 +68,21 @@ export interface CampoForma extends CampoBase {
   padrao?: string
 }
 
+// Paleta fixa: mostra amostras (bolinhas) com a cor real, mas guarda a CHAVE
+// (ex.: 'marinho') — não o hex. `cor` vazio/ausente = amostra "Automático".
+export interface CampoPaleta extends CampoBase {
+  tipo: 'paleta'
+  padrao?: string
+  opcoes: { valor: string; rotulo: string; cor?: string }[]
+}
+
 export type Campo =
   | CampoTexto
   | CampoImagem
   | CampoEstrelas
   | CampoSelect
   | CampoCor
+  | CampoPaleta
   | CampoForma
 
 /** Dimensões reais (px) de cada formato suportado pelo template. */
@@ -109,6 +119,7 @@ export function valoresPadrao(campos: Campo[]): ValoresPeca {
   for (const c of campos) {
     if (c.tipo === 'estrelas') v[c.id] = c.padrao ?? 5
     else if (c.tipo === 'select') v[c.id] = c.padrao ?? c.opcoes[0]?.valor ?? ''
+    else if (c.tipo === 'paleta') v[c.id] = c.padrao ?? c.opcoes[0]?.valor ?? ''
     else if (c.tipo === 'cor') v[c.id] = c.padrao ?? '#000000'
     else if (c.tipo === 'forma') v[c.id] = c.padrao ?? 'shape-blob1'
     else if (c.tipo === 'texto' || c.tipo === 'textarea') v[c.id] = c.padrao ?? ''
