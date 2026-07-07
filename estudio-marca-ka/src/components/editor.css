@@ -1,5 +1,4 @@
-/* Layout do editor: preview (o layout) EM CIMA e os controles (mudanças)
-   EMBAIXO, empilhados numa coluna só. */
+/* Celular: empilhado — preview (layout) EM CIMA, controles (mudanças) EMBAIXO. */
 .editor {
   display: flex;
   flex-direction: column;
@@ -11,6 +10,24 @@
 }
 .editor__panel {
   order: 2;
+}
+
+/* Desktop: duas colunas — controles (rolam) à esquerda e o card FIXO à direita
+   no tamanho cheio (Story inclusive). O scroll fica no lado dos controles. */
+@media (min-width: 900px) {
+  .editor {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 2rem;
+    align-items: start;
+  }
+  .editor__panel {
+    order: 1;
+  }
+  .editor__stage {
+    order: 2;
+    top: 16px;
+  }
 }
 
 .editor__panel {

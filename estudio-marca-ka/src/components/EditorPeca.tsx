@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Template, ValoresPeca, FormatoDef } from '../templates/types'
 import { valoresPadrao } from '../templates/types'
 import { baixarPng } from '../lib/exportar'
@@ -27,11 +27,21 @@ export function EditorPeca({ template }: { template: Template }) {
   const nomeBase = () => `${template.clienteSlug}-${template.id}-${formato.formato}`
   const meta = () => metaPadrao({ cliente: template.clienteNome, titulo: template.nome })
 
-  // Escala do preview: limita LARGURA e ALTURA para o card fixo (sticky) não
-  // engolir a tela — importante no Story (9:16), que é bem alto. Assim sobra
-  // espaço para os controles logo abaixo.
-  const MAX_W = 340
-  const MAX_H = 380
+  // No desktop há duas colunas (controles + card fixo ao lado): o card pode
+  // ficar no tamanho cheio, inclusive o Story alto. No celular é empilhado, com
+  // o card fixo em cima — então limitamos a altura para sobrar espaço aos
+  // controles logo abaixo.
+  const [desktop, setDesktop] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia('(min-width: 900px)').matches,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 900px)')
+    const ao = () => setDesktop(mq.matches)
+    mq.addEventListener('change', ao)
+    return () => mq.removeEventListener('change', ao)
+  }, [])
+  const MAX_W = desktop ? 360 : 340
+  const MAX_H = desktop ? 640 : 380
   const escala = Math.min(MAX_W / formato.largura, MAX_H / formato.altura)
   const previewW = Math.round(formato.largura * escala)
   const previewH = Math.round(formato.altura * escala)
