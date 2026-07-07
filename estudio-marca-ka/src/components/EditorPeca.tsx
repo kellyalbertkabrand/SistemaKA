@@ -40,8 +40,8 @@ export function EditorPeca({ template }: { template: Template }) {
     mq.addEventListener('change', ao)
     return () => mq.removeEventListener('change', ao)
   }, [])
-  const MAX_W = desktop ? 360 : 340
-  const MAX_H = desktop ? 640 : 380
+  const MAX_W = desktop ? 360 : 300
+  const MAX_H = desktop ? 640 : 260
   const escala = Math.min(MAX_W / formato.largura, MAX_H / formato.altura)
   const previewW = Math.round(formato.largura * escala)
   const previewH = Math.round(formato.altura * escala)

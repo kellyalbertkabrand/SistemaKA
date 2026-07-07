@@ -1,8 +1,9 @@
-/* Celular: empilhado — preview (layout) EM CIMA, controles (mudanças) EMBAIXO. */
+/* Celular: empilhado — preview (layout) EM CIMA, controles (mudanças) EMBAIXO.
+   Espaços apertados para o card fixo ocupar o mínimo e sobrar tela p/ mexer. */
 .editor {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.6rem;
   align-items: stretch;
 }
 .editor__stage {
@@ -207,12 +208,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.7rem;
-  padding: 0.8rem 0 1rem;
+  gap: 0.35rem;
+  padding: 0.3rem 0 0.5rem;
   /* Card fixo: fica grudado no topo enquanto você rola os controles e vai
      vendo as mudanças de cor/fonte/texto ao vivo. */
   position: sticky;
-  top: 8px;
+  top: 6px;
   z-index: 5;
   background: var(--bg-1);
   border-radius: 0 0 12px 12px;
