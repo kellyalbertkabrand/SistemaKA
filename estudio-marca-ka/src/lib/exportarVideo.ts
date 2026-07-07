@@ -46,6 +46,42 @@ function audioDoVideo(video: HTMLVideoElement): MediaStream {
   return destino.stream
 }
 
+// Embute as fontes da KA (self-hosted) como base64 e passa direto ao
+// html-to-image. Assim ele NÃO tenta varrer/baixar as fontes do Google
+// (cross-origin), que travavam o embed e faziam o cabeçalho cair no fallback.
+let cacheFontCss: string | null = null
+function bufParaBase64(buf: ArrayBuffer): string {
+  const bytes = new Uint8Array(buf)
+  let bin = ''
+  const chunk = 0x8000
+  for (let i = 0; i < bytes.length; i += chunk) {
+    bin += String.fromCharCode(...bytes.subarray(i, i + chunk))
+  }
+  return btoa(bin)
+}
+async function fontEmbedCssKA(): Promise<string> {
+  if (cacheFontCss !== null) return cacheFontCss
+  const fontes = [
+    { fam: 'Montserrat KA', style: 'normal', weight: '100 900', file: 'montserrat-var.woff2' },
+    { fam: 'Playfair KA', style: 'normal', weight: '400 900', file: 'playfair-var.woff2' },
+    { fam: 'Playfair KA', style: 'italic', weight: '400 900', file: 'playfair-var-italic.woff2' },
+    { fam: 'Outfit KA', style: 'normal', weight: '100 900', file: 'outfit-var.woff2' },
+  ]
+  const partes = await Promise.all(
+    fontes.map(async (f) => {
+      try {
+        const res = await fetch(`/clientes/ka/fonts/${f.file}`)
+        const b64 = bufParaBase64(await res.arrayBuffer())
+        return `@font-face{font-family:'${f.fam}';font-style:${f.style};font-weight:${f.weight};font-display:block;src:url(data:font/woff2;base64,${b64}) format('woff2');}`
+      } catch {
+        return ''
+      }
+    }),
+  )
+  cacheFontCss = partes.join('\n')
+  return cacheFontCss
+}
+
 function carregarImg(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image()
@@ -57,6 +93,24 @@ function carregarImg(src: string): Promise<HTMLImageElement> {
 
 function esperar(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms))
+}
+
+// Força o carregamento dos pesos das fontes da KA ANTES de rasterizar, senão o
+// html-to-image pode usar uma fonte de fallback (mais larga) e o cabeçalho —
+// que é `white-space: nowrap` — sai "estourado"/desconfigurado.
+async function garantirFontesKA(): Promise<void> {
+  try {
+    await Promise.all([
+      document.fonts.load('500 21px "Montserrat KA"'),
+      document.fonts.load('800 21px "Montserrat KA"'),
+      document.fonts.load('600 26px "Montserrat KA"'),
+      document.fonts.load('900 53px "Montserrat KA"'),
+      document.fonts.load('700 106px "Playfair KA"'),
+    ])
+  } catch {
+    /* segue mesmo assim */
+  }
+  if (document.fonts?.ready) await document.fonts.ready
 }
 
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
@@ -105,6 +159,8 @@ async function molduraComJanela(
   const H = node.offsetHeight
   const rect = medirJanela(node)
 
+  await garantirFontesKA()
+  const fontEmbedCSS = await fontEmbedCssKA()
   node.classList.add('moldura-video')
   let molduraUrl: string
   try {
@@ -112,7 +168,12 @@ async function molduraComJanela(
       pixelRatio,
       width: W,
       height: H,
-      cacheBust: true,
+      // NÃO tenta rasterizar o <video> (a gente desenha ele à parte). Isso evita
+      // que o html-to-image trave/erre embutindo o vídeo pesado — o que fazia o
+      // cabeçalho sair com fonte trocada e estourada.
+      filter: (el) => !(el instanceof HTMLVideoElement),
+      // Fontes da KA já embutidas (não varre o Google Fonts, que estraga o embed).
+      fontEmbedCSS,
       style: { transform: 'none', margin: '0' },
     })
   } finally {
@@ -251,16 +312,26 @@ export async function baixarVideoDoCard(
     requestAnimationFrame(desenha)
   }
 
-  aoProgresso?.('Gravando o vídeo…')
+  const dur = Number.isFinite(video.duration) && video.duration > 0 ? Math.min(video.duration, 60) : 8
+  const total = Math.max(1, Math.round(dur))
+
   rec.start(100)
   desenha()
 
-  const dur = Number.isFinite(video.duration) && video.duration > 0 ? Math.min(video.duration, 60) : 8
+  // Progresso ao vivo (o Story é longo/pesado; sem isso parece travado).
+  const t0 = performance.now()
+  const prog = setInterval(() => {
+    const s = Math.min(total, Math.round((performance.now() - t0) / 1000))
+    aoProgresso?.(`Gravando… ${s}s de ${total}s`)
+  }, 500)
+
   await esperar(dur * 1000 + 250)
+  clearInterval(prog)
 
   parar = true
   rec.stop()
-  await parou
+  // Trava de segurança: se o onstop não disparar, não deixa o botão preso.
+  await Promise.race([parou, esperar(5000)])
   video.pause()
   video.muted = muteAntes
   video.loop = loopAntes

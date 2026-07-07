@@ -12,8 +12,12 @@ import './editor.css'
 export function EditorPeca({ template }: { template: Template }) {
   const [valores, setValores] = useState<ValoresPeca>(() => valoresPadrao(template.campos))
   const [formato, setFormato] = useState<FormatoDef>(template.formatos[0])
-  const [baixando, setBaixando] = useState(false)
+  // Qual ação está rodando (null = nenhuma) e o texto de progresso do vídeo.
+  const [acao, setAcao] = useState<'png' | 'moldura' | 'video' | null>(null)
   const [statusVideo, setStatusVideo] = useState<string | null>(null)
+  // O que acabou de baixar (para mostrar as instruções pós-download).
+  const [feito, setFeito] = useState<'imagem' | 'video' | null>(null)
+  const ocupado = acao !== null
   const artRef = useRef<HTMLDivElement>(null)
 
   const Render = template.render
@@ -60,43 +64,35 @@ export function EditorPeca({ template }: { template: Template }) {
     [template.campos, valores],
   )
 
-  async function handleDownload() {
+  async function rodar(
+    qual: 'png' | 'moldura' | 'video',
+    fn: () => Promise<void>,
+    tipoFeito: 'imagem' | 'video',
+  ) {
     if (!artRef.current) return
-    setBaixando(true)
+    setFeito(null)
+    setAcao(qual)
     try {
-      await baixarPng(artRef.current, nomeBase(), 2, meta())
-    } catch (e) {
-      alert('Não consegui gerar o PNG agora. Tente novamente.\n' + (e as Error).message)
-    } finally {
-      setBaixando(false)
-    }
-  }
-
-  async function handleMoldura() {
-    if (!artRef.current) return
-    setBaixando(true)
-    try {
-      await baixarMolduraPng(artRef.current, `${nomeBase()}-moldura`, 2, meta())
-    } catch (e) {
-      alert('Não consegui gerar a moldura agora.\n' + (e as Error).message)
-    } finally {
-      setBaixando(false)
-    }
-  }
-
-  async function handleVideo() {
-    if (!artRef.current) return
-    setBaixando(true)
-    setStatusVideo('Preparando…')
-    try {
-      await baixarVideoDoCard(artRef.current, nomeBase(), (f) => setStatusVideo(f))
+      await fn()
+      setFeito(tipoFeito)
     } catch (e) {
       alert((e as Error).message)
     } finally {
-      setBaixando(false)
+      setAcao(null)
       setStatusVideo(null)
     }
   }
+
+  const handleDownload = () =>
+    rodar('png', () => baixarPng(artRef.current!, nomeBase(), 2, meta()), 'imagem')
+  const handleMoldura = () =>
+    rodar('moldura', () => baixarMolduraPng(artRef.current!, `${nomeBase()}-moldura`, 2, meta()), 'imagem')
+  const handleVideo = () =>
+    rodar(
+      'video',
+      () => baixarVideoDoCard(artRef.current!, nomeBase(), (f) => setStatusVideo(f)),
+      'video',
+    )
 
   return (
     <div className="editor">
@@ -120,35 +116,60 @@ export function EditorPeca({ template }: { template: Template }) {
 
         <CamposEditor campos={template.campos} valores={valores} onSet={set} />
 
-        <button className="btn" disabled={!podeBaixar || baixando} onClick={handleDownload}>
-          {baixando && !statusVideo ? 'Gerando…' : temVideo ? 'Baixar imagem (PNG)' : 'Baixar PNG'}
-        </button>
-
-        {temVideo && (
-          <div className="export-video">
-            <p className="editor__hint" style={{ marginTop: '0.6rem' }}>
+        <div className="export-botoes">
+          {temVideo && (
+            <p className="editor__hint">
               <strong>Este card tem vídeo.</strong> Escolha como baixar:
             </p>
-            <button className="btn btn--ghost" disabled={!podeBaixar || baixando} onClick={handleMoldura}>
-              Baixar moldura (PNG) — p/ montar no CapCut
-            </button>
-            {suportaGravacaoVideo() ? (
-              <button className="btn" disabled={!podeBaixar || baixando} onClick={handleVideo}>
-                {statusVideo ?? 'Baixar vídeo pronto (com áudio)'}
+          )}
+
+          <button className="btn" disabled={!podeBaixar || ocupado} onClick={handleDownload}>
+            {acao === 'png' && <span className="spin-mini" />}
+            {acao === 'png' ? 'Baixando…' : temVideo ? 'Baixar imagem (PNG)' : 'Baixar PNG'}
+          </button>
+
+          {temVideo && (
+            <>
+              <button className="btn" disabled={!podeBaixar || ocupado} onClick={handleMoldura}>
+                {acao === 'moldura' && <span className="spin-mini" />}
+                {acao === 'moldura' ? 'Gerando moldura…' : 'Baixar moldura (PNG) — p/ CapCut'}
               </button>
-            ) : (
-              <p className="editor__hint">
-                Seu navegador (comum no iPhone) não gera o vídeo pronto — use a <strong>moldura PNG</strong>{' '}
-                e junte com o vídeo no CapCut/Instagram. No computador (Chrome), o vídeo pronto funciona.
-              </p>
-            )}
-            {statusVideo && (
-              <p className="editor__hint">
-                Gravando o vídeo… deixe esta aba aberta até o download começar (leva o tempo do vídeo).
-              </p>
-            )}
-          </div>
-        )}
+
+              {suportaGravacaoVideo() ? (
+                <button className="btn" disabled={!podeBaixar || ocupado} onClick={handleVideo}>
+                  {acao === 'video' && <span className="spin-mini" />}
+                  {acao === 'video' ? statusVideo ?? 'Preparando…' : 'Baixar vídeo pronto (com áudio)'}
+                </button>
+              ) : (
+                <p className="editor__hint">
+                  Seu navegador não gera o vídeo pronto — use a <strong>moldura PNG</strong> e junte
+                  com o vídeo no CapCut/Instagram.
+                </p>
+              )}
+            </>
+          )}
+
+          {acao === 'video' && (
+            <p className="editor__hint">
+              Gravando em tempo real — leva o tempo do vídeo. Deixe esta aba aberta.
+            </p>
+          )}
+
+          {feito && (
+            <div className="export-feito">
+              <strong>✓ {feito === 'video' ? 'Vídeo baixado!' : 'Imagem baixada!'}</strong>
+              <div>
+                <strong>No iPhone:</strong> na tela que abriu, toque em <strong>“Mais…”</strong> →{' '}
+                {feito === 'video' ? '“Salvar em Vídeos”' : '“Salvar em Fotos”'} (ou “Salvar em
+                Arquivos”). Depois é só postar no Instagram.
+              </div>
+              <div style={{ marginTop: '0.35rem' }}>
+                <strong>No computador:</strong> o arquivo está na pasta <strong>Downloads</strong>.
+              </div>
+            </div>
+          )}
+        </div>
+
         {!podeBaixar && <p className="editor__hint">Preencha os campos obrigatórios para baixar.</p>}
       </div>
 

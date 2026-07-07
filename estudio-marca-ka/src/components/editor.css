@@ -175,6 +175,49 @@
 }
 
 /* palco */
+/* Botões de exportar: todos iguais (mesma cor/formato), empilhados. */
+.export-botoes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+.export-botoes .btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+/* Sinal de carregando dentro do botão. */
+.spin-mini {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #fff;
+  animation: spin-mini 0.7s linear infinite;
+  flex: 0 0 auto;
+}
+@keyframes spin-mini {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Caixa de sucesso com as instruções pós-download. */
+.export-feito {
+  background: rgba(46, 107, 69, 0.1);
+  border: 1px solid rgba(46, 107, 69, 0.28);
+  color: #2e6b45;
+  border-radius: 10px;
+  padding: 0.8rem 0.9rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.export-feito strong {
+  color: #234f34;
+}
+
 /* Paleta de cores (fundo/texto): amostras clicáveis mostrando a cor real. */
 .paleta-grid {
   display: flex;
