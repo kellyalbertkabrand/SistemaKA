@@ -541,8 +541,8 @@ export const TEMPLATES: Template[] = [
         aceitaVideo: true,
         redimensionavel2d: true,
         ajuda:
-          'Aceita foto/print OU vídeo (vertical inclusive). Ajuste a Largura e a Altura ' +
-          'da área nos controles. A proporção base vem do seletor abaixo.',
+          'Aceita foto/print OU vídeo. Vídeo: use MP4 (H.264) para tocar no navegador — ' +
+          '.mov do iPhone/Mac pode não abrir; máx. 200 MB e ~60s. Ajuste Largura/Altura da área.',
       },
       {
         id: 'proporcao',

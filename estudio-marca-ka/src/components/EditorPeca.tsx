@@ -20,7 +20,9 @@ export function EditorPeca({ template }: { template: Template }) {
 
   // O card tem vídeo? (alguma mídia carregada é um arquivo de vídeo)
   const temVideo = useMemo(
-    () => Object.values(valores).some((v) => typeof v === 'string' && v.startsWith('data:video')),
+    () =>
+      Object.entries(valores).some(([k, v]) => k.endsWith('_kind') && v === 'video') ||
+      Object.values(valores).some((v) => typeof v === 'string' && v.startsWith('data:video')),
     [valores],
   )
 

@@ -126,7 +126,7 @@ export function KaMidiaCard({ valores, formato }: RenderProps) {
   const fAlt = Math.min(140, Math.max(40, Number(valores.midia_alt) || 100)) / 100
   const w = Math.round(base.largura * fLarg)
   const h = Math.round(base.altura * fAlt)
-  const ehVideo = midia.startsWith('data:video')
+  const ehVideo = String(valores.midia_kind) === 'video' || midia.startsWith('data:video')
   const estiloMidia = { ...estiloImagem(valores, 'midia'), height: '100%' as const }
 
   return (

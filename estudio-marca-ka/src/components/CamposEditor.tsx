@@ -11,14 +11,35 @@ interface Props {
 
 // Renderiza os controles de formulário a partir dos campos declarados no template.
 // Reutilizado pelo editor de peça única e pelo construtor de carrossel.
+// Limites de tamanho de arquivo (megabytes).
+export const MAX_VIDEO_MB = 200
+export const MAX_IMAGEM_MB = 25
+
 export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
   function handleImagem(id: string, file: File | undefined) {
     if (!file) return
-    // Imagem OU vídeo viram data URL em `valores[id]`; o card decide como
-    // renderizar (o ka-midia mostra <video> quando é `data:video`).
-    const reader = new FileReader()
-    reader.onload = () => onSet(id, reader.result as string)
-    reader.readAsDataURL(file)
+    const ehVideo = file.type.startsWith('video')
+    const limite = ehVideo ? MAX_VIDEO_MB : MAX_IMAGEM_MB
+    if (file.size > limite * 1024 * 1024) {
+      alert(
+        `Arquivo muito grande: ${(file.size / 1024 / 1024).toFixed(0)} MB. ` +
+          `O máximo para ${ehVideo ? 'vídeo' : 'imagem'} é ${limite} MB. ` +
+          (ehVideo ? 'Dica: corte o vídeo (até ~60s) ou exporte em MP4 mais leve.' : ''),
+      )
+      return
+    }
+    // Guarda o TIPO para o app saber que é vídeo (independe da URL).
+    onSet(`${id}_kind`, ehVideo ? 'video' : 'image')
+    if (ehVideo) {
+      // Vídeo: object URL (blob) — aguenta arquivos grandes sem virar texto
+      // gigante (data URL travava/estourava com gravações de tela).
+      onSet(id, URL.createObjectURL(file))
+    } else {
+      // Imagem: data URL (necessário para o export html-to-image).
+      const reader = new FileReader()
+      reader.onload = () => onSet(id, reader.result as string)
+      reader.readAsDataURL(file)
+    }
   }
 
   return (
@@ -143,7 +164,8 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
                 )}
                 {valores[c.id] && (
                   <>
-                    {String(valores[c.id]).startsWith('data:video') ? (
+                    {String(valores[`${c.id}_kind`]) === 'video' ||
+                    String(valores[c.id]).startsWith('data:video') ? (
                       <video className="img-preview" src={String(valores[c.id])} autoPlay muted loop playsInline />
                     ) : (
                       <img className="img-preview" src={String(valores[c.id])} alt="pré-visualização" />

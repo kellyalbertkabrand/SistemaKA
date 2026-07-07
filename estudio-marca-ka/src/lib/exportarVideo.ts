@@ -165,6 +165,22 @@ export async function baixarVideoDoCard(
   const video = node.querySelector('video') as HTMLVideoElement | null
   if (!video) throw new Error('Este card não tem vídeo.')
 
+  // Garante que o vídeo carregou os quadros. Se não decodificar (ex.: .mov
+  // HEVC no Chrome), videoWidth fica 0 e o export sairia PRETO — melhor avisar.
+  if (!video.videoWidth) {
+    await new Promise<void>((res) => {
+      const ok = () => res()
+      video.addEventListener('loadeddata', ok, { once: true })
+      setTimeout(ok, 2000)
+    })
+  }
+  if (!video.videoWidth) {
+    throw new Error(
+      'Não consegui ler este vídeo no navegador — é comum com arquivos .mov (HEVC) do iPhone/Mac. ' +
+        'Converta para MP4 (H.264) ou use "Baixar moldura (PNG)" e monte no CapCut.',
+    )
+  }
+
   if (document.fonts?.ready) await document.fonts.ready
 
   const W = node.offsetWidth
