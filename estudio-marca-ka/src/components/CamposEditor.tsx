@@ -15,8 +15,36 @@ interface Props {
 export const MAX_VIDEO_MB = 200
 export const MAX_IMAGEM_MB = 25
 
+// Reduz a imagem para no máximo `maxDim` px (maior lado) e devolve um data URL
+// JPEG. Fotos de celular são grandes demais para o export do Safari (a foto
+// sumia do PNG); reduzidas, cabem e exportam sempre — sem perda visível.
+function reduzirImagem(file: File, maxDim: number, qualidade: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file)
+    const img = new Image()
+    img.onload = () => {
+      URL.revokeObjectURL(url)
+      const escala = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight))
+      const w = Math.max(1, Math.round(img.naturalWidth * escala))
+      const h = Math.max(1, Math.round(img.naturalHeight * escala))
+      const canvas = document.createElement('canvas')
+      canvas.width = w
+      canvas.height = h
+      const ctx = canvas.getContext('2d')
+      if (!ctx) return reject(new Error('sem canvas'))
+      ctx.drawImage(img, 0, 0, w, h)
+      resolve(canvas.toDataURL('image/jpeg', qualidade))
+    }
+    img.onerror = () => {
+      URL.revokeObjectURL(url)
+      reject(new Error('imagem inválida'))
+    }
+    img.src = url
+  })
+}
+
 export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
-  function handleImagem(id: string, file: File | undefined) {
+  async function handleImagem(id: string, file: File | undefined) {
     if (!file) return
     const ehVideo = file.type.startsWith('video')
     const limite = ehVideo ? MAX_VIDEO_MB : MAX_IMAGEM_MB
@@ -35,10 +63,16 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
       // gigante (data URL travava/estourava com gravações de tela).
       onSet(id, URL.createObjectURL(file))
     } else {
-      // Imagem: data URL (necessário para o export html-to-image).
-      const reader = new FileReader()
-      reader.onload = () => onSet(id, reader.result as string)
-      reader.readAsDataURL(file)
+      // Imagem: reduz para no máx. 2600px e re-codifica (JPEG). Fotos de celular
+      // têm vários MB; o data URL gigante fazia a FOTO SUMIR do PNG no iPhone
+      // (limite de imagem embutida do Safari). Reduzida, exporta sempre.
+      try {
+        onSet(id, await reduzirImagem(file, 2600, 0.9))
+      } catch {
+        const reader = new FileReader()
+        reader.onload = () => onSet(id, reader.result as string)
+        reader.readAsDataURL(file)
+      }
     }
   }
 

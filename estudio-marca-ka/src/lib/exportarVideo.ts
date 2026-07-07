@@ -162,21 +162,29 @@ async function molduraComJanela(
 
   await garantirFontesKA()
   const fontEmbedCSS = await fontEmbedCssKA()
+  const opts = {
+    pixelRatio,
+    width: W,
+    height: H,
+    // NÃO tenta rasterizar o <video> (a gente desenha ele à parte). Isso evita
+    // que o html-to-image trave/erre embutindo o vídeo pesado — o que fazia o
+    // cabeçalho sair com fonte trocada e estourada.
+    filter: (el: HTMLElement) => !(el instanceof HTMLVideoElement),
+    // Fontes da KA já embutidas (não varre o Google Fonts, que estraga o embed).
+    fontEmbedCSS,
+    style: { transform: 'none', margin: '0' },
+  }
   node.classList.add('moldura-video')
   let molduraUrl: string
   try {
-    molduraUrl = await toPng(node, {
-      pixelRatio,
-      width: W,
-      height: H,
-      // NÃO tenta rasterizar o <video> (a gente desenha ele à parte). Isso evita
-      // que o html-to-image trave/erre embutindo o vídeo pesado — o que fazia o
-      // cabeçalho sair com fonte trocada e estourada.
-      filter: (el) => !(el instanceof HTMLVideoElement),
-      // Fontes da KA já embutidas (não varre o Google Fonts, que estraga o embed).
-      fontEmbedCSS,
-      style: { transform: 'none', margin: '0' },
-    })
+    const ehSafari =
+      /^((?!chrome|android).)*safari/i.test(navigator.userAgent) ||
+      /iP(hone|ad|od)/i.test(navigator.userAgent)
+    if (ehSafari) {
+      await toPng(node, opts).catch(() => undefined) // aquecimento (imagens)
+      await esperar(150)
+    }
+    molduraUrl = await toPng(node, opts)
   } finally {
     node.classList.remove('moldura-video')
   }

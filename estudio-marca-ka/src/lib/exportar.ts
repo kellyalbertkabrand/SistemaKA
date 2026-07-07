@@ -8,6 +8,41 @@ const OPCOES_PNG = {
   style: { transform: 'none', margin: '0' },
 } as const
 
+const EH_SAFARI =
+  typeof navigator !== 'undefined' &&
+  (/^((?!chrome|android).)*safari/i.test(navigator.userAgent) ||
+    /iP(hone|ad|od)/i.test(navigator.userAgent))
+
+/** Espera todas as imagens do nó terminarem de decodificar. */
+async function esperarImagens(node: HTMLElement): Promise<void> {
+  const imgs = Array.from(node.querySelectorAll('img'))
+  await Promise.all(
+    imgs.map((img) =>
+      img.complete && img.naturalWidth > 0 ? Promise.resolve() : img.decode().catch(() => undefined),
+    ),
+  )
+}
+
+/**
+ * Rasteriza o nó em PNG. No Safari/iPhone a PRIMEIRA rasterização costuma sair
+ * SEM as imagens (o <img> dentro do foreignObject ainda não carregou) — por
+ * isso fazemos uma passada de "aquecimento" e só usamos a segunda. É o que
+ * fazia a foto sumir do PNG salvo no celular.
+ */
+export async function rasterizarPng(
+  node: HTMLElement,
+  opts: Parameters<typeof toPng>[1],
+): Promise<string> {
+  if (document.fonts?.ready) await document.fonts.ready
+  await esperarImagens(node)
+  if (EH_SAFARI) {
+    await toPng(node, opts).catch(() => undefined)
+    await new Promise((r) => setTimeout(r, 150))
+    await esperarImagens(node)
+  }
+  return toPng(node, opts)
+}
+
 /**
  * Exporta um nó (a arte em tamanho real) para PNG de alta resolução, já
  * assinado com os metadados do Estúdio de Marca — KA.
@@ -61,10 +96,7 @@ export async function baixarPng(
   escala = 2,
   meta?: MetaAssinatura,
 ): Promise<void> {
-  // Garante que as fontes carregaram antes de rasterizar.
-  if (document.fonts?.ready) await document.fonts.ready
-
-  const dataUrl = await toPng(node, {
+  const dataUrl = await rasterizarPng(node, {
     ...OPCOES_PNG,
     pixelRatio: escala,
     // Renderiza no tamanho real do nó, ignorando qualquer transform de preview.
@@ -90,7 +122,7 @@ export async function baixarZip(
   const assinatura = meta ?? metaPadrao()
   const zip = new JSZip()
   for (const { node, nome } of itens) {
-    const dataUrl = await toPng(node, {
+    const dataUrl = await rasterizarPng(node, {
       ...OPCOES_PNG,
       pixelRatio: escala,
       width: node.offsetWidth,
