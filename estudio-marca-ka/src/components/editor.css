@@ -191,7 +191,14 @@
   flex-direction: column;
   align-items: center;
   gap: 0.7rem;
-  padding: 1rem 0;
+  padding: 0.8rem 0 1rem;
+  /* Card fixo: fica grudado no topo enquanto você rola os controles e vai
+     vendo as mudanças de cor/fonte/texto ao vivo. */
+  position: sticky;
+  top: 8px;
+  z-index: 5;
+  background: var(--bg-1);
+  border-radius: 0 0 12px 12px;
 }
 .editor__scaler {
   position: relative;
