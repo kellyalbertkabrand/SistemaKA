@@ -144,6 +144,16 @@
   height: 100%;
   display: block;
 }
+/* Exportação da "moldura": a janela da mídia fica transparente para sobrepor
+   ao vídeo (no CapCut) ou receber o vídeo desenhado no canvas (export .webm). */
+.moldura-video .ka-midia .midia-frame {
+  background: transparent !important;
+}
+.moldura-video .ka-midia .midia-frame img,
+.moldura-video .ka-midia .midia-frame video,
+.moldura-video .ka-midia .midia-ph {
+  visibility: hidden !important;
+}
 .ka-midia .midia-ph {
   position: absolute;
   inset: 0;

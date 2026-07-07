@@ -1,7 +1,8 @@
 import { useMemo, useRef, useState } from 'react'
 import type { Template, ValoresPeca, FormatoDef } from '../templates/types'
 import { valoresPadrao } from '../templates/types'
-import { baixarPng } from '../lib/exportar'
+import { baixarPng, baixarMolduraPng } from '../lib/exportar'
+import { baixarVideoDoCard, suportaGravacaoVideo } from '../lib/exportarVideo'
 import { metaPadrao } from '../lib/assinatura'
 import { CamposEditor } from './CamposEditor'
 import './editor.css'
@@ -12,9 +13,19 @@ export function EditorPeca({ template }: { template: Template }) {
   const [valores, setValores] = useState<ValoresPeca>(() => valoresPadrao(template.campos))
   const [formato, setFormato] = useState<FormatoDef>(template.formatos[0])
   const [baixando, setBaixando] = useState(false)
+  const [statusVideo, setStatusVideo] = useState<string | null>(null)
   const artRef = useRef<HTMLDivElement>(null)
 
   const Render = template.render
+
+  // O card tem vídeo? (alguma mídia carregada é um arquivo de vídeo)
+  const temVideo = useMemo(
+    () => Object.values(valores).some((v) => typeof v === 'string' && v.startsWith('data:video')),
+    [valores],
+  )
+
+  const nomeBase = () => `${template.clienteSlug}-${template.id}-${formato.formato}`
+  const meta = () => metaPadrao({ cliente: template.clienteNome, titulo: template.nome })
 
   // Escala do preview: cabe numa coluna de ~360px de largura.
   const previewW = 360
@@ -36,16 +47,37 @@ export function EditorPeca({ template }: { template: Template }) {
     if (!artRef.current) return
     setBaixando(true)
     try {
-      await baixarPng(
-        artRef.current,
-        `${template.clienteSlug}-${template.id}-${formato.formato}`,
-        2,
-        metaPadrao({ cliente: template.clienteNome, titulo: template.nome }),
-      )
+      await baixarPng(artRef.current, nomeBase(), 2, meta())
     } catch (e) {
       alert('Não consegui gerar o PNG agora. Tente novamente.\n' + (e as Error).message)
     } finally {
       setBaixando(false)
+    }
+  }
+
+  async function handleMoldura() {
+    if (!artRef.current) return
+    setBaixando(true)
+    try {
+      await baixarMolduraPng(artRef.current, `${nomeBase()}-moldura`, 2, meta())
+    } catch (e) {
+      alert('Não consegui gerar a moldura agora.\n' + (e as Error).message)
+    } finally {
+      setBaixando(false)
+    }
+  }
+
+  async function handleVideo() {
+    if (!artRef.current) return
+    setBaixando(true)
+    setStatusVideo('Preparando…')
+    try {
+      await baixarVideoDoCard(artRef.current, nomeBase(), (f) => setStatusVideo(f))
+    } catch (e) {
+      alert((e as Error).message)
+    } finally {
+      setBaixando(false)
+      setStatusVideo(null)
     }
   }
 
@@ -72,8 +104,34 @@ export function EditorPeca({ template }: { template: Template }) {
         <CamposEditor campos={template.campos} valores={valores} onSet={set} />
 
         <button className="btn" disabled={!podeBaixar || baixando} onClick={handleDownload}>
-          {baixando ? 'Gerando PNG…' : 'Baixar PNG'}
+          {baixando && !statusVideo ? 'Gerando…' : temVideo ? 'Baixar imagem (PNG)' : 'Baixar PNG'}
         </button>
+
+        {temVideo && (
+          <div className="export-video">
+            <p className="editor__hint" style={{ marginTop: '0.6rem' }}>
+              <strong>Este card tem vídeo.</strong> Escolha como baixar:
+            </p>
+            <button className="btn btn--ghost" disabled={!podeBaixar || baixando} onClick={handleMoldura}>
+              Baixar moldura (PNG) — p/ montar no CapCut
+            </button>
+            {suportaGravacaoVideo() ? (
+              <button className="btn" disabled={!podeBaixar || baixando} onClick={handleVideo}>
+                {statusVideo ?? 'Baixar vídeo pronto (.webm)'}
+              </button>
+            ) : (
+              <p className="editor__hint">
+                Seu navegador (comum no iPhone) não gera o vídeo pronto — use a <strong>moldura PNG</strong>{' '}
+                e junte com o vídeo no CapCut/Instagram. No computador (Chrome), o vídeo pronto funciona.
+              </p>
+            )}
+            {statusVideo && (
+              <p className="editor__hint">
+                Gravando o vídeo… deixe esta aba aberta até o download começar (leva o tempo do vídeo).
+              </p>
+            )}
+          </div>
+        )}
         {!podeBaixar && <p className="editor__hint">Preencha os campos obrigatórios para baixar.</p>}
       </div>
 
