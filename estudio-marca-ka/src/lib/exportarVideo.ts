@@ -96,6 +96,36 @@ function esperar(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms))
 }
 
+// Duração confiável (segundos). Espera os metadados; se vier Infinity/NaN
+// (comum em webm/stream), força o cálculo indo até o fim e voltando.
+async function duracaoConfiavel(video: HTMLVideoElement): Promise<number> {
+  if (video.readyState < 1) {
+    await new Promise<void>((r) => {
+      video.addEventListener('loadedmetadata', () => r(), { once: true })
+      setTimeout(r, 2500)
+    })
+  }
+  let d = video.duration
+  if (!Number.isFinite(d) || d <= 0) {
+    await new Promise<void>((r) => {
+      video.addEventListener('seeked', () => r(), { once: true })
+      try {
+        video.currentTime = 1e7
+      } catch {
+        r()
+      }
+      setTimeout(r, 1500)
+    })
+    d = video.duration
+    try {
+      video.currentTime = 0
+    } catch {
+      /* ignora */
+    }
+  }
+  return Number.isFinite(d) && d > 0 ? d : 8
+}
+
 // Força o carregamento dos pesos das fontes da KA ANTES de rasterizar, senão o
 // html-to-image pode usar uma fonte de fallback (mais larga) e o cabeçalho —
 // que é `white-space: nowrap` — sai "estourado"/desconfigurado.
@@ -296,9 +326,7 @@ export async function baixarVideoDoCard(
   video.loop = false
   await video.play().catch(() => {})
 
-  let parar = false
-  function desenha() {
-    if (parar) return
+  function desenhaQuadro() {
     ctx.clearRect(0, 0, W, H)
     const vw = video!.videoWidth
     const vh = video!.videoHeight
@@ -315,26 +343,31 @@ export async function baixarVideoDoCard(
       ctx.restore()
     }
     ctx.drawImage(moldura, 0, 0, W, H)
-    requestAnimationFrame(desenha)
   }
 
-  const dur = Number.isFinite(video.duration) && video.duration > 0 ? Math.min(video.duration, 60) : 8
-  const total = Math.max(1, Math.round(dur))
+  const total = Math.max(1, Math.min(60, Math.round(await duracaoConfiavel(video))))
 
   rec.start(100)
-  desenha()
+  // setInterval (não requestAnimationFrame) — desenha ~30fps mesmo se o card
+  // não estiver totalmente visível (é o caso do carrossel).
+  const desenhar = setInterval(desenhaQuadro, 33)
+  desenhaQuadro()
 
-  // Progresso ao vivo (o Story é longo/pesado; sem isso parece travado).
   const t0 = performance.now()
   const prog = setInterval(() => {
     const s = Math.min(total, Math.round((performance.now() - t0) / 1000))
     aoProgresso?.(`Gravando… ${s}s de ${total}s`)
   }, 500)
 
-  await esperar(dur * 1000 + 250)
+  // Grava até o vídeo REALMENTE terminar (loop=false) — ou o teto de 60s.
+  // Não confia só no valor de duração (às vezes vinha errado → vídeo de 1s).
+  await Promise.race([
+    new Promise<void>((r) => video.addEventListener('ended', () => r(), { once: true })),
+    esperar(60_000),
+  ])
   clearInterval(prog)
+  clearInterval(desenhar)
 
-  parar = true
   rec.stop()
   // Trava de segurança: se o onstop não disparar, não deixa o botão preso.
   await Promise.race([parou, esperar(5000)])

@@ -42,8 +42,10 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   const [feito, setFeito] = useState<'imagem' | 'video' | null>(null)
   const ocupado = acao !== null
 
-  // Nós em tamanho real (escondidos) usados para exportar cada slide.
+  // Nós em tamanho real (escondidos) usados para exportar PNG de cada slide.
   const nodeRefs = useRef<(HTMLDivElement | null)[]>([])
+  // Nó do slide VISÍVEL (usado no vídeo: o card precisa estar visível/tocando).
+  const stageRef = useRef<HTMLDivElement>(null)
 
   const slide = slides[sel]
   const template = porId(slide.templateId)
@@ -123,12 +125,12 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   }
 
   const baixarMoldura = () => {
-    const node = nodeRefs.current[sel]
+    const node = stageRef.current
     if (node) void rodar('moldura', () => baixarMolduraPng(node, `${nomeSlide()}-moldura`, 2, meta()), 'imagem')
   }
 
   const baixarVideo = () => {
-    const node = nodeRefs.current[sel]
+    const node = stageRef.current
     if (node)
       void rodar('video', () => baixarVideoDoCard(node, nomeSlide(), (f) => setStatusVideo(f)), 'video')
   }
@@ -321,7 +323,9 @@ export function Carrossel({ templates }: { templates: Template[] }) {
                   height: formato.altura,
                 }}
               >
-                <template.render valores={slide.valores} formato={formato} />
+                <div ref={stageRef}>
+                  <template.render valores={slide.valores} formato={formato} />
+                </div>
               </div>
             </div>
             <span className="editor__label">
