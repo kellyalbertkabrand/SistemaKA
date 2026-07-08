@@ -1,10 +1,12 @@
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import type { FormatoDef, Template, ValoresPeca } from '../templates/types'
 import { valoresPadrao } from '../templates/types'
 import { CamposEditor } from './CamposEditor'
 import { baixarPng, baixarZip } from '../lib/exportar'
+import { baixarMolduraPng, baixarVideoDoCard, suportaGravacaoVideo } from '../lib/exportarVideo'
 import { metaPadrao } from '../lib/assinatura'
 import './carrossel.css'
+import './editor.css'
 
 const MAX_SLIDES = 10
 
@@ -35,7 +37,10 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   const [formato, setFormato] = useState<FormatoDef>(FORMATOS[0])
   const [slides, setSlides] = useState<Slide[]>(() => [novoSlide()])
   const [sel, setSel] = useState(0)
-  const [baixando, setBaixando] = useState(false)
+  const [acao, setAcao] = useState<'png' | 'moldura' | 'video' | 'zip' | null>(null)
+  const [statusVideo, setStatusVideo] = useState<string | null>(null)
+  const [feito, setFeito] = useState<'imagem' | 'video' | null>(null)
+  const ocupado = acao !== null
 
   // Nós em tamanho real (escondidos) usados para exportar cada slide.
   const nodeRefs = useRef<(HTMLDivElement | null)[]>([])
@@ -44,6 +49,16 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   const template = porId(slide.templateId)
   const slug = templates[0]?.clienteSlug ?? 'peca'
   const clienteNome = templates[0]?.clienteNome
+
+  // O slide selecionado tem vídeo? (libera as saídas de vídeo/moldura)
+  const temVideo = useMemo(
+    () =>
+      Object.entries(slide.valores).some(([k, v]) => k.endsWith('_kind') && v === 'video') ||
+      Object.values(slide.valores).some((v) => typeof v === 'string' && v.startsWith('data:video')),
+    [slide.valores],
+  )
+  const meta = () => metaPadrao({ cliente: clienteNome, titulo: 'Carrossel' })
+  const nomeSlide = () => `${slug}-carrossel-slide${sel + 1}`
 
   const previewW = 320
   const escala = previewW / formato.largura
@@ -84,32 +99,48 @@ export function Carrossel({ templates }: { templates: Template[] }) {
     )
   }
 
-  async function baixarSlide() {
-    const node = nodeRefs.current[sel]
-    if (!node) return
-    setBaixando(true)
+  async function rodar(
+    qual: 'png' | 'moldura' | 'video' | 'zip',
+    fn: () => Promise<void>,
+    tipoFeito?: 'imagem' | 'video',
+  ) {
+    setFeito(null)
+    setAcao(qual)
     try {
-      await baixarPng(node, `${slug}-carrossel-slide${sel + 1}`, 2, metaPadrao({ cliente: clienteNome, titulo: 'Carrossel' }))
+      await fn()
+      if (tipoFeito) setFeito(tipoFeito)
     } catch (e) {
-      alert('Não consegui gerar o PNG.\n' + (e as Error).message)
+      alert((e as Error).message)
     } finally {
-      setBaixando(false)
+      setAcao(null)
+      setStatusVideo(null)
     }
   }
 
-  async function baixarTodos() {
-    setBaixando(true)
-    try {
+  const baixarSlide = () => {
+    const node = nodeRefs.current[sel]
+    if (node) void rodar('png', () => baixarPng(node, nomeSlide(), 2, meta()), 'imagem')
+  }
+
+  const baixarMoldura = () => {
+    const node = nodeRefs.current[sel]
+    if (node) void rodar('moldura', () => baixarMolduraPng(node, `${nomeSlide()}-moldura`, 2, meta()), 'imagem')
+  }
+
+  const baixarVideo = () => {
+    const node = nodeRefs.current[sel]
+    if (node)
+      void rodar('video', () => baixarVideoDoCard(node, nomeSlide(), (f) => setStatusVideo(f)), 'video')
+  }
+
+  const baixarTodos = () => {
+    void rodar('zip', async () => {
       const itens = slides
         .map((_, i) => nodeRefs.current[i])
         .filter((n): n is HTMLDivElement => !!n)
         .map((node, i) => ({ node, nome: `slide${i + 1}` }))
-      await baixarZip(itens, `${slug}-carrossel`, 2, metaPadrao({ cliente: clienteNome, titulo: 'Carrossel' }))
-    } catch (e) {
-      alert('Não consegui gerar o zip.\n' + (e as Error).message)
-    } finally {
-      setBaixando(false)
-    }
+      await baixarZip(itens, `${slug}-carrossel`, 2, meta())
+    })
   }
 
   return (
@@ -129,11 +160,11 @@ export function Carrossel({ templates }: { templates: Template[] }) {
           ))}
         </div>
         <div className="carrossel__bar-actions">
-          <button className="btn btn--ghost" onClick={addSlide} disabled={slides.length >= MAX_SLIDES}>
+          <button className="btn btn--ghost" onClick={addSlide} disabled={slides.length >= MAX_SLIDES || ocupado}>
             + Slide ({slides.length}/{MAX_SLIDES})
           </button>
-          <button className="btn" onClick={baixarTodos} disabled={baixando}>
-            {baixando ? 'Gerando…' : 'Baixar todos (ZIP)'}
+          <button className="btn" onClick={baixarTodos} disabled={ocupado}>
+            {acao === 'zip' ? 'Gerando…' : 'Baixar todos (ZIP)'}
           </button>
         </div>
       </div>
@@ -228,9 +259,55 @@ export function Carrossel({ templates }: { templates: Template[] }) {
               idPrefix={`s${slide.key}-`}
             />
 
-            <button className="btn btn--ghost" onClick={baixarSlide} disabled={baixando}>
-              Baixar só este slide
-            </button>
+            <div className="export-botoes">
+              {temVideo && (
+                <p className="editor__hint">
+                  <strong>Este slide tem vídeo.</strong> Escolha como baixar:
+                </p>
+              )}
+
+              <button className="btn" onClick={baixarSlide} disabled={ocupado}>
+                {acao === 'png' && <span className="spin-mini" />}
+                {acao === 'png' ? 'Baixando…' : temVideo ? 'Baixar imagem (PNG)' : 'Baixar só este slide'}
+              </button>
+
+              {temVideo && (
+                <>
+                  <button className="btn" onClick={baixarMoldura} disabled={ocupado}>
+                    {acao === 'moldura' && <span className="spin-mini" />}
+                    {acao === 'moldura' ? 'Gerando moldura…' : 'Baixar moldura (PNG) — p/ CapCut'}
+                  </button>
+                  {suportaGravacaoVideo() ? (
+                    <button className="btn" onClick={baixarVideo} disabled={ocupado}>
+                      {acao === 'video' && <span className="spin-mini" />}
+                      {acao === 'video' ? statusVideo ?? 'Preparando…' : 'Baixar vídeo pronto (com áudio)'}
+                    </button>
+                  ) : (
+                    <p className="editor__hint">
+                      Seu navegador não gera o vídeo pronto — use a <strong>moldura PNG</strong> e junte
+                      no CapCut/Instagram.
+                    </p>
+                  )}
+                </>
+              )}
+
+              {acao === 'video' && (
+                <p className="editor__hint">
+                  Gravando em tempo real — leva o tempo do vídeo. Deixe esta aba aberta.
+                </p>
+              )}
+
+              {feito && (
+                <div className="export-feito">
+                  <strong>✓ Pronto!</strong>
+                  <div>
+                    <strong>No celular:</strong> na tela que abriu, toque em{' '}
+                    <strong>{feito === 'video' ? '“Salvar vídeo”' : '“Salvar imagem”'}</strong> (ou
+                    “Salvar em Fotos”). No computador: pasta <strong>Downloads</strong>.
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Preview do slide selecionado */}
