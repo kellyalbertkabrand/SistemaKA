@@ -96,12 +96,25 @@ function esperar(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms))
 }
 
-// Aborta uma promessa lenta (o toPng do Safari às vezes nunca resolve) para o
-// botão nunca ficar preso.
-function comTimeout<T>(p: Promise<T>, ms: number, msg: string): Promise<T> {
+// Marca de cancelamento pelo usuário (o rodar trata sem mostrar erro).
+export const CANCELADO = 'cancelado'
+
+// Aborta uma promessa lenta (o toPng do Safari às vezes nunca resolve) ou quando
+// o usuário aperta Cancelar. Assim o botão nunca fica preso.
+function comTimeout<T>(p: Promise<T>, ms: number, msg: string, sinal?: AbortSignal): Promise<T> {
   return Promise.race([
     p,
-    new Promise<T>((_, rej) => setTimeout(() => rej(new Error(msg)), ms)),
+    new Promise<T>((_, rej) => {
+      const t = setTimeout(() => rej(new Error(msg)), ms)
+      sinal?.addEventListener(
+        'abort',
+        () => {
+          clearTimeout(t)
+          rej(new Error(CANCELADO))
+        },
+        { once: true },
+      )
+    }),
   ])
 }
 
@@ -194,6 +207,7 @@ function medirJanela(node: HTMLElement) {
 async function molduraComJanela(
   node: HTMLElement,
   pixelRatio: number,
+  sinal?: AbortSignal,
 ): Promise<{ canvas: HTMLCanvasElement; rect: { x: number; y: number; w: number; h: number } }> {
   const W = node.offsetWidth
   const H = node.offsetHeight
@@ -224,6 +238,7 @@ async function molduraComJanela(
       toPng(node, opts),
       25000,
       'Não consegui gerar a moldura neste navegador. Tente de novo, ou use o computador (Chrome).',
+      sinal,
     )
   } finally {
     node.classList.remove('moldura-video')
@@ -251,9 +266,10 @@ export async function baixarMolduraPng(
   nome: string,
   escala = 2,
   meta?: MetaAssinatura,
+  sinal?: AbortSignal,
 ): Promise<void> {
   if (document.fonts?.ready) await document.fonts.ready
-  const { canvas } = await molduraComJanela(node, escala)
+  const { canvas } = await molduraComJanela(node, escala, sinal)
   const assinado = assinarPngDataUrl(canvas.toDataURL('image/png'), meta ?? metaPadrao())
   await entregarArquivo(await dataUrlParaBlob(assinado), `${nome}.png`, nome)
 }
@@ -262,6 +278,7 @@ export async function baixarMolduraPng(
 export async function gerarVideoBlob(
   node: HTMLElement,
   aoProgresso?: (fase: string) => void,
+  sinal?: AbortSignal,
 ): Promise<{ blob: Blob; ext: string }> {
   if (!suportaGravacaoVideo()) {
     throw new Error(
@@ -295,7 +312,7 @@ export async function gerarVideoBlob(
 
   aoProgresso?.('Preparando a moldura…')
   // Moldura com a janela perfurada — o vídeo aparece por baixo dela.
-  const { canvas: moldura, rect } = await molduraComJanela(node, 1)
+  const { canvas: moldura, rect } = await molduraComJanela(node, 1, sinal)
 
   const canvas = document.createElement('canvas')
   canvas.width = W
@@ -368,10 +385,18 @@ export async function gerarVideoBlob(
   // Encerra a gravação quando: o vídeo termina; OU ele TRAVA (currentTime parou
   // de avançar por ~2,5s — acontece quando a pessoa rola/sai da aba no iPhone);
   // OU um teto absoluto de 65s. Assim o botão NUNCA fica preso.
+  let cancelado = false
   await new Promise<void>((resolve) => {
     let ultimo = -1
     let mudouEm = performance.now()
     const prog = setInterval(() => {
+      // Usuário apertou Cancelar: para na hora.
+      if (sinal?.aborted) {
+        cancelado = true
+        clearInterval(prog)
+        resolve()
+        return
+      }
       const ct = video.currentTime
       const decorrido = (performance.now() - t0) / 1000
       const s = Math.round(decorrido)
@@ -397,6 +422,9 @@ export async function gerarVideoBlob(
   video.muted = muteAntes
   video.loop = loopAntes
 
+  // Cancelado pelo usuário: descarta o que gravou e avisa o rodar (sem erro visível).
+  if (cancelado) throw new Error(CANCELADO)
+
   const blob = new Blob(chunks, { type: mime?.startsWith('video/mp4') ? 'video/mp4' : 'video/webm' })
   const ext = mime?.startsWith('video/mp4') ? 'mp4' : 'webm'
   return { blob, ext }
@@ -407,7 +435,8 @@ export async function baixarVideoDoCard(
   node: HTMLElement,
   nome: string,
   aoProgresso?: (fase: string) => void,
+  sinal?: AbortSignal,
 ): Promise<void> {
-  const { blob, ext } = await gerarVideoBlob(node, aoProgresso)
+  const { blob, ext } = await gerarVideoBlob(node, aoProgresso, sinal)
   await entregarArquivo(blob, `${nome}.${ext}`, nome)
 }

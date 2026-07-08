@@ -85,25 +85,39 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
             <label htmlFor={inputId}>{c.label}</label>
 
             {c.tipo === 'texto' && (
-              <input
-                id={inputId}
-                type="text"
-                value={String(valores[c.id] ?? '')}
-                placeholder={c.placeholder}
-                maxLength={c.maxLen}
-                onChange={(e) => onSet(c.id, e.target.value)}
-              />
+              <>
+                <input
+                  id={inputId}
+                  type="text"
+                  value={String(valores[c.id] ?? '')}
+                  placeholder={c.placeholder}
+                  maxLength={c.maxLen}
+                  onChange={(e) => onSet(c.id, e.target.value)}
+                />
+                {c.maxLen && (
+                  <span className="contador-chars">
+                    {String(valores[c.id] ?? '').length}/{c.maxLen}
+                  </span>
+                )}
+              </>
             )}
 
             {c.tipo === 'textarea' && (
-              <textarea
-                id={inputId}
-                rows={5}
-                value={String(valores[c.id] ?? '')}
-                placeholder={c.placeholder}
-                maxLength={c.maxLen}
-                onChange={(e) => onSet(c.id, e.target.value)}
-              />
+              <>
+                <textarea
+                  id={inputId}
+                  rows={5}
+                  value={String(valores[c.id] ?? '')}
+                  placeholder={c.placeholder}
+                  maxLength={c.maxLen}
+                  onChange={(e) => onSet(c.id, e.target.value)}
+                />
+                {c.maxLen && (
+                  <span className="contador-chars">
+                    {String(valores[c.id] ?? '').length}/{c.maxLen}
+                  </span>
+                )}
+              </>
             )}
 
             {c.tipo === 'estrelas' && (

@@ -219,6 +219,51 @@
   color: #5a3d00;
 }
 
+/* Contador de caracteres abaixo dos campos de texto com limite. */
+.contador-chars {
+  display: block;
+  text-align: right;
+  font-size: 0.72rem;
+  color: #9a9384;
+  margin-top: 0.2rem;
+}
+
+/* Aviso de rascunho recuperado (não perdeu o trabalho). */
+.rascunho-aviso {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(46, 107, 69, 0.1);
+  border: 1px solid rgba(46, 107, 69, 0.28);
+  color: #2e6b45;
+  border-radius: 10px;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
+}
+.rascunho-aviso button {
+  border: 1px solid rgba(46, 107, 69, 0.4);
+  background: #fff;
+  color: #2e6b45;
+  border-radius: 8px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+
+/* Botão de PARAR/CANCELAR uma exportação travada (não perde o trabalho). */
+.btn--cancelar {
+  width: 100%;
+  background: #fff;
+  color: #b42318;
+  border: 1px solid #f1aca4;
+}
+.btn--cancelar:hover {
+  background: #fef3f2;
+  border-color: #e07a70;
+}
+
 /* Caixa de sucesso com as instruções pós-download. */
 .export-feito {
   background: rgba(46, 107, 69, 0.1);

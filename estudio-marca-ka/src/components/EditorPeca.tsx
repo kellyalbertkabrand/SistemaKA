@@ -2,15 +2,45 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Template, ValoresPeca, FormatoDef } from '../templates/types'
 import { valoresPadrao } from '../templates/types'
 import { baixarPng } from '../lib/exportar'
-import { baixarMolduraPng, baixarVideoDoCard, suportaGravacaoVideo } from '../lib/exportarVideo'
+import { baixarMolduraPng, baixarVideoDoCard, suportaGravacaoVideo, CANCELADO } from '../lib/exportarVideo'
 import { metaPadrao } from '../lib/assinatura'
 import { CamposEditor } from './CamposEditor'
+import { salvarRascunho, lerRascunho, limparRascunho } from '../lib/persistencia'
 import './editor.css'
 
 // Editor de peça: formulário (à esquerda) + pré-visualização ao vivo (à direita),
 // dirigido pelos campos declarados no Template. Exporta PNG em alta resolução.
+// Remove entradas de vídeo mortas (blob: não sobrevive ao recarregar).
+function sanearValores(v: ValoresPeca): ValoresPeca {
+  const out: ValoresPeca = {}
+  for (const [k, val] of Object.entries(v)) {
+    if (typeof val === 'string' && val.startsWith('blob:')) continue
+    out[k] = val
+  }
+  for (const k of Object.keys(out)) {
+    if (k.endsWith('_kind') && out[k] === 'video') {
+      const base = k.slice(0, -'_kind'.length)
+      if (!out[base]) delete out[k]
+    }
+  }
+  return out
+}
+
 export function EditorPeca({ template }: { template: Template }) {
-  const [valores, setValores] = useState<ValoresPeca>(() => valoresPadrao(template.campos))
+  // Rascunho por template: se travar/recarregar, a peça volta preenchida.
+  const CHAVE = `rascunho-peca-${template.id}`
+  const inicial = useRef<{ valores: ValoresPeca; recuperado: boolean } | null>(null)
+  if (!inicial.current) {
+    const salvo = lerRascunho<{ valores?: ValoresPeca }>(CHAVE)
+    const temAlgo =
+      salvo?.valores && Object.keys(salvo.valores).length > 0
+    inicial.current = temAlgo
+      ? { valores: { ...valoresPadrao(template.campos), ...sanearValores(salvo!.valores!) }, recuperado: true }
+      : { valores: valoresPadrao(template.campos), recuperado: false }
+  }
+
+  const [valores, setValores] = useState<ValoresPeca>(inicial.current.valores)
+  const [recuperado, setRecuperado] = useState(inicial.current.recuperado)
   const [formato, setFormato] = useState<FormatoDef>(template.formatos[0])
   // Qual ação está rodando (null = nenhuma) e o texto de progresso do vídeo.
   const [acao, setAcao] = useState<'png' | 'moldura' | 'video' | null>(null)
@@ -19,6 +49,8 @@ export function EditorPeca({ template }: { template: Template }) {
   const [feito, setFeito] = useState<'imagem' | 'video' | null>(null)
   const ocupado = acao !== null
   const artRef = useRef<HTMLDivElement>(null)
+  // Permite CANCELAR uma exportação travada sem perder o trabalho.
+  const abortRef = useRef<AbortController | null>(null)
 
   const Render = template.render
 
@@ -52,8 +84,23 @@ export function EditorPeca({ template }: { template: Template }) {
   const previewW = Math.round(formato.largura * escala)
   const previewH = Math.round(formato.altura * escala)
 
+  // Salva a peça automaticamente (com atraso) para não perder o trabalho.
+  useEffect(() => {
+    const id = setTimeout(() => salvarRascunho(CHAVE, { valores }), 500)
+    return () => clearTimeout(id)
+  }, [valores, CHAVE])
+
   function set(id: string, valor: string | number) {
     setValores((v) => ({ ...v, [id]: valor }))
+  }
+
+  // Limpa a peça e o rascunho salvo (recomeça do zero).
+  function limparPeca() {
+    if (ocupado) return
+    if (!confirm('Limpar tudo e começar do zero?')) return
+    limparRascunho(CHAVE)
+    setValores(valoresPadrao(template.campos))
+    setRecuperado(false)
   }
 
   const podeBaixar = useMemo(
@@ -66,31 +113,46 @@ export function EditorPeca({ template }: { template: Template }) {
 
   async function rodar(
     qual: 'png' | 'moldura' | 'video',
-    fn: () => Promise<void>,
+    fn: (sinal: AbortSignal) => Promise<void>,
     tipoFeito: 'imagem' | 'video',
   ) {
     if (!artRef.current) return
+    const ac = new AbortController()
+    abortRef.current = ac
     setFeito(null)
     setAcao(qual)
     try {
-      await fn()
+      await fn(ac.signal)
       setFeito(tipoFeito)
     } catch (e) {
-      alert((e as Error).message)
+      // Cancelamento pelo usuário: não é erro, some sem alerta e mantém o trabalho.
+      if ((e as Error).message !== CANCELADO && (e as Error).name !== 'AbortError') {
+        alert((e as Error).message)
+      }
     } finally {
+      abortRef.current = null
       setAcao(null)
       setStatusVideo(null)
     }
   }
 
+  // Para o processo (moldura/vídeo travado) sem fechar a tela nem perder a peça.
+  function cancelar() {
+    abortRef.current?.abort()
+  }
+
   const handleDownload = () =>
     rodar('png', () => baixarPng(artRef.current!, nomeBase(), 2, meta()), 'imagem')
   const handleMoldura = () =>
-    rodar('moldura', () => baixarMolduraPng(artRef.current!, `${nomeBase()}-moldura`, 2, meta()), 'imagem')
+    rodar(
+      'moldura',
+      (sinal) => baixarMolduraPng(artRef.current!, `${nomeBase()}-moldura`, 2, meta(), sinal),
+      'imagem',
+    )
   const handleVideo = () =>
     rodar(
       'video',
-      () => baixarVideoDoCard(artRef.current!, nomeBase(), (f) => setStatusVideo(f)),
+      (sinal) => baixarVideoDoCard(artRef.current!, nomeBase(), (f) => setStatusVideo(f), sinal),
       'video',
     )
 
@@ -98,6 +160,15 @@ export function EditorPeca({ template }: { template: Template }) {
     <div className="editor">
       {/* ----- Controles ----- */}
       <div className="editor__panel">
+        {recuperado && (
+          <div className="rascunho-aviso">
+            <span>✓ Recuperamos a sua última peça. Continue de onde parou.</span>
+            <button type="button" onClick={limparPeca}>
+              Começar do zero
+            </button>
+          </div>
+        )}
+
         <div className="field">
           <label>Formato</label>
           <div className="seg">
@@ -159,6 +230,12 @@ export function EditorPeca({ template }: { template: Template }) {
                 progresso aqui.
               </div>
             </div>
+          )}
+
+          {ocupado && (
+            <button type="button" className="btn btn--cancelar" onClick={cancelar}>
+              Parar e voltar (não perde a peça)
+            </button>
           )}
 
           {feito && (

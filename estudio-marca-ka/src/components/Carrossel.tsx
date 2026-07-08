@@ -1,13 +1,15 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FormatoDef, Template, ValoresPeca } from '../templates/types'
 import { valoresPadrao } from '../templates/types'
 import { CamposEditor } from './CamposEditor'
+import { salvarRascunho, lerRascunho, limparRascunho } from '../lib/persistencia'
 import { baixarPng, gerarPngBlob, entregarArquivos } from '../lib/exportar'
 import {
   baixarMolduraPng,
   baixarVideoDoCard,
   gerarVideoBlob,
   suportaGravacaoVideo,
+  CANCELADO,
 } from '../lib/exportarVideo'
 import { metaPadrao } from '../lib/assinatura'
 import './carrossel.css'
@@ -28,6 +30,22 @@ interface Slide {
   valores: ValoresPeca
 }
 
+// Remove entradas de vídeo mortas (blob: não sobrevive ao recarregar a página).
+function sanearValores(v: ValoresPeca): ValoresPeca {
+  const out: ValoresPeca = {}
+  for (const [k, val] of Object.entries(v)) {
+    if (typeof val === 'string' && val.startsWith('blob:')) continue
+    out[k] = val
+  }
+  for (const k of Object.keys(out)) {
+    if (k.endsWith('_kind') && out[k] === 'video') {
+      const base = k.slice(0, -'_kind'.length)
+      if (!out[base]) delete out[k]
+    }
+  }
+  return out
+}
+
 // Construtor de carrossel: até 10 slides; em cada slide a pessoa escolhe o
 // template e preenche os campos. Baixa slide a slide ou tudo num .zip.
 export function Carrossel({ templates }: { templates: Template[] }) {
@@ -39,8 +57,25 @@ export function Carrossel({ templates }: { templates: Template[] }) {
     return { key: ++seqRef.current, templateId: t.id, valores: valoresPadrao(t.campos) }
   }
 
-  const [formato, setFormato] = useState<FormatoDef>(FORMATOS[0])
-  const [slides, setSlides] = useState<Slide[]>(() => [novoSlide()])
+  // Chave do rascunho por cliente (cada marca guarda o seu carrossel).
+  const CHAVE = `rascunho-carrossel-${templates[0]?.clienteSlug ?? 'x'}`
+
+  // Recupera o último carrossel salvo (se houver) para NÃO perder o trabalho.
+  const inicial = useRef<{ slides: Slide[]; formato: FormatoDef; recuperado: boolean } | null>(null)
+  if (!inicial.current) {
+    const salvo = lerRascunho<{ slides?: Slide[]; formato?: { formato?: string } }>(CHAVE)
+    const validos = (salvo?.slides ?? [])
+      .filter((s) => s && templates.some((t) => t.id === s.templateId))
+      .map((s) => ({ key: ++seqRef.current, templateId: s.templateId, valores: sanearValores(s.valores ?? {}) }))
+    const f = FORMATOS.find((x) => x.formato === salvo?.formato?.formato) ?? FORMATOS[0]
+    inicial.current = validos.length
+      ? { slides: validos, formato: f, recuperado: true }
+      : { slides: [novoSlide()], formato: f, recuperado: false }
+  }
+
+  const [formato, setFormato] = useState<FormatoDef>(inicial.current.formato)
+  const [slides, setSlides] = useState<Slide[]>(inicial.current.slides)
+  const [recuperado, setRecuperado] = useState(inicial.current.recuperado)
   const [sel, setSel] = useState(0)
   const [acao, setAcao] = useState<'png' | 'moldura' | 'video' | 'tudo' | null>(null)
   const [statusVideo, setStatusVideo] = useState<string | null>(null)
@@ -48,6 +83,15 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   // true enquanto grava algum vídeo (mostra o aviso de atenção também no "salvar tudo").
   const [gravandoVideo, setGravandoVideo] = useState(false)
   const ocupado = acao !== null
+  // Permite CANCELAR uma exportação travada sem perder o carrossel.
+  const abortRef = useRef<AbortController | null>(null)
+
+  // Salva o carrossel automaticamente (com um pequeno atraso para não pesar a
+  // cada tecla). Assim, se travar/recarregar, o trabalho continua lá.
+  useEffect(() => {
+    const id = setTimeout(() => salvarRascunho(CHAVE, { formato, slides }), 500)
+    return () => clearTimeout(id)
+  }, [slides, formato, CHAVE])
 
   const slideTemVideo = (v: ValoresPeca) =>
     Object.entries(v).some(([k, val]) => k.endsWith('_kind') && val === 'video') ||
@@ -85,8 +129,32 @@ export function Carrossel({ templates }: { templates: Template[] }) {
 
   function removeSlide(i: number) {
     if (ocupado || slides.length <= 1) return
+    if (!confirm(`Apagar o slide ${i + 1}? Não dá para desfazer.`)) return
     setSlides((s) => s.filter((_, idx) => idx !== i))
     setSel((cur) => Math.max(0, cur > i ? cur - 1 : cur === i ? Math.min(i, slides.length - 2) : cur))
+  }
+
+  // Duplica um slide (cópia logo depois): reaproveita o layout/textos já feitos.
+  function duplicarSlide(i: number) {
+    if (ocupado || slides.length >= MAX_SLIDES) return
+    setSlides((s) => {
+      const copia: Slide = { key: ++seqRef.current, templateId: s[i].templateId, valores: { ...s[i].valores } }
+      const c = [...s]
+      c.splice(i + 1, 0, copia)
+      return c
+    })
+    setSel(i + 1)
+  }
+
+  // Começa um carrossel do zero, apagando o rascunho salvo.
+  function comecarNovo() {
+    if (ocupado) return
+    if (!confirm('Começar um carrossel novo? O atual será apagado.')) return
+    limparRascunho(CHAVE)
+    seqRef.current = 0
+    setSlides([novoSlide()])
+    setSel(0)
+    setRecuperado(false)
   }
 
   function mover(i: number, dir: -1 | 1) {
@@ -117,21 +185,32 @@ export function Carrossel({ templates }: { templates: Template[] }) {
 
   async function rodar(
     qual: 'png' | 'moldura' | 'video' | 'tudo',
-    fn: () => Promise<void>,
+    fn: (sinal: AbortSignal) => Promise<void>,
     tipoFeito?: 'imagem' | 'video',
   ) {
+    const ac = new AbortController()
+    abortRef.current = ac
     setFeito(null)
     setAcao(qual)
     try {
-      await fn()
+      await fn(ac.signal)
       if (tipoFeito) setFeito(tipoFeito)
     } catch (e) {
-      alert((e as Error).message)
+      // Cancelamento pelo usuário: não é erro, some sem alerta e mantém o carrossel.
+      if ((e as Error).message !== CANCELADO && (e as Error).name !== 'AbortError') {
+        alert((e as Error).message)
+      }
     } finally {
+      abortRef.current = null
       setAcao(null)
       setStatusVideo(null)
       setGravandoVideo(false)
     }
+  }
+
+  // Para o processo (moldura/vídeo travado) sem perder os slides já montados.
+  function cancelar() {
+    abortRef.current?.abort()
   }
 
   const baixarSlide = () => {
@@ -141,13 +220,22 @@ export function Carrossel({ templates }: { templates: Template[] }) {
 
   const baixarMoldura = () => {
     const node = stageRef.current
-    if (node) void rodar('moldura', () => baixarMolduraPng(node, `${nomeSlide()}-moldura`, 2, meta()), 'imagem')
+    if (node)
+      void rodar(
+        'moldura',
+        (sinal) => baixarMolduraPng(node, `${nomeSlide()}-moldura`, 2, meta(), sinal),
+        'imagem',
+      )
   }
 
   const baixarVideo = () => {
     const node = stageRef.current
     if (node)
-      void rodar('video', () => baixarVideoDoCard(node, nomeSlide(), (f) => setStatusVideo(f)), 'video')
+      void rodar(
+        'video',
+        (sinal) => baixarVideoDoCard(node, nomeSlide(), (f) => setStatusVideo(f), sinal),
+        'video',
+      )
   }
 
   const esperar = (ms: number) => new Promise((r) => setTimeout(r, ms))
@@ -158,9 +246,10 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   const salvarTudo = () => {
     void rodar(
       'tudo',
-      async () => {
+      async (sinal) => {
         const arquivos: { nome: string; blob: Blob }[] = []
         for (let i = 0; i < slides.length; i++) {
+          if (sinal.aborted) throw new Error(CANCELADO)
           const numero = String(i + 1).padStart(2, '0')
           if (slideTemVideo(slides[i].valores)) {
             if (!suportaGravacaoVideo()) continue // sem suporte: pula o vídeo
@@ -169,8 +258,10 @@ export function Carrossel({ templates }: { templates: Template[] }) {
             await esperar(600) // deixa o slide renderizar e o vídeo começar
             const node = stageRef.current
             if (node) {
-              const { blob, ext } = await gerarVideoBlob(node, (fase) =>
-                setStatusVideo(`Slide ${i + 1}: ${fase}`),
+              const { blob, ext } = await gerarVideoBlob(
+                node,
+                (fase) => setStatusVideo(`Slide ${i + 1}: ${fase}`),
+                sinal,
               )
               arquivos.push({ nome: `carrossel-${numero}.${ext}`, blob })
             }
@@ -191,6 +282,15 @@ export function Carrossel({ templates }: { templates: Template[] }) {
 
   return (
     <div className="carrossel">
+      {recuperado && (
+        <div className="rascunho-aviso">
+          <span>✓ Recuperamos o seu último carrossel. Continue de onde parou.</span>
+          <button type="button" onClick={comecarNovo}>
+            Começar um novo
+          </button>
+        </div>
+      )}
+
       {/* Barra de ações */}
       <div className="carrossel__bar">
         <div className="seg">
@@ -284,6 +384,18 @@ export function Carrossel({ templates }: { templates: Template[] }) {
                     </button>
                   </>
                 )}
+                {slides.length < MAX_SLIDES && (
+                  <button
+                    className="thumb__dup"
+                    title="Duplicar slide"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      duplicarSlide(i)
+                    }}
+                  >
+                    ⧉
+                  </button>
+                )}
               </div>
             )
           })}
@@ -357,6 +469,12 @@ export function Carrossel({ templates }: { templates: Template[] }) {
                     gravação. Pode acompanhar aqui o progresso.
                   </div>
                 </div>
+              )}
+
+              {ocupado && (
+                <button type="button" className="btn btn--cancelar" onClick={cancelar}>
+                  Parar e voltar (não perde o carrossel)
+                </button>
               )}
 
               {feito && (
