@@ -548,11 +548,12 @@ export const TEMPLATES: Template[] = [
         id: 'proporcao',
         label: 'Proporção da mídia',
         tipo: 'select',
+        chips: true,
         padrao: '16:9',
         opcoes: [
           { valor: '16:9', rotulo: 'Horizontal 16:9' },
           { valor: '1:1', rotulo: 'Quadrada 1:1' },
-          { valor: '9:16', rotulo: 'Vertical 9:16 (texto à esquerda)' },
+          { valor: '9:16', rotulo: 'Vertical 9:16' },
         ],
       },
       campoFundoKA('papel'),

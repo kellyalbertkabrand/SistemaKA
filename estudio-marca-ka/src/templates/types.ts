@@ -54,6 +54,9 @@ export interface CampoSelect extends CampoBase {
   tipo: 'select'
   opcoes: { valor: string; rotulo: string }[]
   padrao?: string
+  /** Mostra as opções como botões visuais (chips). Para proporções (ex.: 16:9)
+   *  desenha um retângulo na proporção, para a pessoa escolher olhando. */
+  chips?: boolean
 }
 
 export interface CampoCor extends CampoBase {

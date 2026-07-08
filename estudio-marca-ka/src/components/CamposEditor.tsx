@@ -136,7 +136,38 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
               </div>
             )}
 
-            {c.tipo === 'select' && (
+            {c.tipo === 'select' && c.chips && (
+              <div className="chips-grid">
+                {c.opcoes.map((o) => {
+                  const ativo = String(valores[c.id] ?? '') === o.valor
+                  // Se o valor é uma proporção (ex.: 16:9), desenha o retângulo.
+                  const m = /^(\d+):(\d+)$/.exec(o.valor)
+                  const [lw, lh] = m ? [Number(m[1]), Number(m[2])] : [1, 1]
+                  const base = 30
+                  const rw = m ? (lw >= lh ? base : (base * lw) / lh) : base
+                  const rh = m ? (lh >= lw ? base : (base * lh) / lw) : base
+                  return (
+                    <button
+                      key={o.valor}
+                      type="button"
+                      className={`chip ${ativo ? 'on' : ''}`}
+                      onClick={() => onSet(c.id, o.valor)}
+                    >
+                      {m && (
+                        <span
+                          className="chip__ratio"
+                          style={{ width: `${rw}px`, height: `${rh}px` }}
+                          aria-hidden
+                        />
+                      )}
+                      <span className="chip__label">{o.rotulo}</span>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+
+            {c.tipo === 'select' && !c.chips && (
               <select
                 id={inputId}
                 value={String(valores[c.id] ?? '')}
