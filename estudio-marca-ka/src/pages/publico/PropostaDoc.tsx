@@ -4,7 +4,7 @@ import { formatarData } from '../../lib/gestao'
 import '../../styles/proposta.css'
 
 // ============================================================================
-// PROPOSTA COMERCIAL no layout KA — o documento que o cliente abre pelo link
+// PROPOSTA COMERCIAL no layout KA, o documento que o cliente abre pelo link
 // do orçamento (/orcamento/:token) quando a KA preenche o bloco "Proposta".
 // Capa creme com a logo, ficha do cliente, seções numeradas em caramelo,
 // cards de investimento e aceite. Imprimível em A4 (Baixar em PDF).

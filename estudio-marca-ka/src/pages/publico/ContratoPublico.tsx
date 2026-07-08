@@ -76,7 +76,7 @@ export function ContratoPublico() {
     <div className="pub-wrap">
       <div className="pub-doc">
         <div className="pub-doc__head">
-          <div className="eyebrow">Contrato · Kelly Albert — KA</div>
+          <div className="eyebrow">Contrato · Kelly Albert, KA</div>
           <h1>{contrato.titulo}</h1>
           <div className="pub-doc__meta">emitido em {formatarData(contrato.criado_em)}</div>
         </div>
@@ -88,7 +88,7 @@ export function ContratoPublico() {
         {contrato.status === 'assinado' && (
           <div className="pub-assinado">
             ✓ Contrato assinado por {contrato.assinatura_nome} em {formatarData(contrato.assinado_em)}.
-            Guarde este link como comprovante — e você pode salvar em PDF no botão abaixo.
+            Guarde este link como comprovante, e você pode salvar em PDF no botão abaixo.
           </div>
         )}
 

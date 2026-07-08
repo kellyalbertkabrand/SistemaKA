@@ -140,3 +140,62 @@ export async function baixarZip(
   a.click()
   URL.revokeObjectURL(url)
 }
+
+/**
+ * Salva TODAS as imagens de uma vez. No CELULAR (iPhone e Android) abre a folha
+ * de compartilhar com todos os PNGs, onde aparece "Salvar N imagens" e vai para
+ * o rolo/Fotos (o ZIP era difícil de salvar no celular). No computador, baixa
+ * um único ZIP com todas. Devolve como foi entregue.
+ */
+export async function salvarTodasImagens(
+  itens: { node: HTMLElement; nome: string }[],
+  nomeBase: string,
+  escala = 2,
+  meta?: MetaAssinatura,
+): Promise<'compartilhado' | 'zip'> {
+  if (document.fonts?.ready) await document.fonts.ready
+  const assinatura = meta ?? metaPadrao()
+
+  const arquivos: { nome: string; blob: Blob }[] = []
+  for (const { node, nome } of itens) {
+    const dataUrl = await rasterizarPng(node, {
+      ...OPCOES_PNG,
+      pixelRatio: escala,
+      width: node.offsetWidth,
+      height: node.offsetHeight,
+    })
+    const assinado = assinarPngDataUrl(dataUrl, assinatura)
+    arquivos.push({ nome: `${nome}.png`, blob: await dataUrlParaBlob(assinado) })
+  }
+
+  const nav = navigator as Navigator & {
+    canShare?: (data?: unknown) => boolean
+    share?: (data?: unknown) => Promise<void>
+  }
+  const mobile = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches
+  if (mobile && nav.canShare && nav.share) {
+    const files = arquivos.map((a) => new File([a.blob], a.nome, { type: 'image/png' }))
+    if (nav.canShare({ files })) {
+      try {
+        await nav.share({ files, title: nomeBase })
+        return 'compartilhado'
+      } catch (e) {
+        if ((e as Error).name === 'AbortError') return 'compartilhado'
+      }
+    }
+  }
+
+  // Computador (ou sem compartilhar): um único ZIP.
+  const zip = new JSZip()
+  arquivos.forEach((a) => zip.file(a.nome, a.blob))
+  const blob = await zip.generateAsync({ type: 'blob' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.download = `${nomeBase}.zip`
+  a.href = url
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 4000)
+  return 'zip'
+}

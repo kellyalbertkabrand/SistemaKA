@@ -59,7 +59,7 @@ export function GestaoOrcamentos() {
 
   async function copiarLink(o: Orcamento) {
     await navigator.clipboard.writeText(linkPublicoOrcamento(o.token))
-    setMsg(`Link do orçamento "${o.titulo}" copiado — envie ao cliente por WhatsApp ou e-mail.`)
+    setMsg(`Link do orçamento "${o.titulo}" copiado, envie ao cliente por WhatsApp ou e-mail.`)
     setTimeout(() => setMsg(null), 4000)
   }
 
@@ -284,7 +284,7 @@ function EditorOrcamento({
             <div className="field">
               <label>Cliente cadastrado (opcional)</label>
               <select value={f.cliente_id ?? ''} onChange={(e) => escolherCliente(e.target.value)}>
-                <option value="">— prospect / sem cadastro —</option>
+                <option value="">- prospect / sem cadastro -</option>
                 {clientes.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.nome_marca}
@@ -476,31 +476,31 @@ function EditorOrcamento({
                 <textarea rows={3} value={f.proposta.fases ?? ''} onChange={(e) => prop('fases', e.target.value)} />
               </div>
               <div className="field">
-                <label>06 · Implantação — rótulo do card</label>
+                <label>06 · Implantação, rótulo do card</label>
                 <input value={f.proposta.impl_titulo ?? ''} onChange={(e) => prop('impl_titulo', e.target.value)} />
               </div>
               <div className="field">
-                <label>06 · Implantação — valor em destaque</label>
+                <label>06 · Implantação, valor em destaque</label>
                 <input value={f.proposta.impl_valor ?? ''} onChange={(e) => prop('impl_valor', e.target.value)} placeholder="ex.: 2× de R$ 1.250 no Pix" />
               </div>
               <div className="field">
-                <label>06 · Implantação — linha abaixo do valor</label>
+                <label>06 · Implantação, linha abaixo do valor</label>
                 <input value={f.proposta.impl_sub ?? ''} onChange={(e) => prop('impl_sub', e.target.value)} placeholder="ex.: Total: R$ 2.500." />
               </div>
               <div className="field">
-                <label>06 · Implantação — descrição</label>
+                <label>06 · Implantação, descrição</label>
                 <input value={f.proposta.impl_desc ?? ''} onChange={(e) => prop('impl_desc', e.target.value)} />
               </div>
               <div className="field">
-                <label>06 · Mensalidade — rótulo do card</label>
+                <label>06 · Mensalidade, rótulo do card</label>
                 <input value={f.proposta.mensal_titulo ?? ''} onChange={(e) => prop('mensal_titulo', e.target.value)} />
               </div>
               <div className="field">
-                <label>06 · Mensalidade — valor em destaque</label>
+                <label>06 · Mensalidade, valor em destaque</label>
                 <input value={f.proposta.mensal_valor ?? ''} onChange={(e) => prop('mensal_valor', e.target.value)} placeholder="ex.: R$ 420/mês" />
               </div>
               <div className="field campo-2">
-                <label>06 · Mensalidade — descrição (uma frase por linha)</label>
+                <label>06 · Mensalidade, descrição (uma frase por linha)</label>
                 <textarea rows={2} value={f.proposta.mensal_desc ?? ''} onChange={(e) => prop('mensal_desc', e.target.value)} />
               </div>
               <div className="field campo-2">

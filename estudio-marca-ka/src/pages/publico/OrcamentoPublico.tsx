@@ -112,7 +112,7 @@ export function OrcamentoPublico() {
         ) : (
           <>
             <div className="pub-doc__head">
-              <div className="eyebrow">Orçamento · Kelly Albert — KA</div>
+              <div className="eyebrow">Orçamento · Kelly Albert, KA</div>
               <h1>{orc.titulo}</h1>
               <div className="pub-doc__meta">
                 Para {orc.destinatario_nome} · emitido em {formatarData(orc.criado_em)}
@@ -178,7 +178,7 @@ export function OrcamentoPublico() {
         {aberto && aceitando && (
           <form onSubmit={(e) => void aprovar(e)} className="nao-imprimir" style={{ marginTop: '1.4rem' }}>
             <p style={{ fontSize: '0.85rem', marginBottom: '0.8rem' }}>
-              Para aprovar, confirme seus dados — eles entram no contrato gerado em seguida.
+              Para aprovar, confirme seus dados, eles entram no contrato gerado em seguida.
             </p>
             <div className="form-grade">
               <div className="field">
@@ -204,7 +204,7 @@ export function OrcamentoPublico() {
         {!aberto && (
           <div className={orc.status === 'aprovado' ? 'pub-assinado' : 'nota'} style={{ marginTop: '1.2rem' }}>
             {orc.status === 'aprovado' && (
-              <>Orçamento aprovado em {formatarData(orc.respondido_em)}. O contrato foi gerado — o link foi exibido na aprovação (a Kelly também pode reenviar).</>
+              <>Orçamento aprovado em {formatarData(orc.respondido_em)}. O contrato foi gerado, o link foi exibido na aprovação (a Kelly também pode reenviar).</>
             )}
             {orc.status === 'recusado' && <>Este orçamento foi recusado em {formatarData(orc.respondido_em)}.</>}
             {orc.status === 'expirado' && <>Este orçamento expirou. Fale com a Kelly para uma nova proposta.</>}

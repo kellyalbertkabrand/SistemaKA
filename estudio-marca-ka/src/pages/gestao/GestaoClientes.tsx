@@ -101,7 +101,7 @@ export function GestaoClientes() {
       {novos > 0 && (
         <div className="nota" style={{ borderLeft: '3px solid #2e6b45' }}>
           🔔 Você tem <strong>{novos}</strong>{' '}
-          {novos === 1 ? 'novo cadastro' : 'novos cadastros'} pelo link — marcados com{' '}
+          {novos === 1 ? 'novo cadastro' : 'novos cadastros'} pelo link, marcados com{' '}
           <span className="badge badge--verde">NOVO</span> na lista abaixo. Abra a ficha para revisar.
         </div>
       )}
@@ -146,12 +146,12 @@ export function GestaoClientes() {
                       </span>
                     )}
                   </td>
-                  <td>{c.responsavel || '—'}</td>
-                  <td>{c.telefone || c.email_contato || '—'}</td>
+                  <td>{c.responsavel || '-'}</td>
+                  <td>{c.telefone || c.email_contato || '-'}</td>
                   <td className="num">
                     {c.cobranca_ativa && c.valor_mensalidade
                       ? `${formatarBRL(c.valor_mensalidade)} · dia ${c.dia_vencimento}`
-                      : '—'}
+                      : '-'}
                   </td>
                   <td>
                     <span className={`badge ${c.status === 'ativo' ? 'badge--verde' : 'badge--cinza'}`}>
@@ -219,7 +219,7 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente; aoVoltar: () 
       <div className="card">
         <h3>Ficha do cliente</h3>
         <p style={{ marginBottom: '1rem' }}>
-          Dados cadastrais e de contato — ficam guardados aqui, num lugar só.
+          Dados cadastrais e de contato, ficam guardados aqui, num lugar só.
         </p>
         {erro && <div className="erro-msg">{erro}</div>}
         <form onSubmit={(e) => void salvar(e)}>
@@ -323,7 +323,7 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente; aoVoltar: () 
                 onChange={(e) => campo('cobranca_ativa', e.target.value === 'sim')}
               >
                 <option value="nao">não</option>
-                <option value="sim">sim — gerar mensalidade</option>
+                <option value="sim">sim, gerar mensalidade</option>
               </select>
             </div>
           </div>
@@ -386,7 +386,7 @@ function Acessos({ cliente, slug }: { cliente: Cliente; slug: string | null }) {
     } catch (err) {
       setErro(
         (err instanceof Error ? err.message : String(err)) +
-          ' — se a função "convidar-usuario" ainda não foi publicada no Supabase, convide pelo ' +
+          ', se a função "convidar-usuario" ainda não foi publicada no Supabase, convide pelo ' +
           'painel (Authentication → Users → Invite user) e depois vincule aqui embaixo.',
       )
     } finally {

@@ -138,3 +138,9 @@
   top: 0;
   pointer-events: none;
 }
+
+/* Enquanto grava vídeo, os slides ficam bloqueados (não trocar/rolar). */
+.thumb--travado {
+  opacity: 0.5;
+  pointer-events: none;
+}

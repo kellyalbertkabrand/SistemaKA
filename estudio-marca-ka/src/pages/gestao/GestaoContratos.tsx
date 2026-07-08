@@ -104,7 +104,7 @@ export function GestaoContratos() {
         </p>
         <div className="pub-doc">
           <div className="pub-doc__head">
-            <div className="eyebrow">Contrato · Kelly Albert — KA</div>
+            <div className="eyebrow">Contrato · Kelly Albert, KA</div>
             <h1>{vendo.titulo}</h1>
             <div className="pub-doc__meta">
               criado em {formatarData(vendo.criado_em)} ·{' '}
@@ -171,7 +171,7 @@ export function GestaoContratos() {
                   <td>
                     {c.status === 'assinado'
                       ? `${c.assinatura_nome} · ${formatarData(c.assinado_em)}`
-                      : '—'}
+                      : '-'}
                   </td>
                   <td>
                     <span className={`badge ${BADGE_CONTRATO[c.status]}`}>{c.status}</span>
@@ -261,7 +261,7 @@ function NovoContrato({
           </li>
           <li>
             <strong>O cliente preenche:</strong> deixe os campos <strong>em branco</strong> e clique
-            em gerar. Depois copie o <strong>link de assinatura</strong> e envie ao cliente — ele
+            em gerar. Depois copie o <strong>link de assinatura</strong> e envie ao cliente, ele
             preenche o nome e o CPF/CNPJ dele ao assinar, e esses dados entram no contrato
             automaticamente.
           </li>
@@ -282,7 +282,7 @@ function NovoContrato({
               <input
                 value={titulo}
                 onChange={(e) => setTitulo(e.target.value)}
-                placeholder="Ex.: Contrato — Marca do Cliente"
+                placeholder="Ex.: Contrato, Marca do Cliente"
               />
             </div>
           </div>
@@ -313,7 +313,7 @@ function EditorModelo({ aoVoltar }: { aoVoltar: () => void }) {
       .then((ms) => {
         const m = ms.find((x) => x.padrao) ?? ms[0] ?? null
         setModelo(m)
-        setNome(m?.nome ?? 'Contrato padrão de design — KA')
+        setNome(m?.nome ?? 'Contrato padrão de design, KA')
         setConteudo(m?.conteudo ?? '')
       })
       .catch((e) => setErro(e instanceof Error ? e.message : String(e)))
@@ -333,7 +333,7 @@ function EditorModelo({ aoVoltar }: { aoVoltar: () => void }) {
       // Guarda o modelo salvo para os próximos cliques atualizarem em vez de
       // criar um novo (evita modelos duplicados).
       setModelo(salvo)
-      setMsg('✓ Modelo salvo — os próximos contratos usam esta versão.')
+      setMsg('✓ Modelo salvo, os próximos contratos usam esta versão.')
       setTimeout(() => setMsg(null), 4000)
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))

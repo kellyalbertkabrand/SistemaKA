@@ -204,6 +204,21 @@
     transform: rotate(360deg);
   }
 }
+/* Caixa de ATENÇÃO (âmbar) durante a gravação do vídeo. */
+.aviso-atencao {
+  background: #fff4d6;
+  border: 1px solid #e6b800;
+  border-left: 4px solid #e6a100;
+  color: #6b4e00;
+  border-radius: 10px;
+  padding: 0.85rem 0.95rem;
+  font-size: 0.83rem;
+  line-height: 1.5;
+}
+.aviso-atencao strong {
+  color: #5a3d00;
+}
+
 /* Caixa de sucesso com as instruções pós-download. */
 .export-feito {
   background: rgba(46, 107, 69, 0.1);

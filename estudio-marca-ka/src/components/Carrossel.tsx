@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import type { FormatoDef, Template, ValoresPeca } from '../templates/types'
 import { valoresPadrao } from '../templates/types'
 import { CamposEditor } from './CamposEditor'
-import { baixarPng, baixarZip } from '../lib/exportar'
+import { baixarPng, salvarTodasImagens } from '../lib/exportar'
 import { baixarMolduraPng, baixarVideoDoCard, suportaGravacaoVideo } from '../lib/exportarVideo'
 import { metaPadrao } from '../lib/assinatura'
 import './carrossel.css'
@@ -72,12 +72,13 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   }
 
   function removeSlide(i: number) {
-    if (slides.length <= 1) return
+    if (ocupado || slides.length <= 1) return
     setSlides((s) => s.filter((_, idx) => idx !== i))
     setSel((cur) => Math.max(0, cur > i ? cur - 1 : cur === i ? Math.min(i, slides.length - 2) : cur))
   }
 
   function mover(i: number, dir: -1 | 1) {
+    if (ocupado) return
     const j = i + dir
     if (j < 0 || j >= slides.length) return
     setSlides((s) => {
@@ -89,6 +90,7 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   }
 
   function trocarTemplate(id: string) {
+    if (ocupado) return
     const t = porId(id)
     setSlides((s) =>
       s.map((sl, idx) => (idx === sel ? { ...sl, templateId: id, valores: valoresPadrao(t.campos) } : sl)),
@@ -136,13 +138,17 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   }
 
   const baixarTodos = () => {
-    void rodar('zip', async () => {
-      const itens = slides
-        .map((_, i) => nodeRefs.current[i])
-        .filter((n): n is HTMLDivElement => !!n)
-        .map((node, i) => ({ node, nome: `slide${i + 1}` }))
-      await baixarZip(itens, `${slug}-carrossel`, 2, meta())
-    })
+    void rodar(
+      'zip',
+      async () => {
+        const itens = slides
+          .map((_, i) => nodeRefs.current[i])
+          .filter((n): n is HTMLDivElement => !!n)
+          .map((node, i) => ({ node, nome: `slide${i + 1}` }))
+        await salvarTodasImagens(itens, `${slug}-carrossel`, 2, meta())
+      },
+      'imagem',
+    )
   }
 
   return (
@@ -166,7 +172,7 @@ export function Carrossel({ templates }: { templates: Template[] }) {
             + Slide ({slides.length}/{MAX_SLIDES})
           </button>
           <button className="btn" onClick={baixarTodos} disabled={ocupado}>
-            {acao === 'zip' ? 'Gerando…' : 'Baixar todos (ZIP)'}
+            {acao === 'zip' ? 'Gerando…' : 'Salvar todas as imagens'}
           </button>
         </div>
       </div>
@@ -180,7 +186,13 @@ export function Carrossel({ templates }: { templates: Template[] }) {
             const tw = 96
             const th = (formato.altura / formato.largura) * tw
             return (
-              <div key={s.key} className={`thumb ${i === sel ? 'on' : ''}`} onClick={() => setSel(i)}>
+              <div
+                key={s.key}
+                className={`thumb ${i === sel ? 'on' : ''} ${ocupado ? 'thumb--travado' : ''}`}
+                onClick={() => {
+                  if (!ocupado) setSel(i)
+                }}
+              >
                 <div className="thumb__scaler" style={{ width: tw, height: th }}>
                   <div
                     style={{
@@ -245,7 +257,7 @@ export function Carrossel({ templates }: { templates: Template[] }) {
           <div className="editor__panel">
             <div className="field">
               <label>Template deste slide (nº {sel + 1})</label>
-              <select value={slide.templateId} onChange={(e) => trocarTemplate(e.target.value)}>
+              <select value={slide.templateId} disabled={ocupado} onChange={(e) => trocarTemplate(e.target.value)}>
                 {templates.map((t) => (
                   <option key={t.id} value={t.id}>
                     {t.nome}
@@ -277,7 +289,7 @@ export function Carrossel({ templates }: { templates: Template[] }) {
                 <>
                   <button className="btn" onClick={baixarMoldura} disabled={ocupado}>
                     {acao === 'moldura' && <span className="spin-mini" />}
-                    {acao === 'moldura' ? 'Gerando moldura…' : 'Baixar moldura (PNG) — p/ CapCut'}
+                    {acao === 'moldura' ? 'Gerando moldura…' : 'Baixar moldura PNG (p/ CapCut)'}
                   </button>
                   {suportaGravacaoVideo() ? (
                     <button className="btn" onClick={baixarVideo} disabled={ocupado}>
@@ -286,17 +298,23 @@ export function Carrossel({ templates }: { templates: Template[] }) {
                     </button>
                   ) : (
                     <p className="editor__hint">
-                      Seu navegador não gera o vídeo pronto — use a <strong>moldura PNG</strong> e junte
-                      no CapCut/Instagram.
+                      Seu navegador não gera o vídeo pronto. Use a <strong>moldura PNG</strong> e junte
+                      no CapCut ou no Instagram.
                     </p>
                   )}
                 </>
               )}
 
               {acao === 'video' && (
-                <p className="editor__hint">
-                  Gravando em tempo real — leva o tempo do vídeo. Deixe esta aba aberta.
-                </p>
+                <div className="aviso-atencao">
+                  <strong>⚠️ Atenção: fique nesta tela até terminar.</strong>
+                  <div>
+                    O vídeo é gravado em tempo real (leva o tempo do vídeo). Enquanto grava,{' '}
+                    <strong>não role a tela, não troque de slide, não bloqueie o celular e não abra
+                    outro app</strong>. No iPhone qualquer uma dessas ações pausa o vídeo e corta a
+                    gravação. Pode acompanhar aqui o progresso.
+                  </div>
+                </div>
               )}
 
               {feito && (

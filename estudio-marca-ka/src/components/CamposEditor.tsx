@@ -17,7 +17,7 @@ export const MAX_IMAGEM_MB = 25
 
 // Reduz a imagem para no máximo `maxDim` px (maior lado) e devolve um data URL
 // JPEG. Fotos de celular são grandes demais para o export do Safari (a foto
-// sumia do PNG); reduzidas, cabem e exportam sempre — sem perda visível.
+// sumia do PNG); reduzidas, cabem e exportam sempre, sem perda visível.
 function reduzirImagem(file: File, maxDim: number, qualidade: number): Promise<string> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file)
@@ -59,7 +59,7 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
     // Guarda o TIPO para o app saber que é vídeo (independe da URL).
     onSet(`${id}_kind`, ehVideo ? 'video' : 'image')
     if (ehVideo) {
-      // Vídeo: object URL (blob) — aguenta arquivos grandes sem virar texto
+      // Vídeo: object URL (blob), aguenta arquivos grandes sem virar texto
       // gigante (data URL travava/estourava com gravações de tela).
       onSet(id, URL.createObjectURL(file))
     } else {

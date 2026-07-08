@@ -35,7 +35,7 @@ export function EditorPeca({ template }: { template: Template }) {
 
   // No desktop há duas colunas (controles + card fixo ao lado): o card pode
   // ficar no tamanho cheio, inclusive o Story alto. No celular é empilhado, com
-  // o card fixo em cima — então limitamos a altura para sobrar espaço aos
+  // o card fixo em cima, então limitamos a altura para sobrar espaço aos
   // controles logo abaixo.
   const [desktop, setDesktop] = useState(
     () => typeof window !== 'undefined' && window.matchMedia('(min-width: 900px)').matches,
@@ -132,7 +132,7 @@ export function EditorPeca({ template }: { template: Template }) {
             <>
               <button className="btn" disabled={!podeBaixar || ocupado} onClick={handleMoldura}>
                 {acao === 'moldura' && <span className="spin-mini" />}
-                {acao === 'moldura' ? 'Gerando moldura…' : 'Baixar moldura (PNG) — p/ CapCut'}
+                {acao === 'moldura' ? 'Gerando moldura…' : 'Baixar moldura PNG (p/ CapCut)'}
               </button>
 
               {suportaGravacaoVideo() ? (
@@ -142,17 +142,23 @@ export function EditorPeca({ template }: { template: Template }) {
                 </button>
               ) : (
                 <p className="editor__hint">
-                  Seu navegador não gera o vídeo pronto — use a <strong>moldura PNG</strong> e junte
-                  com o vídeo no CapCut/Instagram.
+                  Seu navegador não gera o vídeo pronto. Use a <strong>moldura PNG</strong> e junte
+                  com o vídeo no CapCut ou no Instagram.
                 </p>
               )}
             </>
           )}
 
           {acao === 'video' && (
-            <p className="editor__hint">
-              Gravando em tempo real — leva o tempo do vídeo. Deixe esta aba aberta.
-            </p>
+            <div className="aviso-atencao">
+              <strong>⚠️ Atenção: fique nesta tela até terminar.</strong>
+              <div>
+                O vídeo é gravado em tempo real (leva o tempo do vídeo). Enquanto grava,{' '}
+                <strong>não role a tela, não bloqueie o celular e não abra outro app</strong>. No
+                iPhone qualquer uma dessas ações pausa o vídeo e corta a gravação. Pode acompanhar o
+                progresso aqui.
+              </div>
+            </div>
           )}
 
           {feito && (

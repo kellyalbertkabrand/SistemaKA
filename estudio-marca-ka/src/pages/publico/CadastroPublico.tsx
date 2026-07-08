@@ -37,7 +37,7 @@ export function CadastroPublico() {
       <div className="pub-wrap">
         <div className="pub-doc">
           <div className="pub-doc__head">
-            <div className="eyebrow">Cadastro · Kelly Albert — KA</div>
+            <div className="eyebrow">Cadastro · Kelly Albert, KA</div>
             <h1>Cadastro recebido! ✨</h1>
           </div>
           <p style={{ marginTop: '0.6rem', color: 'var(--t-600)', lineHeight: 1.6 }}>
@@ -53,7 +53,7 @@ export function CadastroPublico() {
     <div className="pub-wrap">
       <div className="pub-doc">
         <div className="pub-doc__head">
-          <div className="eyebrow">Cadastro · Kelly Albert — KA</div>
+          <div className="eyebrow">Cadastro · Kelly Albert, KA</div>
           <h1>Ficha de cadastro</h1>
           <div className="pub-doc__meta">
             Preencha os seus dados para começarmos. Campos com * são obrigatórios.

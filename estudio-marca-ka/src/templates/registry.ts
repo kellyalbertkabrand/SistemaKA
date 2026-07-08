@@ -83,7 +83,7 @@ function campoCorTextoKA(): Campo {
     label: 'Cor do texto',
     tipo: 'paleta',
     padrao: 'auto',
-    ajuda: 'A primeira (A) é automática — combina com o fundo. Ou escolha uma cor fixa.',
+    ajuda: 'A primeira (A) é automática, combina com o fundo. Ou escolha uma cor fixa.',
     opcoes: [
       { valor: 'auto', rotulo: 'Automático (combina com o fundo)' },
       ...FUNDOS_KA.map((f) => ({ valor: f.valor, rotulo: f.rotulo, cor: f.hex })),
@@ -108,7 +108,7 @@ const FORMATOS = [
 // Hoje os moldes vivem no código (rápido para colocar de pé e com fidelidade
 // total ao layout aprovado). Quando o Painel Admin (Fase 2) estiver completo,
 // os metadados de cada template passam a vir da tabela `templates` do Supabase
-// e os assets do Storage — mas a interface `Template` continua a mesma.
+// e os assets do Storage, mas a interface `Template` continua a mesma.
 // ============================================================================
 
 export const TEMPLATES: Template[] = [
@@ -118,7 +118,7 @@ export const TEMPLATES: Template[] = [
     clienteNome: 'Shapes',
     nome: 'Card de Feedback',
     descricao:
-      'Depoimento de cliente no padrão da Shapes — fundo laranja texturizado, ' +
+      'Depoimento de cliente no padrão da Shapes, fundo laranja texturizado, ' +
       'símbolo da concha e card branco com estrelas douradas.',
     formatos: [
       { formato: 'post', rotulo: 'Feed 4:5', largura: 1080, altura: 1350 },
@@ -173,7 +173,7 @@ export const TEMPLATES: Template[] = [
     clienteNome: 'Shapes',
     nome: 'Post de Produto',
     descricao:
-      'Post de produto no estilo do carrossel da Shapes — fundo colorido, ' +
+      'Post de produto no estilo do carrossel da Shapes, fundo colorido, ' +
       'foto do produto em forma orgânica e um texto curto.',
     formatos: [
       { formato: 'post', rotulo: 'Feed 4:5', largura: 1080, altura: 1350 },
@@ -194,7 +194,7 @@ export const TEMPLATES: Template[] = [
         label: 'Cor de fundo',
         tipo: 'cor',
         padrao: '#FF7829',
-        ajuda: 'Escolha uma cor da marca nas amostras ou qualquer cor no seletor — a Shapes tem liberdade cromática.',
+        ajuda: 'Escolha uma cor da marca nas amostras ou qualquer cor no seletor, a Shapes tem liberdade cromática.',
         opcoes: SWATCHES,
       },
       { id: 'cor_fonte', label: 'Cor do texto', tipo: 'cor', padrao: '#FFFFFF', opcoes: SWATCHES },
@@ -215,7 +215,7 @@ export const TEMPLATES: Template[] = [
     clienteSlug: 'shapes',
     clienteNome: 'Shapes',
     nome: 'Capa (foto + título)',
-    descricao: 'Capa do carrossel — foto com título grande e a logo; a foto pode ocupar o card todo ou aparecer menor, revelando a cor de fundo.',
+    descricao: 'Capa do carrossel, foto com título grande e a logo; a foto pode ocupar o card todo ou aparecer menor, revelando a cor de fundo.',
     formatos: FORMATOS,
     campos: [
       {
@@ -393,7 +393,7 @@ export const TEMPLATES: Template[] = [
     clienteSlug: 'shapes',
     clienteNome: 'Shapes',
     nome: 'CTA (acesse a loja)',
-    descricao: 'Fechamento do carrossel — foto de fundo, forma orgânica colorida (semi-transparente), concha, botão e chamada para a loja.',
+    descricao: 'Fechamento do carrossel, foto de fundo, forma orgânica colorida (semi-transparente), concha, botão e chamada para a loja.',
     formatos: FORMATOS,
     campos: [
       {
@@ -433,7 +433,7 @@ export const TEMPLATES: Template[] = [
     clienteNome: 'KA | Inteligência para Marcas',
     nome: 'Capa (gancho)',
     descricao:
-      'Card 1 do carrossel — o gancho em Playfair Display grande, no padrão ' +
+      'Card 1 do carrossel, o gancho em Playfair Display grande, no padrão ' +
       'unificado da KA (cabeçalho, rodapé e fundos oficiais).',
     formatos: FORMATO_KA,
     campos: [
@@ -457,7 +457,7 @@ export const TEMPLATES: Template[] = [
     clienteNome: 'KA | Inteligência para Marcas',
     nome: 'Texto (desenvolvimento)',
     descricao:
-      'Card de desenvolvimento — afirmação, virada ou insight. Título em ' +
+      'Card de desenvolvimento, afirmação, virada ou insight. Título em ' +
       'Playfair (opcional) e corpo em Montserrat com destaques em caramelo.',
     formatos: FORMATO_KA,
     campos: [
@@ -490,7 +490,7 @@ export const TEMPLATES: Template[] = [
     clienteNome: 'KA | Inteligência para Marcas',
     nome: 'Passo numerado',
     descricao:
-      'Card de passo — número grande em caramelo acima do texto, para as ' +
+      'Card de passo, número grande em caramelo acima do texto, para as ' +
       'sequências didáticas do carrossel educativo.',
     formatos: FORMATO_KA,
     campos: [
@@ -521,7 +521,7 @@ export const TEMPLATES: Template[] = [
     clienteNome: 'KA | Inteligência para Marcas',
     nome: 'Mídia (notícias e análises)',
     descricao:
-      'Card do carrossel de notícias — texto + área de mídia (imagem, print ou ' +
+      'Card do carrossel de notícias, texto + área de mídia (imagem, print ou ' +
       'vídeo) como prova. Horizontal e quadrada: mídia embaixo; vertical: mídia à direita.',
     formatos: FORMATO_KA,
     campos: [
@@ -541,7 +541,7 @@ export const TEMPLATES: Template[] = [
         aceitaVideo: true,
         redimensionavel2d: true,
         ajuda:
-          'Aceita foto/print OU vídeo. Vídeo: use MP4 (H.264) para tocar no navegador — ' +
+          'Aceita foto/print OU vídeo. Vídeo: use MP4 (H.264) para tocar no navegador, ' +
           '.mov do iPhone/Mac pode não abrir; máx. 200 MB e ~60s. Ajuste Largura/Altura da área.',
       },
       {
@@ -566,7 +566,7 @@ export const TEMPLATES: Template[] = [
     clienteNome: 'KA | Inteligência para Marcas',
     nome: 'Comentário (box de print)',
     descricao:
-      'Card do carrossel de notícias — texto em cima e card branco com ' +
+      'Card do carrossel de notícias, texto em cima e card branco com ' +
       '@usuário e o comentário, como um print de texto.',
     formatos: FORMATO_KA,
     campos: [
@@ -604,7 +604,7 @@ export const TEMPLATES: Template[] = [
     clienteNome: 'KA | Inteligência para Marcas',
     nome: 'CTA (card 10)',
     descricao:
-      'Fechamento de todo carrossel KA — fundo bege, frase, nome do produto ' +
+      'Fechamento de todo carrossel KA, fundo bege, frase, nome do produto ' +
       'grande e botão pill "Link na minha bio" com contorno caramelo.',
     formatos: FORMATO_KA,
     campos: [
@@ -642,7 +642,7 @@ export const TEMPLATES: Template[] = [
     clienteNome: 'KA | Inteligência para Marcas',
     nome: 'Card de Feedback (review)',
     descricao:
-      'Prova social no modelo de review do Google — logo KA, "FEEDBACK ;)", ' +
+      'Prova social no modelo de review do Google, logo KA, "FEEDBACK ;)", ' +
       'box branco com avatar, nome, estrelas douradas e o depoimento real.',
     formatos: FORMATO_KA,
     campos: [
@@ -668,7 +668,7 @@ export const TEMPLATES: Template[] = [
         tipo: 'textarea',
         obrigatorio: true,
         placeholder: 'Cole aqui o depoimento real (Google, WhatsApp ou DM)…',
-        ajuda: 'Transcreva o depoimento REAL — limpe só erros óbvios de digitação. Sem data.',
+        ajuda: 'Transcreva o depoimento REAL, limpe só erros óbvios de digitação. Sem data.',
         padrao:
           'Nós do grupo SABRE somos muito gratos pela experiência maravilhosa ' +
           'que tivemos com a Kelly e tudo aquilo que ela nos ensinou. É uma ' +

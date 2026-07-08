@@ -354,18 +354,30 @@ export async function baixarVideoDoCard(
   desenhaQuadro()
 
   const t0 = performance.now()
-  const prog = setInterval(() => {
-    const s = Math.min(total, Math.round((performance.now() - t0) / 1000))
-    aoProgresso?.(`Gravando… ${s}s de ${total}s`)
-  }, 500)
 
-  // Grava até o vídeo REALMENTE terminar (loop=false) — ou o teto de 60s.
-  // Não confia só no valor de duração (às vezes vinha errado → vídeo de 1s).
-  await Promise.race([
-    new Promise<void>((r) => video.addEventListener('ended', () => r(), { once: true })),
-    esperar(60_000),
-  ])
-  clearInterval(prog)
+  // Encerra a gravação quando: o vídeo termina; OU ele TRAVA (currentTime parou
+  // de avançar por ~2,5s — acontece quando a pessoa rola/sai da aba no iPhone);
+  // OU um teto absoluto de 65s. Assim o botão NUNCA fica preso.
+  await new Promise<void>((resolve) => {
+    let ultimo = -1
+    let mudouEm = performance.now()
+    const prog = setInterval(() => {
+      const ct = video.currentTime
+      const decorrido = (performance.now() - t0) / 1000
+      const s = Math.round(decorrido)
+      aoProgresso?.(video.ended || s >= total ? 'Finalizando…' : `Gravando… ${s}s de ${total}s`)
+
+      if (Math.abs(ct - ultimo) >= 0.02) {
+        ultimo = ct
+        mudouEm = performance.now()
+      }
+      const travou = ct > 0.2 && performance.now() - mudouEm > 2500
+      if (video.ended || travou || decorrido > 65) {
+        clearInterval(prog)
+        resolve()
+      }
+    }, 250)
+  })
   clearInterval(desenhar)
 
   rec.stop()

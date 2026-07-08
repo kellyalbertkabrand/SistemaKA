@@ -31,7 +31,7 @@ export function GestaoCobrancas() {
 
   const nomeCliente = useMemo(() => {
     const m = new Map(clientes.map((c) => [c.id, c.nome_marca]))
-    return (id: string | null) => (id ? (m.get(id) ?? '—') : '—')
+    return (id: string | null) => (id ? (m.get(id) ?? '-') : '-')
   }, [clientes])
 
   async function recarregar() {
@@ -65,7 +65,7 @@ export function GestaoCobrancas() {
       avisar(
         qtd > 0
           ? `${qtd} mensalidade(s) do mês geradas.`
-          : 'Nenhuma mensalidade nova — clientes com cobrança ativa já têm a deste mês (ou não há clientes com mensalidade configurada).',
+          : 'Nenhuma mensalidade nova, clientes com cobrança ativa já têm a deste mês (ou não há clientes com mensalidade configurada).',
       )
       await recarregar()
     } catch (e) {
@@ -117,7 +117,7 @@ export function GestaoCobrancas() {
     } catch (e) {
       setErro(
         (e instanceof Error ? e.message : String(e)) +
-          ' — a função "mp-criar-cobranca" precisa estar publicada no Supabase com o segredo ' +
+          ', a função "mp-criar-cobranca" precisa estar publicada no Supabase com o segredo ' +
           'MP_ACCESS_TOKEN. Enquanto isso, você pode colar um link manual (botão ao lado).',
       )
     } finally {
@@ -145,7 +145,7 @@ export function GestaoCobrancas() {
   async function copiarLink(c: Cobranca) {
     if (!c.link_pagamento) return
     await navigator.clipboard.writeText(c.link_pagamento)
-    avisar('Link de pagamento copiado — envie ao cliente.')
+    avisar('Link de pagamento copiado, envie ao cliente.')
   }
 
   async function marcarPaga(c: Cobranca) {

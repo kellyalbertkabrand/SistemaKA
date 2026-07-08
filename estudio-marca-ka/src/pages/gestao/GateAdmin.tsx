@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { ACESSO_ABERTO } from '../../lib/config'
 
 // As abas de gestão (clientes, orçamentos, contratos, cobranças) só abrem
-// para a KA logada como admin — diferente do estúdio, que é aberto.
+// para a KA logada como admin, diferente do estúdio, que é aberto.
 export function GateAdmin({ children }: { children: ReactNode }) {
   const { session, isAdmin, loading } = useAuth()
 
