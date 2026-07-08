@@ -5,7 +5,9 @@ import { baixarPng } from '../lib/exportar'
 import { baixarMolduraPng, baixarVideoDoCard, suportaGravacaoVideo, CANCELADO } from '../lib/exportarVideo'
 import { metaPadrao } from '../lib/assinatura'
 import { CamposEditor } from './CamposEditor'
+import { PreviewCheia } from './PreviewCheia'
 import { salvarRascunho, lerRascunho, limparRascunho } from '../lib/persistencia'
+import { useHistorico } from '../lib/historico'
 import './editor.css'
 
 // Editor de peça: formulário (à esquerda) + pré-visualização ao vivo (à direita),
@@ -39,9 +41,18 @@ export function EditorPeca({ template }: { template: Template }) {
       : { valores: valoresPadrao(template.campos), recuperado: false }
   }
 
-  const [valores, setValores] = useState<ValoresPeca>(inicial.current.valores)
+  const {
+    estado: valores,
+    set: setValores,
+    repor: reporValores,
+    desfazer,
+    refazer,
+    podeDesfazer,
+    podeRefazer,
+  } = useHistorico<ValoresPeca>(inicial.current.valores)
   const [recuperado, setRecuperado] = useState(inicial.current.recuperado)
   const [formato, setFormato] = useState<FormatoDef>(template.formatos[0])
+  const [telaCheia, setTelaCheia] = useState(false)
   // Qual ação está rodando (null = nenhuma) e o texto de progresso do vídeo.
   const [acao, setAcao] = useState<'png' | 'moldura' | 'video' | null>(null)
   const [statusVideo, setStatusVideo] = useState<string | null>(null)
@@ -91,7 +102,8 @@ export function EditorPeca({ template }: { template: Template }) {
   }, [valores, CHAVE])
 
   function set(id: string, valor: string | number) {
-    setValores((v) => ({ ...v, [id]: valor }))
+    // agrupar=true: digitar não empilha um passo de Desfazer por letra.
+    setValores((v) => ({ ...v, [id]: valor }), true)
   }
 
   // Limpa a peça e o rascunho salvo (recomeça do zero).
@@ -99,7 +111,7 @@ export function EditorPeca({ template }: { template: Template }) {
     if (ocupado) return
     if (!confirm('Limpar tudo e começar do zero?')) return
     limparRascunho(CHAVE)
-    setValores(valoresPadrao(template.campos))
+    reporValores(valoresPadrao(template.campos))
     setRecuperado(false)
   }
 
@@ -168,6 +180,18 @@ export function EditorPeca({ template }: { template: Template }) {
             </button>
           </div>
         )}
+
+        <div className="acoes-rapidas">
+          <button type="button" onClick={desfazer} disabled={!podeDesfazer || ocupado} title="Desfazer">
+            ↶ Desfazer
+          </button>
+          <button type="button" onClick={refazer} disabled={!podeRefazer || ocupado} title="Refazer">
+            ↷ Refazer
+          </button>
+          <button type="button" onClick={() => setTelaCheia(true)} title="Ver em tela cheia">
+            ⛶ Tela cheia
+          </button>
+        </div>
 
         <div className="field">
           <label>Formato</label>
@@ -280,6 +304,17 @@ export function EditorPeca({ template }: { template: Template }) {
           {formato.rotulo} · {formato.largura}×{formato.altura}
         </span>
       </div>
+
+      {telaCheia && (
+        <PreviewCheia
+          largura={formato.largura}
+          altura={formato.altura}
+          rotulo={`${template.nome} · ${formato.rotulo}`}
+          onFechar={() => setTelaCheia(false)}
+        >
+          <Render valores={valores} formato={formato} />
+        </PreviewCheia>
+      )}
     </div>
   )
 }

@@ -219,6 +219,76 @@
   color: #5a3d00;
 }
 
+/* Pré-visualização em tela cheia. */
+.preview-cheia {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 25, 35, 0.82);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  gap: 0.6rem;
+}
+.preview-cheia__palco {
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.preview-cheia__x {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.preview-cheia__x:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+.preview-cheia__label {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.82rem;
+}
+
+/* Barra de Desfazer/Refazer/Tela cheia acima dos botões de baixar. */
+.acoes-rapidas {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+.acoes-rapidas button {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 1px solid rgba(15, 25, 35, 0.16);
+  background: #fff;
+  color: var(--t-800, #1c2530);
+  border-radius: 8px;
+  padding: 0.45rem 0.5rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.acoes-rapidas button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.acoes-rapidas button:not(:disabled):hover {
+  background: #f5f2ec;
+}
+
 /* Contador de caracteres abaixo dos campos de texto com limite. */
 .contador-chars {
   display: block;

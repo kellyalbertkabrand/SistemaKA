@@ -2,7 +2,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { FormatoDef, Template, ValoresPeca } from '../templates/types'
 import { valoresPadrao } from '../templates/types'
 import { CamposEditor } from './CamposEditor'
+import { PreviewCheia } from './PreviewCheia'
 import { salvarRascunho, lerRascunho, limparRascunho } from '../lib/persistencia'
+import { useHistorico } from '../lib/historico'
+import { migrarConteudo } from '../templates/migrar'
 import { baixarPng, gerarPngBlob, entregarArquivos } from '../lib/exportar'
 import {
   baixarMolduraPng,
@@ -74,9 +77,19 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   }
 
   const [formato, setFormato] = useState<FormatoDef>(inicial.current.formato)
-  const [slides, setSlides] = useState<Slide[]>(inicial.current.slides)
+  // Slides com histórico (Desfazer/Refazer).
+  const {
+    estado: slides,
+    set: setSlides,
+    repor: reporSlides,
+    desfazer,
+    refazer,
+    podeDesfazer,
+    podeRefazer,
+  } = useHistorico<Slide[]>(inicial.current.slides)
   const [recuperado, setRecuperado] = useState(inicial.current.recuperado)
   const [sel, setSel] = useState(0)
+  const [telaCheia, setTelaCheia] = useState(false)
   const [acao, setAcao] = useState<'png' | 'moldura' | 'video' | 'tudo' | null>(null)
   const [statusVideo, setStatusVideo] = useState<string | null>(null)
   const [feito, setFeito] = useState<'imagem' | 'video' | null>(null)
@@ -85,6 +98,8 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   const ocupado = acao !== null
   // Permite CANCELAR uma exportação travada sem perder o carrossel.
   const abortRef = useRef<AbortController | null>(null)
+  // Índice do slide sendo arrastado (reordenar).
+  const arrastandoRef = useRef<number | null>(null)
 
   // Salva o carrossel automaticamente (com um pequeno atraso para não pesar a
   // cada tecla). Assim, se travar/recarregar, o trabalho continua lá.
@@ -152,7 +167,7 @@ export function Carrossel({ templates }: { templates: Template[] }) {
     if (!confirm('Começar um carrossel novo? O atual será apagado.')) return
     limparRascunho(CHAVE)
     seqRef.current = 0
-    setSlides([novoSlide()])
+    reporSlides([novoSlide()])
     setSel(0)
     setRecuperado(false)
   }
@@ -169,17 +184,37 @@ export function Carrossel({ templates }: { templates: Template[] }) {
     setSel((cur) => (cur === i ? j : cur === j ? i : cur))
   }
 
+  // Reordena arrastando (do índice `de` para o índice `para`).
+  function reordenar(de: number, para: number) {
+    if (ocupado || de === para || de < 0 || para < 0 || de >= slides.length || para >= slides.length) return
+    setSlides((s) => {
+      const c = [...s]
+      const [item] = c.splice(de, 1)
+      c.splice(para, 0, item)
+      return c
+    })
+    setSel(para)
+  }
+
+  // Troca o template do slide APROVEITANDO o conteúdo (textos e imagens migram).
+  // Assim a pessoa vê o mesmo conteúdo em outro modelo sem redigitar.
   function trocarTemplate(id: string) {
     if (ocupado) return
-    const t = porId(id)
+    const novoT = porId(id)
     setSlides((s) =>
-      s.map((sl, idx) => (idx === sel ? { ...sl, templateId: id, valores: valoresPadrao(t.campos) } : sl)),
+      s.map((sl, idx) =>
+        idx === sel
+          ? { ...sl, templateId: id, valores: migrarConteudo(porId(sl.templateId), sl.valores, novoT) }
+          : sl,
+      ),
     )
   }
 
   function setValor(id: string, valor: string | number) {
-    setSlides((s) =>
-      s.map((sl, idx) => (idx === sel ? { ...sl, valores: { ...sl.valores, [id]: valor } } : sl)),
+    // agrupar=true: digitar não empilha um passo de Desfazer por letra.
+    setSlides(
+      (s) => s.map((sl, idx) => (idx === sel ? { ...sl, valores: { ...sl.valores, [id]: valor } } : sl)),
+      true,
     )
   }
 
@@ -331,8 +366,22 @@ export function Carrossel({ templates }: { templates: Template[] }) {
               <div
                 key={s.key}
                 className={`thumb ${i === sel ? 'on' : ''} ${ocupado ? 'thumb--travado' : ''}`}
+                draggable={!ocupado}
                 onClick={() => {
                   if (!ocupado) setSel(i)
+                }}
+                onDragStart={() => {
+                  arrastandoRef.current = i
+                }}
+                onDragOver={(e) => {
+                  if (arrastandoRef.current !== null) e.preventDefault()
+                }}
+                onDrop={() => {
+                  if (arrastandoRef.current !== null) reordenar(arrastandoRef.current, i)
+                  arrastandoRef.current = null
+                }}
+                onDragEnd={() => {
+                  arrastandoRef.current = null
                 }}
               >
                 <div className="thumb__scaler" style={{ width: tw, height: th }}>
@@ -409,6 +458,18 @@ export function Carrossel({ templates }: { templates: Template[] }) {
         {/* Editor do slide selecionado */}
         <div className="carrossel__editor">
           <div className="editor__panel">
+            <div className="acoes-rapidas">
+              <button type="button" onClick={desfazer} disabled={!podeDesfazer || ocupado} title="Desfazer">
+                ↶ Desfazer
+              </button>
+              <button type="button" onClick={refazer} disabled={!podeRefazer || ocupado} title="Refazer">
+                ↷ Refazer
+              </button>
+              <button type="button" onClick={() => setTelaCheia(true)} title="Ver em tela cheia">
+                ⛶ Tela cheia
+              </button>
+            </div>
+
             <div className="field">
               <label>Template deste slide (nº {sel + 1})</label>
               <select value={slide.templateId} disabled={ocupado} onChange={(e) => trocarTemplate(e.target.value)}>
@@ -418,6 +479,9 @@ export function Carrossel({ templates }: { templates: Template[] }) {
                   </option>
                 ))}
               </select>
+              <p className="editor__hint">
+                Trocar o modelo mantém o texto e a foto que você já colocou.
+              </p>
             </div>
 
             <CamposEditor
@@ -530,6 +594,17 @@ export function Carrossel({ templates }: { templates: Template[] }) {
           )
         })}
       </div>
+
+      {telaCheia && (
+        <PreviewCheia
+          largura={formato.largura}
+          altura={formato.altura}
+          rotulo={`Slide ${sel + 1} · ${formato.rotulo}`}
+          onFechar={() => setTelaCheia(false)}
+        >
+          <template.render valores={slide.valores} formato={formato} />
+        </PreviewCheia>
+      )}
     </div>
   )
 }
