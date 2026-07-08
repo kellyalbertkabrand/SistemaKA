@@ -2,8 +2,13 @@ import { useMemo, useRef, useState } from 'react'
 import type { FormatoDef, Template, ValoresPeca } from '../templates/types'
 import { valoresPadrao } from '../templates/types'
 import { CamposEditor } from './CamposEditor'
-import { baixarPng, salvarTodasImagens } from '../lib/exportar'
-import { baixarMolduraPng, baixarVideoDoCard, suportaGravacaoVideo } from '../lib/exportarVideo'
+import { baixarPng, gerarPngBlob, entregarArquivos } from '../lib/exportar'
+import {
+  baixarMolduraPng,
+  baixarVideoDoCard,
+  gerarVideoBlob,
+  suportaGravacaoVideo,
+} from '../lib/exportarVideo'
 import { metaPadrao } from '../lib/assinatura'
 import './carrossel.css'
 import './editor.css'
@@ -37,10 +42,17 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   const [formato, setFormato] = useState<FormatoDef>(FORMATOS[0])
   const [slides, setSlides] = useState<Slide[]>(() => [novoSlide()])
   const [sel, setSel] = useState(0)
-  const [acao, setAcao] = useState<'png' | 'moldura' | 'video' | 'zip' | null>(null)
+  const [acao, setAcao] = useState<'png' | 'moldura' | 'video' | 'tudo' | null>(null)
   const [statusVideo, setStatusVideo] = useState<string | null>(null)
   const [feito, setFeito] = useState<'imagem' | 'video' | null>(null)
+  // true enquanto grava algum vídeo (mostra o aviso de atenção também no "salvar tudo").
+  const [gravandoVideo, setGravandoVideo] = useState(false)
   const ocupado = acao !== null
+
+  const slideTemVideo = (v: ValoresPeca) =>
+    Object.entries(v).some(([k, val]) => k.endsWith('_kind') && val === 'video') ||
+    Object.values(v).some((val) => typeof val === 'string' && val.startsWith('data:video'))
+  const temAlgumVideo = slides.some((s) => slideTemVideo(s.valores))
 
   // Nós em tamanho real (escondidos) usados para exportar PNG de cada slide.
   const nodeRefs = useRef<(HTMLDivElement | null)[]>([])
@@ -104,7 +116,7 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   }
 
   async function rodar(
-    qual: 'png' | 'moldura' | 'video' | 'zip',
+    qual: 'png' | 'moldura' | 'video' | 'tudo',
     fn: () => Promise<void>,
     tipoFeito?: 'imagem' | 'video',
   ) {
@@ -118,6 +130,7 @@ export function Carrossel({ templates }: { templates: Template[] }) {
     } finally {
       setAcao(null)
       setStatusVideo(null)
+      setGravandoVideo(false)
     }
   }
 
@@ -137,17 +150,42 @@ export function Carrossel({ templates }: { templates: Template[] }) {
       void rodar('video', () => baixarVideoDoCard(node, nomeSlide(), (f) => setStatusVideo(f)), 'video')
   }
 
-  const baixarTodos = () => {
+  const esperar = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+  // Salva TUDO (imagens e vídeos) de uma vez no rolo. Vídeos são gravados um a
+  // um em tempo real: para gravar, o slide precisa ficar visível, então trocamos
+  // o slide selecionado e esperamos renderizar.
+  const salvarTudo = () => {
     void rodar(
-      'zip',
+      'tudo',
       async () => {
-        const itens = slides
-          .map((_, i) => nodeRefs.current[i])
-          .filter((n): n is HTMLDivElement => !!n)
-          .map((node, i) => ({ node, nome: `slide${i + 1}` }))
-        await salvarTodasImagens(itens, `${slug}-carrossel`, 2, meta())
+        const arquivos: { nome: string; blob: Blob }[] = []
+        for (let i = 0; i < slides.length; i++) {
+          const numero = String(i + 1).padStart(2, '0')
+          if (slideTemVideo(slides[i].valores)) {
+            if (!suportaGravacaoVideo()) continue // sem suporte: pula o vídeo
+            setSel(i)
+            setGravandoVideo(true)
+            await esperar(600) // deixa o slide renderizar e o vídeo começar
+            const node = stageRef.current
+            if (node) {
+              const { blob, ext } = await gerarVideoBlob(node, (fase) =>
+                setStatusVideo(`Slide ${i + 1}: ${fase}`),
+              )
+              arquivos.push({ nome: `carrossel-${numero}.${ext}`, blob })
+            }
+            setGravandoVideo(false)
+          } else {
+            const node = nodeRefs.current[i]
+            if (node) {
+              setStatusVideo(`Gerando imagem do slide ${i + 1}...`)
+              arquivos.push({ nome: `carrossel-${numero}.png`, blob: await gerarPngBlob(node, 2, meta()) })
+            }
+          }
+        }
+        if (arquivos.length) await entregarArquivos(arquivos, `${slug}-carrossel`, 'Carrossel')
       },
-      'imagem',
+      'video',
     )
   }
 
@@ -171,8 +209,12 @@ export function Carrossel({ templates }: { templates: Template[] }) {
           <button className="btn btn--ghost" onClick={addSlide} disabled={slides.length >= MAX_SLIDES || ocupado}>
             + Slide ({slides.length}/{MAX_SLIDES})
           </button>
-          <button className="btn" onClick={baixarTodos} disabled={ocupado}>
-            {acao === 'zip' ? 'Gerando…' : 'Salvar todas as imagens'}
+          <button className="btn" onClick={salvarTudo} disabled={ocupado}>
+            {acao === 'tudo'
+              ? statusVideo ?? 'Gerando…'
+              : temAlgumVideo
+                ? 'Salvar tudo no rolo (imagens e vídeos)'
+                : 'Salvar todas as imagens'}
           </button>
         </div>
       </div>
@@ -305,7 +347,7 @@ export function Carrossel({ templates }: { templates: Template[] }) {
                 </>
               )}
 
-              {acao === 'video' && (
+              {(acao === 'video' || gravandoVideo) && (
                 <div className="aviso-atencao">
                   <strong>⚠️ Atenção: fique nesta tela até terminar.</strong>
                   <div>

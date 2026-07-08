@@ -141,6 +141,65 @@ export async function baixarZip(
   URL.revokeObjectURL(url)
 }
 
+/** Gera o PNG (assinado) de um nó e devolve como Blob. */
+export async function gerarPngBlob(
+  node: HTMLElement,
+  escala = 2,
+  meta?: MetaAssinatura,
+): Promise<Blob> {
+  const dataUrl = await rasterizarPng(node, {
+    ...OPCOES_PNG,
+    pixelRatio: escala,
+    width: node.offsetWidth,
+    height: node.offsetHeight,
+  })
+  const assinado = assinarPngDataUrl(dataUrl, meta ?? metaPadrao())
+  return dataUrlParaBlob(assinado)
+}
+
+/**
+ * Entrega VÁRIOS arquivos (imagens e/ou vídeos) de uma vez. No celular abre a
+ * folha de compartilhar com todos ("Salvar N itens" no iPhone -> rolo/Fotos);
+ * no computador baixa um único ZIP. Serve para salvar o carrossel inteiro
+ * (imagens + vídeos) numa ação só.
+ */
+export async function entregarArquivos(
+  arquivos: { nome: string; blob: Blob }[],
+  nomeBaseZip: string,
+  titulo: string,
+): Promise<'compartilhado' | 'zip'> {
+  const nav = navigator as Navigator & {
+    canShare?: (data?: unknown) => boolean
+    share?: (data?: unknown) => Promise<void>
+  }
+  const mobile = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches
+  if (mobile && nav.canShare && nav.share) {
+    const files = arquivos.map(
+      (a) => new File([a.blob], a.nome, { type: a.blob.type || 'application/octet-stream' }),
+    )
+    if (nav.canShare({ files })) {
+      try {
+        await nav.share({ files, title: titulo })
+        return 'compartilhado'
+      } catch (e) {
+        if ((e as Error).name === 'AbortError') return 'compartilhado'
+      }
+    }
+  }
+  const zip = new JSZip()
+  arquivos.forEach((a) => zip.file(a.nome, a.blob))
+  const blob = await zip.generateAsync({ type: 'blob' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.download = `${nomeBaseZip}.zip`
+  a.href = url
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 4000)
+  return 'zip'
+}
+
 /**
  * Salva TODAS as imagens de uma vez. No CELULAR (iPhone e Android) abre a folha
  * de compartilhar com todos os PNGs, onde aparece "Salvar N imagens" e vai para

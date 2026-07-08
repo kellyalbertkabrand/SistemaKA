@@ -248,11 +248,11 @@ export async function baixarMolduraPng(
   await entregarArquivo(await dataUrlParaBlob(assinado), `${nome}.png`, nome)
 }
 
-export async function baixarVideoDoCard(
+/** Gera o vídeo do card (arte + vídeo + áudio) e devolve o Blob e a extensão. */
+export async function gerarVideoBlob(
   node: HTMLElement,
-  nome: string,
   aoProgresso?: (fase: string) => void,
-): Promise<void> {
+): Promise<{ blob: Blob; ext: string }> {
   if (!suportaGravacaoVideo()) {
     throw new Error(
       'Este navegador não grava vídeo (comum no iPhone). Use "Baixar moldura (PNG)" e ' +
@@ -389,5 +389,15 @@ export async function baixarVideoDoCard(
 
   const blob = new Blob(chunks, { type: mime?.startsWith('video/mp4') ? 'video/mp4' : 'video/webm' })
   const ext = mime?.startsWith('video/mp4') ? 'mp4' : 'webm'
+  return { blob, ext }
+}
+
+/** Grava o vídeo do card e entrega (compartilhar no celular / baixar no PC). */
+export async function baixarVideoDoCard(
+  node: HTMLElement,
+  nome: string,
+  aoProgresso?: (fase: string) => void,
+): Promise<void> {
+  const { blob, ext } = await gerarVideoBlob(node, aoProgresso)
   await entregarArquivo(blob, `${nome}.${ext}`, nome)
 }
