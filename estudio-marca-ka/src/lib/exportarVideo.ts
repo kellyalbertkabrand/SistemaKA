@@ -62,11 +62,11 @@ function bufParaBase64(buf: ArrayBuffer): string {
 }
 async function fontEmbedCssKA(): Promise<string> {
   if (cacheFontCss !== null) return cacheFontCss
+  // Só a Montserrat: é a fonte do card de Mídia (cabeçalho, texto, rodapé) e o
+  // único que gera moldura/vídeo. Embutir as 4 fontes deixava o SVG grande
+  // demais e travava o Safari do iPhone em "Preparando a moldura".
   const fontes = [
     { fam: 'Montserrat KA', style: 'normal', weight: '100 900', file: 'montserrat-var.woff2' },
-    { fam: 'Playfair KA', style: 'normal', weight: '400 900', file: 'playfair-var.woff2' },
-    { fam: 'Playfair KA', style: 'italic', weight: '400 900', file: 'playfair-var-italic.woff2' },
-    { fam: 'Outfit KA', style: 'normal', weight: '100 900', file: 'outfit-var.woff2' },
   ]
   const partes = await Promise.all(
     fontes.map(async (f) => {
@@ -94,6 +94,15 @@ function carregarImg(src: string): Promise<HTMLImageElement> {
 
 function esperar(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms))
+}
+
+// Aborta uma promessa lenta (o toPng do Safari às vezes nunca resolve) para o
+// botão nunca ficar preso.
+function comTimeout<T>(p: Promise<T>, ms: number, msg: string): Promise<T> {
+  return Promise.race([
+    p,
+    new Promise<T>((_, rej) => setTimeout(() => rej(new Error(msg)), ms)),
+  ])
 }
 
 // Duração confiável (segundos). Espera os metadados; se vier Infinity/NaN
@@ -207,14 +216,15 @@ async function molduraComJanela(
   node.classList.add('moldura-video')
   let molduraUrl: string
   try {
-    const ehSafari =
-      /^((?!chrome|android).)*safari/i.test(navigator.userAgent) ||
-      /iP(hone|ad|od)/i.test(navigator.userAgent)
-    if (ehSafari) {
-      await toPng(node, opts).catch(() => undefined) // aquecimento (imagens)
-      await esperar(150)
-    }
-    molduraUrl = await toPng(node, opts)
+    // Uma única rasterização, com tempo limite: o toPng do Safari às vezes
+    // nunca resolve, e sem o limite o botão ficava preso em "Preparando a
+    // moldura". (Não precisa de aquecimento aqui: o vídeo é excluído e não há
+    // foto na moldura.)
+    molduraUrl = await comTimeout(
+      toPng(node, opts),
+      25000,
+      'Não consegui gerar a moldura neste navegador. Tente de novo, ou use o computador (Chrome).',
+    )
   } finally {
     node.classList.remove('moldura-video')
   }
