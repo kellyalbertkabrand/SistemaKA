@@ -59,6 +59,7 @@ export async function renderObras(container) {
         </div>
         <div class="topo-acoes">
           <a class="btn btn-mini" data-link href="/clientes">Clientes</a>
+          <a class="btn btn-mini" data-link href="/fornecedores">Fornecedores</a>
           <button class="btn btn-ghost" id="sair">Sair</button>
         </div>
       </header>

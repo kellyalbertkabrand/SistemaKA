@@ -6,6 +6,7 @@ import { renderObra } from './views/obra.js';
 import { renderPublica } from './views/publica.js';
 import { renderClientes } from './views/clientes.js';
 import { renderCadastroCliente } from './views/cadastroCliente.js';
+import { renderFornecedores } from './views/fornecedores.js';
 
 const app = document.getElementById('app');
 
@@ -70,6 +71,10 @@ async function rotear() {
 
   if (path === '/clientes' || path === '/clientes/') {
     return renderClientes(app);
+  }
+
+  if (path === '/fornecedores' || path === '/fornecedores/') {
+    return renderFornecedores(app);
   }
 
   // Padrão: lista de obras.
