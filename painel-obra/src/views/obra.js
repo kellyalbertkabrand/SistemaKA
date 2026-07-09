@@ -3,6 +3,7 @@ import { navegar } from '../main.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
 import { reconhecimentoDisponivel, ouvir, parar } from '../lib/voice.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
+import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
 
 // Detalhe interno de uma obra: KPIs, lançamento por voz/IA, etapas e lançamentos.
 export async function renderObra(container, obraId) {
@@ -117,6 +118,7 @@ export async function renderObra(container, obraId) {
           <input id="e-orcado" type="number" min="0" step="0.01" placeholder="Orçado R$" />
           <button class="btn btn-mini btn-primary" type="submit">Salvar</button>
         </form>
+        ${chipsPadrao(etapas)}
         <div id="tabela-etapas">${tabelaEtapas(etapas, lancamentos)}</div>
       </section>
 
@@ -202,6 +204,14 @@ export async function renderObra(container, obraId) {
   container.querySelectorAll('[data-del-etapa]').forEach((b) => {
     b.addEventListener('click', async () => {
       await supabase.from('etapas').delete().eq('id', b.getAttribute('data-del-etapa'));
+      recarregar();
+    });
+  });
+  // Quick-add: adicionar uma etapa padrão (CAIXA) com um clique.
+  container.querySelectorAll('[data-chip-etapa]').forEach((c) => {
+    c.addEventListener('click', async () => {
+      c.disabled = true;
+      await supabase.from('etapas').insert({ obra_id: obra.id, nome: c.getAttribute('data-chip-etapa'), orcado: 0 });
       recarregar();
     });
   });
@@ -365,6 +375,17 @@ function configurarLancamento(container, obra, etapas, recarregar) {
 // ---------------------------------------------------------------------------
 // Tabelas
 // ---------------------------------------------------------------------------
+// Sugestões de etapas padrão (CAIXA) ainda não cadastradas — 1 clique adiciona.
+function chipsPadrao(etapas) {
+  const tem = new Set(etapas.map((e) => e.nome.toLowerCase()));
+  const faltam = ETAPAS_PADRAO.filter((n) => !tem.has(n.toLowerCase()));
+  if (!faltam.length) return '';
+  return `<div class="chips-padrao">
+    <span class="chips-label">Etapas padrão — clique para adicionar:</span>
+    ${faltam.map((n) => `<button type="button" class="chip" data-chip-etapa="${esc(n)}">+ ${esc(n)}</button>`).join('')}
+  </div>`;
+}
+
 function tabelaEtapas(etapas, lancamentos) {
   // Realizado por etapa (casado pelo nome).
   const realizado = {};

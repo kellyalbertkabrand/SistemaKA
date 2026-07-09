@@ -2,6 +2,7 @@ import { supabase } from '../supabaseClient.js';
 import { navegar } from '../main.js';
 import { moeda, pct, slugify, esc } from '../lib/format.js';
 import { logoPlaceholder } from '../lib/marca.js';
+import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
 
 // Lista de obras + cadastro de nova obra (com etapas opcionais).
 export async function renderObras(container) {
@@ -23,18 +24,27 @@ export async function renderObras(container) {
     return;
   }
 
-  // Totais executados por obra (uma consulta só).
+  // Totais por obra + totais gerais (uma consulta só).
   const ids = (obras || []).map((o) => o.id);
   let porObra = {};
+  let totalExec = 0, totalPago = 0, totalPend = 0;
   if (ids.length) {
     const { data: lancs } = await supabase
       .from('lancamentos')
-      .select('obra_id, valor')
+      .select('obra_id, valor, status')
       .in('obra_id', ids);
     for (const l of lancs || []) {
-      porObra[l.obra_id] = (porObra[l.obra_id] || 0) + Number(l.valor || 0);
+      const v = Number(l.valor || 0);
+      porObra[l.obra_id] = (porObra[l.obra_id] || 0) + v;
+      totalExec += v;
+      if (l.status === 'pago') totalPago += v; else totalPend += v;
     }
   }
+  const totalOrc = (obras || []).reduce((t, o) => t + Number(o.orcamento || 0), 0);
+  const totalSaldo = totalOrc - totalExec;
+  const obrasEstouradas = (obras || []).filter(
+    (o) => Number(o.orcamento || 0) - (porObra[o.id] || 0) < 0
+  ).length;
 
   container.innerHTML = `
     <div class="app">
@@ -48,6 +58,24 @@ export async function renderObras(container) {
         </div>
         <button class="btn btn-ghost" id="sair">Sair</button>
       </header>
+
+      ${(obras || []).length ? `
+      <section class="card resumo-geral">
+        <div class="row-between">
+          <h2>Resumo geral</h2>
+          <span class="muted">${obras.length} obra${obras.length > 1 ? 's' : ''}</span>
+        </div>
+        <div class="kpis">
+          ${kpi('Orçado', moeda(totalOrc))}
+          ${kpi('Executado', moeda(totalExec))}
+          ${kpi('Pago', moeda(totalPago))}
+          ${kpi('Pendente', moeda(totalPend))}
+          ${kpi('Saldo', moeda(totalSaldo), totalSaldo < 0 ? 'neg' : '')}
+        </div>
+        ${obrasEstouradas > 0
+          ? `<p class="alerta">⚠️ ${obrasEstouradas} obra${obrasEstouradas > 1 ? 's' : ''} com o orçamento estourado (saldo negativo).</p>`
+          : ''}
+      </section>` : ''}
 
       <section class="card">
         <button class="btn btn-primary" id="abrir-nova">+ Nova obra</button>
@@ -72,6 +100,11 @@ export async function renderObras(container) {
             </div>
             <div id="etapas-linhas"></div>
           </div>
+
+          <label class="check-inline full">
+            <input type="checkbox" id="o-padrao" />
+            Já criar as etapas padrão da obra (lista CAIXA, do início ao fim)
+          </label>
 
           <div class="full row-end">
             <button type="button" class="btn btn-ghost" id="cancelar-nova">Cancelar</button>
@@ -192,7 +225,7 @@ function configurarFormNovaObra(container) {
       return;
     }
 
-    // Etapas preenchidas
+    // Etapas preenchidas manualmente
     const etapas = [...linhas.querySelectorAll('.etapa-linha')]
       .map((l) => ({
         obra_id: obra.id,
@@ -201,12 +234,26 @@ function configurarFormNovaObra(container) {
       }))
       .filter((et) => et.nome);
 
+    // Etapas padrão (CAIXA), se marcado — sem duplicar as já digitadas
+    if (container.querySelector('#o-padrao')?.checked) {
+      const jaTem = new Set(etapas.map((e) => e.nome.toLowerCase()));
+      for (const nome of ETAPAS_PADRAO) {
+        if (!jaTem.has(nome.toLowerCase())) {
+          etapas.push({ obra_id: obra.id, nome, orcado: 0 });
+        }
+      }
+    }
+
     if (etapas.length) {
       await supabase.from('etapas').insert(etapas);
     }
 
     navegar(`/painel/${obra.id}`);
   });
+}
+
+function kpi(rotulo, valor, cls = '') {
+  return `<div class="kpi"><small>${rotulo}</small><strong class="${cls}">${valor}</strong></div>`;
 }
 
 function mostrarErro(el, msg) {

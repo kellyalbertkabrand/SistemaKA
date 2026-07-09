@@ -173,6 +173,19 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: -1
 .kpi small { color: var(--muted); font-size: .72rem; display: block; }
 .kpi strong { font-size: 1.05rem; }
 
+/* ---- Dashboard / resumo geral ---- */
+.resumo-geral h2 { font-size: 1.1rem; }
+.alerta { margin: .8rem 0 0; padding: .6rem .8rem; background: #f7e3e1; color: var(--neg); border-radius: 10px; font-size: .88rem; }
+.check-inline { display: flex; flex-direction: row; align-items: center; gap: .5rem; font-size: .9rem; color: var(--tinta); }
+.check-inline input { width: auto; }
+
+/* ---- Chips de etapas padrão ---- */
+.chips-padrao { margin: .8rem 0; display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
+.chips-label { font-size: .78rem; color: var(--muted); width: 100%; margin-bottom: .1rem; }
+.chip { font-family: var(--fonte-ui); font-size: .78rem; padding: .3rem .6rem; border: 1px dashed var(--acento); background: #fdf6f2; color: var(--acento-escuro); border-radius: 999px; cursor: pointer; }
+.chip:hover { background: var(--acento); color: #fff; border-style: solid; }
+.chip:disabled { opacity: .5; }
+
 /* ---- Barras ---- */
 .barra { background: #eee7da; border-radius: 999px; height: 9px; overflow: hidden; margin: .5rem 0 .2rem; }
 .barra span { display: block; height: 100%; background: var(--acento); border-radius: 999px; }
