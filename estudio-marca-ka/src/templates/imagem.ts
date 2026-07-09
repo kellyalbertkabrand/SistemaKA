@@ -11,9 +11,10 @@ import type { ValoresPeca } from './types'
 // excedente e o object-position escolhe qual parte aparece). Antes o pan era um
 // `translate` preso a uma folga de 12%, então numa foto larga mal saía do meio.
 //
-// Uma folga mínima de zoom garante um arrasto leve também quando a foto tem a
-// MESMA proporção da moldura (aí o movimento vem do transform-origin do zoom).
-const FOLGA = 1.05
+// Uma folga de zoom garante arrasto também no eixo em que a foto tem a MESMA
+// proporção da moldura (aí o movimento vem do transform-origin do zoom), para os
+// DOIS controles (horizontal e vertical) sempre reenquadrarem a foto.
+const FOLGA = 1.12
 
 const clamp = (n: number) => Math.min(100, Math.max(0, Number.isFinite(n) ? n : 50))
 
