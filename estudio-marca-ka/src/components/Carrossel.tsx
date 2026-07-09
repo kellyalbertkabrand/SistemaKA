@@ -344,13 +344,6 @@ export function Carrossel({ templates }: { templates: Template[] }) {
           <button className="btn btn--ghost" onClick={addSlide} disabled={slides.length >= MAX_SLIDES || ocupado}>
             + Slide ({slides.length}/{MAX_SLIDES})
           </button>
-          <button className="btn" onClick={salvarTudo} disabled={ocupado}>
-            {acao === 'tudo'
-              ? statusVideo ?? 'Gerando…'
-              : temAlgumVideo
-                ? 'Salvar tudo no rolo (imagens e vídeos)'
-                : 'Salvar todas as imagens'}
-          </button>
         </div>
       </div>
 
@@ -502,6 +495,19 @@ export function Carrossel({ templates }: { templates: Template[] }) {
                 {acao === 'png' && <span className="spin-mini" />}
                 {acao === 'png' ? 'Baixando…' : temVideo ? 'Baixar imagem (PNG)' : 'Baixar só este slide'}
               </button>
+
+              <button className="btn" onClick={salvarTudo} disabled={ocupado}>
+                {acao === 'tudo' && <span className="spin-mini" />}
+                {acao === 'tudo'
+                  ? statusVideo ?? 'Gerando…'
+                  : temAlgumVideo
+                    ? 'Salvar tudo no rolo (imagens e vídeos)'
+                    : 'Salvar todas as imagens'}
+              </button>
+              <p className="editor__hint">
+                No celular, as imagens (e vídeos) vão direto para o <strong>rolo de câmera</strong>;
+                no computador, baixam juntas num <strong>arquivo .zip</strong>.
+              </p>
 
               {temVideo && (
                 <>
