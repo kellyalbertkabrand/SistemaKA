@@ -49,7 +49,7 @@ function KaFrame({
 }) {
   return (
     <div
-      className={`ka-card ${classe}`}
+      className={`ka-card ${classe} fmt-${formato.formato}`}
       style={{
         width: formato.largura,
         height: formato.altura,
@@ -130,11 +130,15 @@ export function KaMidiaCard({ valores, formato }: RenderProps) {
   const prop = String(valores.proporcao || '16:9')
   const base = PROPORCOES[prop] ?? PROPORCOES['16:9']
 
-  // Largura e altura da área controladas separadamente (40–140%).
+  // Largura e altura da área controladas separadamente (40–140%). A largura é
+  // limitada à área útil do card (largura − 2×80 de padding) para a mídia não
+  // estourar as laterais; a altura é limitada para não invadir texto/rodapé.
   const fLarg = Math.min(140, Math.max(40, Number(valores.midia_larg) || 100)) / 100
   const fAlt = Math.min(140, Math.max(40, Number(valores.midia_alt) || 100)) / 100
-  const w = Math.round(base.largura * fLarg)
-  const h = Math.round(base.altura * fAlt)
+  const maxW = formato.largura - 160
+  const maxH = formato.altura - (prop === '9:16' ? 260 : 460)
+  const w = Math.min(Math.round(base.largura * fLarg), maxW)
+  const h = Math.min(Math.round(base.altura * fAlt), maxH)
   const ehVideo = String(valores.midia_kind) === 'video' || midia.startsWith('data:video')
   const estiloMidia = { ...estiloImagem(valores, 'midia'), height: '100%' as const }
 
@@ -204,7 +208,7 @@ export function KaFeedbackCard({ valores, formato }: RenderProps) {
 
   return (
     <div
-      className="ka-fb"
+      className={`ka-fb fmt-${formato.formato}`}
       style={{ width: formato.largura, height: formato.altura, background: hexFundoKA(fundo), color: fg }}
     >
       <div className="main">

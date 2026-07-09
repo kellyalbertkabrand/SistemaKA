@@ -43,14 +43,18 @@ export function hexFundoKA(fundo: string): string {
   return FUNDOS_KA.find((f) => f.valor === v)?.hex ?? COR_PAPEL
 }
 
+/** Luminância YIQ (0–255) de um hex. */
+function yiqDe(hex: string): number {
+  const h = hex.replace('#', '')
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  return (r * 299 + g * 587 + b * 114) / 1000
+}
+
 /** true se o fundo é escuro (→ texto/logo claros). Limiar YIQ. */
 export function ehFundoEscuroKA(fundo: string): boolean {
-  const hex = hexFundoKA(fundo).replace('#', '')
-  const r = parseInt(hex.slice(0, 2), 16)
-  const g = parseInt(hex.slice(2, 4), 16)
-  const b = parseInt(hex.slice(4, 6), 16)
-  const yiq = (r * 299 + g * 587 + b * 114) / 1000
-  return yiq < 150
+  return yiqDe(hexFundoKA(fundo)) < 150
 }
 
 /** Cor do texto automática por contraste com o fundo. */
@@ -68,11 +72,17 @@ export function corFonteKA(corFonte: unknown, fundo: string): string {
   return hexFundoKA(v)
 }
 
-/** Cor de destaque (*asteriscos*, números): caramelo — mas sobre fundos
- *  caramelo/cobre vira marinho para manter contraste. */
+/** Cor de destaque (aspas/*asteriscos*, números): caramelo por padrão. Quando o
+ *  caramelo não contrasta com o fundo (fundos quentes/dourados ou o próprio
+ *  caramelo/cobre), troca por marinho (fundo claro) ou mostarda (fundo escuro),
+ *  para o destaque SEMPRE aparecer. */
 export function corDestaqueKA(fundo: string): string {
-  const v = resolver(fundo)
-  return v === 'caramelo' || v === 'cobre' ? COR_MARINHO : COR_CARAMELO
+  const yFundo = yiqDe(hexFundoKA(fundo))
+  const yCaramelo = yiqDe(COR_CARAMELO)
+  // Caramelo tem contraste suficiente com o fundo → usa caramelo.
+  if (Math.abs(yFundo - yCaramelo) >= 60) return COR_CARAMELO
+  // Contraste fraco: destaca com a cor oposta ao fundo.
+  return yFundo < 128 ? COR_MOSTARDA : COR_MARINHO
 }
 
 /** Paleta para o card da marca no painel interno. */

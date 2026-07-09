@@ -67,7 +67,9 @@
   text-transform: uppercase;
   opacity: 0.58;
 }
-/* miolo: conteúdo centralizado verticalmente entre cabeçalho e rodapé */
+/* miolo: conteúdo centralizado verticalmente entre cabeçalho e rodapé.
+   overflow:hidden garante que um texto longo seja recortado no miolo em vez de
+   invadir o cabeçalho/rodapé (acontecia no Quadrado 1:1, mais baixo). */
 .ka-card .ka-miolo {
   flex: 1 1 auto;
   min-height: 0;
@@ -77,6 +79,24 @@
   justify-content: center;
   text-align: center;
   width: 100%;
+  overflow: hidden;
+}
+
+/* Quadrado 1:1 é bem mais baixo (1080 vs 1350) — reduz os tamanhos grandes para
+   o mesmo texto caber sem recortar nem encostar no cabeçalho/rodapé. */
+.ka-capa.fmt-card .titulo {
+  font-size: 84px;
+}
+.ka-texto.fmt-card .titulo {
+  font-size: 62px;
+  margin-bottom: 36px;
+}
+.ka-card.fmt-card .corpo {
+  font-size: 44px;
+}
+.ka-passo.fmt-card .numero {
+  font-size: 150px;
+  margin-bottom: 28px;
 }
 
 /* destaque: sempre bold (peso 900), nunca itálico */
@@ -320,6 +340,32 @@
   text-transform: uppercase;
   opacity: 0.58;
   padding-top: 26px;
+}
+/* Quadrado 1:1 (bem mais baixo): compacta o feedback para o depoimento longo
+   não ser recortado. */
+.ka-fb.fmt-card .rotulo {
+  font-size: 42px;
+  letter-spacing: 9px;
+  margin-bottom: 30px;
+}
+.ka-fb.fmt-card .logo {
+  height: 58px;
+  margin-bottom: 22px;
+}
+.ka-fb.fmt-card .box {
+  padding: 42px 48px;
+  border-radius: 28px;
+}
+.ka-fb.fmt-card .head {
+  margin-bottom: 22px;
+}
+.ka-fb.fmt-card .stars {
+  font-size: 38px;
+  margin-bottom: 20px;
+}
+.ka-fb.fmt-card .depo {
+  font-size: 27px;
+  line-height: 1.4;
 }
 
 .ka-cta .botao {
