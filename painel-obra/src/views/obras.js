@@ -57,7 +57,10 @@ export async function renderObras(container) {
             <p class="muted">Schramm · Arquitetura e Engenharia</p>
           </div>
         </div>
-        <button class="btn btn-ghost" id="sair">Sair</button>
+        <div class="topo-acoes">
+          <a class="btn btn-mini" data-link href="/clientes">Clientes</a>
+          <button class="btn btn-ghost" id="sair">Sair</button>
+        </div>
       </header>
 
       ${(obras || []).length ? `

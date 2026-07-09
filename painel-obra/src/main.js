@@ -4,6 +4,8 @@ import { renderLogin } from './views/login.js';
 import { renderObras } from './views/obras.js';
 import { renderObra } from './views/obra.js';
 import { renderPublica } from './views/publica.js';
+import { renderClientes } from './views/clientes.js';
+import { renderCadastroCliente } from './views/cadastroCliente.js';
 
 const app = document.getElementById('app');
 
@@ -26,10 +28,16 @@ document.addEventListener('click', (e) => {
 async function rotear() {
   const path = window.location.pathname;
 
-  // 1) Rota pública do cliente: /obra/{slug} — sem login.
+  // 1) Rotas públicas (sem login):
+  //    /obra/{slug} — painel do cliente
   const mPublica = path.match(/^\/obra\/([^/]+)\/?$/);
   if (mPublica) {
     return renderPublica(app, decodeURIComponent(mPublica[1]));
+  }
+  //    /cadastro/{token} — autopreenchimento do cliente
+  const mCadastro = path.match(/^\/cadastro\/([^/]+)\/?$/);
+  if (mCadastro) {
+    return renderCadastroCliente(app, decodeURIComponent(mCadastro[1]));
   }
 
   // Sem as chaves do Supabase nada funciona — avisa em vez de quebrar.
@@ -58,6 +66,10 @@ async function rotear() {
   const mObra = path.match(/^\/painel\/([^/]+)\/?$/);
   if (mObra) {
     return renderObra(app, mObra[1]);
+  }
+
+  if (path === '/clientes' || path === '/clientes/') {
+    return renderClientes(app);
   }
 
   // Padrão: lista de obras.

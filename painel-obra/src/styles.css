@@ -204,6 +204,16 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: -1
 .status-voz.erro { color: var(--neg); }
 .preview-card { border: 1px dashed var(--acento); border-radius: 12px; padding: 1rem; margin-top: 1rem; background: #fdf8f4; }
 
+/* ---- Clientes / cadastro ---- */
+.cliente-item { padding: .7rem 0; border-bottom: 1px solid #f1ece2; }
+.cliente-item:last-child { border-bottom: none; }
+.cliente-dados { font-size: .85rem; margin-top: .15rem; }
+.cliente-data { font-size: .72rem; margin-top: .3rem; }
+.cadastro-card { max-width: 620px; margin: 1.2rem auto; }
+.cad-titulo { font-size: 1.5rem; margin: 0 0 .3rem; }
+.cad-sucesso { text-align: center; padding: 2rem 1rem; }
+.cad-check { width: 56px; height: 56px; border-radius: 50%; background: #e7f0e9; color: var(--ok); font-size: 1.8rem; display: grid; place-items: center; margin: 0 auto 1rem; }
+
 /* ---- Tabelas ---- */
 .tabela { width: 100%; border-collapse: collapse; font-size: .9rem; margin-top: .6rem; }
 .tabela th { text-align: left; font-size: .72rem; text-transform: uppercase; letter-spacing: .03em; color: var(--muted); padding: .4rem .5rem; border-bottom: 1px solid var(--linha); }
