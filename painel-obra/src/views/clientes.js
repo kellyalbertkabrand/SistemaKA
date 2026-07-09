@@ -1,6 +1,6 @@
 import { supabase } from '../supabaseClient.js';
 import { esc, dataBR } from '../lib/format.js';
-import { logoPlaceholder } from '../lib/marca.js';
+import { navBar } from '../lib/nav.js';
 
 // Tela interna: lista de clientes + gerar link de autopreenchimento.
 export async function renderClientes(container) {
@@ -30,17 +30,9 @@ export async function renderClientes(container) {
   const obras = obrasRes.data || [];
 
   container.innerHTML = `
+    ${navBar('clientes')}
     <div class="app">
-      <header class="topo">
-        <div class="topo-marca">
-          ${logoPlaceholder('logo-ph-sm')}
-          <div>
-            <a class="voltar" data-link href="/">← Painel</a>
-            <h1 class="logo">Clientes</h1>
-          </div>
-        </div>
-        <button class="btn btn-ghost" id="sair">Sair</button>
-      </header>
+      <div class="pagina-topo"><h1>Clientes</h1></div>
 
       <section class="card">
         <h2>Gerar link de cadastro</h2>

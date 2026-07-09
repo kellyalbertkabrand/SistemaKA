@@ -1,7 +1,7 @@
 import { supabase } from '../supabaseClient.js';
 import { navegar } from '../main.js';
 import { moeda, pct, slugify, esc, dataBR } from '../lib/format.js';
-import { logoPlaceholder } from '../lib/marca.js';
+import { navBar } from '../lib/nav.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
 import { baixarCSV, numBR } from '../lib/exportar.js';
 
@@ -48,22 +48,8 @@ export async function renderObras(container) {
   ).length;
 
   container.innerHTML = `
+    ${navBar('painel')}
     <div class="app">
-      <header class="topo">
-        <div class="topo-marca">
-          ${logoPlaceholder('logo-ph-sm')}
-          <div>
-            <h1 class="logo">Painel de Obra</h1>
-            <p class="muted">Schramm · Arquitetura e Engenharia</p>
-          </div>
-        </div>
-        <div class="topo-acoes">
-          <a class="btn btn-mini" data-link href="/clientes">Clientes</a>
-          <a class="btn btn-mini" data-link href="/fornecedores">Fornecedores</a>
-          <button class="btn btn-ghost" id="sair">Sair</button>
-        </div>
-      </header>
-
       ${(obras || []).length ? `
       <section class="card resumo-geral">
         <div class="row-between">

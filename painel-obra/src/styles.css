@@ -139,6 +139,32 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: -1
 .erro { color: var(--neg); font-size: .88rem; margin: .2rem 0 0; }
 .erro[hidden] { display: none; }
 
+/* ---- Navegação (menu de site) ---- */
+.nav { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .55rem 1.1rem; background: #fff; border-bottom: 1px solid var(--linha); box-shadow: 0 1px 4px rgba(42, 38, 34, .05); }
+.nav-brand { display: flex; align-items: center; gap: .55rem; text-decoration: none; }
+.logo-ph-nav { width: 42px; height: 30px; font-size: .42rem; padding: .15rem; }
+.nav-titulo { font-family: var(--fonte-ui); font-weight: 700; letter-spacing: .06em; font-size: .8rem; text-transform: uppercase; color: var(--tinta); }
+.nav-toggle { display: none; }
+.nav-burger { display: none; font-size: 1.5rem; line-height: 1; cursor: pointer; padding: .1rem .5rem; color: var(--tinta); user-select: none; }
+.nav-links { display: flex; align-items: center; gap: .25rem; }
+.nav-item { text-decoration: none; color: var(--tinta); font-size: .9rem; padding: .5rem .85rem; border-radius: 8px; }
+.nav-item:hover { background: #f4efe8; }
+.nav-item.ativo { color: var(--acento); font-weight: 600; background: #fbf1ea; }
+.nav-sair { border: 1px solid var(--linha); background: #fff; padding: .45rem .85rem; border-radius: 8px; cursor: pointer; font-size: .88rem; font-family: var(--fonte-ui); color: var(--tinta); margin-left: .3rem; }
+.nav-sair:hover { border-color: #d8d0c2; }
+
+/* Cabeçalho de cada página, abaixo da nav */
+.pagina-topo { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
+.pagina-topo h1 { font-size: 1.5rem; }
+
+@media (max-width: 720px) {
+  .nav { flex-wrap: wrap; }
+  .nav-burger { display: block; }
+  .nav-links { display: none; flex-direction: column; align-items: stretch; width: 100%; gap: .15rem; margin-top: .5rem; }
+  .nav-toggle:checked ~ .nav-links { display: flex; }
+  .nav-item, .nav-sair { width: 100%; text-align: left; margin-left: 0; }
+}
+
 /* ---- Topo ---- */
 .topo { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1.3rem; }
 .topo-acoes { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; justify-content: flex-end; }

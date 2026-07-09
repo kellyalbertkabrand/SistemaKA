@@ -1,6 +1,6 @@
 import { supabase } from '../supabaseClient.js';
 import { esc } from '../lib/format.js';
-import { logoPlaceholder } from '../lib/marca.js';
+import { navBar } from '../lib/nav.js';
 
 // Tela interna: cadastro e lista de fornecedores.
 export async function renderFornecedores(container) {
@@ -27,17 +27,9 @@ export async function renderFornecedores(container) {
   const fornecedores = data || [];
 
   container.innerHTML = `
+    ${navBar('fornecedores')}
     <div class="app">
-      <header class="topo">
-        <div class="topo-marca">
-          ${logoPlaceholder('logo-ph-sm')}
-          <div>
-            <a class="voltar" data-link href="/">← Painel</a>
-            <h1 class="logo">Fornecedores</h1>
-          </div>
-        </div>
-        <button class="btn btn-ghost" id="sair">Sair</button>
-      </header>
+      <div class="pagina-topo"><h1>Fornecedores</h1></div>
 
       <section class="card">
         <button class="btn btn-primary" id="abrir-novo">+ Novo fornecedor</button>

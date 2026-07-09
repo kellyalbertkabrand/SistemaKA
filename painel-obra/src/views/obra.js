@@ -5,6 +5,7 @@ import { reconhecimentoDisponivel, ouvir, parar } from '../lib/voice.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
 import { baixarCSV, numBR } from '../lib/exportar.js';
+import { navBar } from '../lib/nav.js';
 
 // Detalhe interno de uma obra: KPIs, lançamento por voz/IA, etapas e lançamentos.
 export async function renderObra(container, obraId) {
@@ -37,8 +38,9 @@ export async function renderObra(container, obraId) {
   const linkPublico = `${window.location.origin}/obra/${obra.slug}`;
 
   container.innerHTML = `
+    ${navBar('painel')}
     <div class="app">
-      <header class="topo">
+      <div class="pagina-topo">
         <div>
           <a class="voltar" data-link href="/">← Obras</a>
           <h1>${esc(obra.nome)}</h1>
@@ -46,11 +48,8 @@ export async function renderObra(container, obraId) {
             <button class="btn btn-mini" id="abrir-editar">✎ Editar obra</button>
           </p>
         </div>
-        <div class="topo-acoes">
-          <button class="btn btn-mini" id="exportar">⬇ Exportar (Excel)</button>
-          <button class="btn btn-ghost" id="sair">Sair</button>
-        </div>
-      </header>
+        <button class="btn btn-mini" id="exportar">⬇ Exportar (Excel)</button>
+      </div>
 
       <form id="form-editar" class="card" hidden>
         <div class="form-grid">
