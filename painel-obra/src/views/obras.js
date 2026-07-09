@@ -50,26 +50,10 @@ export async function renderObras(container) {
   container.innerHTML = `
     ${navBar('painel')}
     <div class="app">
-      ${(obras || []).length ? `
-      <section class="card resumo-geral">
-        <div class="row-between">
-          <h2>Resumo geral</h2>
-          <div class="row-end">
-            <span class="muted">${obras.length} obra${obras.length > 1 ? 's' : ''}</span>
-            <button class="btn btn-mini" id="exportar-tudo">⬇ Exportar tudo</button>
-          </div>
-        </div>
-        <div class="kpis">
-          ${kpi('Orçado', moeda(totalOrc))}
-          ${kpi('Executado', moeda(totalExec))}
-          ${kpi('Pago', moeda(totalPago))}
-          ${kpi('Pendente', moeda(totalPend))}
-          ${kpi('Saldo', moeda(totalSaldo), totalSaldo < 0 ? 'neg' : '')}
-        </div>
-        ${obrasEstouradas > 0
-          ? `<p class="alerta">⚠️ ${obrasEstouradas} obra${obrasEstouradas > 1 ? 's' : ''} com o orçamento estourado (saldo negativo).</p>`
-          : ''}
-      </section>` : ''}
+      <div class="pagina-topo">
+        <h1>Painel de Obras</h1>
+        ${(obras || []).length ? `<button class="btn btn-mini" id="exportar-tudo">⬇ Exportar tudo</button>` : ''}
+      </div>
 
       <section class="card">
         <button class="btn btn-primary" id="abrir-nova">+ Nova obra</button>
