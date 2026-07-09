@@ -34,11 +34,12 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Painel da KA — aberto, sem login (uso interno da KA) */}
+          {/* Painel administrativo da KA (gestão) — aberto, sem login.
+              Fica na raiz e em /admin. O /ka agora é o ESTÚDIO da marca KA
+              (cai na rota dinâmica /:slug lá embaixo), igual ao /shapes. */}
           <Route path="/" element={<AdminPanel />} />
-          <Route path="/ka" element={<AdminPanel />} />
 
-          {/* Estúdio público por marca — ex.: /shapes, /aa (e alias /ver/:slug) */}
+          {/* Estúdio público por marca — ex.: /shapes, /ka (e alias /ver/:slug) */}
           <Route path="/ver/:slug" element={<DemoStudio />} />
 
           {/* Links públicos enviados ao cliente (por token) */}

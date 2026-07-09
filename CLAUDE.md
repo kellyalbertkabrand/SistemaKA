@@ -69,12 +69,22 @@ monta o editor de peça única; `Carrossel.tsx` monta o construtor de carrossel
 
 ## 3. Rotas
 
-- `/` e `/ka` → **AdminPanel** (painel da KA, público hoje — lista clientes)
+> ⚠️ **Mudança (jul/2026, a pedido da KA):** `/ka` NÃO é mais o painel admin.
+> Agora `/ka` é o **estúdio da marca KA** (gerar layouts), igual a `/shapes`.
+> O painel administrativo completo fica em **`/admin`** (e na raiz `/`).
+
+- `/` → **AdminPanel** (painel da KA, público hoje — lista clientes)
+- `/admin` → **AdminPanel** completo/protegido (admin) — é o hub de gestão
+- `/ka` → **DemoStudio** da marca KA (cai na rota dinâmica `/:slug`)
 - `/login` → Login (Supabase)
-- `/admin` → AdminPanel protegido (admin)
 - `/estudio` → Studio do cliente (protegido)
-- `/ver/:slug` e `/:slug` → **DemoStudio** público por marca (ex.: `/shapes`)
+- `/ver/:slug` e `/:slug` → **DemoStudio** público por marca (ex.: `/shapes`, `/ka`)
 - `*` → NotFound
+
+Todas as URLs (admin → aba Estúdio, `/ka`, `/shapes`) montam os layouts a
+partir do **mesmo `registry.ts`** — fonte única. Mudou um layout, muda em todas
+as URLs no próximo deploy (não há cópia separada nem versão "desatualizada"; o
+que parece velho no ar é cache do navegador/celular — forçar recarregar).
 
 Admin é reconhecido por e-mail (allowlist `VITE_ADMIN_EMAILS`, padrão
 `kellyalbertka@gmail.com`) **ou** `papel='admin'` no banco — ver `AuthContext.tsx`.
