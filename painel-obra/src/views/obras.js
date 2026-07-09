@@ -1,8 +1,9 @@
 import { supabase } from '../supabaseClient.js';
 import { navegar } from '../main.js';
-import { moeda, pct, slugify, esc } from '../lib/format.js';
+import { moeda, pct, slugify, esc, dataBR } from '../lib/format.js';
 import { logoPlaceholder } from '../lib/marca.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
+import { baixarCSV, numBR } from '../lib/exportar.js';
 
 // Lista de obras + cadastro de nova obra (com etapas opcionais).
 export async function renderObras(container) {
@@ -63,7 +64,10 @@ export async function renderObras(container) {
       <section class="card resumo-geral">
         <div class="row-between">
           <h2>Resumo geral</h2>
-          <span class="muted">${obras.length} obra${obras.length > 1 ? 's' : ''}</span>
+          <div class="row-end">
+            <span class="muted">${obras.length} obra${obras.length > 1 ? 's' : ''}</span>
+            <button class="btn btn-mini" id="exportar-tudo">⬇ Exportar tudo</button>
+          </div>
         </div>
         <div class="kpis">
           ${kpi('Orçado', moeda(totalOrc))}
@@ -125,6 +129,29 @@ export async function renderObras(container) {
   container.querySelector('#sair').addEventListener('click', async () => {
     await supabase.auth.signOut();
   });
+
+  // Exportar tudo (todos os lançamentos de todas as obras) em CSV/Excel
+  const btnExp = container.querySelector('#exportar-tudo');
+  if (btnExp) {
+    btnExp.addEventListener('click', async () => {
+      btnExp.disabled = true;
+      const original = btnExp.textContent;
+      btnExp.textContent = 'Gerando…';
+      const nomePorId = Object.fromEntries((obras || []).map((o) => [o.id, o.nome]));
+      const { data: todos } = await supabase
+        .from('lancamentos')
+        .select('obra_id, data, etapa, descricao, valor, status')
+        .in('obra_id', ids)
+        .order('data', { ascending: false });
+      const linhas = [['Obra', 'Data', 'Etapa', 'Descrição', 'Valor', 'Status']];
+      for (const l of todos || []) {
+        linhas.push([nomePorId[l.obra_id] || '', dataBR(l.data), l.etapa, l.descricao || '', numBR(l.valor), l.status]);
+      }
+      baixarCSV('obras-todos-os-lancamentos.csv', linhas);
+      btnExp.disabled = false;
+      btnExp.textContent = original;
+    });
+  }
 
   // Abrir uma obra
   container.querySelectorAll('[data-obra]').forEach((el) => {

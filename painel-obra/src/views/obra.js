@@ -4,6 +4,7 @@ import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
 import { reconhecimentoDisponivel, ouvir, parar } from '../lib/voice.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
+import { baixarCSV, numBR } from '../lib/exportar.js';
 
 // Detalhe interno de uma obra: KPIs, lançamento por voz/IA, etapas e lançamentos.
 export async function renderObra(container, obraId) {
@@ -45,7 +46,10 @@ export async function renderObra(container, obraId) {
             <button class="btn btn-mini" id="abrir-editar">✎ Editar obra</button>
           </p>
         </div>
-        <button class="btn btn-ghost" id="sair">Sair</button>
+        <div class="topo-acoes">
+          <button class="btn btn-mini" id="exportar">⬇ Exportar (Excel)</button>
+          <button class="btn btn-ghost" id="sair">Sair</button>
+        </div>
       </header>
 
       <form id="form-editar" class="card" hidden>
@@ -136,6 +140,29 @@ export async function renderObra(container, obraId) {
 
   container.querySelector('#sair').addEventListener('click', async () => {
     await supabase.auth.signOut();
+  });
+
+  // ---- Exportar a obra (Excel/CSV) ----
+  container.querySelector('#exportar').addEventListener('click', () => {
+    const realizado = {};
+    for (const l of lancamentos) realizado[l.etapa] = (realizado[l.etapa] || 0) + Number(l.valor || 0);
+    const linhas = [];
+    linhas.push(['Obra', obra.nome]);
+    linhas.push(['Cliente', obra.cliente || '']);
+    linhas.push(['Orçamento', numBR(obra.orcamento)]);
+    linhas.push(['Executado', numBR(executado)]);
+    linhas.push(['Saldo', numBR(saldo)]);
+    linhas.push([]);
+    linhas.push(['ETAPAS']);
+    linhas.push(['Etapa', 'Orçado', 'Realizado']);
+    for (const et of etapas) linhas.push([et.nome, numBR(et.orcado), numBR(realizado[et.nome] || 0)]);
+    linhas.push([]);
+    linhas.push(['LANÇAMENTOS']);
+    linhas.push(['Data', 'Etapa', 'Descrição', 'Valor', 'Status']);
+    for (const l of lancamentos) {
+      linhas.push([dataBR(l.data), l.etapa, l.descricao || '', numBR(l.valor), l.status]);
+    }
+    baixarCSV(`obra-${obra.slug}.csv`, linhas);
   });
 
   // ---- Editar obra (nome, cliente, orçamento total) ----
