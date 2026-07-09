@@ -1,8 +1,9 @@
+import { useId } from 'react'
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
 import { ratioForma, caixaFoto, FORMAS } from '../formas'
 import { logoShapes } from './cores'
-import { ShapesClips } from './ShapesClips'
+import { ShapesClips, idsClipSeguro } from './ShapesClips'
 import { comEnfase } from './enfase'
 import './shapes.css'
 
@@ -49,13 +50,14 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
   const forma = String(valores.forma || 'shape-blob1')
   const corFonte = String(valores.cor_fonte || '#131313')
   const logoUrl = logoShapes(String(valores.cor_logo || 'auto'), cor)
+  const uid = idsClipSeguro(useId())
   const caixa = caixaFoto(formato.largura - 192, formato.altura - 500, ratioForma(forma), Number(valores.foto_area))
   return (
     <div
       className={`shapes-cores fmt-${formato.formato}`}
       style={{ width: formato.largura, height: formato.altura, background: cor, color: corFonte }}
     >
-      <ShapesClips />
+      <ShapesClips uid={uid} />
       <img className="logo" src={logoUrl} alt="Shapes" crossOrigin="anonymous" />
       <div className="blob-wrap">
         <div
@@ -63,8 +65,8 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
           style={{
             width: caixa.largura,
             height: caixa.altura,
-            clipPath: `url(#${forma})`,
-            WebkitClipPath: `url(#${forma})`,
+            clipPath: `url(#${forma}-${uid})`,
+            WebkitClipPath: `url(#${forma}-${uid})`,
           }}
         >
           {foto ? (
@@ -89,6 +91,7 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
   const forma = String(valores.forma || 'shape-blob1')
   const corFonte = String(valores.cor_fonte || '#FFFFFF')
   const logoUrl = logoShapes(String(valores.cor_logo || 'auto'), cor)
+  const uid = idsClipSeguro(useId())
   const story = formato.formato === 'story'
   const caixa = story
     ? caixaFoto(formato.largura - 192, formato.altura - 600, ratioForma(forma), Number(valores.foto_area))
@@ -100,8 +103,8 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
       style={{
         width: caixa.largura,
         height: caixa.altura,
-        clipPath: `url(#${forma})`,
-        WebkitClipPath: `url(#${forma})`,
+        clipPath: `url(#${forma}-${uid})`,
+        WebkitClipPath: `url(#${forma}-${uid})`,
       }}
     >
       {foto ? (
@@ -123,7 +126,7 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
       className={`shapes-forma ${story ? 'empilhado' : ''}`}
       style={{ width: formato.largura, height: formato.altura, background: cor, color: corFonte }}
     >
-      <ShapesClips />
+      <ShapesClips uid={uid} />
       {story ? (
         <>
           {lado}

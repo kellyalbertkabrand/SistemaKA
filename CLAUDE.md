@@ -115,22 +115,32 @@ Admin é reconhecido por e-mail (allowlist `VITE_ADMIN_EMAILS`, padrão
   (padrão combinando com o fundo inicial); o cliente muda a cor do texto à
   vontade, independente do logo.
 
-### As 3 formas orgânicas — `src/templates/shapes/formas.ts`
+### As formas — `src/templates/shapes/formas.ts`
 
-As fotos entram dentro de uma das 3 formas oficiais da Shapes, via
-`clip-path: url(#id)` com `clipPathUnits="objectBoundingBox"` (coords 0–1).
-Cada forma tem seu `d` (traçado EXATO extraído dos SVGs oficiais) e um `ratio`
-(proporção nativa largura/altura):
+As fotos entram dentro de uma das formas da Shapes, via `clip-path: url(#id)`
+com `clipPathUnits="objectBoundingBox"` (coords 0–1). Cada forma tem seu `d`
+(traçado EXATO extraído dos SVGs oficiais) e um `ratio` (proporção nativa
+largura/altura):
 
 - `shape-blob1` — pedra/ovo (732×817)
 - `shape-blob2` — "guitar pick" (710×715)
 - `shape-blob3` — gota/triângulo (693×677)
+- `shape-quadrado` — quadrada (cantos levemente arredondados; ratio 1), opção
+  reta a pedido da KA (jul/2026), além das 3 orgânicas.
 
 **Importante (bug já resolvido):** `objectBoundingBox` estica a forma para a
 caixa da foto. Por isso a caixa é dimensionada na **proporção nativa da forma**
 (`caixaContida`/`caixaFoto`) e centralizada — senão a forma distorce. Os defs
 do clip-path são renderizados dentro de cada card (`ShapesClips.tsx`) para o
 `html-to-image` resolver a `url(#...)` no export.
+
+**Bug do iPhone (jul/2026 — RESOLVIDO):** vários cards na mesma página (galeria
+de miniaturas, carrossel) repetiam os mesmos ids `shape-blob1/2/3`. O Chrome
+tolera ids duplicados, mas o **Safari (iPhone) não resolve** e a foto saía
+QUADRADA em vez de na forma orgânica. Agora cada card gera um `uid` único
+(`useId` sanitizado) e os ids viram `shape-blob1-<uid>` etc. — `ShapesClips`
+recebe `uid` e os cards referenciam `url(#${forma}-${uid})` (ProdutoCard,
+ShapesCoresCard, ShapesFormaCard). O CTA desenha a forma inline (não usa clip).
 
 **Tamanho da foto:** `caixaFoto()` escala a caixa por um slider "Tamanho da
 foto" (`foto_area`, 60–120%, padrão 92%). Acima de 100% a foto avança nas

@@ -1,8 +1,9 @@
+import { useId } from 'react'
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
 import { ratioForma, caixaFoto } from '../formas'
 import { logoShapes } from './cores'
-import { ShapesClips } from './ShapesClips'
+import { ShapesClips, idsClipSeguro } from './ShapesClips'
 import { comEnfase } from './enfase'
 import './shapes.css'
 
@@ -16,6 +17,7 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
   const forma = String(valores.forma || 'shape-blob1')
   const corFonte = String(valores.cor_fonte || '#FFFFFF')
   const logoUrl = logoShapes(String(valores.cor_logo || 'auto'), cor)
+  const uid = idsClipSeguro(useId())
 
   // caixa da foto com a proporção nativa da forma (contain), para o clip não
   // esticar; tamanho ajustável pelo slider "Tamanho da foto" (foto_area).
@@ -32,7 +34,7 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
       className={`shapes-prod fmt-${formato.formato}`}
       style={{ width: formato.largura, height: formato.altura, background: cor, color: corFonte }}
     >
-      <ShapesClips />
+      <ShapesClips uid={uid} />
       <img
         className="logo"
         src={logoUrl}
@@ -46,8 +48,8 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
           style={{
             width: caixa.largura,
             height: caixa.altura,
-            clipPath: `url(#${forma})`,
-            WebkitClipPath: `url(#${forma})`,
+            clipPath: `url(#${forma}-${uid})`,
+            WebkitClipPath: `url(#${forma}-${uid})`,
           }}
         >
           {foto ? (
