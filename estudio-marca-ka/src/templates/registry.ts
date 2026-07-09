@@ -458,7 +458,7 @@ export const TEMPLATES: Template[] = [
     nome: 'Texto (desenvolvimento)',
     descricao:
       'Card de desenvolvimento, afirmação, virada ou insight. Título em ' +
-      'Playfair (opcional) e corpo em Montserrat com destaques em caramelo.',
+      'Playfair (opcional) e corpo em Montserrat, com destaques em negrito.',
     formatos: FORMATO_KA,
     campos: [
       {

@@ -188,10 +188,11 @@ app — aqui é a versão web dos mesmos cards).
   **variáveis** auto-hospedadas (`public/clientes/ka/fonts/*-var.woff2`,
   3 arquivos, licença OFL, famílias 'Playfair KA'/'Montserrat KA' em `ka.css`)
   — o export embute as fontes sem depender do CSS cross-origin do Google.
-- **Destaque:** `*asteriscos*` no texto viram `<strong>` peso 900 na cor de
-  destaque (caramelo; papel sobre fundo caramelo). Nunca itálico. Sem
-  travessões (—). Se a frase termina na palavra destacada, o ponto final entra
-  dentro dos asteriscos.
+- **Destaque:** aspas (`"assim"`) e `*asteriscos*` no texto viram `<strong>`
+  peso 900 **na MESMA cor do texto** (a pedido da KA, jul/2026 — o negrito NÃO
+  troca a cor; se o texto é branco, o negrito é branco). Nunca itálico. Sem
+  travessões (—). O número grande do card Passo continua na cor de destaque
+  (`corDestaqueKA`, calculada por contraste). `comDestaque` em `KaCards.tsx`.
 
 ### Templates KA (`registry.ts`) — os blocos dos carrosséis de 10 cards
 
