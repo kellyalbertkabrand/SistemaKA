@@ -9,6 +9,7 @@ import { NotFound } from './pages/NotFound'
 import { OrcamentoPublico } from './pages/publico/OrcamentoPublico'
 import { ContratoPublico } from './pages/publico/ContratoPublico'
 import { CadastroPublico } from './pages/publico/CadastroPublico'
+import { CuidadoraCadastro } from './pages/publico/CuidadoraCadastro'
 import { PropostaDoc } from './pages/publico/PropostaDoc'
 import { modeloPropostaPadrao } from './lib/gestao'
 
@@ -46,6 +47,9 @@ export default function App() {
           <Route path="/orcamento/:token" element={<OrcamentoPublico />} />
           <Route path="/contrato/:token" element={<ContratoPublico />} />
           <Route path="/cadastro" element={<CadastroPublico />} />
+
+          {/* Cadastro público de cuidadora (controle pessoal da KA) */}
+          <Route path="/cadastro-cuidadora" element={<CuidadoraCadastro />} />
 
           {/* Pré-visualização do modelo de proposta (só em desenvolvimento) */}
           {import.meta.env.DEV && <Route path="/proposta-modelo" element={<PropostaModeloDev />} />}

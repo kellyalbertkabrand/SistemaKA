@@ -358,6 +358,29 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
   completo em `supabase/functions/README.md`.
 - Dev local: `?preview-gate` na URL pula o gate (só em `import.meta.env.DEV`).
 
+### Cuidadoras (controle PESSOAL da KA — jul/2026)
+
+Aba **Cuidadoras 🔒** no painel (restrita à admin): gestão das cuidadoras
+(vida pessoal da KA, não é parte do negócio de design).
+
+- **Cadastro público:** link `/cadastro-cuidadora` — a pessoa preenche a
+  própria ficha (nome, CPF, RG, telefone, endereço…) e **anexa documentos**
+  no próprio formulário; entra como status `pendente` + etiqueta "novo".
+- **Ficha** (`GestaoCuidadoras.tsx`): dados completos, status
+  (pendente/ativa/inativa), início do trabalho, observações + seção
+  **Documentos** (anexar/baixar/excluir).
+- **Documentos SEM Firebase Storage** (plano Spark não tem): cada arquivo vira
+  data URL num doc da subcoleção `cuidadoras/{id}/documentos` (limite 1 MB por
+  doc do Firestore). Imagens são comprimidas no navegador (canvas, máx 1600px,
+  JPEG com qualidade decrescente até ~900 KB de data URL) em
+  `src/lib/cuidadoras.ts` (`prepararArquivo`); PDFs valem até ~600 KB (senão a
+  UI orienta a comprimir/fotografar). Quando subir para o Blaze, migrar para o
+  Storage.
+- **Regras do Firestore** (modo produção em `firebase/firestore.rules`):
+  `create` público em `cuidadoras` e `cuidadoras/{id}/documentos` (para o link
+  de cadastro); read/update/delete só a KA. O mesmo padrão foi aplicado a
+  `clientes` (o `/cadastro` público precisava de `create`).
+
 ---
 
 
@@ -508,6 +531,7 @@ estudio-marca-ka/
     │   ├── assinatura.ts           # metadados iTXt no PNG
     │   ├── supabase.ts, api.ts, storage.ts, database.types.ts
     │   ├── gestao.ts               # dados de orçamentos/contratos/cobranças
+    │   ├── cuidadoras.ts           # cuidadoras + documentos (compressão)
     ├── styles/
     │   ├── global.css              # tema base (KA)
     │   ├── painel.css              # grades do painel (clientes + templates)
@@ -522,7 +546,7 @@ estudio-marca-ka/
     ├── pages/
     │   ├── AdminPanel.tsx          # painel da KA (abas estúdio + gestão)
     │   ├── gestao/                 # GateAdmin, Clientes, Orçamentos,
-    │   │                           #   Contratos, Cobranças (admin)
+    │   │                           #   Contratos, Cobranças, Cuidadoras (admin)
     │   ├── publico/                # OrcamentoPublico, ContratoPublico (token)
     │   ├── Studio.tsx              # área do cliente logado
     │   ├── DemoStudio.tsx          # rota pública por marca (/shapes)

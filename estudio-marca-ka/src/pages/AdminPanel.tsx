@@ -8,10 +8,11 @@ import { GestaoClientes } from './gestao/GestaoClientes'
 import { GestaoOrcamentos } from './gestao/GestaoOrcamentos'
 import { GestaoContratos } from './gestao/GestaoContratos'
 import { GestaoCobrancas } from './gestao/GestaoCobrancas'
+import { GestaoCuidadoras } from './gestao/GestaoCuidadoras'
 import '../styles/painel.css'
 import '../styles/gestao.css'
 
-type Aba = 'estudio' | 'clientes' | 'orcamentos' | 'contratos' | 'cobrancas'
+type Aba = 'estudio' | 'clientes' | 'orcamentos' | 'contratos' | 'cobrancas' | 'cuidadoras'
 
 // Rótulos curtos para o menu (estilo site: maiúsculas, poucos caracteres).
 const MENU: ItemMenu[] = [
@@ -20,6 +21,7 @@ const MENU: ItemMenu[] = [
   { id: 'orcamentos', rotulo: 'Orçamentos' },
   { id: 'contratos', rotulo: 'Contratos' },
   { id: 'cobrancas', rotulo: 'Cobranças' },
+  { id: 'cuidadoras', rotulo: 'Cuidadoras' },
 ]
 
 const CABECALHOS: Record<Aba, { titulo: string; sub: string }> = {
@@ -28,6 +30,7 @@ const CABECALHOS: Record<Aba, { titulo: string; sub: string }> = {
   orcamentos: { titulo: 'Orçamentos', sub: 'Monte a proposta, envie o link; aprovado, vira contrato + cobrança.' },
   contratos: { titulo: 'Contratos', sub: 'Modelo padrão, contratos gerados e assinaturas (aceite digital).' },
   cobrancas: { titulo: 'Cobranças', sub: 'Mensalidades e cobranças avulsas — boleto, PIX e cartão via Mercado Pago.' },
+  cuidadoras: { titulo: 'Cuidadoras 🔒', sub: 'Seu controle pessoal — cadastro pelo link, ficha e documentos de cada cuidadora.' },
 }
 
 // Painel da KA: estúdio (aberto) + gestão (restrita à admin logada).
@@ -129,6 +132,11 @@ export function AdminPanel() {
             {aba === 'cobrancas' && (
               <GateAdmin>
                 <GestaoCobrancas />
+              </GateAdmin>
+            )}
+            {aba === 'cuidadoras' && (
+              <GateAdmin>
+                <GestaoCuidadoras />
               </GateAdmin>
             )}
           </>

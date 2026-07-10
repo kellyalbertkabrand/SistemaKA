@@ -36,8 +36,9 @@ service cloud.firestore {
 //         && request.auth.token.email == 'kellyalbertka@gmail.com';
 //     }
 //
-//     // Gestão interna: só a KA.
-//     match /clientes/{id}      { allow read, write: if ehKA(); }
+//     // Gestão interna: só a KA. Exceção: o link público /cadastro cria a
+//     // ficha do cliente (create liberado; ler/editar continua só a KA).
+//     match /clientes/{id}      { allow create: if true; allow read, update, delete: if ehKA(); }
 //     match /usuarios/{id}      { allow read, write: if ehKA() || request.auth.uid == id; }
 //     match /convites/{id}      { allow read, write: if ehKA(); }
 //     match /kit_marca/{id}     { allow read, write: if ehKA(); }
@@ -59,6 +60,17 @@ service cloud.firestore {
 //     match /cobrancas/{id} {
 //       allow read: if true;
 //       allow write: if ehKA();
+//     }
+//
+//     // CUIDADORAS (controle pessoal da KA): o link público /cadastro-cuidadora
+//     // pode CRIAR a ficha e os documentos anexados; ler/editar/apagar só a KA.
+//     match /cuidadoras/{id} {
+//       allow create: if true;
+//       allow read, update, delete: if ehKA();
+//       match /documentos/{docId} {
+//         allow create: if true;
+//         allow read, update, delete: if ehKA();
+//       }
 //     }
 //   }
 // }
