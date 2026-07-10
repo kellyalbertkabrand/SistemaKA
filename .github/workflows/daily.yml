@@ -9,11 +9,14 @@ name: Coleta diária (SistemaKA)
 #    (atrasam menos) para garantir que, quando você abrir o painel, o dia já
 #    esteja coletado e publicado.
 #  - workflow_dispatch: quando você clica em "Atualizar agora" / "Run workflow"
+# SISTEMA PAUSADO (a pedido da Kelly, 2026). O agendamento automático está
+# comentado abaixo. Para VOLTAR a rodar sozinho: descomente o bloco
+# "schedule:" (as 3 linhas de cron) e envie (push) de novo.
 on:
-  schedule:
-    - cron: "11 8 * * *"    # 08:11 UTC ≈ 05:11 Brasília (cedo; pronto de manhã)
-    - cron: "11 13 * * *"   # 13:11 UTC ≈ 10:11 Brasília
-    - cron: "11 18 * * *"   # 18:11 UTC ≈ 15:11 Brasília
+  # schedule:
+  #   - cron: "11 8 * * *"    # 08:11 UTC ≈ 05:11 Brasília (cedo; pronto de manhã)
+  #   - cron: "11 13 * * *"   # 13:11 UTC ≈ 10:11 Brasília
+  #   - cron: "11 18 * * *"   # 18:11 UTC ≈ 15:11 Brasília
   workflow_dispatch: {}
 
 permissions:
