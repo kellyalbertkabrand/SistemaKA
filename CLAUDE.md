@@ -64,6 +64,11 @@ continua a mesma.
 `CamposEditor.tsx` renderiza os controles a partir de `campos`; `EditorPeca.tsx`
 monta o editor de peça única; `Carrossel.tsx` monta o construtor de carrossel
 (até 10 slides, cada um escolhe template + preenche, com reordenar e export .zip).
+Tem **criação em lote** ("Colar textos e criar vários"): cola o texto de cada
+slide separado por linha em branco, escolhe UM layout e o sistema gera todos os
+slides de uma vez (`quebrarEmSlides`/`campoTextoPrincipal` em `Carrossel.tsx`);
+depois ajusta cada um. Também tem Desfazer/Refazer, rascunho automático
+(localStorage), duplicar slide e tela cheia (ver seções de componentes).
 
 ---
 

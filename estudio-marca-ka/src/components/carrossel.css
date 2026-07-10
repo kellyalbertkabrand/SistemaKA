@@ -12,6 +12,59 @@
   align-items: center;
 }
 
+/* Painel "criar vários slides de uma vez" (colar textos). */
+.lote {
+  border: 1px solid var(--linha, rgba(15, 25, 35, 0.16));
+  background: var(--card, #fbf9f3);
+  border-radius: 14px;
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 1.2rem;
+}
+.lote__head h3 {
+  margin: 0 0 0.3rem;
+  font-size: 1.05rem;
+}
+.lote__head p {
+  margin: 0 0 1rem;
+  font-size: 0.86rem;
+  color: var(--t-600, #5a5346);
+  line-height: 1.5;
+  max-width: 60ch;
+}
+.lote__grid {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 1rem;
+  align-items: start;
+}
+@media (max-width: 720px) {
+  .lote__grid {
+    grid-template-columns: 1fr;
+  }
+}
+.lote__textarea {
+  width: 100%;
+  resize: vertical;
+  font-size: 16px;
+  line-height: 1.5;
+  padding: 0.7rem 0.8rem;
+}
+.lote__lado {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.lote__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.lote__dica {
+  font-size: 0.76rem;
+  color: var(--t-500, #837b6c);
+  margin: 0 0 0.2rem;
+  line-height: 1.45;
+}
+
 .carrossel__body {
   display: grid;
   grid-template-columns: 130px 1fr;

@@ -49,6 +49,31 @@ function sanearValores(v: ValoresPeca): ValoresPeca {
   return out
 }
 
+// Quebra um texto colado em vários slides. Separa por LINHA EM BRANCO (o mais
+// comum ao colar), ou por uma linha com --- / ===, ou — se não houver nada
+// disso — uma linha por slide. Remove rótulos tipo "Slide 1:", "1.", "2)".
+function quebrarEmSlides(txt: string, max: number): string[] {
+  const bruto = txt.replace(/\r\n/g, '\n').trim()
+  if (!bruto) return []
+  let blocos: string[]
+  if (/\n[ \t]*\n/.test(bruto)) blocos = bruto.split(/\n[ \t]*\n+/)
+  else if (/^[ \t]*[-=]{3,}[ \t]*$/m.test(bruto)) blocos = bruto.split(/^[ \t]*[-=]{3,}[ \t]*$/m)
+  else blocos = bruto.split(/\n/)
+  return blocos
+    .map((b) => b.trim().replace(/^\s*(slide\s*)?\d+\s*[:.)\-]\s*/i, '').trim())
+    .filter(Boolean)
+    .slice(0, max)
+}
+
+// Campo de texto principal de um template (para receber o texto colado):
+// a primeira área de texto (textarea) ou, na falta, o primeiro campo de texto.
+function campoTextoPrincipal(t: Template): string | null {
+  const ta = t.campos.find((c) => c.tipo === 'textarea')
+  if (ta) return ta.id
+  const tx = t.campos.find((c) => c.tipo === 'texto')
+  return tx ? tx.id : null
+}
+
 // Construtor de carrossel: até 10 slides; em cada slide a pessoa escolhe o
 // template e preenche os campos. Baixa slide a slide ou tudo num .zip.
 export function Carrossel({ templates }: { templates: Template[] }) {
@@ -90,6 +115,10 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   const [recuperado, setRecuperado] = useState(inicial.current.recuperado)
   const [sel, setSel] = useState(0)
   const [telaCheia, setTelaCheia] = useState(false)
+  // Criar vários slides de uma vez, colando os textos.
+  const [modoLote, setModoLote] = useState(false)
+  const [textoLote, setTextoLote] = useState('')
+  const [tplLote, setTplLote] = useState(templates[0].id)
   const [acao, setAcao] = useState<'png' | 'moldura' | 'video' | 'tudo' | null>(null)
   const [statusVideo, setStatusVideo] = useState<string | null>(null)
   const [feito, setFeito] = useState<'imagem' | 'video' | null>(null)
@@ -169,6 +198,42 @@ export function Carrossel({ templates }: { templates: Template[] }) {
     seqRef.current = 0
     reporSlides([novoSlide()])
     setSel(0)
+    setRecuperado(false)
+  }
+
+  // Um slide tem conteúdo (texto ou foto) que a pessoa preencheu?
+  function slideComConteudo(s: Slide): boolean {
+    const t = porId(s.templateId)
+    return t.campos.some(
+      (c) =>
+        (c.tipo === 'texto' || c.tipo === 'textarea' || c.tipo === 'imagem') &&
+        String(s.valores[c.id] ?? '').trim() !== '',
+    )
+  }
+
+  // Cria vários slides de uma vez a partir dos textos colados, todos no mesmo
+  // layout escolhido. Depois é só ajustar cada um (cor, foto, texto).
+  function gerarEmLote() {
+    if (ocupado) return
+    const textos = quebrarEmSlides(textoLote, MAX_SLIDES)
+    if (!textos.length) {
+      alert('Cole os textos primeiro. Separe cada slide com uma linha em branco.')
+      return
+    }
+    if (slides.some(slideComConteudo) && !confirm(`Isto vai substituir o carrossel atual por ${textos.length} slide(s) novo(s). Continuar?`)) {
+      return
+    }
+    const t = porId(tplLote)
+    const campo = campoTextoPrincipal(t)
+    const novos: Slide[] = textos.map((txt) => {
+      const valores = valoresPadrao(t.campos)
+      if (campo) valores[campo] = txt
+      return { key: ++seqRef.current, templateId: t.id, valores }
+    })
+    setSlides(novos)
+    setSel(0)
+    setModoLote(false)
+    setTextoLote('')
     setRecuperado(false)
   }
 
@@ -341,11 +406,64 @@ export function Carrossel({ templates }: { templates: Template[] }) {
           ))}
         </div>
         <div className="carrossel__bar-actions">
+          <button
+            className="btn btn--ghost"
+            onClick={() => setModoLote((v) => !v)}
+            disabled={ocupado}
+          >
+            ✨ Colar textos e criar vários
+          </button>
           <button className="btn btn--ghost" onClick={addSlide} disabled={slides.length >= MAX_SLIDES || ocupado}>
             + Slide ({slides.length}/{MAX_SLIDES})
           </button>
         </div>
       </div>
+
+      {modoLote && (
+        <div className="lote">
+          <div className="lote__head">
+            <h3>Criar vários slides de uma vez</h3>
+            <p>
+              Cole aqui o texto de cada slide, <strong>separando um do outro por uma linha em
+              branco</strong>. O sistema cria um slide para cada bloco, todos no mesmo layout. Depois
+              é só ajustar cor, foto e texto em cada um.
+            </p>
+          </div>
+
+          <div className="lote__grid">
+            <textarea
+              className="lote__textarea"
+              rows={10}
+              value={textoLote}
+              onChange={(e) => setTextoLote(e.target.value)}
+              placeholder={
+                'Texto do slide 1\n\nTexto do slide 2\n\nTexto do slide 3\n\n...'
+              }
+            />
+            <div className="lote__lado">
+              <label className="lote__label">Layout para todos os slides</label>
+              <select value={tplLote} onChange={(e) => setTplLote(e.target.value)}>
+                {templates.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.nome}
+                  </option>
+                ))}
+              </select>
+              <p className="lote__dica">
+                Escolha um modelo com foto ou sem foto — os que têm foto ficam com o espaço pronto
+                para você anexar depois.
+              </p>
+              <button className="btn" onClick={gerarEmLote} disabled={ocupado}>
+                Criar {quebrarEmSlides(textoLote, MAX_SLIDES).length || ''} slide
+                {quebrarEmSlides(textoLote, MAX_SLIDES).length === 1 ? '' : 's'}
+              </button>
+              <button className="btn btn--ghost" onClick={() => setModoLote(false)} disabled={ocupado}>
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="carrossel__body">
         {/* Filmstrip de slides */}
