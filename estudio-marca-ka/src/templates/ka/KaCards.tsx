@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
 import { hexFundoKA, corFonteKA, corDestaqueKA, ehFundoEscuroKA } from './cores'
+import { estiloTextura, alphaTextura } from './texturas'
 import './ka.css'
 
 // ============================================================================
@@ -40,24 +41,28 @@ function KaFrame({
   corTexto,
   classe,
   formato,
+  textura,
+  texturaInt,
   children,
 }: {
   fundo: string
   corTexto?: string
   classe: string
   formato: RenderProps['formato']
+  textura?: string
+  texturaInt?: number
   children: ReactNode
 }) {
+  const cor = corTexto ?? corFonteKA('auto', fundo)
+  const temTextura = textura && textura !== 'nenhuma'
   return (
     <div
       className={`ka-card ${classe} fmt-${formato.formato}`}
-      style={{
-        width: formato.largura,
-        height: formato.altura,
-        background: hexFundoKA(fundo),
-        color: corTexto ?? corFonteKA('auto', fundo),
-      }}
+      style={{ width: formato.largura, height: formato.altura, background: hexFundoKA(fundo), color: cor }}
     >
+      {temTextura && (
+        <div className="ka-textura" style={estiloTextura(textura!, cor, alphaTextura(Number(texturaInt)))} />
+      )}
       <div className="ka-header">
         <strong>KA | Inteligência para Marcas</strong> · Branding · Posicionamento · IA
       </div>
@@ -73,7 +78,7 @@ export function KaCapaCard({ valores, formato }: RenderProps) {
   const cor = corFonteKA(valores.cor_fonte, fundo)
   const titulo = String(valores.titulo || '')
   return (
-    <KaFrame fundo={fundo} corTexto={cor} classe="ka-capa" formato={formato}>
+    <KaFrame fundo={fundo} corTexto={cor} classe="ka-capa" formato={formato} textura={String(valores.textura || 'nenhuma')} texturaInt={Number(valores.textura_int)}>
       {titulo && <div className="titulo">{comDestaque(titulo)}</div>}
     </KaFrame>
   )
@@ -86,7 +91,7 @@ export function KaTextoCard({ valores, formato }: RenderProps) {
   const titulo = String(valores.titulo || '')
   const texto = String(valores.texto || '')
   return (
-    <KaFrame fundo={fundo} corTexto={cor} classe="ka-texto" formato={formato}>
+    <KaFrame fundo={fundo} corTexto={cor} classe="ka-texto" formato={formato} textura={String(valores.textura || 'nenhuma')} texturaInt={Number(valores.textura_int)}>
       {titulo && <div className="titulo">{comDestaque(titulo)}</div>}
       {texto && <div className="corpo">{comDestaque(texto)}</div>}
     </KaFrame>
@@ -103,7 +108,7 @@ export function KaPassoCard({ valores, formato }: RenderProps) {
   // de cor — só o negrito das aspas.
   const destaque = corDestaqueKA(fundo)
   return (
-    <KaFrame fundo={fundo} corTexto={cor} classe="ka-passo" formato={formato}>
+    <KaFrame fundo={fundo} corTexto={cor} classe="ka-passo" formato={formato} textura={String(valores.textura || 'nenhuma')} texturaInt={Number(valores.textura_int)}>
       {numero && (
         <div className="numero" style={{ color: destaque }}>
           {numero}
@@ -150,6 +155,8 @@ export function KaMidiaCard({ valores, formato }: RenderProps) {
       corTexto={cor}
       classe={`ka-midia ${prop === '9:16' ? 'vertical' : ''}`}
       formato={formato}
+      textura={String(valores.textura || 'nenhuma')}
+      texturaInt={Number(valores.textura_int)}
     >
       {texto && <div className="texto">{comDestaque(texto)}</div>}
       <div className="midia-frame" style={{ width: w, height: h }}>
@@ -180,7 +187,7 @@ export function KaComentarioCard({ valores, formato }: RenderProps) {
   const usuario = String(valores.usuario || '')
   const comentario = String(valores.comentario || '')
   return (
-    <KaFrame fundo={fundo} corTexto={cor} classe="ka-comentario" formato={formato}>
+    <KaFrame fundo={fundo} corTexto={cor} classe="ka-comentario" formato={formato} textura={String(valores.textura || 'nenhuma')} texturaInt={Number(valores.textura_int)}>
       {texto && <div className="texto">{comDestaque(texto)}</div>}
       <div className="box">
         {usuario && <div className="usuario">{usuario}</div>}
@@ -242,7 +249,7 @@ export function KaCtaCard({ valores, formato }: RenderProps) {
   const produto = String(valores.produto || '')
   const botao = String(valores.botao || '')
   return (
-    <KaFrame fundo={fundo} corTexto={cor} classe="ka-cta" formato={formato}>
+    <KaFrame fundo={fundo} corTexto={cor} classe="ka-cta" formato={formato} textura={String(valores.textura || 'nenhuma')} texturaInt={Number(valores.textura_int)}>
       {frase && <div className="frase">{comDestaque(frase)}</div>}
       {produto && <div className="produto">{produto}</div>}
       {botao && <div className="botao">{botao}</div>}

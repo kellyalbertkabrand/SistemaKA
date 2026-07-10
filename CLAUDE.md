@@ -194,11 +194,19 @@ app — aqui é a versão web dos mesmos cards).
   · Branding · Posicionamento · IA", Montserrat maiúsculas, 1 linha, ~85% da
   largura, parte da marca em bold 800) e **rodapé** ("KELLY ALBERT",
   letter-spacing .4em, opacidade .58).
-- **Fundos travados em 3 cores** (campo `select`, não `cor` livre — o oposto
-  da liberdade cromática da Shapes): Bege `#F2EEE3`, Marinho `#152535`,
-  Caramelo `#C47830`. A **cor do texto deriva do fundo** (bege→marinho,
-  marinho→claro `#F4F1EB`, caramelo→papel) — ver `src/templates/ka/cores.ts`.
-  Detalhe (nunca fundo): Essência `#3D6B7E`, Mostarda `#E0B880`.
+- **Paleta oficial da marca** (`FUNDOS_KA` em `src/templates/ka/cores.ts`,
+  campo `paleta` com amostras): as 6 da marca vêm primeiro — Cream `#E7E0CD`,
+  Bege Quente `#C2AA8A`, Cobre `#8B5A2B`, Caramelo `#C47830`, Azul Essência
+  `#3D6B7E`, Marinho `#152535` — seguidas de extras (papel, beges, dourados,
+  preto). Fundo e texto escolhem da mesma paleta; a cor do texto pode ser
+  "Automático" (contraste YIQ) ou fixa. `corDestaqueKA` só é usada no número do
+  card Passo (o negrito por aspas herda a cor do texto, ver seção 4b abaixo).
+- **Texturas de fundo** (`src/templates/ka/texturas.ts`, campo `textura`
+  `campoTexturaKA()`): padrões geométricos gerados por CSS (sem imagem) —
+  Grid Quadrado, Grid Fino, Diamante, Linhas, Diagonal, Xadrez — com slider de
+  **intensidade** (mais clara/escura). Renderizados em `.ka-textura` dentro do
+  `KaFrame` (atrás do conteúdo, na cor do texto com alpha). Valem para os 6
+  cards de carrossel (não o feedback, que não usa o KaFrame).
 - **Tipografia:** títulos Playfair Display, corpo Montserrat. Fontes
   **variáveis** auto-hospedadas (`public/clientes/ka/fonts/*-var.woff2`,
   3 arquivos, licença OFL, famílias 'Playfair KA'/'Montserrat KA' em `ka.css`)

@@ -42,6 +42,19 @@
   padding: 80px;
   font-family: var(--sans);
 }
+/* textura de fundo (padrão CSS) atrás do conteúdo, na frente da cor do fundo */
+.ka-card .ka-textura {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.ka-card .ka-header,
+.ka-card .ka-miolo,
+.ka-card .ka-footer {
+  position: relative;
+  z-index: 1;
+}
 /* uma linha só, ocupando ~86% da largura do card (respiro dos dois lados) */
 .ka-card .ka-header {
   flex: 0 0 auto;

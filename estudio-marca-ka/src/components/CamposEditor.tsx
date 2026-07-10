@@ -1,5 +1,6 @@
 import type { Campo, ValoresPeca } from '../templates/types'
 import { FORMAS } from '../templates/formas'
+import { TEXTURAS_KA, estiloTextura } from '../templates/ka/texturas'
 
 interface Props {
   campos: Campo[]
@@ -321,6 +322,46 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
                   </button>
                 ))}
               </div>
+            )}
+
+            {c.tipo === 'textura' && (
+              <>
+                <div className="textura-grid">
+                  {TEXTURAS_KA.map((t) => {
+                    const ativo = String(valores[c.id] ?? 'nenhuma') === t.id
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        className={`textura-op ${ativo ? 'on' : ''}`}
+                        title={t.rotulo}
+                        aria-label={t.rotulo}
+                        onClick={() => onSet(c.id, t.id)}
+                      >
+                        <span
+                          className="textura-op__amostra"
+                          style={t.id === 'nenhuma' ? undefined : estiloTextura(t.id, '#333333', 0.85, 0.28)}
+                        >
+                          {t.id === 'nenhuma' ? '∅' : ''}
+                        </span>
+                        <span className="textura-op__nome">{t.rotulo}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+                {String(valores[c.id] ?? 'nenhuma') !== 'nenhuma' && (
+                  <div className="ajuste-foto tamanho-foto">
+                    <label>Intensidade (mais clara ← → mais escura)</label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      value={Number(valores[`${c.id}_int`] ?? 40)}
+                      onChange={(e) => onSet(`${c.id}_int`, Number(e.target.value))}
+                    />
+                  </div>
+                )}
+              </>
             )}
 
             {c.ajuda && <p className="editor__hint">{c.ajuda}</p>}

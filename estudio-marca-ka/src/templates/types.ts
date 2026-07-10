@@ -19,6 +19,7 @@ export type CampoTipo =
   | 'cor'
   | 'paleta'
   | 'forma'
+  | 'textura'
 
 export interface CampoBase {
   id: string
@@ -79,6 +80,15 @@ export interface CampoPaleta extends CampoBase {
   opcoes: { valor: string; rotulo: string; cor?: string }[]
 }
 
+/** Textura de fundo (padrão geométrico) + intensidade. As opções vêm de
+ *  TEXTURAS_KA; o valor guarda o id da textura e o companheiro `${id}_int`
+ *  guarda a intensidade (0–100). */
+export interface CampoTextura extends CampoBase {
+  tipo: 'textura'
+  padrao?: string
+  intensidadePadrao?: number
+}
+
 export type Campo =
   | CampoTexto
   | CampoImagem
@@ -87,6 +97,7 @@ export type Campo =
   | CampoCor
   | CampoPaleta
   | CampoForma
+  | CampoTextura
 
 /** Dimensões reais (px) de cada formato suportado pelo template. */
 export interface FormatoDef {
@@ -126,7 +137,10 @@ export function valoresPadrao(campos: Campo[]): ValoresPeca {
     else if (c.tipo === 'cor') v[c.id] = c.padrao ?? '#000000'
     else if (c.tipo === 'forma') v[c.id] = c.padrao ?? 'shape-blob1'
     else if (c.tipo === 'texto' || c.tipo === 'textarea') v[c.id] = c.padrao ?? ''
-    else if (c.tipo === 'imagem') v[`${c.id}_area`] = c.areaPadrao ?? 92
+    else if (c.tipo === 'textura') {
+      v[c.id] = c.padrao ?? 'nenhuma'
+      v[`${c.id}_int`] = c.intensidadePadrao ?? 40
+    } else if (c.tipo === 'imagem') v[`${c.id}_area`] = c.areaPadrao ?? 92
     else v[c.id] = ''
   }
   return v

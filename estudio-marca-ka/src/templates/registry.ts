@@ -91,6 +91,19 @@ function campoCorTextoKA(): Campo {
   }
 }
 
+// Campo padrão "Textura de fundo": nenhum ou um dos padrões geométricos, com
+// intensidade (mais clara/escura). Vale para todos os cards da KA.
+function campoTexturaKA(): Campo {
+  return {
+    id: 'textura',
+    label: 'Textura de fundo',
+    tipo: 'textura',
+    padrao: 'nenhuma',
+    intensidadePadrao: 40,
+    ajuda: 'Opcional: um padrão sutil no fundo. O slider deixa mais clara ou mais escura.',
+  }
+}
+
 const AJUDA_DESTAQUE =
   'Para deixar uma palavra ou frase em negrito, coloque entre aspas. ' +
   'Ex.: a marca é "percepção".'
@@ -448,6 +461,7 @@ export const TEMPLATES: Template[] = [
       },
       campoFundoKA('marinho'),
       campoCorTextoKA(),
+      campoTexturaKA(),
     ],
     render: KaCapaCard,
   },
@@ -481,6 +495,7 @@ export const TEMPLATES: Template[] = [
       },
       campoFundoKA('papel'),
       campoCorTextoKA(),
+      campoTexturaKA(),
     ],
     render: KaTextoCard,
   },
@@ -512,6 +527,7 @@ export const TEMPLATES: Template[] = [
       },
       campoFundoKA('papel'),
       campoCorTextoKA(),
+      campoTexturaKA(),
     ],
     render: KaPassoCard,
   },
@@ -558,6 +574,7 @@ export const TEMPLATES: Template[] = [
       },
       campoFundoKA('papel'),
       campoCorTextoKA(),
+      campoTexturaKA(),
     ],
     render: KaMidiaCard,
   },
@@ -596,6 +613,7 @@ export const TEMPLATES: Template[] = [
       },
       campoFundoKA('marinho'),
       campoCorTextoKA(),
+      campoTexturaKA(),
     ],
     render: KaComentarioCard,
   },
@@ -634,6 +652,7 @@ export const TEMPLATES: Template[] = [
       },
       campoFundoKA('papel'),
       campoCorTextoKA(),
+      campoTexturaKA(),
     ],
     render: KaCtaCard,
   },

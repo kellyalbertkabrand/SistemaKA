@@ -3,23 +3,24 @@
 // texto em qualquer card da KA. A cor do texto pode ser "Automático" (contraste
 // calculado a partir do fundo) ou uma cor fixa da paleta.
 
-/** Cores oficiais da paleta KA (fundo e texto). */
+/** Cores oficiais da paleta KA (fundo e texto). As 6 da marca vêm primeiro
+ *  (Cream, Bege Quente, Cobre, Caramelo, Essência, Marinho); as demais ficam
+ *  como opções extras. */
 export const FUNDOS_KA = [
-  // Canvas / claros
+  // Paleta oficial da marca (jul/2026)
+  { valor: 'cream', rotulo: 'Cream', hex: '#E7E0CD' },
+  { valor: 'bege-quente', rotulo: 'Bege Quente', hex: '#C2AA8A' },
+  { valor: 'cobre', rotulo: 'Cobre', hex: '#8B5A2B' },
+  { valor: 'caramelo', rotulo: 'Caramelo', hex: '#C47830' },
+  { valor: 'essencia', rotulo: 'Azul Essência', hex: '#3D6B7E' },
+  { valor: 'marinho', rotulo: 'Marinho', hex: '#152535' },
+  // Extras (claros e detalhes)
   { valor: 'papel', rotulo: 'Papel', hex: '#F8F7F2' },
   { valor: 'bege-leve', rotulo: 'Bege Leve', hex: '#F7F3EA' },
   { valor: 'bege-papel', rotulo: 'Bege Papel', hex: '#E8E4DB' },
-  { valor: 'bege-quente', rotulo: 'Bege Quente', hex: '#E0DCD3' },
-  // Dourados / mostardas
   { valor: 'dourado-claro', rotulo: 'Dourado Claro', hex: '#D4C49E' },
   { valor: 'mostarda', rotulo: 'Mostarda', hex: '#E0B880' },
   { valor: 'dourado', rotulo: 'Dourado', hex: '#B89B6A' },
-  // Quentes
-  { valor: 'caramelo', rotulo: 'Caramelo', hex: '#C47830' },
-  { valor: 'cobre', rotulo: 'Cobre', hex: '#8B5A2B' },
-  // Azuis / escuros
-  { valor: 'essencia', rotulo: 'Azul Essência', hex: '#3D6B7E' },
-  { valor: 'marinho', rotulo: 'Marinho', hex: '#152535' },
   { valor: 'preto', rotulo: 'Preto KA', hex: '#0F1923' },
 ] as const
 

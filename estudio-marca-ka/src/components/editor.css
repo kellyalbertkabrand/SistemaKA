@@ -331,6 +331,42 @@
   text-align: center;
 }
 
+/* Seletor de textura de fundo (padrões geométricos). */
+.textura-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(74px, 1fr));
+  gap: 0.5rem;
+}
+.textura-op {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem;
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.16);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.textura-op:hover { background: #f5f2ec; }
+.textura-op.on { border-color: #c47830; box-shadow: 0 0 0 1px #c47830 inset; }
+.textura-op__amostra {
+  width: 100%;
+  height: 42px;
+  border-radius: 6px;
+  background-color: #f3efe6;
+  display: grid;
+  place-items: center;
+  color: rgba(15, 25, 35, 0.4);
+  font-size: 18px;
+}
+.textura-op__nome {
+  font-size: 0.72rem;
+  line-height: 1.1;
+  text-align: center;
+  color: var(--t-700, #33404d);
+}
+
 /* Contador de caracteres abaixo dos campos de texto com limite. */
 .contador-chars {
   display: block;
