@@ -275,16 +275,23 @@ function EditorOrcamento({
     }
   }
 
-  // Ao escolher um cliente cadastrado, pré-preenche o destinatário.
+  // Ao escolher um cliente cadastrado, pré-preenche o destinatário (quem assina
+  // o contrato): prefere os "dados para o contrato" da ficha, se houver.
   function escolherCliente(id: string) {
     const c = clientes.find((x) => x.id === id) ?? null
     setF((atual) => ({
       ...atual,
       cliente_id: c?.id ?? null,
-      destinatario_nome: atual.destinatario_nome || c?.responsavel || c?.nome_marca || '',
-      destinatario_email: atual.destinatario_email ?? c?.email_cobranca ?? c?.email_contato ?? null,
+      destinatario_nome:
+        atual.destinatario_nome || c?.contrato_nome || c?.responsavel || c?.nome_marca || '',
+      destinatario_email:
+        atual.destinatario_email ?? c?.contrato_email ?? c?.email_cobranca ?? c?.email_contato ?? null,
       destinatario_telefone: atual.destinatario_telefone ?? c?.telefone ?? null,
-      destinatario_documento: atual.destinatario_documento ?? c?.documento ?? null,
+      destinatario_documento:
+        atual.destinatario_documento ?? c?.contrato_documento ?? c?.documento ?? null,
+      razao_social: atual.razao_social ?? c?.razao_social ?? null,
+      fundador_nome: atual.fundador_nome ?? c?.fundador_nome ?? null,
+      fundador_cpf: atual.fundador_cpf ?? c?.fundador_cpf ?? null,
     }))
   }
 

@@ -100,8 +100,48 @@ export function CadastroPublico() {
               <input value={f.cidade ?? ''} onChange={(e) => campo('cidade', e.target.value || null)} />
             </div>
             <div className="field">
-              <label>CPF / CNPJ</label>
+              <label>CPF / CNPJ da empresa</label>
               <input value={f.documento ?? ''} onChange={(e) => campo('documento', e.target.value || null)} />
+            </div>
+          </div>
+
+          <h3 style={{ fontSize: '1.05rem', margin: '1.4rem 0 0.3rem' }}>Dados para o contrato</h3>
+          <p style={{ fontSize: '0.8rem', color: 'var(--t-500)', marginBottom: '0.9rem' }}>
+            Usamos estes dados para preparar o contrato. Preencha o fundador da empresa e quem vai
+            assinar (se for a mesma pessoa, pode repetir).
+          </p>
+          <div className="form-grade">
+            <div className="field campo-toda">
+              <label>Razão social / nome jurídico da empresa</label>
+              <input
+                value={f.razao_social ?? ''}
+                onChange={(e) => campo('razao_social', e.target.value || null)}
+                placeholder="como está no CNPJ (se tiver)"
+              />
+            </div>
+            <div className="field">
+              <label>Fundador(a) da empresa</label>
+              <input value={f.fundador_nome ?? ''} onChange={(e) => campo('fundador_nome', e.target.value || null)} />
+            </div>
+            <div className="field">
+              <label>CPF do fundador(a)</label>
+              <input value={f.fundador_cpf ?? ''} onChange={(e) => campo('fundador_cpf', e.target.value || null)} />
+            </div>
+            <div className="field campo-toda">
+              <label>Quem vai assinar o contrato (nome completo)</label>
+              <input value={f.contrato_nome ?? ''} onChange={(e) => campo('contrato_nome', e.target.value || null)} />
+            </div>
+            <div className="field">
+              <label>CPF de quem assina</label>
+              <input value={f.contrato_documento ?? ''} onChange={(e) => campo('contrato_documento', e.target.value || null)} />
+            </div>
+            <div className="field">
+              <label>RG de quem assina</label>
+              <input value={f.contrato_rg ?? ''} onChange={(e) => campo('contrato_rg', e.target.value || null)} />
+            </div>
+            <div className="field campo-toda">
+              <label>E-mail de quem assina</label>
+              <input type="email" value={f.contrato_email ?? ''} onChange={(e) => campo('contrato_email', e.target.value || null)} />
             </div>
           </div>
 

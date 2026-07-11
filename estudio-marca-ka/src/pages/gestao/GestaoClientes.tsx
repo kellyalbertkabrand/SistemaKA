@@ -358,6 +358,38 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente | null; aoVolt
             </div>
           </div>
 
+          <h3 style={{ margin: '0.6rem 0 0.8rem' }}>Dados para o contrato</h3>
+          <div className="form-grade">
+            <div className="field campo-toda">
+              <label>Razão social / nome jurídico</label>
+              <input value={f.razao_social ?? ''} onChange={(e) => campo('razao_social', e.target.value || null)} />
+            </div>
+            <div className="field">
+              <label>Fundador(a) da empresa</label>
+              <input value={f.fundador_nome ?? ''} onChange={(e) => campo('fundador_nome', e.target.value || null)} />
+            </div>
+            <div className="field">
+              <label>CPF do fundador(a)</label>
+              <input value={f.fundador_cpf ?? ''} onChange={(e) => campo('fundador_cpf', e.target.value || null)} />
+            </div>
+            <div className="field campo-toda">
+              <label>Quem assina o contrato (nome)</label>
+              <input value={f.contrato_nome ?? ''} onChange={(e) => campo('contrato_nome', e.target.value || null)} />
+            </div>
+            <div className="field">
+              <label>CPF de quem assina</label>
+              <input value={f.contrato_documento ?? ''} onChange={(e) => campo('contrato_documento', e.target.value || null)} />
+            </div>
+            <div className="field">
+              <label>RG de quem assina</label>
+              <input value={f.contrato_rg ?? ''} onChange={(e) => campo('contrato_rg', e.target.value || null)} />
+            </div>
+            <div className="field">
+              <label>E-mail de quem assina</label>
+              <input type="email" value={f.contrato_email ?? ''} onChange={(e) => campo('contrato_email', e.target.value || null)} />
+            </div>
+          </div>
+
           <p style={{ display: 'flex', gap: '0.7rem', alignItems: 'center' }}>
             <button className="btn" type="submit" disabled={salvando}>
               {salvando ? 'Salvando…' : 'Salvar ficha'}

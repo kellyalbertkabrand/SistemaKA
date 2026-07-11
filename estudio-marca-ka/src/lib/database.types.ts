@@ -31,6 +31,17 @@ export interface Cliente {
   valor_mensalidade: number | null
   dia_vencimento: number
   cobranca_ativa: boolean
+  // Dados para o CONTRATO (preenchidos no cadastro ou pela KA)
+  /** Razão social / nome jurídico da empresa (se diferente da marca). */
+  razao_social?: string | null
+  /** Fundador(a) da empresa. */
+  fundador_nome?: string | null
+  fundador_cpf?: string | null
+  /** Quem assina o contrato (responsável legal). */
+  contrato_nome?: string | null
+  contrato_documento?: string | null
+  contrato_rg?: string | null
+  contrato_email?: string | null
   /** Origem do registro: 'auto-cadastro' quando veio do link público /cadastro. */
   origem?: string | null
   /** false enquanto a KA ainda não abriu a ficha de um cadastro novo. */
@@ -104,6 +115,10 @@ export interface Orcamento {
   destinatario_email: string | null
   destinatario_telefone: string | null
   destinatario_documento: string | null
+  /** Dados da empresa/fundador copiados da ficha, para entrar no contrato. */
+  razao_social?: string | null
+  fundador_nome?: string | null
+  fundador_cpf?: string | null
   titulo: string
   descricao: string | null
   itens: OrcamentoItem[]

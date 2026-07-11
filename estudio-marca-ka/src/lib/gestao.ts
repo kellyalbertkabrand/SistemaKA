@@ -92,6 +92,13 @@ export type FichaCliente = Partial<
     | 'valor_mensalidade'
     | 'dia_vencimento'
     | 'cobranca_ativa'
+    | 'razao_social'
+    | 'fundador_nome'
+    | 'fundador_cpf'
+    | 'contrato_nome'
+    | 'contrato_documento'
+    | 'contrato_rg'
+    | 'contrato_email'
   >
 >
 
@@ -144,6 +151,13 @@ export async function cadastrarClientePublico(
     observacoes: dados.observacoes ?? null,
     email_cobranca: dados.email_cobranca ?? dados.email_contato ?? null,
     documento: dados.documento ?? null,
+    razao_social: dados.razao_social ?? null,
+    fundador_nome: dados.fundador_nome ?? null,
+    fundador_cpf: dados.fundador_cpf ?? null,
+    contrato_nome: dados.contrato_nome ?? null,
+    contrato_documento: dados.contrato_documento ?? null,
+    contrato_rg: dados.contrato_rg ?? null,
+    contrato_email: dados.contrato_email ?? null,
     valor_mensalidade: null,
     dia_vencimento: 10,
     cobranca_ativa: false,
@@ -185,6 +199,9 @@ export type NovoOrcamento = Pick<
   | 'destinatario_email'
   | 'destinatario_telefone'
   | 'destinatario_documento'
+  | 'razao_social'
+  | 'fundador_nome'
+  | 'fundador_cpf'
   | 'titulo'
   | 'descricao'
   | 'itens'
@@ -393,6 +410,9 @@ export async function responderOrcamento(
     ? preencherModelo(modelo.conteudo, {
         cliente_nome: nomeFinal,
         cliente_documento: docFinal,
+        razao_social: o.razao_social ?? '',
+        fundador_nome: o.fundador_nome ?? '',
+        fundador_cpf: o.fundador_cpf ?? '',
         titulo: o.titulo,
         descricao: o.descricao ?? '',
         valor: formatarBRL(o.valor_total),
