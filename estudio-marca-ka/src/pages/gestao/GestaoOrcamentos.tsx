@@ -186,6 +186,9 @@ export function GestaoOrcamentos() {
                     )}
                     {o.status !== 'rascunho' && (
                       <>
+                        <button className="btn-mini" onClick={() => setEditando(o)}>
+                          Editar
+                        </button>
                         <button className="btn-mini btn-mini--whats" onClick={() => enviarWhatsApp(o)}>
                           WhatsApp
                         </button>

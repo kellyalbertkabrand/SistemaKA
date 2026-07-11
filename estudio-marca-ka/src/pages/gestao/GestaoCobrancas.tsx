@@ -31,8 +31,9 @@ export function GestaoCobrancas() {
   const [erro, setErro] = useState<string | null>(null)
   const [ocupado, setOcupado] = useState<string | null>(null) // id da linha em ação
   const [carregando, setCarregando] = useState(true)
-  // Nova cobrança avulsa (formulário — sem window.prompt, que trava no iPhone)
+  // Formulário de cobrança avulsa (criar OU editar) — sem window.prompt.
   const [criando, setCriando] = useState(false)
+  const [editandoId, setEditandoId] = useState<string | null>(null)
   const [novoCli, setNovoCli] = useState('')
   const [novaDesc, setNovaDesc] = useState('')
   const [novoValor, setNovoValor] = useState('')
@@ -113,6 +114,7 @@ export function GestaoCobrancas() {
       setErro('Cadastre um cliente primeiro (aba Clientes).')
       return
     }
+    setEditandoId(null)
     setNovoCli(clientes[0].id)
     setNovaDesc('')
     setNovoValor('')
@@ -121,7 +123,22 @@ export function GestaoCobrancas() {
     setCriando(true)
   }
 
-  async function salvarNova() {
+  function abrirEditar(c: Cobranca) {
+    setEditandoId(c.id)
+    setNovoCli(c.cliente_id ?? '')
+    setNovaDesc(c.descricao)
+    setNovoValor(String(c.valor))
+    setNovoVenc(c.vencimento)
+    setErro(null)
+    setCriando(true)
+  }
+
+  function fecharForm() {
+    setCriando(false)
+    setEditandoId(null)
+  }
+
+  async function salvarForm() {
     const cliente = clientes.find((c) => c.id === novoCli)
     const valor = Number(novoValor.replace(',', '.'))
     if (!cliente || !novaDesc.trim() || !valor || valor <= 0 || !novoVenc) {
@@ -131,16 +148,26 @@ export function GestaoCobrancas() {
     setOcupado('nova')
     setErro(null)
     try {
-      await criarCobranca({
-        cliente_id: cliente.id,
-        tipo: 'avulsa',
-        descricao: novaDesc.trim(),
-        valor,
-        vencimento: novoVenc,
-        telefone: cliente.telefone ?? null,
-      })
-      setCriando(false)
-      mostrar('Cobrança criada')
+      if (editandoId) {
+        await atualizarCobranca(editandoId, {
+          cliente_id: cliente.id,
+          descricao: novaDesc.trim(),
+          valor,
+          vencimento: novoVenc,
+        })
+        mostrar('Cobrança atualizada')
+      } else {
+        await criarCobranca({
+          cliente_id: cliente.id,
+          tipo: 'avulsa',
+          descricao: novaDesc.trim(),
+          valor,
+          vencimento: novoVenc,
+          telefone: cliente.telefone ?? null,
+        })
+        mostrar('Cobrança criada')
+      }
+      fecharForm()
       await recarregar()
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
@@ -261,7 +288,7 @@ export function GestaoCobrancas() {
 
       {criando && (
         <div className="card">
-          <h3>Nova cobrança avulsa</h3>
+          <h3>{editandoId ? 'Editar cobrança' : 'Nova cobrança avulsa'}</h3>
           <div className="form-grade">
             <div className="field">
               <label>Cliente</label>
@@ -299,10 +326,10 @@ export function GestaoCobrancas() {
             </div>
           </div>
           <p style={{ display: 'flex', gap: '0.6rem', marginTop: '0.2rem' }}>
-            <button className="btn" disabled={ocupado === 'nova'} onClick={() => void salvarNova()}>
-              {ocupado === 'nova' ? 'Criando…' : 'Criar cobrança'}
+            <button className="btn" disabled={ocupado === 'nova'} onClick={() => void salvarForm()}>
+              {ocupado === 'nova' ? 'Salvando…' : editandoId ? 'Salvar alterações' : 'Criar cobrança'}
             </button>
-            <button className="btn--voltar" onClick={() => setCriando(false)}>
+            <button className="btn--voltar" onClick={fecharForm}>
               Cancelar
             </button>
           </p>
@@ -363,6 +390,13 @@ export function GestaoCobrancas() {
                   <td className="acoes">
                     {c.status !== 'paga' && c.status !== 'cancelada' && (
                       <>
+                        <button
+                          className="btn-mini"
+                          disabled={ocupado === c.id}
+                          onClick={() => abrirEditar(c)}
+                        >
+                          Editar
+                        </button>
                         <button
                           className="btn-mini btn-mini--whats"
                           disabled={ocupado === c.id}

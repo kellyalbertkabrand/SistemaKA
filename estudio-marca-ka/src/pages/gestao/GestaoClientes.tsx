@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import type { Cliente, Usuario, PagamentoContrato } from '../../lib/database.types'
 import {
   criarCliente,
@@ -26,6 +27,7 @@ function ehNovo(c: Cliente): boolean {
 // Clientes & Acessos: ficha completa de cada cliente (dados cadastrais,
 // cobrança/mensalidade) + quem tem login vinculado à marca.
 export function GestaoClientes() {
+  const [params, setParams] = useSearchParams()
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [sel, setSel] = useState<Cliente | 'novo' | null>(null)
   const [erro, setErro] = useState<string | null>(null)
@@ -79,6 +81,21 @@ export function GestaoClientes() {
   useEffect(() => {
     void recarregar()
   }, [])
+
+  // Veio do Financeiro com ?cliente=<id> → abre a ficha desse cliente e limpa
+  // o parâmetro (pra não reabrir ao fechar).
+  useEffect(() => {
+    const id = params.get('cliente')
+    if (!id || clientes.length === 0) return
+    const c = clientes.find((x) => x.id === id)
+    if (c) {
+      abrir(c)
+      const p = new URLSearchParams(params)
+      p.delete('cliente')
+      setParams(p, { replace: true })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clientes])
 
   if (sel) {
     return (

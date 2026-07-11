@@ -1569,3 +1569,22 @@
   padding: 0.45rem 0.6rem;
   background: var(--bg-1);
 }
+
+/* Financeiro: item clicável (leva pra ficha do cliente) */
+.fin-dica {
+  font-size: 0.75rem;
+  color: var(--t-400);
+  margin-bottom: 0.5rem;
+}
+.fin-item--btn {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition: 0.15s;
+}
+.fin-item--btn:hover {
+  border-color: var(--essencia);
+  background: rgba(61, 107, 126, 0.04);
+}

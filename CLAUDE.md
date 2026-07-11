@@ -377,6 +377,16 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
     avulsa" abre um formulário inline (cliente, descrição, valor, vencimento) —
     NÃO usa mais `window.prompt` (que travava no iPhone). "Colar link" também
     virou um campo inline por linha. Feedback via toast.
+  - **EDITAR cobrança** (jul/2026): botão "Editar" em cada cobrança abre o mesmo
+    formulário pré-preenchido (o combinado muda — cliente paga diferente);
+    `atualizarCobranca` agora aceita `descricao`/`cliente_id` além de valor/venc.
+- **EDITAR orçamento:** botão "Editar" em TODOS os orçamentos (não só rascunho)
+  + clicar no título abre o editor (`setEditando`).
+- **EDITAR no Financeiro:** cada item do painel Financeiro é um botão que leva
+  à **ficha do cliente** (`?aba=clientes&cliente=<id>`) para editar o pagamento;
+  `GestaoClientes` lê o parâmetro e abre a ficha (e limpa o parâmetro).
+- **Edição é só da KA:** quando o modo seguro entrar, o papel `parceiro` (VM)
+  NÃO terá permissão de editar cobrança/orçamento/financeiro (decisão da KA).
 - **Acessos:** aba Clientes & Acessos convida por e-mail (Edge Function
   `convidar-usuario`, service_role só no servidor) e vincula/desvincula logins
   à marca (`usuarios.cliente_id`/`cliente_slug`).

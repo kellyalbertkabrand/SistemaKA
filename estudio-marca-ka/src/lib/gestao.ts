@@ -678,7 +678,9 @@ export async function criarCobranca(dados: NovaCobranca): Promise<Cobranca> {
 
 export async function atualizarCobranca(
   id: string,
-  dados: Partial<Pick<Cobranca, 'status' | 'link_pagamento' | 'pago_em' | 'vencimento' | 'valor'>>,
+  dados: Partial<
+    Pick<Cobranca, 'status' | 'link_pagamento' | 'pago_em' | 'vencimento' | 'valor' | 'descricao' | 'cliente_id'>
+  >,
 ): Promise<Cobranca> {
   await updateDoc(doc(db, 'cobrancas', id), limpar({ ...dados }))
   const d = await getDoc(doc(db, 'cobrancas', id))

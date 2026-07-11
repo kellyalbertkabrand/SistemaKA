@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { listarClientes } from '../../lib/api'
 import { formatarBRL, formatarData } from '../../lib/gestao'
 import type { Cliente } from '../../lib/database.types'
@@ -11,6 +12,7 @@ import { linhasFinanceiro, resumoPorQuem, rotuloForma } from '../../lib/financei
 // ============================================================================
 
 export function GestaoFinanceiro() {
+  const [, setParams] = useSearchParams()
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
@@ -87,9 +89,15 @@ export function GestaoFinanceiro() {
             ))}
           </div>
 
+          <p className="fin-dica">Toque num pagamento para editar na ficha do cliente.</p>
           <div className="fin-lista">
             {lista.map((l, i) => (
-              <div key={`${l.cliente_id}-${i}`} className="fin-item">
+              <button
+                key={`${l.cliente_id}-${i}`}
+                className="fin-item fin-item--btn"
+                onClick={() => setParams({ aba: 'clientes', cliente: l.cliente_id })}
+                title="Editar na ficha do cliente"
+              >
                 <div className="fin-item__corpo">
                   <div className="fin-item__cliente">{l.cliente_nome}</div>
                   <div className="fin-item__meta">
@@ -101,7 +109,7 @@ export function GestaoFinanceiro() {
                   {l.unico > 0 && formatarBRL(l.unico)}
                   {l.mensal > 0 && `${formatarBRL(l.mensal)}/mês`}
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </>
