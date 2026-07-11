@@ -312,6 +312,111 @@ h3 {
   margin-top: 0.7rem;
 }
 
+/* ---- Toque, rolagem e movimento (modernização) ---- */
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Foco visível para navegação por teclado (acessibilidade). Não aparece no
+   clique de mouse graças ao :focus-visible. */
+a:focus-visible,
+button:focus-visible,
+[role='menuitem']:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--essencia);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--essencia);
+  outline-offset: 1px;
+}
+
+/* ---- Toast (avisos flutuantes) ---- */
+.toast-cont {
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  bottom: 1.1rem;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: min(92vw, 430px);
+  pointer-events: none;
+}
+.toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--marinho);
+  color: var(--t-inv);
+  border-radius: 12px;
+  padding: 0.8rem 0.9rem;
+  box-shadow: 0 12px 34px rgba(15, 25, 35, 0.28);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  animation: toast-in 0.25s ease;
+}
+.toast--ok {
+  border-left: 4px solid #4e9c72;
+}
+.toast--erro {
+  border-left: 4px solid var(--erro);
+}
+.toast--info {
+  border-left: 4px solid var(--dourado);
+}
+.toast__ico {
+  flex: none;
+  font-size: 1rem;
+}
+.toast__txt {
+  flex: 1;
+}
+.toast__x {
+  flex: none;
+  background: transparent;
+  border: none;
+  color: rgba(244, 241, 235, 0.7);
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0.1rem 0.2rem;
+  line-height: 1;
+}
+.toast__x:hover {
+  color: #fff;
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ---- Estados utilitários ---- */
 .center-screen {
   min-height: 100vh;

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { SiteHeader, type ItemMenu } from '../components/SiteHeader'
 import { clientesComTemplates } from '../templates/registry'
 import { marcaVisual } from '../templates/marcas'
@@ -55,22 +56,39 @@ const CABECALHOS: Record<Aba, { titulo: string; sub: string }> = {
   cuidadoras: { titulo: 'Cuidadoras 🔒', sub: 'Seu controle pessoal — cadastro pelo link, ficha e documentos de cada cuidadora.' },
 }
 
+const ABAS_VALIDAS: Aba[] = [
+  'estudio',
+  'clientes',
+  'projetos',
+  'orcamentos',
+  'contratos',
+  'cobrancas',
+  'atividades',
+  'cuidadoras',
+]
+
 // Painel da KA: estúdio (aberto) + gestão (restrita à admin logada).
+// A aba ativa fica na URL (?aba=projetos): assim o "voltar" do navegador
+// funciona, dá para atualizar a página sem perder o lugar e compartilhar o link.
 export function AdminPanel() {
-  const [aba, setAba] = useState<Aba>('estudio')
+  const [params, setParams] = useSearchParams()
+  const paramAba = params.get('aba') as Aba | null
+  const aba: Aba = paramAba && ABAS_VALIDAS.includes(paramAba) ? paramAba : 'estudio'
   const [slug, setSlug] = useState<string | null>(null)
   const clientes = clientesComTemplates()
   const cab = CABECALHOS[aba]
+
+  function irPara(id: Aba) {
+    setSlug(null)
+    setParams(id === 'estudio' ? {} : { aba: id })
+  }
 
   return (
     <>
       <SiteHeader
         itens={MENU}
         ativo={aba}
-        onSelecionar={(id) => {
-          setAba(id as Aba)
-          setSlug(null)
-        }}
+        onSelecionar={(id) => irPara(id as Aba)}
       />
       <div className="page">
         {aba === 'estudio' && slug ? (

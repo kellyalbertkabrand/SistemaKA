@@ -1,5 +1,8 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { formatarData } from '../../lib/gestao'
+import { BotaoMic } from '../../components/BotaoMic'
+import { useToast } from '../../components/Toast'
+import { useDitado } from '../../hooks/useDitado'
 import {
   listarProjetos,
   pendenciasDeProjetos,
@@ -31,6 +34,7 @@ import {
 const ORDEM: CategoriaAtividade[] = CATEGORIAS
 
 export function GestaoAtividades() {
+  const { mostrar } = useToast()
   const [projetos, setProjetos] = useState<Projeto[]>([])
   const [atividades, setAtividades] = useState<Atividade[]>([])
   const [carregando, setCarregando] = useState(true)
@@ -43,6 +47,11 @@ export function GestaoAtividades() {
   const [novoTitulo, setNovoTitulo] = useState('')
   const [novaCategoria, setNovaCategoria] = useState<CategoriaAtividade>('pessoal')
   const [novaData, setNovaData] = useState('')
+  // Modo "colar várias" (uma por linha) e ditado por voz
+  const [modoColar, setModoColar] = useState(false)
+  const [textoColar, setTextoColar] = useState('')
+  const ditadoUm = useDitado((t) => setNovoTitulo((v) => (v ? `${v} ${t}` : t)))
+  const ditadoVarias = useDitado((t) => setTextoColar((v) => (v ? `${v}\n${t}` : t)))
 
   // Edição inline
   const [editId, setEditId] = useState<string | null>(null)
@@ -88,6 +97,35 @@ export function GestaoAtividades() {
     }
   }
 
+  // Linhas não vazias do textão "colar várias".
+  const linhasColar = textoColar
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+
+  async function adicionarVarias() {
+    if (linhasColar.length === 0) return
+    if (ditadoVarias.gravando) ditadoVarias.alternar()
+    setSalvando(true)
+    try {
+      // Cria de cima para baixo, mas mostra na lista na mesma ordem colada.
+      const criadas: Atividade[] = []
+      for (const titulo of linhasColar) {
+        criadas.push(await criarAtividade({ titulo, categoria: novaCategoria, data: novaData || null }))
+      }
+      setAtividades((l) => [...criadas.reverse(), ...l])
+      setTextoColar('')
+      setNovaData('')
+      setModoColar(false)
+      setFiltro(novaCategoria)
+      mostrar(`${criadas.length} ${criadas.length === 1 ? 'tarefa adicionada' : 'tarefas adicionadas'} em ${ROTULO_CATEGORIA[novaCategoria]}`)
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : String(e))
+    } finally {
+      setSalvando(false)
+    }
+  }
+
   async function toggle(a: Atividade) {
     const feito = !a.feito
     setAtividades((l) => l.map((x) => (x.id === a.id ? { ...x, feito } : x)))
@@ -103,6 +141,7 @@ export function GestaoAtividades() {
     try {
       const nova = await duplicarAtividade(a)
       setAtividades((l) => [nova, ...l])
+      mostrar('Tarefa duplicada')
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
     } finally {
@@ -195,25 +234,83 @@ export function GestaoAtividades() {
 
       {erro && <div className="erro-msg">{erro}</div>}
 
-      {/* Nova atividade */}
-      <form className="card add-ativ" onSubmit={(e) => void addNovo(e)}>
-        <input
-          value={novoTitulo}
-          onChange={(e) => setNovoTitulo(e.target.value)}
-          placeholder="O que precisa fazer?"
-        />
-        <select value={novaCategoria} onChange={(e) => setNovaCategoria(e.target.value as CategoriaAtividade)}>
-          {ORDEM.map((c) => (
-            <option key={c} value={c}>
-              {ROTULO_CATEGORIA[c]}
-            </option>
-          ))}
-        </select>
-        <input type="date" value={novaData} onChange={(e) => setNovaData(e.target.value)} title="Data (opcional)" />
-        <button className="btn" type="submit" disabled={salvando || !novoTitulo.trim()}>
-          + Adicionar
-        </button>
-      </form>
+      {/* Nova atividade — uma tarefa OU colar/ditar várias */}
+      <div className="card add-ativ-card">
+        <div className="seg add-ativ-seg">
+          <button className={!modoColar ? 'seg__on' : ''} onClick={() => setModoColar(false)}>
+            Uma tarefa
+          </button>
+          <button className={modoColar ? 'seg__on' : ''} onClick={() => setModoColar(true)}>
+            Colar / ditar várias
+          </button>
+        </div>
+
+        {!modoColar ? (
+          <form className="add-ativ" onSubmit={(e) => void addNovo(e)}>
+            <div className="campo-mic">
+              <input
+                value={novoTitulo}
+                onChange={(e) => setNovoTitulo(e.target.value)}
+                placeholder="O que precisa fazer?"
+              />
+              {ditadoUm.suportado && (
+                <BotaoMic gravando={ditadoUm.gravando} onClick={ditadoUm.alternar} />
+              )}
+            </div>
+            <select value={novaCategoria} onChange={(e) => setNovaCategoria(e.target.value as CategoriaAtividade)}>
+              {ORDEM.map((c) => (
+                <option key={c} value={c}>
+                  {ROTULO_CATEGORIA[c]}
+                </option>
+              ))}
+            </select>
+            <input type="date" value={novaData} onChange={(e) => setNovaData(e.target.value)} title="Data (opcional)" />
+            <button className="btn" type="submit" disabled={salvando || !novoTitulo.trim()}>
+              + Adicionar
+            </button>
+          </form>
+        ) : (
+          <div className="add-ativ-colar">
+            <div className="campo-mic campo-mic--area">
+              <textarea
+                rows={5}
+                value={textoColar}
+                onChange={(e) => setTextoColar(e.target.value)}
+                placeholder={'Cole ou dite várias tarefas — uma por linha.\nEx.:\nFalar com a fornecedora\nEnviar arte da Boba Joy\nMarcar reunião'}
+              />
+              {ditadoVarias.suportado && (
+                <BotaoMic gravando={ditadoVarias.gravando} onClick={ditadoVarias.alternar} titulo="Ditar (cada frase vira uma linha)" />
+              )}
+            </div>
+            <div className="add-ativ-colar__baixo">
+              <select value={novaCategoria} onChange={(e) => setNovaCategoria(e.target.value as CategoriaAtividade)}>
+                {ORDEM.map((c) => (
+                  <option key={c} value={c}>
+                    {ROTULO_CATEGORIA[c]}
+                  </option>
+                ))}
+              </select>
+              <input type="date" value={novaData} onChange={(e) => setNovaData(e.target.value)} title="Data (opcional)" />
+              <span className="add-ativ__conta">
+                {linhasColar.length} {linhasColar.length === 1 ? 'tarefa' : 'tarefas'}
+              </span>
+              <button
+                className="btn"
+                onClick={() => void adicionarVarias()}
+                disabled={salvando || linhasColar.length === 0}
+              >
+                + Adicionar todas
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!ditadoUm.suportado && (
+          <p className="dica-voz">
+            O ditado por voz 🎤 aparece no Chrome e no Safari do iPhone (o navegador pede permissão do microfone).
+          </p>
+        )}
+      </div>
 
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
 

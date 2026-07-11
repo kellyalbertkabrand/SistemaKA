@@ -25,6 +25,7 @@ import {
   type Responsavel,
 } from '../../lib/projetos'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
+import { useToast } from '../../components/Toast'
 
 const BADGE_PROJETO: Record<ProjetoStatus, string> = {
   ativo: 'badge--azul',
@@ -47,11 +48,11 @@ const BADGE_FASE: Record<FaseStatus, string> = {
 // Projetos: cadastro simples, fases com modelos prontos e link público onde
 // o cliente acompanha o andamento em tempo real.
 export function GestaoProjetos() {
+  const { mostrar } = useToast()
   const [lista, setLista] = useState<Projeto[]>([])
   const [sel, setSel] = useState<Projeto | null>(null)
   const [criando, setCriando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
-  const [msg, setMsg] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
   // Visão: lista de projetos OU painel de pendências (com filtro por responsável)
   const [vista, setVista] = useState<'projetos' | 'pendencias'>('projetos')
@@ -75,8 +76,7 @@ export function GestaoProjetos() {
 
   async function copiarLink(p: Projeto) {
     await navigator.clipboard.writeText(linkPublicoProjeto(p.token, p.cliente_nome ?? p.nome))
-    setMsg(`Link de acompanhamento de "${p.nome}" copiado. Envie ao cliente. A página dele atualiza sozinha conforme você avança as fases.`)
-    setTimeout(() => setMsg(null), 5000)
+    mostrar(`Link de "${p.nome}" copiado — é só enviar ao cliente`)
   }
 
   async function excluir(p: Projeto) {
@@ -137,7 +137,6 @@ export function GestaoProjetos() {
       </div>
 
       {erro && <div className="erro-msg">{erro}</div>}
-      {msg && <div className="nota">{msg}</div>}
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
 
       {vista === 'pendencias' && (
@@ -432,9 +431,9 @@ function SeletorResponsavel({
 // (pendente → em andamento → concluída). Tudo salva na hora.
 // ---------------------------------------------------------------------------
 function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: () => void }) {
+  const { mostrar } = useToast()
   const [p, setP] = useState<Projeto>(original)
   const [erro, setErro] = useState<string | null>(null)
-  const [msg, setMsg] = useState<string | null>(null)
   const [salvando, setSalvando] = useState(false)
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [fasesSalvas, setFasesSalvas] = useState<FaseSalva[]>([])
@@ -635,8 +634,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
 
   async function copiarLink() {
     await navigator.clipboard.writeText(linkPublicoProjeto(p.token, p.cliente_nome ?? p.nome))
-    setMsg('Link copiado. Envie ao cliente. A página dele atualiza em tempo real.')
-    setTimeout(() => setMsg(null), 4000)
+    mostrar('Link copiado — a página do cliente atualiza em tempo real')
   }
 
   function iniciarEdicaoNome() {
@@ -665,7 +663,6 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
       </p>
 
       {erro && <div className="erro-msg">{erro}</div>}
-      {msg && <div className="nota">{msg}</div>}
 
       <div className="card">
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.8rem', flexWrap: 'wrap' }}>

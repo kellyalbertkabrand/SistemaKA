@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
+import { ToastProvider } from './components/Toast'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import { Login } from './pages/Login'
 import { DemoStudio } from './pages/DemoStudio'
@@ -34,8 +35,9 @@ function PropostaModeloDev() {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
+      <ToastProvider>
+        <BrowserRouter>
+          <Routes>
           {/* Painel administrativo da KA (gestão) — aberto, sem login.
               Fica na raiz e em /admin. O /ka agora é o ESTÚDIO da marca KA
               (cai na rota dinâmica /:slug lá embaixo), igual ao /shapes. */}
@@ -80,8 +82,9 @@ export default function App() {
           {/* Marca por slug (deixe por último: rota dinâmica) */}
           <Route path="/:slug" element={<DemoStudio />} />
           <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+          </Routes>
+        </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   )
 }

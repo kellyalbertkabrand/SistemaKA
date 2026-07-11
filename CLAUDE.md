@@ -43,6 +43,19 @@ Clientes no sistema:
 - **Hospedagem:** Netlify, conectado ao GitHub (build server-side).
 - **Mobile (futuro):** Capacitor já configurado (iOS/Android).
 
+**Modernização transversal (jul/2026):**
+- **Toast** (`src/components/Toast.tsx`, `ToastProvider` no `App.tsx`): avisos
+  flutuantes (sucesso/erro/info) com `aria-live`, somem sozinhos. Usar
+  `useToast().mostrar(texto, 'ok'|'erro'|'info')`. Já em uso em Projetos (copiar
+  link) e Atividades; as outras telas ainda usam `.nota`/`.erro-msg` inline
+  (migração incremental).
+- **Abas por URL:** o `AdminPanel` guarda a aba ativa em `?aba=` (via
+  `useSearchParams`) — "voltar" do navegador, atualizar a página e compartilhar
+  o link agora funcionam (`ABAS_VALIDAS`/`irPara`).
+- **Acessibilidade/toque:** `:focus-visible` global (foco de teclado), alvos de
+  toque ≥40px no celular, `prefers-reduced-motion` respeitado, `-webkit-tap-
+  highlight-color` (ver fim de `global.css`/`gestao.css`).
+
 O app independente vive em **`estudio-marca-ka/`**. (Na raiz do repo também há
 um sistema de notícias em Python, separado, que não tem relação com este app.)
 
@@ -312,8 +325,9 @@ Receita manual equivalente (fallback/histórico — IA no sandbox):
 >   `estudiodemarca`.
 > - **Mercado Pago:** link automático precisa de Cloud Function (plano Blaze);
 >   por enquanto `gerarLinkMercadoPago` avisa para colar o link manualmente.
-> - Supabase (`src/lib/supabase.ts`, `supabase/`) continua no repo como legado,
->   sem ser importado (tree-shaken do bundle).
+> - Supabase: o cliente JS legado (`src/lib/supabase.ts` + `src/lib/storage.ts`)
+>   foi **removido** (jul/2026) — o app é 100% Firebase. A pasta `supabase/`
+>   (SQL + Edge Functions) continua no repo só como referência histórica.
 
 O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamentos
 / Contratos / Cobranças (**restritas** — exigem login admin, `GateAdmin.tsx`).
@@ -440,6 +454,13 @@ coloridos).
   etiqueta "projeto"; a bolinha marca a etapa como **concluída** direto (edita
   o projeto). Itens pessoais têm check (feito/não), editar inline, duplicar e
   excluir.
+- **Adicionar por VOZ ou COLAR VÁRIAS** (jul/2026): o card "Nova atividade" tem
+  um segmento **Uma tarefa / Colar · ditar várias**. Um botão 🎤 **Falar**
+  (`BotaoMic` + hook `src/hooks/useDitado.ts`, Web Speech API pt-BR — grátis,
+  funciona no Chrome e no Safari do iPhone) dita para o campo; no modo "colar
+  várias", um textão (uma tarefa por linha, ou ditado — cada frase vira uma
+  linha) cria todas de uma vez na categoria escolhida. Onde o navegador não
+  suporta voz, o botão some e aparece uma dica.
 - **Regra Firestore:** `atividades` = só a KA (modo produção).
 
 ### WhatsApp (Caminho 1 — links wa.me, jul/2026)
@@ -631,7 +652,7 @@ estudio-marca-ka/
     ├── lib/
     │   ├── exportar.ts             # baixarPng / baixarZip (assinado)
     │   ├── assinatura.ts           # metadados iTXt no PNG
-    │   ├── supabase.ts, api.ts, storage.ts, database.types.ts
+    │   ├── firebase.ts, api.ts, database.types.ts
     │   ├── gestao.ts               # dados de orçamentos/contratos/cobranças
     │   ├── cuidadoras.ts           # cuidadoras + documentos (compressão)
     │   ├── projetos.ts             # projetos + fases + responsável/data + pendências
@@ -640,7 +661,11 @@ estudio-marca-ka/
     │   ├── global.css              # tema base (KA)
     │   ├── painel.css              # grades do painel (clientes + templates)
     │   └── gestao.css              # abas, tabelas, fichas, páginas públicas
+    ├── hooks/
+    │   └── useDitado.ts            # ditado por voz (Web Speech API, pt-BR)
     ├── components/
+    │   ├── Toast.tsx               # avisos flutuantes (ToastProvider/useToast)
+    │   ├── BotaoMic.tsx            # botão de microfone (ditado)
     │   ├── BrandStudio.tsx         # estúdio por marca ("o que criar?")
     │   ├── MiniPreview.tsx         # miniatura ao vivo de template (scale)
     │   ├── EditorPeca.tsx          # editor de peça única
