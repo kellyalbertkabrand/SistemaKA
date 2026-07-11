@@ -45,6 +45,19 @@
 .gestao-acoes .espaco {
   flex: 1;
 }
+/* Seletor "Ordenar por" (fica à direita das chips). */
+.gestao-acoes .ordenar {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--t-600, #5a5346);
+}
+.gestao-acoes .ordenar select {
+  font-size: 0.85rem;
+  padding: 0.3rem 0.5rem;
+}
 
 /* ---- Tabela ---- */
 .tabela-wrap {

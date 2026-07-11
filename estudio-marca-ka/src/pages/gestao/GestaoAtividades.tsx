@@ -37,6 +37,7 @@ export function GestaoAtividades() {
   const [erro, setErro] = useState<string | null>(null)
   const [salvando, setSalvando] = useState(false)
   const [filtro, setFiltro] = useState<'tudo' | CategoriaAtividade>('tudo')
+  const [ordenar, setOrdenar] = useState<'padrao' | 'data' | 'cliente'>('padrao')
 
   // Nova atividade
   const [novoTitulo, setNovoTitulo] = useState('')
@@ -182,6 +183,14 @@ export function GestaoAtividades() {
             </button>
           ))}
         </div>
+        <label className="ordenar">
+          Ordenar por:
+          <select value={ordenar} onChange={(e) => setOrdenar(e.target.value as typeof ordenar)}>
+            <option value="padrao">Padrão</option>
+            <option value="data">Data</option>
+            <option value="cliente">Cliente</option>
+          </select>
+        </label>
       </div>
 
       {erro && <div className="erro-msg">{erro}</div>}
@@ -213,40 +222,71 @@ export function GestaoAtividades() {
           const pessoais = atividades.filter((a) => a.categoria === cat)
           const pendencias = cat === 'trabalho' ? pendKA : []
           const vazio = pessoais.length === 0 && pendencias.length === 0
-          // pendentes primeiro, feitas por último
-          const pessoaisOrd = [...pessoais].sort((a, b) => Number(a.feito) - Number(b.feito))
+
+          // Junta pendências de projeto + atividades pessoais numa lista só e
+          // ordena conforme a escolha (Padrão / Data / Cliente).
+          type Item =
+            | { tipo: 'pend'; chave: string; data: string | null; cliente: string; feito: boolean; pd: Pendencia }
+            | { tipo: 'ativ'; chave: string; data: string | null; cliente: string; feito: boolean; a: Atividade }
+          const itens: Item[] = [
+            ...pendencias.map(
+              (pd): Item => ({
+                tipo: 'pend',
+                chave: `p-${pd.projeto_id}-${pd.fase_idx}`,
+                data: pd.data ?? null,
+                cliente: pd.cliente_nome ?? '',
+                feito: false,
+                pd,
+              }),
+            ),
+            ...pessoais.map(
+              (a): Item => ({ tipo: 'ativ', chave: `a-${a.id}`, data: a.data ?? null, cliente: '', feito: a.feito, a }),
+            ),
+          ]
+          const FIM = '￿' // vazios (sem data / sem cliente) vão para o fim
+          itens.sort((x, y) => {
+            // feitas sempre por último
+            if (x.feito !== y.feito) return Number(x.feito) - Number(y.feito)
+            if (ordenar === 'data') return (x.data || FIM).localeCompare(y.data || FIM)
+            if (ordenar === 'cliente') {
+              const c = (x.cliente || FIM).localeCompare(y.cliente || FIM)
+              return c !== 0 ? c : (x.data || FIM).localeCompare(y.data || FIM)
+            }
+            // padrão: pendências de projeto primeiro, depois pessoais
+            if ((x.tipo === 'pend') !== (y.tipo === 'pend')) return x.tipo === 'pend' ? -1 : 1
+            return 0
+          })
+
           return (
             <div key={cat} className="ativ-grupo">
               <h3 className={`ativ-grupo__tit cat--${cat}`}>{ROTULO_CATEGORIA[cat]}</h3>
 
               {vazio && <p className="ativ-vazio">Nada por aqui ainda.</p>}
 
-              {/* Pendências de trabalho (dos projetos) */}
-              {pendencias.map((pd) => (
-                <div key={`${pd.projeto_id}-${pd.fase_idx}`} className="ativ ativ--projeto">
-                  <button
-                    className="ativ__check"
-                    disabled={salvando}
-                    title="Marcar etapa como concluída"
-                    onClick={() => void concluirPendencia(pd)}
-                  >
-                    {pd.status === 'andamento' ? '●' : '○'}
-                  </button>
-                  <div className="ativ__corpo">
-                    <div className="ativ__titulo">{pd.fase_nome}</div>
-                    <div className="ativ__sub">
-                      <span className="ativ__tag">projeto</span>
-                      {pd.projeto_nome}
-                      {pd.cliente_nome ? ` · ${pd.cliente_nome}` : ''}
-                      {pd.data && <> · 📅 {formatarData(pd.data)}</>}
+              {itens.map((it) =>
+                it.tipo === 'pend' ? (
+                  <div key={it.chave} className="ativ ativ--projeto">
+                    <button
+                      className="ativ__check"
+                      disabled={salvando}
+                      title="Marcar etapa como concluída"
+                      onClick={() => void concluirPendencia(it.pd)}
+                    >
+                      {it.pd.status === 'andamento' ? '●' : '○'}
+                    </button>
+                    <div className="ativ__corpo">
+                      <div className="ativ__titulo">{it.pd.fase_nome}</div>
+                      <div className="ativ__sub">
+                        <span className="ativ__tag">projeto</span>
+                        {it.pd.projeto_nome}
+                        {it.pd.cliente_nome ? ` · ${it.pd.cliente_nome}` : ''}
+                        {it.pd.data && <> · 📅 {formatarData(it.pd.data)}</>}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-
-              {/* Atividades pessoais */}
-              {pessoaisOrd.map((a) =>
-                editId === a.id ? (
+                ) : (() => {
+                  const a = it.a
+                  return editId === a.id ? (
                   <div key={a.id} className="ativ ativ--edit">
                     <input
                       autoFocus
@@ -300,7 +340,8 @@ export function GestaoAtividades() {
                       </button>
                     </div>
                   </div>
-                ),
+                  )
+                })(),
               )}
             </div>
           )
