@@ -13,6 +13,7 @@ import {
   formatarData,
 } from '../../lib/gestao'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
+import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
 
 const BADGE_COBRANCA: Record<CobrancaStatus, string> = {
@@ -140,7 +141,11 @@ export function GestaoCobrancas() {
 
   function abrirEditar(c: Cobranca) {
     setEditandoId(c.id)
-    setNovoCli(c.cliente_id ?? '')
+    // Se a cobrança está sem cliente (ou o id não existe mais), já seleciona o
+    // 1º da lista — assim o que aparece no campo é o que será salvo de verdade.
+    const cid =
+      c.cliente_id && clientes.some((x) => x.id === c.cliente_id) ? c.cliente_id : clientes[0]?.id ?? ''
+    setNovoCli(cid)
     setNovaDesc(c.descricao)
     setNovoValor(String(c.valor))
     setNovoVenc(c.vencimento)
@@ -269,7 +274,7 @@ export function GestaoCobrancas() {
   }
 
   async function cancelar(c: Cobranca) {
-    if (!window.confirm(`Cancelar a cobrança "${c.descricao}"?`)) return
+    if (!(await confirmar(`Cancelar a cobrança "${c.descricao}"?`, { perigo: true, confirmar: 'Cancelar cobrança' }))) return
     setOcupado(c.id)
     try {
       await atualizarCobranca(c.id, { status: 'cancelada' })
@@ -282,13 +287,12 @@ export function GestaoCobrancas() {
   }
 
   async function excluir(c: Cobranca) {
-    if (
-      !window.confirm(
-        `Excluir de vez a cobrança "${c.descricao}"? Ela some do histórico e não dá para ` +
-          'recuperar. (Para manter registro, prefira "Cancelar".)',
-      )
+    const ok = await confirmar(
+      `Excluir de vez a cobrança "${c.descricao}"? Ela some do histórico e não dá para ` +
+        'recuperar. (Para manter registro, prefira "Cancelar".)',
+      { perigo: true, confirmar: 'Excluir' },
     )
-      return
+    if (!ok) return
     setOcupado(c.id)
     try {
       await excluirCobranca(c.id)
@@ -323,7 +327,7 @@ export function GestaoCobrancas() {
         )}
       </div>
 
-      {erro && <div className="erro-msg">{erro}</div>}
+      {erro && !criando && <div className="erro-msg">{erro}</div>}
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
 
       {criando && (
@@ -399,6 +403,8 @@ export function GestaoCobrancas() {
               sistema cria {nParcelas} cobranças, uma por mês a partir do 1º vencimento.
             </p>
           )}
+
+          {erro && <div className="erro-msg" style={{ marginTop: '0.4rem' }}>{erro}</div>}
 
           <p style={{ display: 'flex', gap: '0.6rem', marginTop: '0.2rem' }}>
             <button className="btn" disabled={ocupado === 'nova'} onClick={() => void salvarForm()}>

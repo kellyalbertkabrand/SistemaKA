@@ -25,6 +25,7 @@ import {
   type Responsavel,
 } from '../../lib/projetos'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
+import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
 
 const BADGE_PROJETO: Record<ProjetoStatus, string> = {
@@ -80,7 +81,7 @@ export function GestaoProjetos() {
   }
 
   async function excluir(p: Projeto) {
-    if (!window.confirm(`Excluir o projeto "${p.nome}"? O link do cliente para de funcionar.`)) return
+    if (!(await confirmar(`Excluir o projeto "${p.nome}"? O link do cliente para de funcionar.`, { perigo: true, confirmar: 'Excluir' }))) return
     try {
       await excluirProjeto(p.id)
       await recarregar()
@@ -444,6 +445,10 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
   // Editar o nome do projeto (inline)
   const [editandoNome, setEditandoNome] = useState(false)
   const [nomeEdit, setNomeEdit] = useState('')
+  // Editar o nome do cliente (inline) — útil para criar o projeto antes de ter
+  // os dados do cliente e só depois trocar o nome / excluir o cadastro provisório
+  const [editandoCliente, setEditandoCliente] = useState(false)
+  const [clienteEdit, setClienteEdit] = useState('')
   // Edição inline (sem a janelinha do navegador)
   const [editIdx, setEditIdx] = useState<number | null>(null)
   const [editNome, setEditNome] = useState('')
@@ -556,8 +561,8 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     setEditIdx(null)
   }
 
-  function removerFase(i: number) {
-    if (!window.confirm(`Remover a fase "${p.fases[i].nome}"?`)) return
+  async function removerFase(i: number) {
+    if (!(await confirmar(`Remover a fase "${p.fases[i].nome}"?`, { perigo: true, confirmar: 'Remover' }))) return
     void aplicar({ fases: p.fases.filter((_, idx) => idx !== i) })
   }
 
@@ -648,6 +653,15 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     setEditandoNome(false)
   }
 
+  function iniciarEdicaoCliente() {
+    setClienteEdit(p.cliente_nome ?? '')
+    setEditandoCliente(true)
+  }
+  async function salvarCliente() {
+    await aplicar({ cliente_nome: clienteEdit.trim() || null })
+    setEditandoCliente(false)
+  }
+
   return (
     <>
       <p style={{ marginBottom: '1rem', display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
@@ -704,9 +718,37 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
             <option value="concluido">concluído</option>
           </select>
         </div>
-        {p.cliente_nome && (
-          <p style={{ marginTop: 2 }}>
-            Cliente: <strong>{p.cliente_nome}</strong>
+        {editandoCliente ? (
+          <div className="proj-nome-edit" style={{ marginTop: 6 }}>
+            <input
+              autoFocus
+              value={clienteEdit}
+              onChange={(e) => setClienteEdit(e.target.value)}
+              placeholder="Nome do cliente"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') void salvarCliente()
+                if (e.key === 'Escape') setEditandoCliente(false)
+              }}
+            />
+            <button className="btn-mini" disabled={salvando} onClick={() => void salvarCliente()}>
+              Salvar
+            </button>
+            <button className="btn-mini" onClick={() => setEditandoCliente(false)}>
+              Cancelar
+            </button>
+          </div>
+        ) : (
+          <p style={{ marginTop: 2, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {p.cliente_nome ? (
+              <>
+                Cliente: <strong>{p.cliente_nome}</strong>
+              </>
+            ) : (
+              <span style={{ opacity: 0.6 }}>Sem cliente definido</span>
+            )}
+            <button className="btn-mini" disabled={salvando} title="Alterar o nome do cliente" onClick={iniciarEdicaoCliente}>
+              {p.cliente_nome ? 'Alterar cliente' : 'Definir cliente'}
+            </button>
           </p>
         )}
 

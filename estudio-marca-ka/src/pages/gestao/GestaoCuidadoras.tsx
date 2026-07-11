@@ -17,6 +17,7 @@ import {
   type FichaCuidadora,
 } from '../../lib/cuidadoras'
 import { formatarData } from '../../lib/gestao'
+import { confirmar } from '../../lib/confirmar'
 
 const BADGE_CUIDADORA: Record<CuidadoraStatus, string> = {
   pendente: 'badge--dourado',
@@ -188,7 +189,7 @@ function FichaCuidadoraView({ cuidadora, aoVoltar }: { cuidadora: Cuidadora; aoV
   }
 
   async function excluir() {
-    if (!window.confirm(`Excluir ${cuidadora.nome} e todos os documentos anexados? Não dá para desfazer.`)) return
+    if (!(await confirmar(`Excluir ${cuidadora.nome} e todos os documentos anexados? Não dá para desfazer.`, { perigo: true, confirmar: 'Excluir' }))) return
     try {
       await excluirCuidadora(cuidadora.id)
       aoVoltar()
@@ -335,7 +336,7 @@ function Documentos({ cuidadora }: { cuidadora: Cuidadora }) {
   }
 
   async function remover(d: DocumentoCuidadora) {
-    if (!window.confirm(`Excluir o documento "${d.nome}"?`)) return
+    if (!(await confirmar(`Excluir o documento "${d.nome}"?`, { perigo: true, confirmar: 'Excluir' }))) return
     try {
       await removerDocumento(cuidadora.id, d.id)
       await recarregar()

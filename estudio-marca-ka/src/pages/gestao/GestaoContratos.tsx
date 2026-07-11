@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import type { Cliente, Contrato, ContratoStatus, ModeloContrato } from '../../lib/database.types'
+import { confirmar } from '../../lib/confirmar'
 import { listarClientes } from '../../lib/api'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import {
@@ -77,7 +78,7 @@ export function GestaoContratos() {
   }
 
   async function cancelar(c: Contrato) {
-    if (!window.confirm(`Cancelar o contrato "${c.titulo}"?`)) return
+    if (!(await confirmar(`Cancelar o contrato "${c.titulo}"?`, { perigo: true, confirmar: 'Cancelar contrato' }))) return
     try {
       await atualizarContrato(c.id, { status: 'cancelado' })
       await recarregar()
@@ -91,7 +92,7 @@ export function GestaoContratos() {
       c.status === 'assinado'
         ? `ATENÇÃO: "${c.titulo}" está ASSINADO. O registro do aceite digital será apagado junto e não dá para recuperar. Excluir mesmo assim? (Use só para limpar testes.)`
         : `Excluir o contrato "${c.titulo}"? Essa ação não pode ser desfeita.`
-    if (!window.confirm(aviso)) return
+    if (!(await confirmar(aviso, { perigo: true, confirmar: 'Excluir' }))) return
     try {
       await excluirContrato(c.id)
       await recarregar()

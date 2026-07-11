@@ -3,6 +3,7 @@ import { formatarData } from '../../lib/gestao'
 import { BotaoMic } from '../../components/BotaoMic'
 import { useToast } from '../../components/Toast'
 import { useDitado } from '../../hooks/useDitado'
+import { confirmar } from '../../lib/confirmar'
 import {
   listarProjetos,
   pendenciasDeProjetos,
@@ -176,7 +177,7 @@ export function GestaoAtividades() {
   }
 
   async function excluir(a: Atividade) {
-    if (!window.confirm(`Excluir "${a.titulo}"?`)) return
+    if (!(await confirmar(`Excluir "${a.titulo}"?`, { perigo: true, confirmar: 'Excluir' }))) return
     setAtividades((l) => l.filter((x) => x.id !== a.id))
     try {
       await excluirAtividade(a.id)

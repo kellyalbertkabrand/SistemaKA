@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import './menu.css'
 
@@ -45,9 +46,14 @@ export function SiteHeader({ itens = [], ativo, onSelecionar }: Props) {
 
   return (
     <header className="ka-top">
-      <a className="ka-logo" href="/" aria-label="KA, Inteligência para Marcas">
+      <Link
+        className="ka-logo"
+        to="/"
+        aria-label="KA, Inteligência para Marcas — voltar ao início"
+        onClick={() => setAberto(false)}
+      >
         <img className="ka-logo__img" src="/logo-ka.png" alt="KA, Inteligência para Marcas" />
-      </a>
+      </Link>
 
       {temNav && (
         <button

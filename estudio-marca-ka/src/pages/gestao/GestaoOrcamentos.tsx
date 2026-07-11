@@ -7,6 +7,7 @@ import type {
   PropostaCampos,
 } from '../../lib/database.types'
 import { listarClientes } from '../../lib/api'
+import { confirmar } from '../../lib/confirmar'
 import {
   criarOrcamento,
   atualizarOrcamento,
@@ -98,7 +99,7 @@ export function GestaoOrcamentos() {
       o.status === 'aprovado'
         ? `Excluir o orçamento "${o.titulo}"? O contrato e a cobrança que ele gerou NÃO são apagados junto. Apague-os nas abas Contratos e Cobranças se também forem teste.`
         : `Excluir o orçamento "${o.titulo}"? Essa ação não pode ser desfeita.`
-    if (!window.confirm(aviso)) return
+    if (!(await confirmar(aviso, { perigo: true, confirmar: 'Excluir' }))) return
     try {
       await excluirOrcamento(o.id)
       await recarregar()

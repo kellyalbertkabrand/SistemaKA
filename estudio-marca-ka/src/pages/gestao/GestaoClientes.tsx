@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useSearchParams } from 'react-router-dom'
+import { confirmar } from '../../lib/confirmar'
 import type { Cliente, Usuario, PagamentoContrato } from '../../lib/database.types'
 import {
   criarCliente,
@@ -47,14 +48,13 @@ export function GestaoClientes() {
   }
 
   async function excluir(c: Cliente) {
-    if (
-      !window.confirm(
-        `Excluir o cliente "${c.nome_marca}"? A ficha e os acessos somem de vez. ` +
-          'Orçamentos, contratos e cobranças ligados a ele NÃO são apagados junto. ' +
-          'Se também forem teste, apague-os nas outras abas.',
-      )
+    const ok = await confirmar(
+      `Excluir o cliente "${c.nome_marca}"? A ficha e os acessos somem de vez. ` +
+        'Orçamentos, contratos e cobranças ligados a ele NÃO são apagados junto. ' +
+        'Se também forem teste, apague-os nas outras abas.',
+      { perigo: true, confirmar: 'Excluir' },
     )
-      return
+    if (!ok) return
     try {
       await excluirCliente(c.id)
       await recarregar()
@@ -717,7 +717,7 @@ function Acessos({ cliente, slug }: { cliente: Cliente; slug: string | null }) {
   }
 
   async function desvincular(u: Usuario) {
-    if (!window.confirm(`Remover o acesso de ${u.email} a ${cliente.nome_marca}?`)) return
+    if (!(await confirmar(`Remover o acesso de ${u.email} a ${cliente.nome_marca}?`, { perigo: true }))) return
     setOcupado(true)
     try {
       await desvincularUsuario(u.id)

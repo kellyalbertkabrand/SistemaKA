@@ -1599,3 +1599,20 @@
   border-color: var(--essencia);
   box-shadow: 0 -2px 0 var(--essencia) inset;
 }
+
+/* ---- Caixa de confirmação própria (confirmar.ts) ---- */
+.cf-msg {
+  font-family: var(--body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--t-900);
+  margin-bottom: 1rem;
+}
+.wa-btn--perigo {
+  background: var(--erro);
+  color: #fff;
+  border-color: var(--erro);
+}
+.wa-btn--perigo:hover {
+  filter: brightness(0.94);
+}

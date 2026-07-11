@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { confirmar } from '../../lib/confirmar'
 import {
   orcamentoPorToken,
   responderOrcamento,
@@ -55,7 +56,8 @@ export function OrcamentoPublico() {
   }
 
   async function recusar() {
-    if (!token || !window.confirm('Recusar este orçamento?')) return
+    if (!token) return
+    if (!(await confirmar('Recusar este orçamento?', { perigo: true, confirmar: 'Recusar' }))) return
     setRespondendo(true)
     setErro(null)
     try {
