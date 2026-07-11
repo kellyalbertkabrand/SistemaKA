@@ -43,7 +43,6 @@ export function CadastroPublico() {
           <p style={{ marginTop: '0.6rem', color: 'var(--t-600)', lineHeight: 1.6 }}>
             Obrigada! Recebemos os seus dados. A Kelly vai analisar e entrar em contato em breve.
           </p>
-          <div className="pub-rodape">Sistema Visual de Publicações da Marca · KA</div>
         </div>
       </div>
     )
@@ -104,15 +103,6 @@ export function CadastroPublico() {
               <label>CPF / CNPJ</label>
               <input value={f.documento ?? ''} onChange={(e) => campo('documento', e.target.value || null)} />
             </div>
-            <div className="field campo-toda">
-              <label>Observações (o que você precisa)</label>
-              <textarea
-                rows={3}
-                value={f.observacoes ?? ''}
-                onChange={(e) => campo('observacoes', e.target.value || null)}
-                placeholder="Conte um pouco sobre a sua marca e o que procura."
-              />
-            </div>
           </div>
 
           <div className="pub-acoes">
@@ -121,8 +111,6 @@ export function CadastroPublico() {
             </button>
           </div>
         </form>
-
-        <div className="pub-rodape">Sistema Visual de Publicações da Marca · KA</div>
       </div>
     </div>
   )

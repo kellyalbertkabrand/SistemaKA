@@ -27,7 +27,7 @@ function ehNovo(c: Cliente): boolean {
 // cobrança/mensalidade) + quem tem login vinculado à marca.
 export function GestaoClientes() {
   const [clientes, setClientes] = useState<Cliente[]>([])
-  const [sel, setSel] = useState<Cliente | null>(null)
+  const [sel, setSel] = useState<Cliente | 'novo' | null>(null)
   const [erro, setErro] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
   const [msg, setMsg] = useState<string | null>(null)
@@ -80,22 +80,10 @@ export function GestaoClientes() {
     void recarregar()
   }, [])
 
-  async function novoCliente() {
-    const nome = window.prompt('Nome da marca do novo cliente:')
-    if (!nome?.trim()) return
-    try {
-      const c = await criarCliente({ nome_marca: nome.trim(), instagram_handle: null, segmento: null, site: null })
-      await recarregar()
-      setSel(c)
-    } catch (e) {
-      setErro(e instanceof Error ? e.message : String(e))
-    }
-  }
-
   if (sel) {
     return (
       <FichaDoCliente
-        cliente={sel}
+        cliente={sel === 'novo' ? null : sel}
         aoVoltar={() => {
           setSel(null)
           void recarregar()
@@ -111,7 +99,7 @@ export function GestaoClientes() {
         <button className="btn--voltar" onClick={() => void copiarLinkCadastro()}>
           Copiar link de cadastro
         </button>
-        <button className="btn" onClick={() => void novoCliente()}>
+        <button className="btn" onClick={() => setSel('novo')}>
           + Novo cliente
         </button>
       </div>
@@ -197,8 +185,11 @@ export function GestaoClientes() {
 // ---------------------------------------------------------------------------
 // Ficha do cliente: dados cadastrais + cobrança + acessos.
 // ---------------------------------------------------------------------------
-function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente; aoVoltar: () => void }) {
-  const [f, setF] = useState<FichaCliente>({ ...cliente })
+function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente | null; aoVoltar: () => void }) {
+  const criando = !cliente
+  const [f, setF] = useState<FichaCliente>(
+    cliente ? { ...cliente } : { status: 'ativo', dia_vencimento: 10, cobranca_ativa: false },
+  )
   const [salvando, setSalvando] = useState(false)
   const [msg, setMsg] = useState<string | null>(null)
   const [erro, setErro] = useState<string | null>(null)
@@ -209,17 +200,35 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente; aoVoltar: () 
 
   async function salvar(e: FormEvent) {
     e.preventDefault()
+    if (!f.nome_marca?.trim()) {
+      setErro('Informe o nome da marca.')
+      return
+    }
     setSalvando(true)
     setErro(null)
+    const dados: FichaCliente = {
+      ...f,
+      nome_marca: f.nome_marca.trim(),
+      valor_mensalidade:
+        f.valor_mensalidade == null || Number.isNaN(Number(f.valor_mensalidade))
+          ? null
+          : Number(f.valor_mensalidade),
+      dia_vencimento: Math.min(28, Math.max(1, Number(f.dia_vencimento) || 10)),
+    }
     try {
-      await salvarFichaCliente(cliente.id, {
-        ...f,
-        valor_mensalidade:
-          f.valor_mensalidade == null || Number.isNaN(Number(f.valor_mensalidade))
-            ? null
-            : Number(f.valor_mensalidade),
-        dia_vencimento: Math.min(28, Math.max(1, Number(f.dia_vencimento) || 10)),
-      })
+      if (criando) {
+        // Cria o cliente e já grava a ficha completa; volta para a lista.
+        const novo = await criarCliente({
+          nome_marca: dados.nome_marca!,
+          instagram_handle: dados.instagram_handle ?? null,
+          segmento: dados.segmento ?? null,
+          site: dados.site ?? null,
+        })
+        await salvarFichaCliente(novo.id, dados)
+        aoVoltar()
+        return
+      }
+      await salvarFichaCliente(cliente!.id, dados)
       setMsg('Ficha salva.')
       setTimeout(() => setMsg(null), 2500)
     } catch (err) {
@@ -238,7 +247,7 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente; aoVoltar: () 
       </p>
 
       <div className="card">
-        <h3>Ficha do cliente</h3>
+        <h3>{criando ? 'Novo cliente' : 'Ficha do cliente'}</h3>
         <p style={{ marginBottom: '1rem' }}>
           Dados cadastrais e de contato, ficam guardados aqui, num lugar só.
         </p>
@@ -358,7 +367,13 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente; aoVoltar: () 
         </form>
       </div>
 
-      <Acessos cliente={cliente} slug={f.slug ?? null} />
+      {cliente ? (
+        <Acessos cliente={cliente} slug={f.slug ?? null} />
+      ) : (
+        <p style={{ color: 'var(--t-500)', fontSize: '0.82rem', marginTop: '1rem' }}>
+          Salve a ficha para poder convidar acessos deste cliente.
+        </p>
+      )}
     </>
   )
 }
