@@ -15,6 +15,7 @@ import {
   salvarProjeto,
   type FaseProjeto,
   type FaseSalva,
+  type FaseStatus,
   type Projeto,
   type ProjetoStatus,
 } from '../../lib/projetos'
@@ -31,6 +32,12 @@ const ROTULO_FASE = {
   andamento: 'em andamento',
   concluida: 'concluída ✓',
 } as const
+
+const BADGE_FASE: Record<FaseStatus, string> = {
+  pendente: 'badge--cinza',
+  andamento: 'badge--azul',
+  concluida: 'badge--verde',
+}
 
 // Projetos: cadastro simples, fases com modelos prontos e link público onde
 // o cliente acompanha o andamento em tempo real.
@@ -368,6 +375,20 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     void aplicar({ fases })
   }
 
+  function definirStatusFase(i: number, status: FaseStatus) {
+    const fases = p.fases.map<FaseProjeto>((f, idx) =>
+      idx === i
+        ? {
+            ...f,
+            status,
+            concluida_em:
+              status === 'concluida' ? (f.concluida_em ?? new Date().toISOString()) : null,
+          }
+        : f,
+    )
+    void aplicar({ fases })
+  }
+
   function renomearFase(i: number) {
     const nome = window.prompt('Nome da fase:', p.fases[i].nome)
     if (!nome?.trim()) return
@@ -487,11 +508,26 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
                 <div className="fase__nome">{f.nome}</div>
                 {f.descricao && <div className="fase__desc">{f.descricao}</div>}
                 <div className="fase__meta">
-                  {ROTULO_FASE[f.status]}
-                  {f.concluida_em && ` em ${formatarData(f.concluida_em)}`}
+                  <span className={`badge ${BADGE_FASE[f.status]}`}>{ROTULO_FASE[f.status]}</span>
+                  {f.concluida_em && (
+                    <span style={{ marginLeft: 6, color: 'var(--t-400)', textTransform: 'none', letterSpacing: 0 }}>
+                      {formatarData(f.concluida_em)}
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="fase__acoes">
+                <select
+                  className={`fase-status-sel status-${f.status}`}
+                  value={f.status}
+                  disabled={salvando}
+                  title="Mudar o status desta fase"
+                  onChange={(e) => definirStatusFase(i, e.target.value as FaseStatus)}
+                >
+                  <option value="pendente">Pendente</option>
+                  <option value="andamento">Em andamento</option>
+                  <option value="concluida">Concluída</option>
+                </select>
                 <button className="btn-mini" disabled={salvando || i === 0} onClick={() => moverFase(i, -1)} title="Subir">
                   ▲
                 </button>
@@ -535,7 +571,9 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
         </div>
 
         <p style={{ marginTop: '0.6rem', fontSize: '0.75rem', color: 'var(--t-400)' }}>
-          Clique na bolinha para avançar a fase (pendente → em andamento → concluída). As fases que
+          Mude o status pelo seletor de cada fase (ou clique na bolinha para avançar). Concluída
+          fica <strong style={{ color: '#2e6b45' }}>verde</strong>, em andamento{' '}
+          <strong style={{ color: 'var(--essencia)' }}>azul</strong>, pendente cinza. As fases que
           você escreve ficam <strong>salvas</strong> — comece a digitar o nome e a descrição aparece.
         </p>
       </div>

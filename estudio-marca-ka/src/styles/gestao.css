@@ -694,3 +694,29 @@
 .add-fase input:nth-of-type(2) {
   flex: 2 1 260px;
 }
+
+/* ---- Seletor de status da fase (colorido) ---- */
+.fase-status-sel {
+  font-family: var(--body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 100px;
+  padding: 0.32rem 0.6rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.fase-status-sel.status-pendente {
+  color: var(--t-500);
+  background: rgba(15, 25, 35, 0.06);
+  border-color: rgba(15, 25, 35, 0.12);
+}
+.fase-status-sel.status-andamento {
+  color: var(--essencia);
+  background: rgba(61, 107, 126, 0.1);
+  border-color: rgba(61, 107, 126, 0.3);
+}
+.fase-status-sel.status-concluida {
+  color: #2e6b45;
+  background: rgba(46, 107, 69, 0.12);
+  border-color: rgba(46, 107, 69, 0.35);
+}
