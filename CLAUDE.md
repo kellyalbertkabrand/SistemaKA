@@ -551,6 +551,9 @@ número da ficha já preenchidos (normalizado com DDI 55) + a mensagem editável
 "Abrir WhatsApp" dispara o `wa.me` a partir do clique real (não é bloqueado).
 ⚠️ NÃO usar `window.prompt` — no iPhone/Safari ele é suprimido e o botão
 "não faz nada". Popup estilizado em `gestao.css` (`.wa-overlay`/`.wa-box`).
+O número da cobrança resolve `cliente?.telefone || c.telefone` (**`||`**, não
+`??` — telefone antigo vazio deixava passar `''`). Sem telefone na ficha, o
+popup mostra um aviso pedindo pra digitar / preencher em Clientes.
 
 - **Cobranças:** mensagem com descrição, valor, vencimento e link de pagamento.
 - **Orçamentos:** link público da proposta + validade.

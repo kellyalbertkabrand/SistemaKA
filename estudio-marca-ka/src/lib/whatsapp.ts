@@ -68,6 +68,11 @@ export function abrirWhatsApp(
 
   const aviso = document.createElement('div')
   aviso.className = 'wa-box__aviso'
+  // Se a ficha não tem telefone, avisa (mas dá para digitar aqui mesmo).
+  if (!tel) {
+    aviso.textContent =
+      'Sem telefone na ficha deste cliente — digite o número aqui, ou preencha em Clientes para vir automático.'
+  }
 
   const acoes = document.createElement('div')
   acoes.className = 'wa-box__acoes'

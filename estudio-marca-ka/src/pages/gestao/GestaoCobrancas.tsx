@@ -74,7 +74,9 @@ export function GestaoCobrancas() {
     }
     linhas.push('', 'Qualquer dúvida, me chama! Kelly')
     abrirWhatsApp(
-      c.telefone ?? cliente?.telefone,
+      // O telefone atual da ficha vem primeiro; `||` garante que vazio/nulo
+      // caia para o próximo (o `??` deixava passar string vazia antiga).
+      cliente?.telefone || c.telefone,
       linhas.join('\n'),
       cliente ? (cliente.responsavel ?? cliente.nome_marca) : null,
     )
