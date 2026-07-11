@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import type { Cliente, Usuario } from '../../lib/database.types'
+import type { Cliente, Usuario, PagamentoContrato } from '../../lib/database.types'
 import {
   criarCliente,
   listarClientes,
@@ -399,6 +399,17 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente | null; aoVolt
             </div>
           </div>
 
+          <h3 style={{ margin: '0.6rem 0 0.2rem' }}>Pagamentos do contrato</h3>
+          <p style={{ margin: '0 0 0.6rem', fontSize: '0.8rem', color: '#5a5346' }}>
+            Para cada pagamento, escolha <strong>quem</strong> deve ser pago (o cliente, a KA, a VM
+            ou um nome personalizado), quando, em quantas parcelas e o valor de cada parcela.
+          </p>
+
+          <PagamentosContrato
+            lista={f.pagamentos_contrato ?? []}
+            onChange={(l) => campo('pagamentos_contrato', l)}
+          />
+
           <p style={{ display: 'flex', gap: '0.7rem', alignItems: 'center', marginTop: '1.2rem' }}>
             <button className="btn" type="submit" disabled={salvando}>
               {salvando ? 'Salvando…' : 'Salvar ficha'}
@@ -416,6 +427,108 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente | null; aoVolt
         </p>
       )}
     </>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Pagamentos do contrato: lista com "quem" deve ser pago (cliente/KA/VM/outro),
+// data, nº de parcelas e valor de cada parcela.
+// ---------------------------------------------------------------------------
+const QUEM_OPCOES = [
+  { valor: 'cliente', rotulo: 'O cliente' },
+  { valor: 'ka', rotulo: 'KA' },
+  { valor: 'vm', rotulo: 'VM Rocks' },
+  { valor: 'outro', rotulo: 'Personalizado…' },
+]
+
+function PagamentosContrato({
+  lista,
+  onChange,
+}: {
+  lista: PagamentoContrato[]
+  onChange: (l: PagamentoContrato[]) => void
+}) {
+  function atualizar(i: number, patch: Partial<PagamentoContrato>) {
+    onChange(lista.map((p, x) => (x === i ? { ...p, ...patch } : p)))
+  }
+  function adicionar() {
+    onChange([...lista, { quem: 'ka', quem_outro: null, data: null, parcelas: null, valor_parcela: null }])
+  }
+  function remover(i: number) {
+    onChange(lista.filter((_, x) => x !== i))
+  }
+
+  return (
+    <div>
+      {lista.length === 0 && (
+        <p style={{ fontSize: '0.82rem', color: '#837b6c', margin: '0 0 0.6rem' }}>
+          Nenhum pagamento cadastrado ainda.
+        </p>
+      )}
+      {lista.map((p, i) => (
+        <div
+          key={i}
+          style={{ border: '1px solid rgba(21,37,53,0.14)', borderRadius: 10, padding: '0.8rem', marginBottom: '0.7rem' }}
+        >
+          <div className="form-grade">
+            <div className="field">
+              <label>Quem deve ser pago</label>
+              <select value={p.quem} onChange={(e) => atualizar(i, { quem: e.target.value })}>
+                {QUEM_OPCOES.map((o) => (
+                  <option key={o.valor} value={o.valor}>
+                    {o.rotulo}
+                  </option>
+                ))}
+              </select>
+            </div>
+            {p.quem === 'outro' && (
+              <div className="field">
+                <label>Nome (personalizado)</label>
+                <input
+                  value={p.quem_outro ?? ''}
+                  onChange={(e) => atualizar(i, { quem_outro: e.target.value || null })}
+                  placeholder="ex.: Fornecedor, sócio…"
+                />
+              </div>
+            )}
+            <div className="field">
+              <label>Data do pagamento</label>
+              <input type="date" value={p.data ?? ''} onChange={(e) => atualizar(i, { data: e.target.value || null })} />
+            </div>
+            <div className="field">
+              <label>Nº de parcelas</label>
+              <input
+                type="number"
+                min={1}
+                step="1"
+                value={p.parcelas ?? ''}
+                onChange={(e) => atualizar(i, { parcelas: e.target.value === '' ? null : Number(e.target.value) })}
+              />
+            </div>
+            <div className="field">
+              <label>Valor de cada parcela (R$)</label>
+              <input
+                type="number"
+                min={0}
+                step="0.01"
+                value={p.valor_parcela ?? ''}
+                onChange={(e) => atualizar(i, { valor_parcela: e.target.value === '' ? null : Number(e.target.value) })}
+              />
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => remover(i)}
+            style={{ background: 'none', border: 'none', color: '#b4462f', fontSize: '0.8rem', cursor: 'pointer', padding: '0.3rem 0', marginTop: '0.3rem' }}
+          >
+            Remover pagamento
+          </button>
+        </div>
+      ))}
+      <button type="button" className="btn btn--ghost" onClick={adicionar}>
+        + Adicionar pagamento
+      </button>
+    </div>
   )
 }
 

@@ -46,6 +46,19 @@ export interface Cliente {
   origem?: string | null
   /** false enquanto a KA ainda não abriu a ficha de um cadastro novo. */
   revisado?: boolean
+  /** Pagamentos do contrato: para cada um, QUEM deve ser pago (cliente, KA, VM
+   *  ou um nome personalizado), quando, em quantas parcelas e o valor de cada. */
+  pagamentos_contrato?: PagamentoContrato[]
+}
+
+/** Um pagamento do contrato. `quem` é 'cliente' | 'ka' | 'vm' | 'outro'; quando
+ *  'outro', o nome fica em `quem_outro`. */
+export interface PagamentoContrato {
+  quem: string
+  quem_outro?: string | null
+  data?: string | null
+  parcelas?: number | null
+  valor_parcela?: number | null
 }
 
 // ---- Gestão: orçamentos, contratos e cobranças -----------------------------

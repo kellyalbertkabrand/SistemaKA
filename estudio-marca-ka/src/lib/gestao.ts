@@ -99,6 +99,7 @@ export type FichaCliente = Partial<
     | 'contrato_documento'
     | 'contrato_rg'
     | 'contrato_email'
+    | 'pagamentos_contrato'
   >
 >
 
