@@ -822,6 +822,24 @@
   gap: 0.35rem;
 }
 
+/* ---- Editar o nome do projeto (inline) ---- */
+.proj-nome-edit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+.proj-nome-edit input {
+  flex: 1 1 200px;
+  min-width: 0;
+  font-family: var(--heading);
+  font-size: 1.1rem;
+  border: 1px solid rgba(61, 107, 126, 0.4);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  background: var(--bg-1);
+}
+
 /* ---- Início do projeto ---- */
 .proj-inicio {
   display: inline-flex;

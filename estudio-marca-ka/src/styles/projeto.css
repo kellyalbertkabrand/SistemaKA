@@ -336,6 +336,13 @@
   color: var(--t-400);
   margin-top: 0.35rem;
 }
+/* Assinatura conjunta KA + VM Rocks: espaçamento normal, sem caixa alta */
+.proj-rodape__parceria {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  color: var(--t-500);
+}
 
 /* Descrição da etapa na página do cliente */
 .proj-fase__desc {
@@ -343,4 +350,16 @@
   color: var(--t-500);
   line-height: 1.55;
   margin-top: 0.25rem;
+}
+/* Responsável pela fase (na página do cliente) — usa as cores resp--KA/VM/outro
+   de gestao.css, que também é carregado nesta página. */
+.proj-fase__resp {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 100px;
+  padding: 0.18rem 0.55rem;
+  margin-top: 0.4rem;
 }

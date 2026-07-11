@@ -280,8 +280,35 @@ export async function excluirProjeto(id: string): Promise<void> {
   await deleteDoc(doc(db, 'projetos', id))
 }
 
-export function linkPublicoProjeto(token: string): string {
-  return `${window.location.origin}/projeto/${token}`
+function slugMarca(rotulo: string): string {
+  return (
+    rotulo
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 40)
+  )
+}
+
+/**
+ * Link de acompanhamento do cliente, com a URL personalizada pelo nome da marca
+ * (ex.: `/projeto/boba-joy-<token>`). O token (32 hex, sem hífen) fica NO FIM e
+ * é o que identifica o projeto; o slug antes dele é só cosmético. Links antigos
+ * (só o token) continuam funcionando.
+ */
+export function linkPublicoProjeto(token: string, rotulo?: string | null): string {
+  const slug = rotulo ? slugMarca(rotulo) : ''
+  const cauda = slug ? `${slug}-${token}` : token
+  return `${window.location.origin}/projeto/${cauda}`
+}
+
+/** Do parâmetro da URL ("slug-<token>" ou só o token), devolve o token. */
+export function tokenDoParametro(param: string): string {
+  const i = param.lastIndexOf('-')
+  return i >= 0 ? param.slice(i + 1) : param
 }
 
 // ---- Biblioteca de fases (reuso) ---------------------------------------------

@@ -74,7 +74,7 @@ export function GestaoProjetos() {
   }, [])
 
   async function copiarLink(p: Projeto) {
-    await navigator.clipboard.writeText(linkPublicoProjeto(p.token))
+    await navigator.clipboard.writeText(linkPublicoProjeto(p.token, p.cliente_nome ?? p.nome))
     setMsg(`Link de acompanhamento de "${p.nome}" copiado. Envie ao cliente. A página dele atualiza sozinha conforme você avança as fases.`)
     setTimeout(() => setMsg(null), 5000)
   }
@@ -442,6 +442,9 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
   const [novaDesc, setNovaDesc] = useState('')
   const [novaResp, setNovaResp] = useState<Responsavel>('KA')
   const [novaData, setNovaData] = useState('')
+  // Editar o nome do projeto (inline)
+  const [editandoNome, setEditandoNome] = useState(false)
+  const [nomeEdit, setNomeEdit] = useState('')
   // Edição inline (sem a janelinha do navegador)
   const [editIdx, setEditIdx] = useState<number | null>(null)
   const [editNome, setEditNome] = useState('')
@@ -483,7 +486,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     linhas.push(
       `Progresso: ${pct}% ✅`,
       '',
-      `Acompanhe em tempo real por aqui: ${linkPublicoProjeto(p.token)}`,
+      `Acompanhe em tempo real por aqui: ${linkPublicoProjeto(p.token, p.cliente_nome ?? p.nome)}`,
       '',
       'Kelly',
     )
@@ -631,9 +634,20 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
   }
 
   async function copiarLink() {
-    await navigator.clipboard.writeText(linkPublicoProjeto(p.token))
+    await navigator.clipboard.writeText(linkPublicoProjeto(p.token, p.cliente_nome ?? p.nome))
     setMsg('Link copiado. Envie ao cliente. A página dele atualiza em tempo real.')
     setTimeout(() => setMsg(null), 4000)
+  }
+
+  function iniciarEdicaoNome() {
+    setNomeEdit(p.nome)
+    setEditandoNome(true)
+  }
+  async function salvarNome() {
+    const nome = nomeEdit.trim()
+    if (!nome) return
+    await aplicar({ nome })
+    setEditandoNome(false)
   }
 
   return (
@@ -655,7 +669,33 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
 
       <div className="card">
         <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.8rem', flexWrap: 'wrap' }}>
-          <h3 style={{ flex: 1 }}>{p.nome}</h3>
+          {editandoNome ? (
+            <div className="proj-nome-edit" style={{ flex: 1 }}>
+              <input
+                autoFocus
+                value={nomeEdit}
+                onChange={(e) => setNomeEdit(e.target.value)}
+                placeholder="Nome do projeto"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') void salvarNome()
+                  if (e.key === 'Escape') setEditandoNome(false)
+                }}
+              />
+              <button className="btn-mini" disabled={salvando || !nomeEdit.trim()} onClick={() => void salvarNome()}>
+                Salvar
+              </button>
+              <button className="btn-mini" onClick={() => setEditandoNome(false)}>
+                Cancelar
+              </button>
+            </div>
+          ) : (
+            <h3 style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+              {p.nome}
+              <button className="btn-mini" disabled={salvando} title="Editar o nome do projeto" onClick={iniciarEdicaoNome}>
+                Editar nome
+              </button>
+            </h3>
+          )}
           <select
             value={p.status}
             disabled={salvando}

@@ -4,6 +4,9 @@ import { formatarData } from '../../lib/gestao'
 import {
   assinarProjetoPorToken,
   progressoProjeto,
+  respClasse,
+  rotuloResp,
+  tokenDoParametro,
   type ProjetoPublico as Proj,
 } from '../../lib/projetos'
 import '../../styles/gestao.css'
@@ -33,8 +36,10 @@ const DEMO: Proj = {
 // Página que o cliente abre pelo link: linha do tempo do projeto no visual da
 // KA. Atualiza EM TEMPO REAL (onSnapshot) conforme as fases avançam.
 export function ProjetoPublico() {
-  const { token } = useParams<{ token: string }>()
-  const demo = import.meta.env.DEV && token === 'demo'
+  const { token: param } = useParams<{ token: string }>()
+  const demo = import.meta.env.DEV && param === 'demo'
+  // A URL pode vir personalizada ("boba-joy-<token>"); extraímos o token real.
+  const token = param ? tokenDoParametro(param) : undefined
   const [proj, setProj] = useState<Proj | null>(demo ? DEMO : null)
   const [carregando, setCarregando] = useState(!demo)
   const [erro, setErro] = useState<string | null>(null)
@@ -172,6 +177,9 @@ export function ProjetoPublico() {
               <div className="proj-fase__corpo">
                 <div className="proj-fase__nome">{f.nome}</div>
                 {f.descricao && <div className="proj-fase__desc">{f.descricao}</div>}
+                <div className={`proj-fase__resp resp--${respClasse(f.responsavel)}`}>
+                  {rotuloResp(f.responsavel)}
+                </div>
                 <div className="proj-fase__meta">
                   {f.status === 'concluida' &&
                     `Concluída${f.concluida_em ? ` · ${formatarData(f.concluida_em)}` : ''}`}
@@ -192,7 +200,7 @@ export function ProjetoPublico() {
 
       <footer className="proj-rodape">
         {comVM ? (
-          <div className="proj-rodape__nome">KA | Inteligência para Marcas | VM Rocks</div>
+          <div className="proj-rodape__parceria">KA | Inteligência para Marcas | VM Rocks</div>
         ) : (
           <>
             <div className="proj-rodape__nome">Kelly Albert</div>

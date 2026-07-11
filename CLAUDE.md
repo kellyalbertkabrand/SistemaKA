@@ -370,7 +370,13 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
   reordenadas/removidas depois.
 - **Link do cliente:** `/projeto/:token` (`ProjetoPublico.tsx`) — linha do
   tempo com barra de progresso; usa **onSnapshot** (query por token), então a
-  página do cliente atualiza EM TEMPO REAL quando a KA marca uma fase.
+  página do cliente atualiza EM TEMPO REAL quando a KA marca uma fase. Cada fase
+  mostra o **responsável** (etiqueta KA/VM Rocks/nome).
+- **URL personalizada com a marca:** `linkPublicoProjeto(token, rotulo)` gera
+  `/projeto/<slug-da-marca>-<token>` (ex.: `/projeto/boba-joy-<token>`). O token
+  (32 hex, sem hífen) fica no fim; `tokenDoParametro(param)` pega tudo após o
+  último hífen. Links antigos (só o token) continuam funcionando. O nome do
+  projeto é **editável inline** no detalhe ("Editar nome").
 - **Co-assinatura KA + VM Rocks:** se o projeto tem **qualquer etapa com
   responsável VM** (`comVM = fases.some(...==='VM')`), a página do cliente
   esconde o logo da KA no cabeçalho e o rodapé vira só **"KA | Inteligência
@@ -410,7 +416,8 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
   laranja, resto roxo). `responsavelPadrao(nome)` põe **visual**/**instagram**
   como VM por padrão (regex), o resto KA — sempre editável. No modelo Marca com
   Essência©, "Identidade Visual" e "Personalização Instagram e WhatsApp" já vêm
-  VM. O responsável NÃO aparece na página do cliente (é interno).
+  VM. O responsável **aparece na página do cliente** (etiqueta colorida em cada
+  fase, `rotuloResp`/`respClasse` importados no `ProjetoPublico.tsx`).
 - **Visão de Pendências:** no topo da aba Projetos, um segmento
   **Projetos / Pendências**. Em Pendências, `pendenciasDeProjetos(projetos,
   filtro)` junta todas as etapas em aberto (não concluídas, de projetos não
