@@ -12,6 +12,7 @@ import { GestaoCobrancas } from './gestao/GestaoCobrancas'
 import { GestaoCuidadoras } from './gestao/GestaoCuidadoras'
 import { GestaoProjetos } from './gestao/GestaoProjetos'
 import { GestaoAtividades } from './gestao/GestaoAtividades'
+import { GestaoFinanceiro } from './gestao/GestaoFinanceiro'
 import '../styles/painel.css'
 import '../styles/gestao.css'
 
@@ -22,6 +23,7 @@ type Aba =
   | 'orcamentos'
   | 'contratos'
   | 'cobrancas'
+  | 'financeiro'
   | 'atividades'
   | 'cuidadoras'
 
@@ -39,6 +41,7 @@ const MENU: ItemMenu[] = [
       { id: 'orcamentos', rotulo: 'Orçamentos' },
       { id: 'contratos', rotulo: 'Contratos' },
       { id: 'cobrancas', rotulo: 'Cobranças' },
+      { id: 'financeiro', rotulo: 'Financeiro' },
     ],
   },
   { id: 'atividades', rotulo: 'Atividades' },
@@ -51,6 +54,7 @@ const CABECALHOS: Record<Aba, { titulo: string; sub: string }> = {
   orcamentos: { titulo: 'Orçamentos', sub: 'Monte a proposta, envie o link; aprovado, vira contrato + cobrança.' },
   contratos: { titulo: 'Contratos', sub: 'Modelo padrão, contratos gerados e assinaturas (aceite digital).' },
   cobrancas: { titulo: 'Cobranças', sub: 'Mensalidades e cobranças avulsas — boleto, PIX e cartão via Mercado Pago.' },
+  financeiro: { titulo: 'Financeiro 🔒', sub: 'Quanto cada um tem a receber (KA, VM Rocks…), somando os pagamentos de todos os contratos.' },
   projetos: { titulo: 'Projetos', sub: 'Fases de cada projeto — um clique para avançar; o cliente acompanha pelo link em tempo real.' },
   atividades: { titulo: 'Atividades 🔒', sub: 'Seu painel pessoal — pendências dos clientes (KA) junto com Trabalho, BIA e Pessoal.' },
   cuidadoras: { titulo: 'Cuidadoras 🔒', sub: 'Seu controle pessoal — cadastro pelo link, ficha e documentos de cada cuidadora.' },
@@ -63,6 +67,7 @@ const ABAS_VALIDAS: Aba[] = [
   'orcamentos',
   'contratos',
   'cobrancas',
+  'financeiro',
   'atividades',
   'cuidadoras',
 ]
@@ -182,6 +187,11 @@ export function AdminPanel() {
             {aba === 'projetos' && (
               <GateAdmin>
                 <GestaoProjetos />
+              </GateAdmin>
+            )}
+            {aba === 'financeiro' && (
+              <GateAdmin>
+                <GestaoFinanceiro />
               </GateAdmin>
             )}
             {aba === 'atividades' && (

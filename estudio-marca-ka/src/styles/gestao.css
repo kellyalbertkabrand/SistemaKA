@@ -1452,3 +1452,99 @@
   color: var(--t-900);
   white-space: nowrap;
 }
+
+/* ============================================================
+   Painel Financeiro (a receber por quem — KA / VM Rocks / …)
+   ============================================================ */
+.fin-total {
+  font-size: 0.95rem;
+  color: var(--t-500);
+  margin-bottom: 1rem;
+}
+.fin-total strong {
+  font-family: var(--heading);
+  font-size: 1.25rem;
+  color: var(--t-900);
+}
+.fin-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.7rem;
+  margin-bottom: 1.2rem;
+}
+.fin-card {
+  border: 1px solid rgba(15, 25, 35, 0.1);
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  background: #fff;
+}
+.fin-card--ka {
+  border-color: rgba(61, 107, 126, 0.35);
+  background: rgba(61, 107, 126, 0.05);
+}
+.fin-card--vm {
+  border-color: rgba(196, 120, 48, 0.4);
+  background: rgba(196, 120, 48, 0.06);
+}
+.fin-card__quem {
+  font-size: 0.64rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--t-500);
+}
+.fin-card--ka .fin-card__quem {
+  color: var(--essencia);
+}
+.fin-card--vm .fin-card__quem {
+  color: #8a4b1f;
+}
+.fin-card__valor {
+  font-family: var(--heading);
+  font-size: 1.5rem;
+  color: var(--t-900);
+  margin-top: 0.2rem;
+}
+.fin-card__mensal {
+  font-size: 0.82rem;
+  color: #2e6b45;
+  font-weight: 600;
+}
+.fin-card__qtd {
+  font-size: 0.72rem;
+  color: var(--t-400);
+  margin-top: 0.3rem;
+}
+.fin-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.fin-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 12px;
+  padding: 0.65rem 0.85rem;
+  background: #fff;
+}
+.fin-item__corpo {
+  flex: 1;
+  min-width: 0;
+}
+.fin-item__cliente {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.fin-item__meta {
+  font-size: 0.75rem;
+  color: var(--t-500);
+}
+.fin-item__valor {
+  flex: none;
+  font-family: var(--heading);
+  font-size: 1rem;
+  color: var(--t-900);
+  white-space: nowrap;
+}

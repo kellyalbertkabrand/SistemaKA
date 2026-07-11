@@ -485,6 +485,11 @@ Na ficha do cliente (`GestaoClientes.tsx` → `PagamentosContrato`), a seção
 - **Resumo "A receber neste contrato"** (`.resumo-receber`): soma por quem —
   ex.: KA R$X · VM Rocks R$Y (+ R$Z/mês). É o que dá pra VM acompanhar quanto
   tem a receber (o painel financeiro só-da-VM depende do modo seguro/login).
+- **Aba Financeiro 🔒** (`GestaoFinanceiro.tsx` + `src/lib/financeiro.ts`):
+  visão consolidada somando os `pagamentos_contrato` de TODOS os clientes —
+  cartões por quem (KA/VM Rocks/…), total geral (único + `/mês`), filtro por
+  chips e lista por cliente/forma. Hoje a KA vê tudo; a versão que a VM acessa
+  (só o dela) entra junto com o login por papel. Estilos `.fin-*` em gestao.css.
 - **Dia do vencimento:** input de texto `inputMode="numeric"` que normaliza
   (não fica mais com "0" fixo/`025`); clampa 1–28 ao salvar.
 
