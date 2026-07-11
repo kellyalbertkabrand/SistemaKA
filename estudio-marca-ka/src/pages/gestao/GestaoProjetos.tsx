@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import type { Cliente } from '../../lib/database.types'
 import { listarClientes } from '../../lib/api'
 import { formatarData } from '../../lib/gestao'
@@ -313,6 +313,16 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
   const [fasesSalvas, setFasesSalvas] = useState<FaseSalva[]>([])
   const [novaNome, setNovaNome] = useState('')
   const [novaDesc, setNovaDesc] = useState('')
+  // Edição inline (sem a janelinha do navegador)
+  const [editIdx, setEditIdx] = useState<number | null>(null)
+  const [editNome, setEditNome] = useState('')
+  const [editDesc, setEditDesc] = useState('')
+  // Arrastar para reordenar (Pointer Events — funciona no dedo E no mouse;
+  // o "draggable" nativo do HTML não dispara no toque do iPhone)
+  const [dragIdx, setDragIdx] = useState<number | null>(null)
+  const [overIdx, setOverIdx] = useState<number | null>(null)
+  const rowsRef = useRef<(HTMLDivElement | null)[]>([])
+  const dragState = useRef<{ de: number; para: number } | null>(null)
 
   function recarregarSalvas() {
     listarFasesSalvas()
@@ -389,27 +399,68 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     void aplicar({ fases })
   }
 
-  function renomearFase(i: number) {
-    const nome = window.prompt('Nome da fase:', p.fases[i].nome)
-    if (!nome?.trim()) return
-    void aplicar({ fases: p.fases.map((f, idx) => (idx === i ? { ...f, nome: nome.trim() } : f)) })
-    void salvarFaseSalva(nome.trim(), p.fases[i].descricao)
-    recarregarSalvas()
+  // ---- Edição inline (sem prompt do navegador) ----
+  function iniciarEdicao(i: number) {
+    setEditIdx(i)
+    setEditNome(p.fases[i].nome)
+    setEditDesc(p.fases[i].descricao ?? '')
   }
-
-  function editarDescricaoFase(i: number) {
-    const d = window.prompt('Descrição da fase (o cliente vê):', p.fases[i].descricao ?? '')
-    if (d === null) return
-    void aplicar({
-      fases: p.fases.map((f, idx) => (idx === i ? { ...f, descricao: d.trim() || null } : f)),
-    })
-    void salvarFaseSalva(p.fases[i].nome, d)
+  async function salvarEdicao() {
+    if (editIdx === null) return
+    const nome = editNome.trim()
+    if (!nome) return
+    const descricao = editDesc.trim() || null
+    const i = editIdx
+    await aplicar({ fases: p.fases.map((f, idx) => (idx === i ? { ...f, nome, descricao } : f)) })
+    void salvarFaseSalva(nome, descricao)
     recarregarSalvas()
+    setEditIdx(null)
   }
 
   function removerFase(i: number) {
     if (!window.confirm(`Remover a fase "${p.fases[i].nome}"?`)) return
     void aplicar({ fases: p.fases.filter((_, idx) => idx !== i) })
+  }
+
+  // ---- Arrastar para reordenar (segurando a alça) ----
+  function reordenar(de: number, para: number) {
+    if (de === para || de < 0 || para < 0 || para >= p.fases.length) return
+    const fases = [...p.fases]
+    const [item] = fases.splice(de, 1)
+    fases.splice(para, 0, item)
+    void aplicar({ fases })
+  }
+
+  // Começa a arrastar pela alça. Usa Pointer Events (dedo ou mouse) e escuta
+  // no window até soltar — assim funciona no toque do celular.
+  function iniciarArraste(e: React.PointerEvent, i: number) {
+    e.preventDefault()
+    dragState.current = { de: i, para: i }
+    setDragIdx(i)
+    setOverIdx(i)
+    const mover = (ev: PointerEvent) => {
+      if (!dragState.current) return
+      const y = ev.clientY
+      let alvo = dragState.current.de
+      rowsRef.current.forEach((el, idx) => {
+        if (!el) return
+        const r = el.getBoundingClientRect()
+        if (y >= r.top && y <= r.bottom) alvo = idx
+      })
+      dragState.current.para = alvo
+      setOverIdx(alvo)
+    }
+    const soltar = () => {
+      window.removeEventListener('pointermove', mover)
+      window.removeEventListener('pointerup', soltar)
+      const st = dragState.current
+      dragState.current = null
+      setDragIdx(null)
+      setOverIdx(null)
+      if (st) reordenar(st.de, st.para)
+    }
+    window.addEventListener('pointermove', mover)
+    window.addEventListener('pointerup', soltar)
   }
 
   async function adicionarFase() {
@@ -433,14 +484,6 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
       const achou = fasesSalvas.find((fs) => fs.nome.toLowerCase() === v.trim().toLowerCase())
       if (achou?.descricao) setNovaDesc(achou.descricao)
     }
-  }
-
-  function moverFase(i: number, delta: -1 | 1) {
-    const j = i + delta
-    if (j < 0 || j >= p.fases.length) return
-    const fases = [...p.fases]
-    ;[fases[i], fases[j]] = [fases[j], fases[i]]
-    void aplicar({ fases })
   }
 
   async function copiarLink() {
@@ -493,61 +536,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
           <span className="progresso__pct">{pct}%</span>
         </div>
 
-        <div className="fases">
-          {p.fases.map((f, i) => (
-            <div key={i} className={`fase fase--${f.status}`}>
-              <button
-                className="fase__status"
-                disabled={salvando}
-                title="Clique para avançar: pendente → em andamento → concluída"
-                onClick={() => avancarFase(i)}
-              >
-                {f.status === 'concluida' ? '✓' : f.status === 'andamento' ? '●' : String(i + 1)}
-              </button>
-              <div className="fase__info">
-                <div className="fase__nome">{f.nome}</div>
-                {f.descricao && <div className="fase__desc">{f.descricao}</div>}
-                <div className="fase__meta">
-                  <span className={`badge ${BADGE_FASE[f.status]}`}>{ROTULO_FASE[f.status]}</span>
-                  {f.concluida_em && (
-                    <span style={{ marginLeft: 6, color: 'var(--t-400)', textTransform: 'none', letterSpacing: 0 }}>
-                      {formatarData(f.concluida_em)}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="fase__acoes">
-                <select
-                  className={`fase-status-sel status-${f.status}`}
-                  value={f.status}
-                  disabled={salvando}
-                  title="Mudar o status desta fase"
-                  onChange={(e) => definirStatusFase(i, e.target.value as FaseStatus)}
-                >
-                  <option value="pendente">Pendente</option>
-                  <option value="andamento">Em andamento</option>
-                  <option value="concluida">Concluída</option>
-                </select>
-                <button className="btn-mini" disabled={salvando || i === 0} onClick={() => moverFase(i, -1)} title="Subir">
-                  ▲
-                </button>
-                <button className="btn-mini" disabled={salvando || i === p.fases.length - 1} onClick={() => moverFase(i, 1)} title="Descer">
-                  ▼
-                </button>
-                <button className="btn-mini" disabled={salvando} onClick={() => renomearFase(i)}>
-                  Renomear
-                </button>
-                <button className="btn-mini" disabled={salvando} onClick={() => editarDescricaoFase(i)}>
-                  Descrição
-                </button>
-                <button className="btn-mini btn-mini--perigo" disabled={salvando} onClick={() => removerFase(i)}>
-                  ✕
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
+        {/* Nova fase — no TOPO */}
         <div className="add-fase">
           <input
             list="fases-salvas"
@@ -561,7 +550,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
             placeholder="Descrição (o cliente vê)"
           />
           <button className="btn-mini" disabled={salvando || !novaNome.trim()} onClick={() => void adicionarFase()}>
-            + Adicionar
+            + Adicionar fase
           </button>
           <datalist id="fases-salvas">
             {fasesSalvas.map((fs) => (
@@ -570,12 +559,108 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
           </datalist>
         </div>
 
-        <p style={{ marginTop: '0.6rem', fontSize: '0.75rem', color: 'var(--t-400)' }}>
-          Mude o status pelo seletor de cada fase (ou clique na bolinha para avançar). Concluída
-          fica <strong style={{ color: '#2e6b45' }}>verde</strong>, em andamento{' '}
+        <p style={{ margin: '0.2rem 0 0.9rem', fontSize: '0.75rem', color: 'var(--t-400)' }}>
+          Arraste pela alça <span aria-hidden>⠿</span> para reordenar. Concluída fica{' '}
+          <strong style={{ color: '#2e6b45' }}>verde</strong>, em andamento{' '}
           <strong style={{ color: 'var(--essencia)' }}>azul</strong>, pendente cinza. As fases que
-          você escreve ficam <strong>salvas</strong> — comece a digitar o nome e a descrição aparece.
+          você escreve ficam <strong>salvas</strong> para reusar.
         </p>
+
+        <div className="fases">
+          {p.fases.map((f, i) => (
+            <div
+              key={i}
+              ref={(el) => {
+                rowsRef.current[i] = el
+              }}
+              className={`fase fase--${f.status} ${dragIdx === i ? 'fase--arrastando' : ''} ${
+                overIdx === i && dragIdx !== null && dragIdx !== i ? 'fase--alvo' : ''
+              }`}
+            >
+              <span
+                className="fase__handle"
+                title="Segure e arraste para reordenar"
+                onPointerDown={(e) => iniciarArraste(e, i)}
+              >
+                ⠿
+              </span>
+              <button
+                className="fase__status"
+                disabled={salvando}
+                title="Clique para avançar: pendente → em andamento → concluída"
+                onClick={() => avancarFase(i)}
+              >
+                {f.status === 'concluida' ? '✓' : f.status === 'andamento' ? '●' : String(i + 1)}
+              </button>
+
+              {editIdx === i ? (
+                <div className="fase__edit">
+                  <input
+                    autoFocus
+                    value={editNome}
+                    onChange={(e) => setEditNome(e.target.value)}
+                    placeholder="Nome da fase"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') void salvarEdicao()
+                      if (e.key === 'Escape') setEditIdx(null)
+                    }}
+                  />
+                  <input
+                    value={editDesc}
+                    onChange={(e) => setEditDesc(e.target.value)}
+                    placeholder="Descrição (o cliente vê)"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') void salvarEdicao()
+                      if (e.key === 'Escape') setEditIdx(null)
+                    }}
+                  />
+                  <div className="fase__edit-acoes">
+                    <button className="btn-mini" disabled={salvando || !editNome.trim()} onClick={() => void salvarEdicao()}>
+                      Salvar
+                    </button>
+                    <button className="btn-mini" onClick={() => setEditIdx(null)}>
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <button className="fase__info fase__info--btn" onClick={() => iniciarEdicao(i)} title="Editar esta fase">
+                    <div className="fase__nome">{f.nome}</div>
+                    {f.descricao && <div className="fase__desc">{f.descricao}</div>}
+                    <div className="fase__meta">
+                      <span className={`badge ${BADGE_FASE[f.status]}`}>{ROTULO_FASE[f.status]}</span>
+                      {f.concluida_em && (
+                        <span style={{ marginLeft: 6, color: 'var(--t-400)', textTransform: 'none', letterSpacing: 0 }}>
+                          {formatarData(f.concluida_em)}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                  <div className="fase__acoes">
+                    <select
+                      className={`fase-status-sel status-${f.status}`}
+                      value={f.status}
+                      disabled={salvando}
+                      title="Mudar o status desta fase"
+                      onChange={(e) => definirStatusFase(i, e.target.value as FaseStatus)}
+                    >
+                      <option value="pendente">Pendente</option>
+                      <option value="andamento">Em andamento</option>
+                      <option value="concluida">Concluída</option>
+                    </select>
+                    <button className="btn-mini" disabled={salvando} onClick={() => iniciarEdicao(i)}>
+                      Editar
+                    </button>
+                    <button className="btn-mini btn-mini--perigo" disabled={salvando} onClick={() => removerFase(i)}>
+                      ✕
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </>
   )
