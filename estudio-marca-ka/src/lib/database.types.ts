@@ -102,6 +102,7 @@ export interface Orcamento {
   cliente_id: string | null
   destinatario_nome: string
   destinatario_email: string | null
+  destinatario_telefone: string | null
   destinatario_documento: string | null
   titulo: string
   descricao: string | null
@@ -130,6 +131,8 @@ export interface Contrato {
   conteudo: string
   status: ContratoStatus
   token: string
+  /** Telefone do destinatário (copiado do orçamento), para o WhatsApp. */
+  telefone?: string | null
   criado_em: string
   enviado_em: string | null
   assinado_em: string | null
@@ -146,6 +149,8 @@ export interface Cobranca {
   descricao: string
   valor: number
   vencimento: string
+  /** Telefone do destinatário (copiado do orçamento), para o WhatsApp. */
+  telefone?: string | null
   competencia: string | null
   status: CobrancaStatus
   mp_preference_id: string | null

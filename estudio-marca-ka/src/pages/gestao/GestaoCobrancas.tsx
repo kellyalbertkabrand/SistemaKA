@@ -52,7 +52,7 @@ export function GestaoCobrancas() {
     }
     linhas.push('', 'Qualquer dúvida, me chama! — Kelly')
     abrirWhatsApp(
-      cliente?.telefone,
+      c.telefone ?? cliente?.telefone,
       linhas.join('\n'),
       cliente ? (cliente.responsavel ?? cliente.nome_marca) : null,
     )
@@ -122,6 +122,7 @@ export function GestaoCobrancas() {
         descricao: descricao.trim(),
         valor,
         vencimento: venc,
+        telefone: cliente.telefone ?? null,
       })
       await recarregar()
     } catch (e) {

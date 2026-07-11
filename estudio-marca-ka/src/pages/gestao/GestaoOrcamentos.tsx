@@ -76,7 +76,11 @@ export function GestaoOrcamentos() {
       '',
       'Qualquer dúvida, me chama! — Kelly',
     ].join('\n')
-    abrirWhatsApp(cliente?.telefone, mensagem, o.destinatario_nome || cliente?.nome_marca)
+    abrirWhatsApp(
+      o.destinatario_telefone ?? cliente?.telefone,
+      mensagem,
+      o.destinatario_nome || cliente?.nome_marca,
+    )
   }
 
   async function enviar(o: Orcamento) {
@@ -219,6 +223,7 @@ function EditorOrcamento({
       cliente_id: null,
       destinatario_nome: '',
       destinatario_email: null,
+      destinatario_telefone: null,
       destinatario_documento: null,
       titulo: '',
       descricao: null,
@@ -278,6 +283,7 @@ function EditorOrcamento({
       cliente_id: c?.id ?? null,
       destinatario_nome: atual.destinatario_nome || c?.responsavel || c?.nome_marca || '',
       destinatario_email: atual.destinatario_email ?? c?.email_cobranca ?? c?.email_contato ?? null,
+      destinatario_telefone: atual.destinatario_telefone ?? c?.telefone ?? null,
       destinatario_documento: atual.destinatario_documento ?? c?.documento ?? null,
     }))
   }
@@ -342,6 +348,14 @@ function EditorOrcamento({
                 type="email"
                 value={f.destinatario_email ?? ''}
                 onChange={(e) => campo('destinatario_email', e.target.value || null)}
+              />
+            </div>
+            <div className="field">
+              <label>WhatsApp do destinatário</label>
+              <input
+                value={f.destinatario_telefone ?? ''}
+                onChange={(e) => campo('destinatario_telefone', e.target.value || null)}
+                placeholder="ex.: 41 99999-0000"
               />
             </div>
             <div className="field">

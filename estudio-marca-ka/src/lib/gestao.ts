@@ -183,6 +183,7 @@ export type NovoOrcamento = Pick<
   | 'cliente_id'
   | 'destinatario_nome'
   | 'destinatario_email'
+  | 'destinatario_telefone'
   | 'destinatario_documento'
   | 'titulo'
   | 'descricao'
@@ -409,6 +410,7 @@ export async function responderOrcamento(
     conteudo: corpo,
     status: 'enviado',
     token: contratoToken,
+    telefone: o.destinatario_telefone ?? null,
     criado_em: quando,
     enviado_em: quando,
     assinado_em: null,
@@ -427,6 +429,7 @@ export async function responderOrcamento(
     descricao: o.titulo,
     valor: o.valor_total,
     vencimento: venc,
+    telefone: o.destinatario_telefone ?? null,
     competencia: null,
     status: 'pendente',
     mp_preference_id: null,
@@ -627,7 +630,7 @@ export type NovaCobranca = Pick<
   Cobranca,
   'cliente_id' | 'tipo' | 'descricao' | 'valor' | 'vencimento'
 > &
-  Partial<Pick<Cobranca, 'competencia' | 'link_pagamento'>>
+  Partial<Pick<Cobranca, 'competencia' | 'link_pagamento' | 'telefone'>>
 
 export async function criarCobranca(dados: NovaCobranca): Promise<Cobranca> {
   const novo = limpar({
@@ -637,6 +640,7 @@ export async function criarCobranca(dados: NovaCobranca): Promise<Cobranca> {
     descricao: dados.descricao,
     valor: dados.valor,
     vencimento: dados.vencimento,
+    telefone: dados.telefone ?? null,
     competencia: dados.competencia ?? null,
     status: 'pendente',
     mp_preference_id: null,
