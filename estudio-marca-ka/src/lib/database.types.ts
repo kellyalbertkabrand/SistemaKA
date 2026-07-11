@@ -56,6 +56,8 @@ export interface Cliente {
 export interface PagamentoContrato {
   quem: string
   quem_outro?: string | null
+  /** Forma: 'avista' | 'parcelado' | 'mensalidade'. */
+  forma?: string | null
   data?: string | null
   parcelas?: number | null
   valor_parcela?: number | null

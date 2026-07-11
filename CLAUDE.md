@@ -473,6 +473,21 @@ coloridos).
   suporta voz, o botão some e aparece uma dica.
 - **Regra Firestore:** `atividades` = só a KA (modo produção).
 
+### Pagamentos do contrato (ficha do cliente — jul/2026)
+
+Na ficha do cliente (`GestaoClientes.tsx` → `PagamentosContrato`), a seção
+"Pagamentos do contrato" (`Cliente.pagamentos_contrato: PagamentoContrato[]`):
+
+- Cada pagamento: **quem recebe** (cliente/KA/**VM Rocks**/outro), **forma**
+  (`avista` | `parcelado` | `mensalidade`), **data** e **valor**. Em
+  `parcelado` aparece "Em quantas vezes" (campo livre); o total mostra
+  `Nx de R$Y = R$Z para <quem>`. `mensalidade` conta como `/mês`.
+- **Resumo "A receber neste contrato"** (`.resumo-receber`): soma por quem —
+  ex.: KA R$X · VM Rocks R$Y (+ R$Z/mês). É o que dá pra VM acompanhar quanto
+  tem a receber (o painel financeiro só-da-VM depende do modo seguro/login).
+- **Dia do vencimento:** input de texto `inputMode="numeric"` que normaliza
+  (não fica mais com "0" fixo/`025`); clampa 1–28 ao salvar.
+
 ### Segurança & Backup (decisões jul/2026 — ver `firebase/SEGURANCA-E-BACKUP.md`)
 
 Estado atual: banco em **modo teste (aberto)** e app com `ACESSO_ABERTO=true`

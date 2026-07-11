@@ -382,11 +382,15 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente | null; aoVolt
             <div className="field">
               <label>Dia do vencimento</label>
               <input
-                type="number"
-                min={1}
-                max={28}
-                value={f.dia_vencimento ?? 10}
-                onChange={(e) => campo('dia_vencimento', Number(e.target.value))}
+                type="text"
+                inputMode="numeric"
+                maxLength={2}
+                placeholder="ex.: 10"
+                value={f.dia_vencimento == null ? '' : String(f.dia_vencimento)}
+                onChange={(e) => {
+                  const d = e.target.value.replace(/\D/g, '')
+                  campo('dia_vencimento', d === '' ? undefined : Number(d))
+                }}
               />
             </div>
             <div className="field">
@@ -403,8 +407,9 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente | null; aoVolt
 
           <h3 style={{ margin: '0.6rem 0 0.2rem' }}>Pagamentos do contrato</h3>
           <p style={{ margin: '0 0 0.6rem', fontSize: '0.8rem', color: '#5a5346' }}>
-            Para cada pagamento, escolha <strong>quem</strong> deve ser pago (o cliente, a KA, a VM
-            ou um nome personalizado), quando, em quantas parcelas e o valor de cada parcela.
+            Para cada pagamento, escolha <strong>quem</strong> recebe (o cliente, a KA, a VM Rocks
+            ou um nome), a <strong>forma</strong> (à vista, parcelado em X vezes ou mensalidade), a
+            data e o valor. O resumo no fim mostra quanto cada um tem a receber.
           </p>
 
           <PagamentosContrato
@@ -442,6 +447,28 @@ const QUEM_OPCOES = [
   { valor: 'vm', rotulo: 'VM Rocks' },
   { valor: 'outro', rotulo: 'Personalizado…' },
 ]
+const FORMA_OPCOES = [
+  { valor: 'avista', rotulo: 'À vista' },
+  { valor: 'parcelado', rotulo: 'Parcelado' },
+  { valor: 'mensalidade', rotulo: 'Mensalidade' },
+]
+
+function rotuloQuem(p: PagamentoContrato): string {
+  if (p.quem === 'outro') return p.quem_outro?.trim() || 'Personalizado'
+  return QUEM_OPCOES.find((o) => o.valor === p.quem)?.rotulo ?? p.quem
+}
+
+/** Valor único (à vista = valor; parcelado = parcelas × valor; mensalidade não entra). */
+function totalUnico(p: PagamentoContrato): number {
+  const v = Number(p.valor_parcela) || 0
+  if (p.forma === 'mensalidade') return 0
+  if (p.forma === 'parcelado') return v * Math.max(1, Number(p.parcelas) || 1)
+  return v
+}
+/** Valor por mês (só quando a forma é mensalidade). */
+function totalMensal(p: PagamentoContrato): number {
+  return p.forma === 'mensalidade' ? Number(p.valor_parcela) || 0 : 0
+}
 
 function PagamentosContrato({
   lista,
@@ -454,10 +481,23 @@ function PagamentosContrato({
     onChange(lista.map((p, x) => (x === i ? { ...p, ...patch } : p)))
   }
   function adicionar() {
-    onChange([...lista, { quem: 'ka', quem_outro: null, data: null, parcelas: null, valor_parcela: null }])
+    onChange([
+      ...lista,
+      { quem: 'ka', quem_outro: null, forma: 'avista', data: null, parcelas: null, valor_parcela: null },
+    ])
   }
   function remover(i: number) {
     onChange(lista.filter((_, x) => x !== i))
+  }
+
+  // Resumo: quanto cada um (KA, VM Rocks, cliente…) tem a receber neste contrato.
+  const resumo = new Map<string, { unico: number; mensal: number }>()
+  for (const p of lista) {
+    const chave = rotuloQuem(p)
+    const cur = resumo.get(chave) ?? { unico: 0, mensal: 0 }
+    cur.unico += totalUnico(p)
+    cur.mensal += totalMensal(p)
+    resumo.set(chave, cur)
   }
 
   return (
@@ -467,69 +507,130 @@ function PagamentosContrato({
           Nenhum pagamento cadastrado ainda.
         </p>
       )}
-      {lista.map((p, i) => (
-        <div
-          key={i}
-          style={{ border: '1px solid rgba(21,37,53,0.14)', borderRadius: 10, padding: '0.8rem', marginBottom: '0.7rem' }}
-        >
-          <div className="form-grade">
-            <div className="field">
-              <label>Quem deve ser pago</label>
-              <select value={p.quem} onChange={(e) => atualizar(i, { quem: e.target.value })}>
-                {QUEM_OPCOES.map((o) => (
-                  <option key={o.valor} value={o.valor}>
-                    {o.rotulo}
-                  </option>
-                ))}
-              </select>
-            </div>
-            {p.quem === 'outro' && (
+      {lista.map((p, i) => {
+        const forma = p.forma ?? 'avista'
+        return (
+          <div
+            key={i}
+            style={{ border: '1px solid rgba(21,37,53,0.14)', borderRadius: 10, padding: '0.8rem', marginBottom: '0.7rem' }}
+          >
+            <div className="form-grade">
               <div className="field">
-                <label>Nome (personalizado)</label>
+                <label>Quem deve ser pago</label>
+                <select value={p.quem} onChange={(e) => atualizar(i, { quem: e.target.value })}>
+                  {QUEM_OPCOES.map((o) => (
+                    <option key={o.valor} value={o.valor}>
+                      {o.rotulo}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {p.quem === 'outro' && (
+                <div className="field">
+                  <label>Nome (personalizado)</label>
+                  <input
+                    value={p.quem_outro ?? ''}
+                    onChange={(e) => atualizar(i, { quem_outro: e.target.value || null })}
+                    placeholder="ex.: Fornecedor, sócio…"
+                  />
+                </div>
+              )}
+              <div className="field">
+                <label>Forma de pagamento</label>
+                <select
+                  value={forma}
+                  onChange={(e) =>
+                    atualizar(i, {
+                      forma: e.target.value,
+                      parcelas: e.target.value === 'parcelado' ? (p.parcelas ?? 2) : null,
+                    })
+                  }
+                >
+                  {FORMA_OPCOES.map((o) => (
+                    <option key={o.valor} value={o.valor}>
+                      {o.rotulo}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              {forma === 'parcelado' && (
+                <div className="field">
+                  <label>Em quantas vezes</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={2}
+                    placeholder="ex.: 3"
+                    value={p.parcelas == null ? '' : String(p.parcelas)}
+                    onChange={(e) => {
+                      const d = e.target.value.replace(/\D/g, '')
+                      atualizar(i, { parcelas: d === '' ? null : Number(d) })
+                    }}
+                  />
+                </div>
+              )}
+              <div className="field">
+                <label>Data do pagamento</label>
+                <input type="date" value={p.data ?? ''} onChange={(e) => atualizar(i, { data: e.target.value || null })} />
+              </div>
+              <div className="field">
+                <label>
+                  {forma === 'parcelado'
+                    ? 'Valor de cada parcela (R$)'
+                    : forma === 'mensalidade'
+                      ? 'Valor por mês (R$)'
+                      : 'Valor (R$)'}
+                </label>
                 <input
-                  value={p.quem_outro ?? ''}
-                  onChange={(e) => atualizar(i, { quem_outro: e.target.value || null })}
-                  placeholder="ex.: Fornecedor, sócio…"
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={p.valor_parcela ?? ''}
+                  onChange={(e) => atualizar(i, { valor_parcela: e.target.value === '' ? null : Number(e.target.value) })}
                 />
               </div>
+            </div>
+
+            {(totalUnico(p) > 0 || totalMensal(p) > 0) && (
+              <p style={{ fontSize: '0.78rem', color: 'var(--t-500)', margin: '0.4rem 0 0' }}>
+                {forma === 'parcelado' && `${p.parcelas || 1}× de ${formatarBRL(p.valor_parcela)} = `}
+                <strong>
+                  {forma === 'mensalidade' ? `${formatarBRL(totalMensal(p))}/mês` : formatarBRL(totalUnico(p))}
+                </strong>{' '}
+                para {rotuloQuem(p)}
+              </p>
             )}
-            <div className="field">
-              <label>Data do pagamento</label>
-              <input type="date" value={p.data ?? ''} onChange={(e) => atualizar(i, { data: e.target.value || null })} />
-            </div>
-            <div className="field">
-              <label>Nº de parcelas</label>
-              <input
-                type="number"
-                min={1}
-                step="1"
-                value={p.parcelas ?? ''}
-                onChange={(e) => atualizar(i, { parcelas: e.target.value === '' ? null : Number(e.target.value) })}
-              />
-            </div>
-            <div className="field">
-              <label>Valor de cada parcela (R$)</label>
-              <input
-                type="number"
-                min={0}
-                step="0.01"
-                value={p.valor_parcela ?? ''}
-                onChange={(e) => atualizar(i, { valor_parcela: e.target.value === '' ? null : Number(e.target.value) })}
-              />
-            </div>
+
+            <button
+              type="button"
+              onClick={() => remover(i)}
+              style={{ background: 'none', border: 'none', color: '#b4462f', fontSize: '0.8rem', cursor: 'pointer', padding: '0.3rem 0', marginTop: '0.3rem' }}
+            >
+              Remover pagamento
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => remover(i)}
-            style={{ background: 'none', border: 'none', color: '#b4462f', fontSize: '0.8rem', cursor: 'pointer', padding: '0.3rem 0', marginTop: '0.3rem' }}
-          >
-            Remover pagamento
-          </button>
-        </div>
-      ))}
+        )
+      })}
       <button type="button" className="btn btn--ghost" onClick={adicionar}>
         + Adicionar pagamento
       </button>
+
+      {lista.length > 0 && (
+        <div className="resumo-receber">
+          <div className="resumo-receber__tit">A receber neste contrato</div>
+          {[...resumo.entries()].map(([quem, v]) => (
+            <div key={quem} className="resumo-receber__linha">
+              <span>{quem}</span>
+              <strong>
+                {v.unico > 0 && formatarBRL(v.unico)}
+                {v.unico > 0 && v.mensal > 0 && ' + '}
+                {v.mensal > 0 && `${formatarBRL(v.mensal)}/mês`}
+                {v.unico === 0 && v.mensal === 0 && '—'}
+              </strong>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

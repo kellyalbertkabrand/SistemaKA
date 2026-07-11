@@ -1418,3 +1418,37 @@
     text-align: right;
   }
 }
+
+/* ---- Resumo "a receber" (pagamentos do contrato: KA / VM / cliente) ---- */
+.resumo-receber {
+  margin-top: 1rem;
+  border: 1px solid rgba(184, 155, 106, 0.4);
+  background: var(--dourado-soft);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+}
+.resumo-receber__tit {
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--dourado);
+  margin-bottom: 0.5rem;
+}
+.resumo-receber__linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.3rem 0;
+  border-top: 1px solid rgba(184, 155, 106, 0.22);
+  font-size: 0.88rem;
+}
+.resumo-receber__linha:first-of-type {
+  border-top: none;
+}
+.resumo-receber__linha strong {
+  font-family: var(--heading);
+  color: var(--t-900);
+  white-space: nowrap;
+}
