@@ -567,3 +567,99 @@
   background: rgba(29, 124, 77, 0.08);
   border-color: #1d7c4d;
 }
+
+/* ---- Popup de WhatsApp (montado via DOM em src/lib/whatsapp.ts) ---- */
+.wa-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 25, 35, 0.5);
+  display: grid;
+  place-items: center;
+  padding: 1.2rem;
+  animation: wa-fade 0.15s ease;
+}
+@keyframes wa-fade {
+  from { opacity: 0; }
+}
+.wa-box {
+  width: 100%;
+  max-width: 440px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(15, 25, 35, 0.28);
+  padding: 1.5rem 1.4rem;
+  font-family: var(--body);
+}
+.wa-box__titulo {
+  font-family: var(--heading);
+  font-size: 1.2rem;
+  color: var(--t-900);
+  margin-bottom: 1rem;
+}
+.wa-box__rotulo {
+  display: block;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--t-500);
+  margin: 0.7rem 0 0.35rem;
+}
+.wa-box__input,
+.wa-box__area {
+  width: 100%;
+  font-family: var(--body);
+  font-size: 0.9rem;
+  color: var(--t-900);
+  background: var(--bg-1);
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+}
+.wa-box__area {
+  resize: vertical;
+  line-height: 1.5;
+}
+.wa-box__input:focus,
+.wa-box__area:focus {
+  outline: none;
+  border-color: #1d7c4d;
+}
+.wa-box__aviso {
+  color: var(--erro);
+  font-size: 0.78rem;
+  min-height: 1rem;
+  margin-top: 0.4rem;
+}
+.wa-box__acoes {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  margin-top: 0.9rem;
+}
+.wa-btn {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 100px;
+  padding: 0.7rem 1.3rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: 0.15s;
+}
+.wa-btn--ghost {
+  background: transparent;
+  color: var(--t-500);
+  border-color: rgba(15, 25, 35, 0.2);
+}
+.wa-btn--ghost:hover {
+  background: rgba(15, 25, 35, 0.05);
+}
+.wa-btn--go {
+  background: #1d7c4d;
+  color: #fff;
+}
+.wa-btn--go:hover {
+  background: #17663f;
+}

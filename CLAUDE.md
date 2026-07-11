@@ -376,9 +376,12 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
 
 ### WhatsApp (Caminho 1 — links wa.me, jul/2026)
 
-Botões **WhatsApp** (verdes) espalhados pela gestão: montam a mensagem pronta
-(`src/lib/whatsapp.ts`: `abrirWhatsApp` valida/normaliza o telefone da ficha
-com DDI 55 e abre `wa.me`; se faltar telefone, pede na hora via prompt).
+Botões **WhatsApp** (verdes) espalhados pela gestão: `abrirWhatsApp`
+(`src/lib/whatsapp.ts`) abre um **popup próprio (DOM)** com o destinatário e o
+número da ficha já preenchidos (normalizado com DDI 55) + a mensagem editável;
+"Abrir WhatsApp" dispara o `wa.me` a partir do clique real (não é bloqueado).
+⚠️ NÃO usar `window.prompt` — no iPhone/Safari ele é suprimido e o botão
+"não faz nada". Popup estilizado em `gestao.css` (`.wa-overlay`/`.wa-box`).
 
 - **Cobranças:** mensagem com descrição, valor, vencimento e link de pagamento.
 - **Orçamentos:** link público da proposta + validade.

@@ -1,6 +1,11 @@
 // WhatsApp via link oficial wa.me (Caminho 1 — sem API paga).
 // O sistema monta a mensagem pronta e abre a conversa no WhatsApp da KA;
-// ela só confere e aperta enviar. Usa o telefone da ficha do cliente.
+// ela só confere e envia. Usa o telefone da ficha do cliente.
+//
+// IMPORTANTE: NÃO usamos window.prompt para confirmar o número — no celular
+// (iPhone/Safari sobretudo) o prompt é suprimido e "não acontece nada". Em vez
+// disso montamos um popup próprio (DOM), e o envio sai de um clique real de
+// botão dentro dele — assim nenhum navegador bloqueia a abertura do WhatsApp.
 
 /** Converte o telefone da ficha em número wa.me (só dígitos, com DDI 55). */
 export function telefoneParaWa(telefone: string): string | null {
@@ -10,51 +15,102 @@ export function telefoneParaWa(telefone: string): string | null {
   return null
 }
 
+/** Primeiro nome, para a mensagem soar pessoal. */
+export function primeiroNome(nome: string | null | undefined): string {
+  return (nome ?? '').trim().split(/\s+/)[0] || ''
+}
+
 /**
- * Abre o WhatsApp com a mensagem pronta. Mostra uma confirmação com o nome do
- * destinatário e o número da ficha JÁ PREENCHIDO — é só dar OK (ou trocar o
- * número ali mesmo, se quiser enviar a outra pessoa). Devolve true se abriu.
+ * Abre um popup próprio com o destinatário e o número da ficha JÁ preenchidos
+ * e a mensagem à vista. A KA confere (ou troca o número) e clica em "Abrir
+ * WhatsApp" — o wa.me abre a partir desse clique.
  */
 export function abrirWhatsApp(
   telefone: string | null | undefined,
   mensagem: string,
   destinatario?: string | null,
-): boolean {
-  // Abre a aba AGORA, ainda dentro do clique — depois do prompt o navegador
-  // (principalmente o Safari do iPhone) bloquearia o pop-up silenciosamente.
-  const aba = window.open('', '_blank')
+): void {
+  const tel = (telefone ?? '').trim()
+  const quem = (destinatario ?? '').trim()
 
-  const tel = telefone?.trim() ?? ''
-  const quem = destinatario?.trim()
-  const digitado = window.prompt(
-    (quem ? `Enviar WhatsApp para ${quem}.\n` : 'Enviar WhatsApp.\n') +
-      (tel
-        ? 'Confirme o número (OK) ou troque para enviar a outra pessoa:'
-        : 'Sem telefone na ficha — digite o número (com DDD, ex.: 41 99999-0000):'),
-    tel,
-  )
-  if (digitado === null) {
-    aba?.close()
-    return false
+  // Remove um popup anterior, se houver.
+  document.getElementById('wa-overlay')?.remove()
+
+  const overlay = document.createElement('div')
+  overlay.id = 'wa-overlay'
+  overlay.className = 'wa-overlay'
+
+  const box = document.createElement('div')
+  box.className = 'wa-box'
+
+  const titulo = document.createElement('div')
+  titulo.className = 'wa-box__titulo'
+  titulo.textContent = quem ? `Enviar WhatsApp para ${quem}` : 'Enviar WhatsApp'
+
+  const rotuloTel = document.createElement('label')
+  rotuloTel.className = 'wa-box__rotulo'
+  rotuloTel.textContent = 'Número (com DDD)'
+
+  const input = document.createElement('input')
+  input.className = 'wa-box__input'
+  input.type = 'tel'
+  input.value = tel
+  input.placeholder = 'ex.: 41 99999-0000'
+
+  const rotuloMsg = document.createElement('label')
+  rotuloMsg.className = 'wa-box__rotulo'
+  rotuloMsg.textContent = 'Mensagem (pode editar)'
+
+  const area = document.createElement('textarea')
+  area.className = 'wa-box__area'
+  area.rows = 7
+  area.value = mensagem
+
+  const aviso = document.createElement('div')
+  aviso.className = 'wa-box__aviso'
+
+  const acoes = document.createElement('div')
+  acoes.className = 'wa-box__acoes'
+
+  const cancelar = document.createElement('button')
+  cancelar.type = 'button'
+  cancelar.className = 'wa-btn wa-btn--ghost'
+  cancelar.textContent = 'Cancelar'
+
+  const enviar = document.createElement('button')
+  enviar.type = 'button'
+  enviar.className = 'wa-btn wa-btn--go'
+  enviar.textContent = 'Abrir WhatsApp'
+
+  function fechar() {
+    overlay.remove()
+    document.removeEventListener('keydown', onKey)
   }
-  const numero = telefoneParaWa(digitado)
-  if (!numero) {
-    aba?.close()
-    window.alert('Número inválido — use DDD + número (ex.: 41 99999-0000).')
-    return false
+  function onKey(e: KeyboardEvent) {
+    if (e.key === 'Escape') fechar()
   }
 
-  const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`
-  if (aba) {
-    aba.location.href = url
-  } else {
-    // Pop-up bloqueado mesmo assim: navega na própria aba (o Voltar retorna).
-    window.location.href = url
-  }
-  return true
-}
+  enviar.addEventListener('click', () => {
+    const numero = telefoneParaWa(input.value)
+    if (!numero) {
+      aviso.textContent = 'Número inválido — use DDD + número (ex.: 41 99999-0000).'
+      input.focus()
+      return
+    }
+    const url = `https://wa.me/${numero}?text=${encodeURIComponent(area.value)}`
+    // Clique real do usuário: a abertura não é bloqueada.
+    window.open(url, '_blank', 'noopener')
+    fechar()
+  })
+  cancelar.addEventListener('click', fechar)
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) fechar()
+  })
+  document.addEventListener('keydown', onKey)
 
-/** Primeiro nome, para a mensagem soar pessoal. */
-export function primeiroNome(nome: string | null | undefined): string {
-  return (nome ?? '').trim().split(/\s+/)[0] || ''
+  acoes.append(cancelar, enviar)
+  box.append(titulo, rotuloTel, input, rotuloMsg, area, aviso, acoes)
+  overlay.append(box)
+  document.body.append(overlay)
+  input.focus()
 }
