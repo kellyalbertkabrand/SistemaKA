@@ -70,6 +70,17 @@ Clientes no sistema:
 - **Overflow horizontal travado** em `html`/`body`/`#root` (`overflow-x: clip`)
   e o menu-gaveta do celular rola quando tem muitos itens (`overflow-y: auto`,
   não corta mais — ver `menu.css`).
+- **Confirmação PRÓPRIA (`src/lib/confirmar.ts`):** `await confirmar(msg,
+  { perigo?, confirmar? })` abre uma caixa DOM (mesmo estilo `.wa-overlay`/
+  `.wa-box`, botão de perigo `.wa-btn--perigo`) no lugar de `window.confirm`.
+  Motivo: o Safari do iPhone **suprime** o confirm nativo depois de alguns
+  diálogos ("não mostrar mais") e ele passa a retornar `false` — as exclusões
+  "não aconteciam". TODOS os `window.confirm` da gestão foram migrados.
+- **Home = quadradinhos por categoria:** a raiz `/` (aba `inicio`, padrão do
+  `AdminPanel`) mostra cartões elegantes agrupados em **Criação / Gestão do
+  negócio / Pessoal** (`GRUPOS` + `IconeAtalho` SVG de linha na identidade da
+  KA; estilos `.atalho-grupo`/`.grade-atalhos`/`.atalho-card` em `painel.css`).
+  Clicar no **logotipo** (`SiteHeader`, agora `<Link to="/">`) volta pra home.
 
 O app independente vive em **`estudio-marca-ka/`**. (Na raiz do repo também há
 um sistema de notícias em Python, separado, que não tem relação com este app.)
@@ -416,7 +427,10 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
   alimentar: clicar na bolinha da fase avança o status (ciclo). Modelos de
   fases padrão em `MODELOS_FASES` (`src/lib/projetos.ts`): identidade visual,
   social media, site, personalizado. Fases podem ser adicionadas/renomeadas/
-  reordenadas/removidas depois.
+  reordenadas/removidas depois. O **nome do cliente** também é editável inline
+  no detalhe ("Alterar cliente"/"Definir cliente") — útil pra criar o projeto
+  antes de ter os dados e só depois trocar o nome / excluir o cadastro
+  provisório (`aplicar({ cliente_nome })`).
 - **Link do cliente:** `/projeto/:token` (`ProjetoPublico.tsx`) — linha do
   tempo com barra de progresso; usa **onSnapshot** (query por token), então a
   página do cliente atualiza EM TEMPO REAL quando a KA marca uma fase. Cada fase
