@@ -16,13 +16,21 @@ import '../styles/gestao.css'
 type Aba = 'estudio' | 'clientes' | 'projetos' | 'orcamentos' | 'contratos' | 'cobrancas' | 'cuidadoras'
 
 // Rótulos curtos para o menu (estilo site: maiúsculas, poucos caracteres).
+// No desktop, o grupo "Gestão" abre como MENU SUSPENSO; no celular, os
+// subitens aparecem listados na gaveta.
 const MENU: ItemMenu[] = [
   { id: 'estudio', rotulo: 'Estúdio' },
-  { id: 'clientes', rotulo: 'Clientes' },
-  { id: 'projetos', rotulo: 'Projetos' },
-  { id: 'orcamentos', rotulo: 'Orçamentos' },
-  { id: 'contratos', rotulo: 'Contratos' },
-  { id: 'cobrancas', rotulo: 'Cobranças' },
+  {
+    id: 'gestao',
+    rotulo: 'Gestão',
+    filhos: [
+      { id: 'clientes', rotulo: 'Clientes' },
+      { id: 'projetos', rotulo: 'Projetos' },
+      { id: 'orcamentos', rotulo: 'Orçamentos' },
+      { id: 'contratos', rotulo: 'Contratos' },
+      { id: 'cobrancas', rotulo: 'Cobranças' },
+    ],
+  },
   { id: 'cuidadoras', rotulo: 'Cuidadoras' },
 ]
 
