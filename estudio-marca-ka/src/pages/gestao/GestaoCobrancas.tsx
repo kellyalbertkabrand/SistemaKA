@@ -4,6 +4,7 @@ import { listarClientes } from '../../lib/api'
 import {
   atualizarCobranca,
   criarCobranca,
+  excluirCobranca,
   gerarLinkMercadoPago,
   gerarMensalidades,
   listarCobrancas,
@@ -173,6 +174,25 @@ export function GestaoCobrancas() {
     }
   }
 
+  async function excluir(c: Cobranca) {
+    if (
+      !window.confirm(
+        `Excluir de vez a cobrança "${c.descricao}"? Ela some do histórico e não dá para ` +
+          'recuperar. (Para manter registro, prefira "Cancelar".)',
+      )
+    )
+      return
+    setOcupado(c.id)
+    try {
+      await excluirCobranca(c.id)
+      await recarregar()
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : String(e))
+    } finally {
+      setOcupado(null)
+    }
+  }
+
   const pendentes = lista.filter((c) => c.status === 'pendente' || c.status === 'atrasada')
   const totalPendente = pendentes.reduce((t, c) => t + Number(c.valor), 0)
 
@@ -288,6 +308,13 @@ export function GestaoCobrancas() {
                         paga em {formatarData(c.pago_em)}
                       </span>
                     )}
+                    <button
+                      className="btn-mini btn-mini--perigo"
+                      disabled={ocupado === c.id}
+                      onClick={() => void excluir(c)}
+                    >
+                      Excluir
+                    </button>
                   </td>
                 </tr>
               ))}

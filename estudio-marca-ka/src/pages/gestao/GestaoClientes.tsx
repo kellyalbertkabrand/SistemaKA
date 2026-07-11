@@ -10,6 +10,7 @@ import {
 } from '../../lib/api'
 import {
   convidarUsuario,
+  excluirCliente,
   formatarBRL,
   linkPublicoCadastro,
   marcarClienteRevisado,
@@ -41,6 +42,23 @@ export function GestaoClientes() {
   function abrir(c: Cliente) {
     if (ehNovo(c)) void marcarClienteRevisado(c.id).catch(() => {})
     setSel(c)
+  }
+
+  async function excluir(c: Cliente) {
+    if (
+      !window.confirm(
+        `Excluir o cliente "${c.nome_marca}"? A ficha e os acessos somem de vez. ` +
+          'Orçamentos, contratos e cobranças ligados a ele NÃO são apagados junto — ' +
+          'se também forem teste, apague-os nas outras abas.',
+      )
+    )
+      return
+    try {
+      await excluirCliente(c.id)
+      await recarregar()
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : String(e))
+    }
   }
 
   const novos = clientes.filter(ehNovo).length
@@ -161,6 +179,9 @@ export function GestaoClientes() {
                   <td className="acoes">
                     <button className="btn-mini" onClick={() => abrir(c)}>
                       Abrir ficha
+                    </button>
+                    <button className="btn-mini btn-mini--perigo" onClick={() => void excluir(c)}>
+                      Excluir
                     </button>
                   </td>
                 </tr>

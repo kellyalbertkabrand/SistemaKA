@@ -163,6 +163,14 @@ export async function marcarClienteRevisado(id: string): Promise<void> {
   await updateDoc(doc(db, 'clientes', id), { revisado: true })
 }
 
+/**
+ * Exclui o cliente (para limpar testes). Orçamentos, contratos e cobranças
+ * ligados a ele NÃO são apagados juntos — apague-os nas respectivas abas.
+ */
+export async function excluirCliente(id: string): Promise<void> {
+  await deleteDoc(doc(db, 'clientes', id))
+}
+
 // ---- Orçamentos -------------------------------------------------------------
 
 export async function listarOrcamentos(): Promise<Orcamento[]> {
@@ -650,6 +658,11 @@ export async function atualizarCobranca(
   await updateDoc(doc(db, 'cobrancas', id), limpar({ ...dados }))
   const d = await getDoc(doc(db, 'cobrancas', id))
   return comId<Cobranca>(d.id, d.data() ?? {})
+}
+
+/** Exclui a cobrança de vez (para limpar testes; para histórico use "cancelar"). */
+export async function excluirCobranca(id: string): Promise<void> {
+  await deleteDoc(doc(db, 'cobrancas', id))
 }
 
 export async function marcarCobrancaPaga(id: string): Promise<Cobranca> {

@@ -62,7 +62,11 @@ export function GestaoContratos() {
   }
 
   async function excluir(c: Contrato) {
-    if (!window.confirm(`Excluir o contrato "${c.titulo}"? Essa ação não pode ser desfeita.`)) return
+    const aviso =
+      c.status === 'assinado'
+        ? `ATENÇÃO: "${c.titulo}" está ASSINADO — o registro do aceite digital será apagado junto e não dá para recuperar. Excluir mesmo assim? (Use só para limpar testes.)`
+        : `Excluir o contrato "${c.titulo}"? Essa ação não pode ser desfeita.`
+    if (!window.confirm(aviso)) return
     try {
       await excluirContrato(c.id)
       await recarregar()
@@ -190,11 +194,9 @@ export function GestaoContratos() {
                         Cancelar
                       </button>
                     )}
-                    {c.status !== 'assinado' && (
-                      <button className="btn-mini btn-mini--perigo" onClick={() => void excluir(c)}>
-                        Excluir
-                      </button>
-                    )}
+                    <button className="btn-mini btn-mini--perigo" onClick={() => void excluir(c)}>
+                      Excluir
+                    </button>
                   </td>
                 </tr>
               ))}

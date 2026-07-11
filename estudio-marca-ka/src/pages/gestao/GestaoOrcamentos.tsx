@@ -74,7 +74,11 @@ export function GestaoOrcamentos() {
   }
 
   async function excluir(o: Orcamento) {
-    if (!window.confirm(`Excluir o orçamento "${o.titulo}"?`)) return
+    const aviso =
+      o.status === 'aprovado'
+        ? `Excluir o orçamento "${o.titulo}"? O contrato e a cobrança que ele gerou NÃO são apagados junto — apague-os nas abas Contratos e Cobranças se também forem teste.`
+        : `Excluir o orçamento "${o.titulo}"? Essa ação não pode ser desfeita.`
+    if (!window.confirm(aviso)) return
     try {
       await excluirOrcamento(o.id)
       await recarregar()
@@ -159,9 +163,14 @@ export function GestaoOrcamentos() {
                       </>
                     )}
                     {o.status !== 'rascunho' && (
-                      <button className="btn-mini" onClick={() => void copiarLink(o)}>
-                        Copiar link
-                      </button>
+                      <>
+                        <button className="btn-mini" onClick={() => void copiarLink(o)}>
+                          Copiar link
+                        </button>
+                        <button className="btn-mini btn-mini--perigo" onClick={() => void excluir(o)}>
+                          Excluir
+                        </button>
+                      </>
                     )}
                   </td>
                 </tr>
