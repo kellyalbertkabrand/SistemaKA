@@ -1548,3 +1548,24 @@
   color: var(--t-900);
   white-space: nowrap;
 }
+
+/* ---- Colar link de pagamento (inline, na cobrança) ---- */
+.colar-link {
+  display: flex;
+  flex-basis: 100%;
+  width: 100%;
+  gap: 0.35rem;
+  align-items: center;
+  margin-top: 0.45rem;
+  white-space: normal;
+}
+.colar-link input {
+  flex: 1;
+  min-width: 120px;
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(61, 107, 126, 0.4);
+  border-radius: 8px;
+  padding: 0.45rem 0.6rem;
+  background: var(--bg-1);
+}

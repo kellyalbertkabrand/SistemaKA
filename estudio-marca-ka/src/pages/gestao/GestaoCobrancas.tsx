@@ -13,6 +13,7 @@ import {
   formatarData,
 } from '../../lib/gestao'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
+import { useToast } from '../../components/Toast'
 
 const BADGE_COBRANCA: Record<CobrancaStatus, string> = {
   pendente: 'badge--azul',
@@ -24,12 +25,21 @@ const BADGE_COBRANCA: Record<CobrancaStatus, string> = {
 // Cobranças: mensalidades (geradas por mês) + avulsas (de orçamento aprovado).
 // O link de pagamento (cartão/boleto/PIX) vem do Mercado Pago via Edge Function.
 export function GestaoCobrancas() {
+  const { mostrar } = useToast()
   const [lista, setLista] = useState<Cobranca[]>([])
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [erro, setErro] = useState<string | null>(null)
-  const [msg, setMsg] = useState<string | null>(null)
   const [ocupado, setOcupado] = useState<string | null>(null) // id da linha em ação
   const [carregando, setCarregando] = useState(true)
+  // Nova cobrança avulsa (formulário — sem window.prompt, que trava no iPhone)
+  const [criando, setCriando] = useState(false)
+  const [novoCli, setNovoCli] = useState('')
+  const [novaDesc, setNovaDesc] = useState('')
+  const [novoValor, setNovoValor] = useState('')
+  const [novoVenc, setNovoVenc] = useState('')
+  // Colar link de pagamento (inline, por linha)
+  const [linkPara, setLinkPara] = useState<string | null>(null)
+  const [linkTemp, setLinkTemp] = useState('')
 
   const nomeCliente = useMemo(() => {
     const m = new Map(clientes.map((c) => [c.id, c.nome_marca]))
@@ -77,8 +87,7 @@ export function GestaoCobrancas() {
   }, [])
 
   function avisar(texto: string) {
-    setMsg(texto)
-    setTimeout(() => setMsg(null), 4500)
+    mostrar(texto)
   }
 
   async function gerarMes() {
@@ -99,31 +108,39 @@ export function GestaoCobrancas() {
     }
   }
 
-  async function novaAvulsa() {
+  function abrirNova() {
     if (clientes.length === 0) {
       setErro('Cadastre um cliente primeiro (aba Clientes).')
       return
     }
-    const nomes = clientes.map((c, i) => `${i + 1} - ${c.nome_marca}`).join('\n')
-    const escolha = window.prompt(`Cobrança para qual cliente?\n${nomes}\n\nDigite o número:`)
-    const cliente = clientes[Number(escolha) - 1]
-    if (!cliente) return
-    const descricao = window.prompt('Descrição da cobrança:')
-    if (!descricao?.trim()) return
-    const valor = Number(window.prompt('Valor (R$):')?.replace(',', '.'))
-    if (!valor || valor <= 0) return
-    const venc = window.prompt('Vencimento (AAAA-MM-DD):', new Date().toISOString().slice(0, 10))
-    if (!venc) return
+    setNovoCli(clientes[0].id)
+    setNovaDesc('')
+    setNovoValor('')
+    setNovoVenc(new Date().toISOString().slice(0, 10))
+    setErro(null)
+    setCriando(true)
+  }
+
+  async function salvarNova() {
+    const cliente = clientes.find((c) => c.id === novoCli)
+    const valor = Number(novoValor.replace(',', '.'))
+    if (!cliente || !novaDesc.trim() || !valor || valor <= 0 || !novoVenc) {
+      setErro('Preencha o cliente, a descrição, um valor maior que zero e o vencimento.')
+      return
+    }
     setOcupado('nova')
+    setErro(null)
     try {
       await criarCobranca({
         cliente_id: cliente.id,
         tipo: 'avulsa',
-        descricao: descricao.trim(),
+        descricao: novaDesc.trim(),
         valor,
-        vencimento: venc,
+        vencimento: novoVenc,
         telefone: cliente.telefone ?? null,
       })
+      setCriando(false)
+      mostrar('Cobrança criada')
       await recarregar()
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
@@ -150,15 +167,17 @@ export function GestaoCobrancas() {
     }
   }
 
-  async function colarLink(c: Cobranca) {
-    const link = window.prompt(
-      'Cole o link de pagamento (Mercado Pago → Cobrar → Link de pagamento):',
-      c.link_pagamento ?? '',
-    )
-    if (link === null) return
-    setOcupado(c.id)
+  function abrirColarLink(c: Cobranca) {
+    setLinkPara(c.id)
+    setLinkTemp(c.link_pagamento ?? '')
+  }
+  async function salvarColarLink() {
+    if (!linkPara) return
+    setOcupado(linkPara)
     try {
-      await atualizarCobranca(c.id, { link_pagamento: link.trim() || null })
+      await atualizarCobranca(linkPara, { link_pagamento: linkTemp.trim() || null })
+      setLinkPara(null)
+      mostrar('Link de pagamento salvo')
       await recarregar()
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
@@ -226,7 +245,7 @@ export function GestaoCobrancas() {
         <button className="btn" disabled={ocupado === 'mes'} onClick={() => void gerarMes()}>
           {ocupado === 'mes' ? 'Gerando…' : 'Gerar mensalidades do mês'}
         </button>
-        <button className="btn--voltar" disabled={ocupado === 'nova'} onClick={() => void novaAvulsa()}>
+        <button className="btn--voltar" disabled={ocupado === 'nova' || criando} onClick={abrirNova}>
           + Cobrança avulsa
         </button>
         <span className="espaco" />
@@ -238,8 +257,57 @@ export function GestaoCobrancas() {
       </div>
 
       {erro && <div className="erro-msg">{erro}</div>}
-      {msg && <div className="nota">{msg}</div>}
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
+
+      {criando && (
+        <div className="card">
+          <h3>Nova cobrança avulsa</h3>
+          <div className="form-grade">
+            <div className="field">
+              <label>Cliente</label>
+              <select value={novoCli} onChange={(e) => setNovoCli(e.target.value)}>
+                {clientes.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nome_marca}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="field">
+              <label>Descrição</label>
+              <input
+                value={novaDesc}
+                onChange={(e) => setNovaDesc(e.target.value)}
+                placeholder="ex.: Criação de logo"
+              />
+            </div>
+            <div className="field">
+              <label>Valor (R$)</label>
+              <input
+                type="number"
+                inputMode="decimal"
+                min={0}
+                step="0.01"
+                value={novoValor}
+                onChange={(e) => setNovoValor(e.target.value)}
+                placeholder="ex.: 500"
+              />
+            </div>
+            <div className="field">
+              <label>Vencimento</label>
+              <input type="date" value={novoVenc} onChange={(e) => setNovoVenc(e.target.value)} />
+            </div>
+          </div>
+          <p style={{ display: 'flex', gap: '0.6rem', marginTop: '0.2rem' }}>
+            <button className="btn" disabled={ocupado === 'nova'} onClick={() => void salvarNova()}>
+              {ocupado === 'nova' ? 'Criando…' : 'Criar cobrança'}
+            </button>
+            <button className="btn--voltar" onClick={() => setCriando(false)}>
+              Cancelar
+            </button>
+          </p>
+        </div>
+      )}
 
       {!carregando && lista.length === 0 && !erro && (
         <div className="card">
@@ -314,7 +382,7 @@ export function GestaoCobrancas() {
                         <button
                           className="btn-mini"
                           disabled={ocupado === c.id}
-                          onClick={() => void colarLink(c)}
+                          onClick={() => abrirColarLink(c)}
                         >
                           Colar link
                         </button>
@@ -332,6 +400,22 @@ export function GestaoCobrancas() {
                         >
                           Cancelar
                         </button>
+                        {linkPara === c.id && (
+                          <div className="colar-link">
+                            <input
+                              autoFocus
+                              value={linkTemp}
+                              onChange={(e) => setLinkTemp(e.target.value)}
+                              placeholder="Cole aqui o link do Mercado Pago"
+                            />
+                            <button className="btn-mini" disabled={ocupado === c.id} onClick={() => void salvarColarLink()}>
+                              Salvar
+                            </button>
+                            <button className="btn-mini" onClick={() => setLinkPara(null)}>
+                              Cancelar
+                            </button>
+                          </div>
+                        )}
                       </>
                     )}
                     {c.status === 'paga' && c.pago_em && (

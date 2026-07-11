@@ -373,6 +373,10 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
   manuais). Link de pagamento **Mercado Pago Checkout Pro** (cartão parcelado,
   boleto, PIX) via Edge Function `mp-criar-cobranca`; `mp-webhook` marca paga
   quando o MP aprova. Sem as functions publicadas, dá para colar link manual.
+  - **Lançar cobrança avulsa = FORMULÁRIO** (jul/2026): o botão "+ Cobrança
+    avulsa" abre um formulário inline (cliente, descrição, valor, vencimento) —
+    NÃO usa mais `window.prompt` (que travava no iPhone). "Colar link" também
+    virou um campo inline por linha. Feedback via toast.
 - **Acessos:** aba Clientes & Acessos convida por e-mail (Edge Function
   `convidar-usuario`, service_role só no servidor) e vincula/desvincula logins
   à marca (`usuarios.cliente_id`/`cliente_slug`).
