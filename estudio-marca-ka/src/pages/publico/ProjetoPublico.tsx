@@ -88,6 +88,11 @@ export function ProjetoPublico() {
     null
   const concluido = proj.status === 'concluido' || (total > 0 && feitas === total)
 
+  // Projeto feito em parceria com a VM Rocks? (alguma etapa é responsabilidade
+  // da VM). Nesse caso a página é co-assinada KA + VM: sem o logo da KA no topo
+  // e com um rodapé conjunto.
+  const comVM = proj.fases.some((f) => (f.responsavel ?? 'KA') === 'VM')
+
   // Anel de progresso (SVG)
   const R = 46
   const CIRC = 2 * Math.PI * R
@@ -95,7 +100,9 @@ export function ProjetoPublico() {
   return (
     <div className="proj-pub">
       <header className="proj-hero">
-        <img className="proj-hero__logo" src={LOGO_BRANCA} alt="KA · Inteligência para Marcas" />
+        {!comVM && (
+          <img className="proj-hero__logo" src={LOGO_BRANCA} alt="KA · Inteligência para Marcas" />
+        )}
         <div className="proj-hero__eyebrow">Acompanhamento de projeto</div>
         <h1>{proj.nome}</h1>
         <div className="proj-hero__meta">
@@ -184,8 +191,14 @@ export function ProjetoPublico() {
       </div>
 
       <footer className="proj-rodape">
-        <div className="proj-rodape__nome">Kelly Albert</div>
-        <div className="proj-rodape__sub">Sistema Visual de Publicações da Marca · KA</div>
+        {comVM ? (
+          <div className="proj-rodape__nome">KA | Inteligência para Marcas | VM Rocks</div>
+        ) : (
+          <>
+            <div className="proj-rodape__nome">Kelly Albert</div>
+            <div className="proj-rodape__sub">Sistema Visual de Publicações da Marca · KA</div>
+          </>
+        )}
       </footer>
     </div>
   )

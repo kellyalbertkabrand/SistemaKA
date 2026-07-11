@@ -371,6 +371,11 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
 - **Link do cliente:** `/projeto/:token` (`ProjetoPublico.tsx`) — linha do
   tempo com barra de progresso; usa **onSnapshot** (query por token), então a
   página do cliente atualiza EM TEMPO REAL quando a KA marca uma fase.
+- **Co-assinatura KA + VM Rocks:** se o projeto tem **qualquer etapa com
+  responsável VM** (`comVM = fases.some(...==='VM')`), a página do cliente
+  esconde o logo da KA no cabeçalho e o rodapé vira só **"KA | Inteligência
+  para Marcas | VM Rocks"** (uma linha, sem o nome do projeto) em vez do rodapé
+  padrão Kelly Albert. Projeto só-KA mantém o logo e o rodapé normais.
 - **Regras:** `projetos` = leitura pública (token no doc, como orçamentos),
   escrita só a KA.
 - **Modelos de fases** em `MODELOS_FASES`: **Marca com Essência©** (6 etapas
