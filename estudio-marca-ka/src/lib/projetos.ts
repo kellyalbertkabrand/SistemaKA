@@ -27,12 +27,25 @@ import { db } from './firebase'
 export type FaseStatus = 'pendente' | 'andamento' | 'concluida'
 export type ProjetoStatus = 'ativo' | 'pausado' | 'concluido'
 
-/** Quem é responsável pela etapa: a KA ou a parceira VM Rocks. */
-export type Responsavel = 'KA' | 'VM'
+/**
+ * Quem é responsável pela etapa. Valores especiais: 'KA' (a Kelly) e 'VM'
+ * (a parceira VM Rocks) — usados nos filtros de pendências. Também pode ser o
+ * nome do cliente ou qualquer texto livre que a KA escrever.
+ */
+export type Responsavel = string
 
-export const ROTULO_RESP: Record<Responsavel, string> = {
-  KA: 'KA',
-  VM: 'VM Rocks',
+/** Texto que aparece na tela para um responsável ('VM' vira "VM Rocks"). */
+export function rotuloResp(v?: string): string {
+  if (!v || v === 'KA') return 'KA'
+  if (v === 'VM') return 'VM Rocks'
+  return v
+}
+
+/** Classe CSS da etiqueta (KA/VM têm cor própria; o resto usa "outro"). */
+export function respClasse(v?: string): 'KA' | 'VM' | 'outro' {
+  if (!v || v === 'KA') return 'KA'
+  if (v === 'VM') return 'VM'
+  return 'outro'
 }
 
 /**

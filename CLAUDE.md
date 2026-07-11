@@ -396,12 +396,16 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
 - **Data por etapa** (`FaseProjeto.data`, opcional): data prevista/marcada de
   cada fase. Na página do cliente vira "· previsto DD/MM" nas fases não
   concluídas.
-- **Responsável por etapa** (`FaseProjeto.responsavel: 'KA' | 'VM'`; `VM` =
-  **VM Rocks**, parceira). `responsavelPadrao(nome)` põe as etapas de **visual**
-  e **instagram** como VM por padrão (regex), o resto KA — sempre editável.
-  Rótulos em `ROTULO_RESP`. No modelo Marca com Essência©, as fases
-  "Identidade Visual" e "Personalização Instagram e WhatsApp" já vêm VM. O
-  responsável NÃO aparece na página do cliente (é interno).
+- **Responsável por etapa** (`FaseProjeto.responsavel: string`): valores
+  especiais `'KA'` (Kelly) e `'VM'` (**VM Rocks**, parceira) — usados nos
+  filtros; ou o **nome do cliente** do projeto, ou **qualquer texto livre**
+  ("Outro"). O `SeletorResponsavel` (em `GestaoProjetos.tsx`) oferece KA / VM
+  Rocks / {cliente} / Outro (revela um campo pra escrever). `rotuloResp(v)` faz
+  o texto ('VM'→"VM Rocks"); `respClasse(v)` a cor da etiqueta (KA azul, VM
+  laranja, resto roxo). `responsavelPadrao(nome)` põe **visual**/**instagram**
+  como VM por padrão (regex), o resto KA — sempre editável. No modelo Marca com
+  Essência©, "Identidade Visual" e "Personalização Instagram e WhatsApp" já vêm
+  VM. O responsável NÃO aparece na página do cliente (é interno).
 - **Visão de Pendências:** no topo da aba Projetos, um segmento
   **Projetos / Pendências**. Em Pendências, `pendenciasDeProjetos(projetos,
   filtro)` junta todas as etapas em aberto (não concluídas, de projetos não

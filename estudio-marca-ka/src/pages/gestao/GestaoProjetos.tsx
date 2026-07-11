@@ -12,8 +12,9 @@ import {
   pendenciasDeProjetos,
   progressoProjeto,
   proximoStatusFase,
+  respClasse,
   responsavelPadrao,
-  ROTULO_RESP,
+  rotuloResp,
   salvarFaseSalva,
   salvarProjeto,
   type FaseProjeto,
@@ -148,7 +149,7 @@ export function GestaoProjetos() {
                 className={`chip ${filtroResp === f ? 'chip--on' : ''}`}
                 onClick={() => setFiltroResp(f)}
               >
-                {f === 'todas' ? 'Todas' : ROTULO_RESP[f]}{' '}
+                {f === 'todas' ? 'Todas' : rotuloResp(f)}{' '}
                 <span className="chip__n">
                   {f === 'todas' ? pendTodas.length : f === 'KA' ? pendKA.length : pendVM.length}
                 </span>
@@ -159,7 +160,7 @@ export function GestaoProjetos() {
           {pend.length === 0 ? (
             <div className="card">
               <h3>Tudo em dia por aqui ✨</h3>
-              <p>Nenhuma etapa em aberto {filtroResp !== 'todas' ? `para ${ROTULO_RESP[filtroResp as Responsavel]}` : ''}.</p>
+              <p>Nenhuma etapa em aberto {filtroResp !== 'todas' ? `para ${rotuloResp(filtroResp)}` : ''}.</p>
             </div>
           ) : (
             <div className="pend-lista">
@@ -170,7 +171,7 @@ export function GestaoProjetos() {
                   onClick={() => setSel(lista.find((x) => x.id === pd.projeto_id) ?? null)}
                   title="Abrir o projeto"
                 >
-                  <span className={`resp-badge resp--${pd.responsavel}`}>{ROTULO_RESP[pd.responsavel]}</span>
+                  <span className={`resp-badge resp--${respClasse(pd.responsavel)}`}>{rotuloResp(pd.responsavel)}</span>
                   <div className="pend-item__corpo">
                     <div className="pend-item__fase">{pd.fase_nome}</div>
                     <div className="pend-item__proj">
@@ -376,6 +377,56 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
   )
 }
 
+// Seletor de responsável da etapa: KA, VM Rocks, o cliente do projeto ou um
+// texto livre ("Outro"). Guarda o valor bruto (string) — 'KA'/'VM' são
+// especiais; o resto é o nome escrito.
+function SeletorResponsavel({
+  value,
+  onChange,
+  clienteNome,
+}: {
+  value: string
+  onChange: (v: string) => void
+  clienteNome: string | null
+}) {
+  const opt =
+    value === 'KA'
+      ? 'KA'
+      : value === 'VM'
+        ? 'VM'
+        : clienteNome && value === clienteNome
+          ? 'cliente'
+          : 'outro'
+  return (
+    <span className="resp-campo">
+      <select
+        className="resp-sel"
+        value={opt}
+        onChange={(e) => {
+          const o = e.target.value
+          if (o === 'KA') onChange('KA')
+          else if (o === 'VM') onChange('VM')
+          else if (o === 'cliente') onChange(clienteNome ?? '')
+          else onChange('') // "outro": começa vazio para digitar
+        }}
+      >
+        <option value="KA">KA</option>
+        <option value="VM">VM Rocks</option>
+        {clienteNome && <option value="cliente">{clienteNome} (cliente)</option>}
+        <option value="outro">Outro (escrever)</option>
+      </select>
+      {opt === 'outro' && (
+        <input
+          className="resp-sel"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="Nome do responsável"
+        />
+      )}
+    </span>
+  )
+}
+
 // ---------------------------------------------------------------------------
 // Detalhe: as fases. Um clique na fase avança o status
 // (pendente → em andamento → concluída). Tudo salva na hora.
@@ -493,7 +544,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     if (!nome) return
     const descricao = editDesc.trim() || null
     const data = editData || null
-    const responsavel = editResp
+    const responsavel = editResp.trim() || 'KA'
     const i = editIdx
     await aplicar({
       fases: p.fases.map((f, idx) => (idx === i ? { ...f, nome, descricao, responsavel, data } : f)),
@@ -556,7 +607,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     await aplicar({
       fases: [
         ...p.fases,
-        { nome, descricao, status: 'pendente', concluida_em: null, responsavel: novaResp, data: novaData || null },
+        { nome, descricao, status: 'pendente', concluida_em: null, responsavel: novaResp.trim() || 'KA', data: novaData || null },
       ],
     })
     // Salva na biblioteca para reusar em outros projetos.
@@ -652,15 +703,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
             onChange={(e) => setNovaDesc(e.target.value)}
             placeholder="Descrição (o cliente vê)"
           />
-          <select
-            className="add-fase__resp"
-            value={novaResp}
-            title="Responsável pela etapa"
-            onChange={(e) => setNovaResp(e.target.value as Responsavel)}
-          >
-            <option value="KA">KA</option>
-            <option value="VM">VM Rocks</option>
-          </select>
+          <SeletorResponsavel value={novaResp} onChange={setNovaResp} clienteNome={p.cliente_nome} />
           <input
             className="add-fase__data"
             type="date"
@@ -682,8 +725,9 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
           Arraste pela alça <span aria-hidden>⠿</span> para reordenar. Concluída fica{' '}
           <strong style={{ color: '#2e6b45' }}>verde</strong>, em andamento{' '}
           <strong style={{ color: 'var(--essencia)' }}>azul</strong>, pendente cinza. Cada etapa tem
-          um <strong>responsável</strong> (KA ou VM Rocks) e pode ter uma <strong>data</strong>{' '}
-          (opcional). As fases que você escreve ficam <strong>salvas</strong> para reusar.
+          um <strong>responsável</strong> (KA, VM Rocks, o cliente ou outro que você escrever) e
+          pode ter uma <strong>data</strong> (opcional). As fases que você escreve ficam{' '}
+          <strong>salvas</strong> para reusar.
         </p>
 
         <div className="fases">
@@ -737,10 +781,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
                   <div className="fase__edit-linha">
                     <label>
                       Responsável
-                      <select value={editResp} onChange={(e) => setEditResp(e.target.value as Responsavel)}>
-                        <option value="KA">KA</option>
-                        <option value="VM">VM Rocks</option>
-                      </select>
+                      <SeletorResponsavel value={editResp} onChange={setEditResp} clienteNome={p.cliente_nome} />
                     </label>
                     <label>
                       Data (opcional)
@@ -763,8 +804,8 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
                     {f.descricao && <div className="fase__desc">{f.descricao}</div>}
                     <div className="fase__meta">
                       <span className={`badge ${BADGE_FASE[f.status]}`}>{ROTULO_FASE[f.status]}</span>
-                      <span className={`resp-badge resp--${f.responsavel ?? 'KA'}`}>
-                        {ROTULO_RESP[f.responsavel ?? 'KA']}
+                      <span className={`resp-badge resp--${respClasse(f.responsavel)}`}>
+                        {rotuloResp(f.responsavel)}
                       </span>
                       {f.data && (
                         <span className="fase__data" style={{ textTransform: 'none', letterSpacing: 0 }}>
