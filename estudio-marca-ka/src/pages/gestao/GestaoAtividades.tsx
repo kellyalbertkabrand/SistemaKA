@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { formatarData } from '../../lib/gestao'
 import { BotaoMic } from '../../components/BotaoMic'
 import { useToast } from '../../components/Toast'
@@ -18,6 +18,7 @@ import {
   editarAtividade,
   excluirAtividade,
   listarAtividades,
+  reordenarAtividades,
   ROTULO_CATEGORIA,
   type Atividade,
   type CategoriaAtividade,
@@ -59,6 +60,12 @@ export function GestaoAtividades() {
   const [editCategoria, setEditCategoria] = useState<CategoriaAtividade>('pessoal')
   const [editData, setEditData] = useState('')
 
+  // Arrastar para reordenar (Pointer Events — funciona no toque do iPhone)
+  const [dragId, setDragId] = useState<string | null>(null)
+  const [overId, setOverId] = useState<string | null>(null)
+  const rowsRef = useRef<Map<string, HTMLElement>>(new Map())
+  const dragRef = useRef<{ cat: CategoriaAtividade; de: string; para: string } | null>(null)
+
   async function recarregar() {
     try {
       setCarregando(true)
@@ -80,13 +87,23 @@ export function GestaoAtividades() {
   // Pendências de trabalho (etapas da KA em aberto, de todos os projetos).
   const pendKA = pendenciasDeProjetos(projetos, 'KA')
 
+  // Menor `ordem` de uma categoria (para novos itens nascerem no topo).
+  function menorOrdem(cat: CategoriaAtividade): number {
+    return Math.min(0, ...atividades.filter((a) => a.categoria === cat).map((a) => a.ordem ?? 0))
+  }
+
   async function addNovo(e: FormEvent) {
     e.preventDefault()
     const titulo = novoTitulo.trim()
     if (!titulo) return
     setSalvando(true)
     try {
-      const nova = await criarAtividade({ titulo, categoria: novaCategoria, data: novaData || null })
+      const nova = await criarAtividade({
+        titulo,
+        categoria: novaCategoria,
+        data: novaData || null,
+        ordem: menorOrdem(novaCategoria) - 1,
+      })
       setAtividades((l) => [nova, ...l])
       setNovoTitulo('')
       setNovaData('')
@@ -108,10 +125,19 @@ export function GestaoAtividades() {
     if (ditadoVarias.gravando) ditadoVarias.alternar()
     setSalvando(true)
     try {
-      // Cria de cima para baixo, mas mostra na lista na mesma ordem colada.
+      // Cria mantendo a ordem colada no topo (a 1ª linha fica mais em cima).
+      const base = menorOrdem(novaCategoria)
+      const n = linhasColar.length
       const criadas: Atividade[] = []
-      for (const titulo of linhasColar) {
-        criadas.push(await criarAtividade({ titulo, categoria: novaCategoria, data: novaData || null }))
+      for (let i = 0; i < n; i++) {
+        criadas.push(
+          await criarAtividade({
+            titulo: linhasColar[i],
+            categoria: novaCategoria,
+            data: novaData || null,
+            ordem: base - (n - i),
+          }),
+        )
       }
       setAtividades((l) => [...criadas.reverse(), ...l])
       setTextoColar('')
@@ -157,6 +183,66 @@ export function GestaoAtividades() {
     } catch {
       void recarregar()
     }
+  }
+
+  // ---- Arrastar para reordenar (só no modo "Padrão") ----
+  // Atividades pessoais de uma categoria, na ordem em que aparecem (não feitas
+  // primeiro, depois por `ordem`). É a mesma ordem usada no render.
+  function pessoaisOrdenadas(cat: CategoriaAtividade): Atividade[] {
+    return atividades
+      .filter((a) => a.categoria === cat)
+      .sort((a, b) => Number(a.feito) - Number(b.feito) || (a.ordem ?? 0) - (b.ordem ?? 0))
+  }
+
+  async function aplicarReordem(cat: CategoriaAtividade, deId: string, paraId: string) {
+    const arr = pessoaisOrdenadas(cat)
+    const de = arr.findIndex((a) => a.id === deId)
+    const para = arr.findIndex((a) => a.id === paraId)
+    if (de < 0 || para < 0 || de === para) return
+    const [item] = arr.splice(de, 1)
+    arr.splice(para, 0, item)
+    const pos = new Map(arr.map((a, i) => [a.id, i]))
+    setAtividades((l) => l.map((a) => (pos.has(a.id) ? { ...a, ordem: pos.get(a.id) } : a)))
+    try {
+      await reordenarAtividades(arr.map((a) => a.id))
+    } catch {
+      void recarregar()
+    }
+  }
+
+  function iniciarArraste(e: React.PointerEvent, cat: CategoriaAtividade, id: string) {
+    e.preventDefault()
+    dragRef.current = { cat, de: id, para: id }
+    setDragId(id)
+    setOverId(id)
+    const mover = (ev: PointerEvent) => {
+      const st = dragRef.current
+      if (!st) return
+      const y = ev.clientY
+      let alvo = st.de
+      for (const a of pessoaisOrdenadas(st.cat)) {
+        const el = rowsRef.current.get(a.id)
+        if (!el) continue
+        const r = el.getBoundingClientRect()
+        if (y >= r.top && y <= r.bottom) {
+          alvo = a.id
+          break
+        }
+      }
+      st.para = alvo
+      setOverId(alvo)
+    }
+    const soltar = () => {
+      window.removeEventListener('pointermove', mover)
+      window.removeEventListener('pointerup', soltar)
+      const st = dragRef.current
+      dragRef.current = null
+      setDragId(null)
+      setOverId(null)
+      if (st && st.de !== st.para) void aplicarReordem(st.cat, st.de, st.para)
+    }
+    window.addEventListener('pointermove', mover)
+    window.addEventListener('pointerup', soltar)
   }
 
   function iniciarEdicao(a: Atividade) {
@@ -314,6 +400,12 @@ export function GestaoAtividades() {
 
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
 
+      {!carregando && ordenar === 'padrao' && atividades.length > 0 && (
+        <p className="dica-voz" style={{ marginTop: 0 }}>
+          Segure a alça <span aria-hidden>⠿</span> e arraste para reordenar suas tarefas.
+        </p>
+      )}
+
       {!carregando &&
         categoriasVisiveis.map((cat) => {
           const pessoais = atividades.filter((a) => a.categoria === cat)
@@ -349,8 +441,9 @@ export function GestaoAtividades() {
               const c = (x.cliente || FIM).localeCompare(y.cliente || FIM)
               return c !== 0 ? c : (x.data || FIM).localeCompare(y.data || FIM)
             }
-            // padrão: pendências de projeto primeiro, depois pessoais
+            // padrão: pendências de projeto primeiro, depois pessoais por ordem
             if ((x.tipo === 'pend') !== (y.tipo === 'pend')) return x.tipo === 'pend' ? -1 : 1
+            if (x.tipo === 'ativ' && y.tipo === 'ativ') return (x.a.ordem ?? 0) - (y.a.ordem ?? 0)
             return 0
           })
 
@@ -412,7 +505,25 @@ export function GestaoAtividades() {
                     </div>
                   </div>
                 ) : (
-                  <div key={a.id} className={`ativ ${a.feito ? 'ativ--feito' : ''}`}>
+                  <div
+                    key={a.id}
+                    ref={(el) => {
+                      if (el) rowsRef.current.set(a.id, el)
+                      else rowsRef.current.delete(a.id)
+                    }}
+                    className={`ativ ${a.feito ? 'ativ--feito' : ''} ${dragId === a.id ? 'ativ--arrastando' : ''} ${
+                      overId === a.id && dragId && dragId !== a.id ? 'ativ--alvo' : ''
+                    }`}
+                  >
+                    {ordenar === 'padrao' && (
+                      <span
+                        className="fase__handle"
+                        title="Segure e arraste para reordenar"
+                        onPointerDown={(e) => iniciarArraste(e, cat, a.id)}
+                      >
+                        ⠿
+                      </span>
+                    )}
                     <button
                       className="ativ__check"
                       title={a.feito ? 'Marcar como não feita' : 'Marcar como feita'}

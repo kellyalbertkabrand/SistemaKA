@@ -1588,3 +1588,14 @@
   border-color: var(--essencia);
   background: rgba(61, 107, 126, 0.04);
 }
+
+/* Atividades: arrastar para reordenar (usa .fase__handle) */
+.ativ--arrastando {
+  opacity: 0.5;
+  border-style: dashed;
+  border-color: var(--essencia);
+}
+.ativ--alvo {
+  border-color: var(--essencia);
+  box-shadow: 0 -2px 0 var(--essencia) inset;
+}

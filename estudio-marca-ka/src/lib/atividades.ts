@@ -36,6 +36,8 @@ export interface Atividade {
   feito: boolean
   /** Data marcada (YYYY-MM-DD). Opcional. */
   data: string | null
+  /** Ordem manual (arrastar). Menor = mais em cima. Ausente = tratado como 0. */
+  ordem?: number
   criado_em: string
 }
 
@@ -50,16 +52,24 @@ export async function criarAtividade(dados: {
   titulo: string
   categoria: CategoriaAtividade
   data: string | null
+  /** Ordem inicial (opcional): use um valor pequeno para nascer no topo. */
+  ordem?: number
 }): Promise<Atividade> {
   const nova = {
     titulo: dados.titulo.trim(),
     categoria: dados.categoria,
     data: dados.data,
+    ordem: dados.ordem ?? 0,
     feito: false,
     criado_em: agora(),
   }
   const ref = await addDoc(collection(db, 'atividades'), nova)
   return { id: ref.id, ...nova }
+}
+
+/** Salva a nova ordem: cada id recebe `ordem` = sua posição na lista. */
+export async function reordenarAtividades(ids: string[]): Promise<void> {
+  await Promise.all(ids.map((id, i) => updateDoc(doc(db, 'atividades', id), { ordem: i })))
 }
 
 export async function alternarAtividade(id: string, feito: boolean): Promise<void> {

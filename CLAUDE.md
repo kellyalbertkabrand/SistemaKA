@@ -485,6 +485,11 @@ coloridos).
   várias", um textão (uma tarefa por linha, ou ditado — cada frase vira uma
   linha) cria todas de uma vez na categoria escolhida. Onde o navegador não
   suporta voz, o botão some e aparece uma dica.
+- **Arrastar para reordenar** (jul/2026): no modo **Padrão**, cada tarefa
+  pessoal tem a alça `⠿` e usa **Pointer Events** (`iniciarArraste`) — funciona
+  no toque do iPhone. Campo novo `Atividade.ordem` (menor = mais em cima);
+  novos itens nascem no topo (`menorOrdem-1`); `reordenarAtividades(ids)` grava
+  `ordem` = posição. Pendências de projeto não arrastam (são derivadas).
 - **Regra Firestore:** `atividades` = só a KA (modo produção).
 
 ### Pagamentos do contrato (ficha do cliente — jul/2026)
