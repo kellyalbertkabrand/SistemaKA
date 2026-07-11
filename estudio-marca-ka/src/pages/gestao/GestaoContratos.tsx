@@ -1,5 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import type { Contrato, ContratoStatus, ModeloContrato } from '../../lib/database.types'
+import type { Cliente, Contrato, ContratoStatus, ModeloContrato } from '../../lib/database.types'
+import { listarClientes } from '../../lib/api'
+import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import {
   atualizarContrato,
   criarContratoDoModelo,
@@ -29,10 +31,15 @@ export function GestaoContratos() {
   const [msg, setMsg] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
 
+  const [clientes, setClientes] = useState<Cliente[]>([])
+
   async function recarregar() {
     try {
       setCarregando(true)
       setLista(await listarContratos())
+      listarClientes()
+        .then(setClientes)
+        .catch(() => setClientes([]))
       setErro(null)
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
@@ -49,6 +56,20 @@ export function GestaoContratos() {
     await navigator.clipboard.writeText(linkPublicoContrato(c.token))
     setMsg(`Link de assinatura de "${c.titulo}" copiado.`)
     setTimeout(() => setMsg(null), 4000)
+  }
+
+  function enviarWhatsApp(c: Contrato) {
+    const cliente = c.cliente_id ? clientes.find((x) => x.id === c.cliente_id) : null
+    const nome = primeiroNome(cliente?.responsavel ?? cliente?.nome_marca)
+    const mensagem = [
+      `Oi${nome ? `, ${nome}` : ''}! ✍️`,
+      '',
+      `O contrato "${c.titulo}" está pronto para a sua assinatura.`,
+      `Leia com calma e assine por aqui: ${linkPublicoContrato(c.token)}`,
+      '',
+      'Qualquer dúvida, me chama! — Kelly',
+    ].join('\n')
+    abrirWhatsApp(cliente?.telefone, mensagem)
   }
 
   async function cancelar(c: Contrato) {
@@ -184,6 +205,11 @@ export function GestaoContratos() {
                     <button className="btn-mini" onClick={() => setVendo(c)}>
                       Ver
                     </button>
+                    {c.status !== 'cancelado' && c.status !== 'assinado' && (
+                      <button className="btn-mini btn-mini--whats" onClick={() => enviarWhatsApp(c)}>
+                        WhatsApp
+                      </button>
+                    )}
                     {c.status !== 'cancelado' && (
                       <button className="btn-mini" onClick={() => void copiarLink(c)}>
                         Copiar link

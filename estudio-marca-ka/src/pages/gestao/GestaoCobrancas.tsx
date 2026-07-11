@@ -12,6 +12,7 @@ import {
   formatarBRL,
   formatarData,
 } from '../../lib/gestao'
+import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 
 const BADGE_COBRANCA: Record<CobrancaStatus, string> = {
   pendente: 'badge--azul',
@@ -34,6 +35,24 @@ export function GestaoCobrancas() {
     const m = new Map(clientes.map((c) => [c.id, c.nome_marca]))
     return (id: string | null) => (id ? (m.get(id) ?? '-') : '-')
   }, [clientes])
+
+  const clientePorId = useMemo(() => new Map(clientes.map((c) => [c.id, c])), [clientes])
+
+  function cobrarWhatsApp(c: Cobranca) {
+    const cliente = c.cliente_id ? clientePorId.get(c.cliente_id) : null
+    const nome = primeiroNome(cliente?.responsavel ?? cliente?.nome_marca)
+    const linhas = [
+      `Oi${nome ? `, ${nome}` : ''}! Tudo bem? 😊`,
+      '',
+      `Segue a cobrança: ${c.descricao}`,
+      `Valor: ${formatarBRL(c.valor)} · vencimento: ${formatarData(c.vencimento)}`,
+    ]
+    if (c.link_pagamento) {
+      linhas.push('', `Você pode pagar por aqui (cartão, boleto ou PIX): ${c.link_pagamento}`)
+    }
+    linhas.push('', 'Qualquer dúvida, me chama! — Kelly')
+    abrirWhatsApp(cliente?.telefone, linhas.join('\n'))
+  }
 
   async function recarregar() {
     try {
@@ -271,6 +290,13 @@ export function GestaoCobrancas() {
                   <td className="acoes">
                     {c.status !== 'paga' && c.status !== 'cancelada' && (
                       <>
+                        <button
+                          className="btn-mini btn-mini--whats"
+                          disabled={ocupado === c.id}
+                          onClick={() => cobrarWhatsApp(c)}
+                        >
+                          WhatsApp
+                        </button>
                         {!c.link_pagamento && (
                           <button
                             className="btn-mini"

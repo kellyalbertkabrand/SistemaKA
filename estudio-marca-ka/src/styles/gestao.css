@@ -550,3 +550,20 @@
   letter-spacing: 0.06em;
   margin-top: 2px;
 }
+
+/* ---- Botões de WhatsApp (verde) ---- */
+.btn-mini--whats {
+  color: #1d7c4d;
+  border-color: rgba(29, 124, 77, 0.35);
+}
+.btn-mini--whats:hover {
+  background: rgba(29, 124, 77, 0.08);
+}
+.btn--voltar-whats {
+  color: #1d7c4d;
+  border-color: rgba(29, 124, 77, 0.4);
+}
+.btn--voltar-whats:hover {
+  background: rgba(29, 124, 77, 0.08);
+  border-color: #1d7c4d;
+}

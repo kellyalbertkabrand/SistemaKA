@@ -15,6 +15,7 @@ import {
   type Projeto,
   type ProjetoStatus,
 } from '../../lib/projetos'
+import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 
 const BADGE_PROJETO: Record<ProjetoStatus, string> = {
   ativo: 'badge--azul',
@@ -298,8 +299,35 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
   const [erro, setErro] = useState<string | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
   const [salvando, setSalvando] = useState(false)
+  const [clientes, setClientes] = useState<Cliente[]>([])
+
+  useEffect(() => {
+    listarClientes()
+      .then(setClientes)
+      .catch(() => setClientes([]))
+  }, [])
 
   const pct = progressoProjeto(p)
+
+  function avisarWhatsApp() {
+    const cliente = p.cliente_id ? clientes.find((c) => c.id === p.cliente_id) : null
+    const nome = primeiroNome(cliente?.responsavel ?? p.cliente_nome)
+    const concluidas = p.fases.filter((f) => f.status === 'concluida')
+    const ultima = concluidas[concluidas.length - 1]
+    const atual = p.fases.find((f) => f.status === 'andamento')
+    const linhas = [`Boa notícia${nome ? `, ${nome}` : ''}! ✨`, '']
+    if (ultima) linhas.push(`Concluímos a etapa "${ultima.nome}" do projeto ${p.nome}.`)
+    else linhas.push(`O projeto ${p.nome} avançou!`)
+    if (atual) linhas.push(`Agora estamos em: ${atual.nome}.`)
+    linhas.push(
+      `Progresso: ${pct}% ✅`,
+      '',
+      `Acompanhe em tempo real por aqui: ${linkPublicoProjeto(p.token)}`,
+      '',
+      '— Kelly',
+    )
+    abrirWhatsApp(cliente?.telefone, linhas.join('\n'))
+  }
 
   async function aplicar(dados: Partial<Pick<Projeto, 'nome' | 'descricao' | 'fases' | 'status' | 'cliente_nome'>>) {
     setSalvando(true)
@@ -364,6 +392,9 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
         </button>
         <button className="btn--voltar" onClick={() => void copiarLink()}>
           Copiar link do cliente
+        </button>
+        <button className="btn--voltar btn--voltar-whats" onClick={avisarWhatsApp}>
+          Avisar no WhatsApp
         </button>
       </p>
 

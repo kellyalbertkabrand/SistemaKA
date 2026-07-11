@@ -374,6 +374,21 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
 - **Regras:** `projetos` = leitura pública (token no doc, como orçamentos),
   escrita só a KA.
 
+### WhatsApp (Caminho 1 — links wa.me, jul/2026)
+
+Botões **WhatsApp** (verdes) espalhados pela gestão: montam a mensagem pronta
+(`src/lib/whatsapp.ts`: `abrirWhatsApp` valida/normaliza o telefone da ficha
+com DDI 55 e abre `wa.me`; se faltar telefone, pede na hora via prompt).
+
+- **Cobranças:** mensagem com descrição, valor, vencimento e link de pagamento.
+- **Orçamentos:** link público da proposta + validade.
+- **Contratos:** link de assinatura (some depois de assinado).
+- **Projetos** (detalhe): "Avisar no WhatsApp" — última fase concluída, fase
+  atual, % e link de acompanhamento.
+
+Envio automático de verdade (API oficial Meta) fica para quando subir ao
+plano Blaze (Cloud Functions) — decisão da KA registrada: começar pelo manual.
+
 ### Cuidadoras (controle PESSOAL da KA — jul/2026)
 
 Aba **Cuidadoras 🔒** no painel (restrita à admin): gestão das cuidadoras

@@ -20,6 +20,7 @@ import {
   formatarData,
   type NovoOrcamento,
 } from '../../lib/gestao'
+import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 
 const BADGE_ORC: Record<OrcamentoStatus, string> = {
   rascunho: 'badge--cinza',
@@ -61,6 +62,21 @@ export function GestaoOrcamentos() {
     await navigator.clipboard.writeText(linkPublicoOrcamento(o.token))
     setMsg(`Link do orçamento "${o.titulo}" copiado, envie ao cliente por WhatsApp ou e-mail.`)
     setTimeout(() => setMsg(null), 4000)
+  }
+
+  function enviarWhatsApp(o: Orcamento) {
+    const cliente = o.cliente_id ? clientes.find((c) => c.id === o.cliente_id) : null
+    const nome = primeiroNome(o.destinatario_nome || cliente?.responsavel)
+    const mensagem = [
+      `Oi${nome ? `, ${nome}` : ''}! 💛`,
+      '',
+      `Preparei o orçamento "${o.titulo}" para você.`,
+      `Veja os detalhes e aprove por aqui: ${linkPublicoOrcamento(o.token)}`,
+      ...(o.validade ? ['', `A proposta vale até ${formatarData(o.validade)}.`] : []),
+      '',
+      'Qualquer dúvida, me chama! — Kelly',
+    ].join('\n')
+    abrirWhatsApp(cliente?.telefone, mensagem)
   }
 
   async function enviar(o: Orcamento) {
@@ -164,6 +180,9 @@ export function GestaoOrcamentos() {
                     )}
                     {o.status !== 'rascunho' && (
                       <>
+                        <button className="btn-mini btn-mini--whats" onClick={() => enviarWhatsApp(o)}>
+                          WhatsApp
+                        </button>
                         <button className="btn-mini" onClick={() => void copiarLink(o)}>
                           Copiar link
                         </button>
