@@ -17,6 +17,7 @@ import '../styles/painel.css'
 import '../styles/gestao.css'
 
 type Aba =
+  | 'inicio'
   | 'estudio'
   | 'clientes'
   | 'projetos'
@@ -26,6 +27,19 @@ type Aba =
   | 'financeiro'
   | 'atividades'
   | 'cuidadoras'
+
+// Atalhos da HOME: um "quadradinho" por seção (a KA escolhe por onde começar).
+const ATALHOS: { id: Aba; rotulo: string; emoji: string }[] = [
+  { id: 'estudio', rotulo: 'Estúdio', emoji: '🎨' },
+  { id: 'clientes', rotulo: 'Clientes', emoji: '🧑‍💼' },
+  { id: 'projetos', rotulo: 'Projetos', emoji: '📁' },
+  { id: 'orcamentos', rotulo: 'Orçamentos', emoji: '📝' },
+  { id: 'contratos', rotulo: 'Contratos', emoji: '✍️' },
+  { id: 'cobrancas', rotulo: 'Cobranças', emoji: '💳' },
+  { id: 'financeiro', rotulo: 'Financeiro', emoji: '💰' },
+  { id: 'atividades', rotulo: 'Atividades', emoji: '✅' },
+  { id: 'cuidadoras', rotulo: 'Cuidadoras', emoji: '🩺' },
+]
 
 // Rótulos curtos para o menu (estilo site: maiúsculas, poucos caracteres).
 // No desktop, o grupo "Gestão" abre como MENU SUSPENSO; no celular, os
@@ -49,6 +63,7 @@ const MENU: ItemMenu[] = [
 ]
 
 const CABECALHOS: Record<Aba, { titulo: string; sub: string }> = {
+  inicio: { titulo: 'Início', sub: 'Toque numa seção para abrir.' },
   estudio: { titulo: 'Seus clientes', sub: 'Selecione um cliente para gerar as artes na identidade dele.' },
   clientes: { titulo: 'Clientes & Acessos', sub: 'Ficha com os dados de cada cliente e quem pode entrar no sistema.' },
   orcamentos: { titulo: 'Orçamentos', sub: 'Monte a proposta, envie o link; aprovado, vira contrato + cobrança.' },
@@ -78,14 +93,14 @@ const ABAS_VALIDAS: Aba[] = [
 export function AdminPanel() {
   const [params, setParams] = useSearchParams()
   const paramAba = params.get('aba') as Aba | null
-  const aba: Aba = paramAba && ABAS_VALIDAS.includes(paramAba) ? paramAba : 'estudio'
+  const aba: Aba = paramAba && ABAS_VALIDAS.includes(paramAba) ? paramAba : 'inicio'
   const [slug, setSlug] = useState<string | null>(null)
   const clientes = clientesComTemplates()
   const cab = CABECALHOS[aba]
 
   function irPara(id: Aba) {
     setSlug(null)
-    setParams(id === 'estudio' ? {} : { aba: id })
+    setParams(id === 'inicio' ? {} : { aba: id })
   }
 
   return (
@@ -112,6 +127,19 @@ export function AdminPanel() {
               <h1>{cab.titulo}</h1>
               <p>{cab.sub}</p>
             </div>
+
+            {aba === 'inicio' && (
+              <div className="grade-atalhos">
+                {ATALHOS.map((t) => (
+                  <button key={t.id} className="atalho-card" onClick={() => irPara(t.id)}>
+                    <span className="atalho-card__ico" aria-hidden>
+                      {t.emoji}
+                    </span>
+                    <span className="atalho-card__nome">{t.rotulo}</span>
+                  </button>
+                ))}
+              </div>
+            )}
 
             {aba === 'estudio' && (
               <>

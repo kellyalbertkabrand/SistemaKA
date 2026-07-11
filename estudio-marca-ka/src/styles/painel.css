@@ -260,3 +260,47 @@
   letter-spacing: 0.16em;
   color: var(--dourado-c);
 }
+
+/* ============================================================
+   Home: atalhos em "quadradinhos" (um por seção)
+   ============================================================ */
+.grade-atalhos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.9rem;
+}
+.atalho-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  aspect-ratio: 1 / 1;
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.09);
+  border-radius: 16px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: 0.15s;
+  font-family: var(--body);
+}
+.atalho-card:hover {
+  border-color: var(--essencia);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(15, 25, 35, 0.08);
+}
+.atalho-card__ico {
+  font-size: 2rem;
+  line-height: 1;
+}
+.atalho-card__nome {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--t-900);
+  text-align: center;
+}
+@media (max-width: 480px) {
+  .grade-atalhos {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

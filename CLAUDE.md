@@ -52,6 +52,11 @@ Clientes no sistema:
 - **Abas por URL:** o `AdminPanel` guarda a aba ativa em `?aba=` (via
   `useSearchParams`) — "voltar" do navegador, atualizar a página e compartilhar
   o link agora funcionam (`ABAS_VALIDAS`/`irPara`).
+- **Home = atalhos** (`aba='inicio'`, padrão sem `?aba`): a raiz mostra
+  "quadradinhos" (`.grade-atalhos`/`.atalho-card`, `ATALHOS` no AdminPanel) —
+  um por seção (Estúdio, Clientes, Projetos, Orçamentos, Contratos, Cobranças,
+  Financeiro, Atividades, Cuidadoras). O Estúdio deixou de ser a home (virou um
+  atalho); o menu suspenso continua igual.
 - **Acessibilidade/toque:** `:focus-visible` global (foco de teclado), alvos de
   toque ≥40px no celular, `prefers-reduced-motion` respeitado, `-webkit-tap-
   highlight-color` (ver fim de `global.css`/`gestao.css`).
