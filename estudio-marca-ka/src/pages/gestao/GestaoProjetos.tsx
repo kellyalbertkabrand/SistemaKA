@@ -57,7 +57,7 @@ export function GestaoProjetos() {
 
   async function copiarLink(p: Projeto) {
     await navigator.clipboard.writeText(linkPublicoProjeto(p.token))
-    setMsg(`Link de acompanhamento de "${p.nome}" copiado — envie ao cliente. A página dele atualiza sozinha conforme você avança as fases.`)
+    setMsg(`Link de acompanhamento de "${p.nome}" copiado. Envie ao cliente. A página dele atualiza sozinha conforme você avança as fases.`)
     setTimeout(() => setMsg(null), 5000)
   }
 
@@ -142,7 +142,7 @@ export function GestaoProjetos() {
                     <td>
                       <strong>{p.nome}</strong>
                     </td>
-                    <td>{p.cliente_nome || '—'}</td>
+                    <td>{p.cliente_nome || '-'}</td>
                     <td>
                       <div className="progresso">
                         <div className="progresso__barra">
@@ -231,7 +231,7 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
       <div className="card">
         <h3>Novo projeto</h3>
         <p style={{ marginBottom: '1rem' }}>
-          Escolha um modelo de fases pronto — dá para ajustar tudo depois.
+          Escolha um modelo de fases pronto. Dá para ajustar tudo depois.
         </p>
         {erro && <div className="erro-msg">{erro}</div>}
         <form onSubmit={(e) => void criar(e)}>
@@ -241,14 +241,14 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
               <input
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
-                placeholder="ex.: Identidade visual — Shapes"
+                placeholder="ex.: Identidade visual · Shapes"
                 required
               />
             </div>
             <div className="field">
               <label>Cliente cadastrado</label>
               <select value={clienteId} onChange={(e) => setClienteId(e.target.value)}>
-                <option value="">— escolher depois —</option>
+                <option value="">(escolher depois)</option>
                 {clientes.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.nome_marca}
@@ -277,7 +277,7 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
               </select>
             </div>
             <div className="field campo-toda">
-              <label>Descrição (opcional — o cliente vê)</label>
+              <label>Descrição (opcional, o cliente vê)</label>
               <textarea rows={2} value={descricao} onChange={(e) => setDescricao(e.target.value)} />
             </div>
           </div>
@@ -324,7 +324,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
       '',
       `Acompanhe em tempo real por aqui: ${linkPublicoProjeto(p.token)}`,
       '',
-      '— Kelly',
+      'Kelly',
     )
     abrirWhatsApp(
       cliente?.telefone,
@@ -384,7 +384,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
 
   async function copiarLink() {
     await navigator.clipboard.writeText(linkPublicoProjeto(p.token))
-    setMsg('Link copiado — envie ao cliente. A página dele atualiza em tempo real.')
+    setMsg('Link copiado. Envie ao cliente. A página dele atualiza em tempo real.')
     setTimeout(() => setMsg(null), 4000)
   }
 

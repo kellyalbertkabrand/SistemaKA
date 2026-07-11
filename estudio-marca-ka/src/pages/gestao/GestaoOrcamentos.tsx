@@ -74,7 +74,7 @@ export function GestaoOrcamentos() {
       `Veja os detalhes e aprove por aqui: ${linkPublicoOrcamento(o.token)}`,
       ...(o.validade ? ['', `A proposta vale até ${formatarData(o.validade)}.`] : []),
       '',
-      'Qualquer dúvida, me chama! — Kelly',
+      'Qualquer dúvida, me chama! Kelly',
     ].join('\n')
     abrirWhatsApp(
       o.destinatario_telefone ?? cliente?.telefone,
@@ -96,7 +96,7 @@ export function GestaoOrcamentos() {
   async function excluir(o: Orcamento) {
     const aviso =
       o.status === 'aprovado'
-        ? `Excluir o orçamento "${o.titulo}"? O contrato e a cobrança que ele gerou NÃO são apagados junto — apague-os nas abas Contratos e Cobranças se também forem teste.`
+        ? `Excluir o orçamento "${o.titulo}"? O contrato e a cobrança que ele gerou NÃO são apagados junto. Apague-os nas abas Contratos e Cobranças se também forem teste.`
         : `Excluir o orçamento "${o.titulo}"? Essa ação não pode ser desfeita.`
     if (!window.confirm(aviso)) return
     try {

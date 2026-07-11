@@ -67,7 +67,7 @@ export function GestaoContratos() {
       `O contrato "${c.titulo}" está pronto para a sua assinatura.`,
       `Leia com calma e assine por aqui: ${linkPublicoContrato(c.token)}`,
       '',
-      'Qualquer dúvida, me chama! — Kelly',
+      'Qualquer dúvida, me chama! Kelly',
     ].join('\n')
     abrirWhatsApp(
       c.telefone ?? cliente?.telefone,
@@ -89,7 +89,7 @@ export function GestaoContratos() {
   async function excluir(c: Contrato) {
     const aviso =
       c.status === 'assinado'
-        ? `ATENÇÃO: "${c.titulo}" está ASSINADO — o registro do aceite digital será apagado junto e não dá para recuperar. Excluir mesmo assim? (Use só para limpar testes.)`
+        ? `ATENÇÃO: "${c.titulo}" está ASSINADO. O registro do aceite digital será apagado junto e não dá para recuperar. Excluir mesmo assim? (Use só para limpar testes.)`
         : `Excluir o contrato "${c.titulo}"? Essa ação não pode ser desfeita.`
     if (!window.confirm(aviso)) return
     try {

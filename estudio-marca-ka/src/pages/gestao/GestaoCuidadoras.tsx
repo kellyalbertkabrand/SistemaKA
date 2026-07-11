@@ -52,7 +52,7 @@ export function GestaoCuidadoras() {
   async function copiarLinkCadastro() {
     await navigator.clipboard.writeText(linkPublicoCadastroCuidadora())
     setMsg(
-      'Link de cadastro copiado — envie por WhatsApp para a pessoa que vai começar. ' +
+      'Link de cadastro copiado. Envie por WhatsApp para a pessoa que vai começar. ' +
         'Ela preenche os dados, anexa os documentos e aparece aqui como "pendente".',
     )
     setTimeout(() => setMsg(null), 6000)
@@ -107,7 +107,7 @@ export function GestaoCuidadoras() {
         <div className="card">
           <h3>Nenhuma cuidadora cadastrada ainda.</h3>
           <p>
-            Use “Copiar link de cadastro” e envie para a pessoa que vai começar a trabalhar — ela
+            Use “Copiar link de cadastro” e envie para a pessoa que vai começar a trabalhar. Ela
             preenche a própria ficha e anexa os documentos. Ou cadastre você mesma em “+ Nova
             cuidadora”.
           </p>
@@ -137,8 +137,8 @@ export function GestaoCuidadoras() {
                       </span>
                     )}
                   </td>
-                  <td>{c.telefone || '—'}</td>
-                  <td>{c.inicio ? formatarData(c.inicio) : '—'}</td>
+                  <td>{c.telefone || '-'}</td>
+                  <td>{c.inicio ? formatarData(c.inicio) : '-'}</td>
                   <td>
                     <span className={`badge ${BADGE_CUIDADORA[c.status]}`}>{c.status}</span>
                   </td>
@@ -208,7 +208,7 @@ function FichaCuidadoraView({ cuidadora, aoVoltar }: { cuidadora: Cuidadora; aoV
         <p style={{ marginBottom: '1rem' }}>
           {cuidadora.origem === 'auto-cadastro'
             ? 'Cadastro feito pela própria pessoa pelo link. Revise os dados e mude o status para "ativa" quando começar.'
-            : 'Dados pessoais e do trabalho — só você enxerga esta área.'}
+            : 'Dados pessoais e do trabalho. Só você enxerga esta área.'}
         </p>
         {erro && <div className="erro-msg">{erro}</div>}
 

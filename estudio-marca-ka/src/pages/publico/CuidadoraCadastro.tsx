@@ -142,7 +142,7 @@ export function CuidadoraCadastro() {
           <h3 style={{ fontSize: '1rem', margin: '0.6rem 0 0.5rem' }}>Documentos</h3>
           <p style={{ fontSize: '0.8rem', color: 'var(--t-500)', marginBottom: '0.8rem' }}>
             Anexe fotos do RG e do CPF (frente e verso) e um comprovante de endereço. Pode tirar a
-            foto na hora pelo celular — as imagens são compactadas sozinhas.
+            foto na hora pelo celular, as imagens são compactadas sozinhas.
           </p>
 
           <input

@@ -93,7 +93,7 @@ export function abrirWhatsApp(
   enviar.addEventListener('click', () => {
     const numero = telefoneParaWa(input.value)
     if (!numero) {
-      aviso.textContent = 'Número inválido — use DDD + número (ex.: 41 99999-0000).'
+      aviso.textContent = 'Número inválido. Use DDD + número (ex.: 41 99999-0000).'
       input.focus()
       return
     }

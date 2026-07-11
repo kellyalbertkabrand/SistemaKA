@@ -48,8 +48,8 @@ export function GestaoClientes() {
     if (
       !window.confirm(
         `Excluir o cliente "${c.nome_marca}"? A ficha e os acessos somem de vez. ` +
-          'Orçamentos, contratos e cobranças ligados a ele NÃO são apagados junto — ' +
-          'se também forem teste, apague-os nas outras abas.',
+          'Orçamentos, contratos e cobranças ligados a ele NÃO são apagados junto. ' +
+          'Se também forem teste, apague-os nas outras abas.',
       )
     )
       return

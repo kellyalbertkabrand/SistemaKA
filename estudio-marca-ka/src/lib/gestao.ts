@@ -65,7 +65,7 @@ export function formatarBRL(v: number | null | undefined): string {
 }
 
 export function formatarData(d: string | null | undefined): string {
-  if (!d) return '—'
+  if (!d) return '-'
   const data = d.length === 10 ? new Date(`${d}T12:00:00`) : new Date(d)
   return data.toLocaleDateString('pt-BR')
 }
@@ -406,7 +406,7 @@ export async function responderOrcamento(
   const contrato = limpar({
     orcamento_id: o.id,
     cliente_id: o.cliente_id,
-    titulo: `Contrato — ${o.titulo}`,
+    titulo: `Contrato: ${o.titulo}`,
     conteudo: corpo,
     status: 'enviado',
     token: contratoToken,
@@ -509,7 +509,7 @@ export async function criarContratoDoModelo(dados: {
       })
     : `Contrato para ${nome || '{{cliente_nome}}'}.`
   return criarContrato({
-    titulo: dados.titulo?.trim() || (nome ? `Contrato — ${nome}` : 'Contrato de Prestação de Serviços'),
+    titulo: dados.titulo?.trim() || (nome ? `Contrato: ${nome}` : 'Contrato de Prestação de Serviços'),
     conteudo: corpo,
     cliente_id: dados.cliente_id ?? null,
     status: 'enviado',
@@ -699,7 +699,7 @@ export async function gerarMensalidades(competencia?: string): Promise<number> {
     await criarCobranca({
       cliente_id: c.id,
       tipo: 'mensalidade',
-      descricao: `Mensalidade ${comp} — ${cli.nome_marca}`,
+      descricao: `Mensalidade ${comp} · ${cli.nome_marca}`,
       valor: cli.valor_mensalidade,
       vencimento,
       competencia: comp,

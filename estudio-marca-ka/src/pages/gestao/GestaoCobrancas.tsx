@@ -50,7 +50,7 @@ export function GestaoCobrancas() {
     if (c.link_pagamento) {
       linhas.push('', `Você pode pagar por aqui (cartão, boleto ou PIX): ${c.link_pagamento}`)
     }
-    linhas.push('', 'Qualquer dúvida, me chama! — Kelly')
+    linhas.push('', 'Qualquer dúvida, me chama! Kelly')
     abrirWhatsApp(
       c.telefone ?? cliente?.telefone,
       linhas.join('\n'),

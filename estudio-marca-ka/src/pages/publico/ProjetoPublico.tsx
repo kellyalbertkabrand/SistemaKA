@@ -14,7 +14,7 @@ const LOGO_BRANCA = '/clientes/ka/ka-branco.png'
 // Dados de demonstração (só em desenvolvimento, token "demo"): permite ver o
 // layout da página sem banco — /projeto/demo
 const DEMO: Proj = {
-  nome: 'Identidade visual — Shapes',
+  nome: 'Identidade visual · Shapes',
   cliente_nome: 'Shapes',
   descricao:
     'Construção da identidade visual completa: conceito, cores, tipografia e aplicações para redes sociais.',
@@ -95,7 +95,7 @@ export function ProjetoPublico() {
   return (
     <div className="proj-pub">
       <header className="proj-hero">
-        <img className="proj-hero__logo" src={LOGO_BRANCA} alt="KA — Inteligência para Marcas" />
+        <img className="proj-hero__logo" src={LOGO_BRANCA} alt="KA · Inteligência para Marcas" />
         <div className="proj-hero__eyebrow">Acompanhamento de projeto</div>
         <h1>{proj.nome}</h1>
         <div className="proj-hero__meta">
