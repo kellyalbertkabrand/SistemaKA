@@ -103,16 +103,6 @@ export function SiteHeader({ itens = [], ativo, onSelecionar }: Props) {
           ),
         )}
 
-        <a
-          className="ka-link ka-link--site"
-          href="https://kellyalbert.com.br"
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => setAberto(false)}
-        >
-          Meu site
-        </a>
-
         {session && (
           <button
             type="button"
