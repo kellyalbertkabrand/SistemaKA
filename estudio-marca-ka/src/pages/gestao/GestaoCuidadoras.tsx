@@ -129,17 +129,19 @@ export function GestaoCuidadoras() {
             <tbody>
               {lista.map((c) => (
                 <tr key={c.id}>
-                  <td>
-                    <strong>{c.nome}</strong>
+                  <td className="cel-nome" data-label="Nome">
+                    <button className="cel-abrir" onClick={() => abrir(c)} title="Abrir ficha">
+                      <strong>{c.nome}</strong>
+                    </button>
                     {!c.revisado && (
                       <span className="badge badge--vermelho" style={{ marginLeft: 8 }}>
                         novo
                       </span>
                     )}
                   </td>
-                  <td>{c.telefone || '-'}</td>
-                  <td>{c.inicio ? formatarData(c.inicio) : '-'}</td>
-                  <td>
+                  <td data-label="Telefone">{c.telefone || '-'}</td>
+                  <td data-label="Início">{c.inicio ? formatarData(c.inicio) : '-'}</td>
+                  <td data-label="Status">
                     <span className={`badge ${BADGE_CUIDADORA[c.status]}`}>{c.status}</span>
                   </td>
                   <td className="acoes">

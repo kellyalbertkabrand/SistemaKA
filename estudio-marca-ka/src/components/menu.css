@@ -131,7 +131,9 @@
     transition: max-height 0.25s ease, opacity 0.2s ease;
   }
   .ka-nav.aberto {
-    max-height: 80vh;
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     opacity: 1;
     pointer-events: auto;
   }

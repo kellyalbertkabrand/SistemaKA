@@ -193,16 +193,18 @@ export function GestaoContratos() {
             <tbody>
               {lista.map((c) => (
                 <tr key={c.id}>
-                  <td>
-                    <strong>{c.titulo}</strong>
+                  <td className="cel-nome" data-label="Contrato">
+                    <button className="cel-abrir" onClick={() => setVendo(c)} title="Ver contrato">
+                      <strong>{c.titulo}</strong>
+                    </button>
                   </td>
-                  <td>{formatarData(c.criado_em)}</td>
-                  <td>
+                  <td data-label="Criado">{formatarData(c.criado_em)}</td>
+                  <td data-label="Assinatura">
                     {c.status === 'assinado'
                       ? `${c.assinatura_nome} · ${formatarData(c.assinado_em)}`
                       : '-'}
                   </td>
-                  <td>
+                  <td data-label="Status">
                     <span className={`badge ${BADGE_CONTRATO[c.status]}`}>{c.status}</span>
                   </td>
                   <td className="acoes">

@@ -37,8 +37,11 @@ body,
   max-width: 100%;
 }
 /* Trava o deslize horizontal no celular sem quebrar o menu fixo (sticky).
-   overflow-x: clip não cria um container de rolagem como o 'hidden'. */
-html {
+   overflow-x: clip não cria um container de rolagem como o 'hidden'.
+   Aplicado em html + body + #root para conter também iOS antigo. */
+html,
+body,
+#root {
   overflow-x: clip;
 }
 

@@ -55,6 +55,16 @@ Clientes no sistema:
 - **Acessibilidade/toque:** `:focus-visible` global (foco de teclado), alvos de
   toque ≥40px no celular, `prefers-reduced-motion` respeitado, `-webkit-tap-
   highlight-color` (ver fim de `global.css`/`gestao.css`).
+- **Tabelas viram CARTÕES no celular** (≤640px): as tabelas de gestão
+  (`.tabela`) reflowam em cartões via CSS — cada `<td>` precisa de
+  `data-label="..."` e a 1ª célula usa `className="cel-nome"`. Acaba com o
+  rolar-de-lado no iPhone. No desktop continuam tabelas normais.
+- **Clicar no nome abre:** nas listas de Clientes, Contratos, Orçamentos e
+  Cuidadoras o nome/título é um botão `.cel-abrir` que abre a ficha/documento
+  (não precisa ir no botão "Abrir").
+- **Overflow horizontal travado** em `html`/`body`/`#root` (`overflow-x: clip`)
+  e o menu-gaveta do celular rola quando tem muitos itens (`overflow-y: auto`,
+  não corta mais — ver `menu.css`).
 
 O app independente vive em **`estudio-marca-ka/`**. (Na raiz do repo também há
 um sistema de notícias em Python, separado, que não tem relação com este app.)

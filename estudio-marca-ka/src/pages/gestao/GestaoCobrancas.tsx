@@ -269,8 +269,8 @@ export function GestaoCobrancas() {
             <tbody>
               {lista.map((c) => (
                 <tr key={c.id}>
-                  <td>{nomeCliente(c.cliente_id)}</td>
-                  <td>
+                  <td className="cel-nome" data-label="Cliente">{nomeCliente(c.cliente_id)}</td>
+                  <td data-label="Descrição">
                     {c.descricao}
                     {c.tipo === 'mensalidade' && (
                       <span className="badge badge--dourado" style={{ marginLeft: 6 }}>
@@ -278,12 +278,12 @@ export function GestaoCobrancas() {
                       </span>
                     )}
                   </td>
-                  <td className="num">{formatarBRL(c.valor)}</td>
-                  <td>{formatarData(c.vencimento)}</td>
-                  <td>
+                  <td className="num" data-label="Valor">{formatarBRL(c.valor)}</td>
+                  <td data-label="Vencimento">{formatarData(c.vencimento)}</td>
+                  <td data-label="Status">
                     <span className={`badge ${BADGE_COBRANCA[c.status]}`}>{c.status}</span>
                   </td>
-                  <td>
+                  <td data-label="Pagamento">
                     {c.link_pagamento ? (
                       <button className="btn-mini" onClick={() => void copiarLink(c)}>
                         Copiar link

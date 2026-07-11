@@ -141,8 +141,10 @@ export function GestaoClientes() {
             <tbody>
               {clientes.map((c) => (
                 <tr key={c.id}>
-                  <td>
-                    <strong>{c.nome_marca}</strong>
+                  <td className="cel-nome" data-label="Marca">
+                    <button className="cel-abrir" onClick={() => abrir(c)} title="Abrir ficha">
+                      <strong>{c.nome_marca}</strong>
+                    </button>
                     {c.slug && (
                       <span style={{ color: 'var(--t-400)', marginLeft: 6 }}>/{c.slug}</span>
                     )}
@@ -152,14 +154,14 @@ export function GestaoClientes() {
                       </span>
                     )}
                   </td>
-                  <td>{c.responsavel || '-'}</td>
-                  <td>{c.telefone || c.email_contato || '-'}</td>
-                  <td className="num">
+                  <td data-label="Responsável">{c.responsavel || '-'}</td>
+                  <td data-label="Contato">{c.telefone || c.email_contato || '-'}</td>
+                  <td className="num" data-label="Mensalidade">
                     {c.cobranca_ativa && c.valor_mensalidade
                       ? `${formatarBRL(c.valor_mensalidade)} · dia ${c.dia_vencimento}`
                       : '-'}
                   </td>
-                  <td>
+                  <td data-label="Status">
                     <span className={`badge ${c.status === 'ativo' ? 'badge--verde' : 'badge--cinza'}`}>
                       {c.status}
                     </span>

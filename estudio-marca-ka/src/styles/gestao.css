@@ -1313,3 +1313,108 @@
     margin: 0.15rem 0 0.15rem 0.3rem;
   }
 }
+
+/* ============================================================
+   MOBILE: tabelas de gestão viram CARTÕES (fim do rolar de lado)
+   Cada <td> precisa de data-label="..."; a 1ª célula usa .cel-nome.
+   ============================================================ */
+/* Nome/título clicável para abrir (sem cara de botão) */
+.cel-abrir {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.cel-abrir strong {
+  transition: color 0.15s;
+}
+.cel-abrir:hover strong,
+.cel-abrir:focus-visible strong {
+  color: var(--essencia);
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .tabela-wrap {
+    border: none;
+    background: transparent;
+    border-radius: 0;
+    overflow-x: visible;
+  }
+  .tabela,
+  .tabela tbody,
+  .tabela tr,
+  .tabela td {
+    display: block;
+    width: 100%;
+  }
+  .tabela thead {
+    display: none;
+  }
+  .tabela tr {
+    background: #fff;
+    border: 1px solid rgba(15, 25, 35, 0.08);
+    border-radius: 12px;
+    padding: 0.5rem 0.9rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 2px 8px rgba(15, 25, 35, 0.03);
+  }
+  .tabela tr:hover {
+    background: #fff;
+  }
+  .tabela td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.4rem 0;
+    border: none;
+    border-bottom: 1px solid rgba(15, 25, 35, 0.05);
+    text-align: right;
+    white-space: normal;
+  }
+  .tabela td:last-child {
+    border-bottom: none;
+  }
+  .tabela td::before {
+    content: attr(data-label);
+    flex: none;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--t-400);
+    text-align: left;
+  }
+  /* Célula do nome = título do cartão (sem rótulo, alinhado à esquerda) */
+  .tabela td.cel-nome {
+    display: block;
+    text-align: left;
+    padding: 0.2rem 0 0.5rem;
+    font-size: 1rem;
+  }
+  .tabela td.cel-nome::before {
+    display: none;
+  }
+  /* Ações: botões à direita, com respiro */
+  .tabela td.acoes {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding-top: 0.6rem;
+    border-bottom: none;
+  }
+  .tabela td.acoes::before {
+    display: none;
+  }
+  .tabela td.acoes .btn-mini {
+    margin: 0;
+  }
+  .tabela td.num {
+    text-align: right;
+  }
+}

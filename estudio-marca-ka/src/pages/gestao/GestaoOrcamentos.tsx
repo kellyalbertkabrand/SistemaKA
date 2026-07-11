@@ -159,13 +159,15 @@ export function GestaoOrcamentos() {
             <tbody>
               {lista.map((o) => (
                 <tr key={o.id}>
-                  <td>
-                    <strong>{o.titulo}</strong>
+                  <td className="cel-nome" data-label="Título">
+                    <button className="cel-abrir" onClick={() => setEditando(o)} title="Abrir proposta">
+                      <strong>{o.titulo}</strong>
+                    </button>
                   </td>
-                  <td>{o.destinatario_nome}</td>
-                  <td className="num">{formatarBRL(o.valor_total)}</td>
-                  <td>{formatarData(o.validade)}</td>
-                  <td>
+                  <td data-label="Para">{o.destinatario_nome}</td>
+                  <td className="num" data-label="Valor">{formatarBRL(o.valor_total)}</td>
+                  <td data-label="Validade">{formatarData(o.validade)}</td>
+                  <td data-label="Status">
                     <span className={`badge ${BADGE_ORC[o.status]}`}>{o.status}</span>
                   </td>
                   <td className="acoes">
