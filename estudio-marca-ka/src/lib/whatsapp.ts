@@ -20,6 +20,10 @@ export function abrirWhatsApp(
   mensagem: string,
   destinatario?: string | null,
 ): boolean {
+  // Abre a aba AGORA, ainda dentro do clique — depois do prompt o navegador
+  // (principalmente o Safari do iPhone) bloquearia o pop-up silenciosamente.
+  const aba = window.open('', '_blank')
+
   const tel = telefone?.trim() ?? ''
   const quem = destinatario?.trim()
   const digitado = window.prompt(
@@ -29,13 +33,24 @@ export function abrirWhatsApp(
         : 'Sem telefone na ficha — digite o número (com DDD, ex.: 41 99999-0000):'),
     tel,
   )
-  if (digitado === null) return false
+  if (digitado === null) {
+    aba?.close()
+    return false
+  }
   const numero = telefoneParaWa(digitado)
   if (!numero) {
+    aba?.close()
     window.alert('Número inválido — use DDD + número (ex.: 41 99999-0000).')
     return false
   }
-  window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`, '_blank', 'noopener')
+
+  const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`
+  if (aba) {
+    aba.location.href = url
+  } else {
+    // Pop-up bloqueado mesmo assim: navega na própria aba (o Voltar retorna).
+    window.location.href = url
+  }
   return true
 }
 
