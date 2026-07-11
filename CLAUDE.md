@@ -473,6 +473,26 @@ coloridos).
   suporta voz, o botão some e aparece uma dica.
 - **Regra Firestore:** `atividades` = só a KA (modo produção).
 
+### Segurança & Backup (decisões jul/2026 — ver `firebase/SEGURANCA-E-BACKUP.md`)
+
+Estado atual: banco em **modo teste (aberto)** e app com `ACESSO_ABERTO=true`
+(sem login). **Não é seguro pra produção** — só fecha quando a KA aprovar.
+Decisões já alinhadas com a KA para quando formos ligar:
+
+- **Papéis:** KA = `admin` (tudo). VM Rocks = `parceiro` (novo).
+- **VM Rocks** enxerga só os **projetos onde participa** + o **financeiro
+  desses projetos** (orçamento/contrato/cobrança); **pode ver e editar as
+  fases dela**; não vê Clientes/Cuidadoras/Atividades.
+- **"VM participa" = MANUAL:** campo novo `vm_participa: boolean` no projeto,
+  ligado num botão pela KA (nada automático). Ao ligar, o sistema propaga uma
+  marca `vm: true` nos docs financeiros do cliente (as regras do Firestore não
+  cruzam coleções — por isso a marca vai em cada doc).
+- **Backup:** a KA QUER ligar (backup diário + PITR 7 dias). Precisa do plano
+  **Blaze** e é feito no Console (a IA não tem acesso à conta) — passo a passo
+  em `firebase/SEGURANCA-E-BACKUP.md`.
+- **Construção do modo seguro:** EM ESPERA (a KA pediu "por enquanto só
+  entender"). Não implementar sem novo "ok".
+
 ### WhatsApp (Caminho 1 — links wa.me, jul/2026)
 
 Botões **WhatsApp** (verdes) espalhados pela gestão: `abrirWhatsApp`
