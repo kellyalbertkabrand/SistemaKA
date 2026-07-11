@@ -1071,6 +1071,17 @@
   flex: 1;
   min-width: 0;
 }
+/* Campo de UMA tarefa que cresce sozinho (textarea, não input de 1 linha) */
+.campo-mic--cresce {
+  align-items: flex-start;
+}
+.campo-mic--cresce > textarea {
+  min-height: 2.8em;
+  line-height: 1.45;
+  resize: vertical;
+  overflow: hidden;
+}
+
 .campo-mic--area {
   align-items: flex-start;
 }
@@ -1260,7 +1271,8 @@
   align-items: stretch;
   gap: 0.5rem;
 }
-.ativ--edit > input {
+.ativ--edit > input,
+.ativ--edit > .ativ__edit-txt {
   font-family: var(--body);
   font-size: 0.9rem;
   font-weight: 600;
@@ -1268,6 +1280,15 @@
   border-radius: 8px;
   padding: 0.55rem 0.65rem;
   background: var(--bg-1);
+}
+/* Caixa de edição multilinha: cresce sozinha e mostra a tarefa inteira */
+.ativ--edit > .ativ__edit-txt {
+  width: 100%;
+  min-height: 3em;
+  line-height: 1.45;
+  resize: vertical;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 .ativ__edit-linha {
   display: flex;

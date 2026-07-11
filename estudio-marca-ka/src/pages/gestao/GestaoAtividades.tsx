@@ -35,6 +35,14 @@ import {
 
 const ORDEM: CategoriaAtividade[] = CATEGORIAS
 
+// Faz a caixa de texto crescer sozinha conforme o conteúdo (some com a barra de
+// rolagem e mostra a tarefa inteira, sem cortar numa linha só).
+function autoAltura(el: HTMLTextAreaElement | null) {
+  if (!el) return
+  el.style.height = 'auto'
+  el.style.height = `${el.scrollHeight}px`
+}
+
 export function GestaoAtividades() {
   const { mostrar } = useToast()
   const [projetos, setProjetos] = useState<Projeto[]>([])
@@ -95,6 +103,10 @@ export function GestaoAtividades() {
 
   async function addNovo(e: FormEvent) {
     e.preventDefault()
+    await criarUma()
+  }
+
+  async function criarUma() {
     const titulo = novoTitulo.trim()
     if (!titulo) return
     setSalvando(true)
@@ -334,10 +346,21 @@ export function GestaoAtividades() {
 
         {!modoColar ? (
           <form className="add-ativ" onSubmit={(e) => void addNovo(e)}>
-            <div className="campo-mic">
-              <input
+            <div className="campo-mic campo-mic--cresce">
+              <textarea
+                rows={2}
                 value={novoTitulo}
-                onChange={(e) => setNovoTitulo(e.target.value)}
+                ref={autoAltura}
+                onChange={(e) => {
+                  setNovoTitulo(e.target.value)
+                  autoAltura(e.currentTarget)
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault()
+                    void criarUma()
+                  }
+                }}
                 placeholder="O que precisa fazer?"
               />
               {ditadoUm.suportado && (
@@ -479,12 +502,21 @@ export function GestaoAtividades() {
                   const a = it.a
                   return editId === a.id ? (
                   <div key={a.id} className="ativ ativ--edit">
-                    <input
+                    <textarea
                       autoFocus
+                      rows={2}
+                      className="ativ__edit-txt"
                       value={editTitulo}
-                      onChange={(e) => setEditTitulo(e.target.value)}
+                      ref={autoAltura}
+                      onChange={(e) => {
+                        setEditTitulo(e.target.value)
+                        autoAltura(e.currentTarget)
+                      }}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter') void salvarEdicao()
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault()
+                          void salvarEdicao()
+                        }
                         if (e.key === 'Escape') setEditId(null)
                       }}
                     />
