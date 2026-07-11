@@ -133,6 +133,9 @@ export function GestaoProjetos() {
             <tbody>
               {lista.map((p) => {
                 const pct = progressoProjeto(p)
+                const atual =
+                  p.fases.find((f) => f.status === 'andamento') ??
+                  p.fases.find((f) => f.status === 'pendente')
                 return (
                   <tr key={p.id}>
                     <td>
@@ -146,6 +149,11 @@ export function GestaoProjetos() {
                         </div>
                         <span className="progresso__pct">{pct}%</span>
                       </div>
+                      {atual && (
+                        <div style={{ fontSize: '0.68rem', color: 'var(--t-400)', marginTop: 3 }}>
+                          agora: {atual.nome}
+                        </div>
+                      )}
                     </td>
                     <td>
                       <span className={`badge ${BADGE_PROJETO[p.status]}`}>{p.status}</span>
@@ -398,7 +406,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
                 title="Clique para avançar: pendente → em andamento → concluída"
                 onClick={() => avancarFase(i)}
               >
-                {f.status === 'concluida' ? '✓' : f.status === 'andamento' ? '●' : ''}
+                {f.status === 'concluida' ? '✓' : f.status === 'andamento' ? '●' : String(i + 1)}
               </button>
               <div className="fase__info">
                 <div className="fase__nome">{f.nome}</div>
