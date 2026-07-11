@@ -18,14 +18,15 @@ const DEMO: Proj = {
   cliente_nome: 'Cliente exemplo',
   descricao: 'Acompanhe aqui, em tempo real, cada etapa do seu projeto de marca.',
   status: 'ativo',
+  inicio: '2026-06-20',
   atualizado_em: new Date().toISOString(),
   fases: [
-    { nome: 'Revelação de Essência', descricao: 'IKIGAI Empresarial + Escuta Estratégica com os fundadores.', status: 'concluida', concluida_em: '2026-06-24T12:00:00Z' },
-    { nome: 'Base Estratégica + Identidade Verbal', descricao: 'Toda a inteligência da marca em um documento estratégico.', status: 'concluida', concluida_em: '2026-06-30T12:00:00Z' },
-    { nome: 'Identidade Visual', descricao: 'Tradução da essência em expressão estética. Parceria VM Rocks Design (Gabi Lucato).', status: 'andamento', concluida_em: null },
-    { nome: 'Personalização Instagram e WhatsApp', descricao: 'Canais de contato alinhados à identidade da marca.', status: 'pendente', concluida_em: null },
-    { nome: 'Linha de Produtos e Serviços', descricao: 'Reorganização estratégica da oferta, nomeação e proposta de valor.', status: 'pendente', concluida_em: null },
-    { nome: 'Plano de Comunicação + Agente de IA', descricao: 'Pilares, calendário editorial e 01 agente de IA personalizado no ChatGPT, treinado com a essência da sua marca.', status: 'pendente', concluida_em: null },
+    { nome: 'Revelação de Essência', descricao: 'IKIGAI Empresarial + Escuta Estratégica com os fundadores.', status: 'concluida', concluida_em: '2026-06-24T12:00:00Z', responsavel: 'KA', data: null },
+    { nome: 'Base Estratégica + Identidade Verbal', descricao: 'Toda a inteligência da marca em um documento estratégico.', status: 'concluida', concluida_em: '2026-06-30T12:00:00Z', responsavel: 'KA', data: null },
+    { nome: 'Identidade Visual', descricao: 'Tradução da essência em expressão estética. Parceria VM Rocks Design (Gabi Lucato).', status: 'andamento', concluida_em: null, responsavel: 'VM', data: '2026-07-18' },
+    { nome: 'Personalização Instagram e WhatsApp', descricao: 'Canais de contato alinhados à identidade da marca.', status: 'pendente', concluida_em: null, responsavel: 'VM', data: '2026-07-25' },
+    { nome: 'Linha de Produtos e Serviços', descricao: 'Reorganização estratégica da oferta, nomeação e proposta de valor.', status: 'pendente', concluida_em: null, responsavel: 'KA', data: null },
+    { nome: 'Plano de Comunicação + Agente de IA', descricao: 'Pilares, calendário editorial e 01 agente de IA personalizado no ChatGPT, treinado com a essência da sua marca.', status: 'pendente', concluida_em: null, responsavel: 'KA', data: null },
   ],
 }
 
@@ -169,6 +170,7 @@ export function ProjetoPublico() {
                     `Concluída${f.concluida_em ? ` · ${formatarData(f.concluida_em)}` : ''}`}
                   {f.status === 'andamento' && '● Em andamento agora'}
                   {f.status === 'pendente' && 'A seguir'}
+                  {f.status !== 'concluida' && f.data && ` · previsto ${formatarData(f.data)}`}
                 </div>
               </div>
             </div>

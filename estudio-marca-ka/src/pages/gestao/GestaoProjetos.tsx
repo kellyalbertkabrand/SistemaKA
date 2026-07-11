@@ -9,8 +9,11 @@ import {
   listarFasesSalvas,
   listarProjetos,
   MODELOS_FASES,
+  pendenciasDeProjetos,
   progressoProjeto,
   proximoStatusFase,
+  responsavelPadrao,
+  ROTULO_RESP,
   salvarFaseSalva,
   salvarProjeto,
   type FaseProjeto,
@@ -18,6 +21,7 @@ import {
   type FaseStatus,
   type Projeto,
   type ProjetoStatus,
+  type Responsavel,
 } from '../../lib/projetos'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 
@@ -48,6 +52,9 @@ export function GestaoProjetos() {
   const [erro, setErro] = useState<string | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
+  // Visão: lista de projetos OU painel de pendências (com filtro por responsável)
+  const [vista, setVista] = useState<'projetos' | 'pendencias'>('projetos')
+  const [filtroResp, setFiltroResp] = useState<Responsavel | 'todas'>('todas')
 
   async function recarregar() {
     try {
@@ -106,9 +113,22 @@ export function GestaoProjetos() {
     )
   }
 
+  const pendTodas = pendenciasDeProjetos(lista, 'todas')
+  const pendKA = pendenciasDeProjetos(lista, 'KA')
+  const pendVM = pendenciasDeProjetos(lista, 'VM')
+  const pend = filtroResp === 'KA' ? pendKA : filtroResp === 'VM' ? pendVM : pendTodas
+
   return (
     <>
       <div className="gestao-acoes">
+        <div className="seg">
+          <button className={vista === 'projetos' ? 'seg__on' : ''} onClick={() => setVista('projetos')}>
+            Projetos ({lista.length})
+          </button>
+          <button className={vista === 'pendencias' ? 'seg__on' : ''} onClick={() => setVista('pendencias')}>
+            Pendências ({pendTodas.length})
+          </button>
+        </div>
         <span className="espaco" />
         <button className="btn" onClick={() => setCriando(true)}>
           + Novo projeto
@@ -119,7 +139,57 @@ export function GestaoProjetos() {
       {msg && <div className="nota">{msg}</div>}
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
 
-      {!carregando && lista.length === 0 && !erro && (
+      {vista === 'pendencias' && (
+        <>
+          <div className="pend-filtros">
+            {(['todas', 'KA', 'VM'] as const).map((f) => (
+              <button
+                key={f}
+                className={`chip ${filtroResp === f ? 'chip--on' : ''}`}
+                onClick={() => setFiltroResp(f)}
+              >
+                {f === 'todas' ? 'Todas' : ROTULO_RESP[f]}{' '}
+                <span className="chip__n">
+                  {f === 'todas' ? pendTodas.length : f === 'KA' ? pendKA.length : pendVM.length}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {pend.length === 0 ? (
+            <div className="card">
+              <h3>Tudo em dia por aqui ✨</h3>
+              <p>Nenhuma etapa em aberto {filtroResp !== 'todas' ? `para ${ROTULO_RESP[filtroResp as Responsavel]}` : ''}.</p>
+            </div>
+          ) : (
+            <div className="pend-lista">
+              {pend.map((pd) => (
+                <button
+                  key={`${pd.projeto_id}-${pd.fase_idx}`}
+                  className="pend-item"
+                  onClick={() => setSel(lista.find((x) => x.id === pd.projeto_id) ?? null)}
+                  title="Abrir o projeto"
+                >
+                  <span className={`resp-badge resp--${pd.responsavel}`}>{ROTULO_RESP[pd.responsavel]}</span>
+                  <div className="pend-item__corpo">
+                    <div className="pend-item__fase">{pd.fase_nome}</div>
+                    <div className="pend-item__proj">
+                      {pd.projeto_nome}
+                      {pd.cliente_nome ? ` · ${pd.cliente_nome}` : ''}
+                    </div>
+                  </div>
+                  <div className="pend-item__dir">
+                    <span className={`badge ${BADGE_FASE[pd.status]}`}>{ROTULO_FASE[pd.status]}</span>
+                    {pd.data && <span className="pend-item__data">📅 {formatarData(pd.data)}</span>}
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {vista === 'projetos' && !carregando && lista.length === 0 && !erro && (
         <div className="card">
           <h3>Nenhum projeto ainda.</h3>
           <p>
@@ -129,7 +199,7 @@ export function GestaoProjetos() {
         </div>
       )}
 
-      {lista.length > 0 && (
+      {vista === 'projetos' && lista.length > 0 && (
         <div className="tabela-wrap">
           <table className="tabela">
             <thead>
@@ -200,6 +270,7 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
   const [clienteId, setClienteId] = useState('')
   const [clienteNome, setClienteNome] = useState('')
   const [descricao, setDescricao] = useState('')
+  const [inicio, setInicio] = useState('')
   const [modelo, setModelo] = useState(MODELOS_FASES[0].id)
   const [gerando, setGerando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
@@ -222,6 +293,7 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
         cliente_id: c?.id ?? null,
         cliente_nome: c?.nome_marca ?? (clienteNome.trim() || null),
         descricao: descricao.trim() || null,
+        inicio: inicio || null,
         fases,
       })
       aoCriar(p)
@@ -286,6 +358,10 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
                 ))}
               </select>
             </div>
+            <div className="field">
+              <label>Início do projeto (opcional)</label>
+              <input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} />
+            </div>
             <div className="field campo-toda">
               <label>Descrição (opcional, o cliente vê)</label>
               <textarea rows={2} value={descricao} onChange={(e) => setDescricao(e.target.value)} />
@@ -313,10 +389,14 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
   const [fasesSalvas, setFasesSalvas] = useState<FaseSalva[]>([])
   const [novaNome, setNovaNome] = useState('')
   const [novaDesc, setNovaDesc] = useState('')
+  const [novaResp, setNovaResp] = useState<Responsavel>('KA')
+  const [novaData, setNovaData] = useState('')
   // Edição inline (sem a janelinha do navegador)
   const [editIdx, setEditIdx] = useState<number | null>(null)
   const [editNome, setEditNome] = useState('')
   const [editDesc, setEditDesc] = useState('')
+  const [editResp, setEditResp] = useState<Responsavel>('KA')
+  const [editData, setEditData] = useState('')
   // Arrastar para reordenar (Pointer Events — funciona no dedo E no mouse;
   // o "draggable" nativo do HTML não dispara no toque do iPhone)
   const [dragIdx, setDragIdx] = useState<number | null>(null)
@@ -363,7 +443,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     )
   }
 
-  async function aplicar(dados: Partial<Pick<Projeto, 'nome' | 'descricao' | 'fases' | 'status' | 'cliente_nome'>>) {
+  async function aplicar(dados: Partial<Pick<Projeto, 'nome' | 'descricao' | 'fases' | 'status' | 'cliente_nome' | 'inicio'>>) {
     setSalvando(true)
     setErro(null)
     try {
@@ -404,14 +484,20 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     setEditIdx(i)
     setEditNome(p.fases[i].nome)
     setEditDesc(p.fases[i].descricao ?? '')
+    setEditResp(p.fases[i].responsavel ?? 'KA')
+    setEditData(p.fases[i].data ?? '')
   }
   async function salvarEdicao() {
     if (editIdx === null) return
     const nome = editNome.trim()
     if (!nome) return
     const descricao = editDesc.trim() || null
+    const data = editData || null
+    const responsavel = editResp
     const i = editIdx
-    await aplicar({ fases: p.fases.map((f, idx) => (idx === i ? { ...f, nome, descricao } : f)) })
+    await aplicar({
+      fases: p.fases.map((f, idx) => (idx === i ? { ...f, nome, descricao, responsavel, data } : f)),
+    })
     void salvarFaseSalva(nome, descricao)
     recarregarSalvas()
     setEditIdx(null)
@@ -468,22 +554,29 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     if (!nome) return
     const descricao = novaDesc.trim() || null
     await aplicar({
-      fases: [...p.fases, { nome, descricao, status: 'pendente', concluida_em: null }],
+      fases: [
+        ...p.fases,
+        { nome, descricao, status: 'pendente', concluida_em: null, responsavel: novaResp, data: novaData || null },
+      ],
     })
     // Salva na biblioteca para reusar em outros projetos.
     void salvarFaseSalva(nome, descricao)
     setNovaNome('')
     setNovaDesc('')
+    setNovaResp('KA')
+    setNovaData('')
     recarregarSalvas()
   }
 
   // Ao digitar/escolher um nome já salvo, sugere a descrição guardada.
+  // Também sugere a VM Rocks quando o nome fala de "visual" ou "instagram".
   function mudarNovaNome(v: string) {
     setNovaNome(v)
     if (!novaDesc.trim()) {
       const achou = fasesSalvas.find((fs) => fs.nome.toLowerCase() === v.trim().toLowerCase())
       if (achou?.descricao) setNovaDesc(achou.descricao)
     }
+    if (responsavelPadrao(v) === 'VM') setNovaResp('VM')
   }
 
   async function copiarLink() {
@@ -529,6 +622,16 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
           </p>
         )}
 
+        <label className="proj-inicio">
+          <span>Início do projeto</span>
+          <input
+            type="date"
+            value={p.inicio ?? ''}
+            disabled={salvando}
+            onChange={(e) => void aplicar({ inicio: e.target.value || null })}
+          />
+        </label>
+
         <div className="progresso" style={{ margin: '0.9rem 0 1.2rem' }}>
           <div className="progresso__barra progresso__barra--grande">
             <span style={{ width: `${pct}%` }} />
@@ -549,6 +652,22 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
             onChange={(e) => setNovaDesc(e.target.value)}
             placeholder="Descrição (o cliente vê)"
           />
+          <select
+            className="add-fase__resp"
+            value={novaResp}
+            title="Responsável pela etapa"
+            onChange={(e) => setNovaResp(e.target.value as Responsavel)}
+          >
+            <option value="KA">KA</option>
+            <option value="VM">VM Rocks</option>
+          </select>
+          <input
+            className="add-fase__data"
+            type="date"
+            value={novaData}
+            title="Data da etapa (opcional)"
+            onChange={(e) => setNovaData(e.target.value)}
+          />
           <button className="btn-mini" disabled={salvando || !novaNome.trim()} onClick={() => void adicionarFase()}>
             + Adicionar fase
           </button>
@@ -562,8 +681,9 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
         <p style={{ margin: '0.2rem 0 0.9rem', fontSize: '0.75rem', color: 'var(--t-400)' }}>
           Arraste pela alça <span aria-hidden>⠿</span> para reordenar. Concluída fica{' '}
           <strong style={{ color: '#2e6b45' }}>verde</strong>, em andamento{' '}
-          <strong style={{ color: 'var(--essencia)' }}>azul</strong>, pendente cinza. As fases que
-          você escreve ficam <strong>salvas</strong> para reusar.
+          <strong style={{ color: 'var(--essencia)' }}>azul</strong>, pendente cinza. Cada etapa tem
+          um <strong>responsável</strong> (KA ou VM Rocks) e pode ter uma <strong>data</strong>{' '}
+          (opcional). As fases que você escreve ficam <strong>salvas</strong> para reusar.
         </p>
 
         <div className="fases">
@@ -614,6 +734,19 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
                       if (e.key === 'Escape') setEditIdx(null)
                     }}
                   />
+                  <div className="fase__edit-linha">
+                    <label>
+                      Responsável
+                      <select value={editResp} onChange={(e) => setEditResp(e.target.value as Responsavel)}>
+                        <option value="KA">KA</option>
+                        <option value="VM">VM Rocks</option>
+                      </select>
+                    </label>
+                    <label>
+                      Data (opcional)
+                      <input type="date" value={editData} onChange={(e) => setEditData(e.target.value)} />
+                    </label>
+                  </div>
                   <div className="fase__edit-acoes">
                     <button className="btn-mini" disabled={salvando || !editNome.trim()} onClick={() => void salvarEdicao()}>
                       Salvar
@@ -630,9 +763,17 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
                     {f.descricao && <div className="fase__desc">{f.descricao}</div>}
                     <div className="fase__meta">
                       <span className={`badge ${BADGE_FASE[f.status]}`}>{ROTULO_FASE[f.status]}</span>
+                      <span className={`resp-badge resp--${f.responsavel ?? 'KA'}`}>
+                        {ROTULO_RESP[f.responsavel ?? 'KA']}
+                      </span>
+                      {f.data && (
+                        <span className="fase__data" style={{ textTransform: 'none', letterSpacing: 0 }}>
+                          📅 {formatarData(f.data)}
+                        </span>
+                      )}
                       {f.concluida_em && (
                         <span style={{ marginLeft: 6, color: 'var(--t-400)', textTransform: 'none', letterSpacing: 0 }}>
-                          {formatarData(f.concluida_em)}
+                          ✓ {formatarData(f.concluida_em)}
                         </span>
                       )}
                     </div>

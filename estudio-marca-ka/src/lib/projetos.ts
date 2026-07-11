@@ -27,6 +27,22 @@ import { db } from './firebase'
 export type FaseStatus = 'pendente' | 'andamento' | 'concluida'
 export type ProjetoStatus = 'ativo' | 'pausado' | 'concluido'
 
+/** Quem é responsável pela etapa: a KA ou a parceira VM Rocks. */
+export type Responsavel = 'KA' | 'VM'
+
+export const ROTULO_RESP: Record<Responsavel, string> = {
+  KA: 'KA',
+  VM: 'VM Rocks',
+}
+
+/**
+ * Responsável padrão de uma etapa pelo nome: a parte visual e o Instagram
+ * ficam com a VM Rocks; o resto com a KA. (Sempre dá para trocar depois.)
+ */
+export function responsavelPadrao(nome: string): Responsavel {
+  return /visual|instagram/i.test(nome) ? 'VM' : 'KA'
+}
+
 export interface FaseProjeto {
   nome: string
   /** Descrição curta da etapa (o cliente vê abaixo do nome). */
@@ -34,6 +50,10 @@ export interface FaseProjeto {
   status: FaseStatus
   /** Data em que foi concluída (ISO), para mostrar ao cliente. */
   concluida_em: string | null
+  /** Responsável pela etapa (KA ou VM Rocks). Ausente = KA (retrocompat). */
+  responsavel?: Responsavel
+  /** Data prevista/marcada da etapa (YYYY-MM-DD). Pode ficar vazia. */
+  data?: string | null
 }
 
 export interface Projeto {
@@ -43,6 +63,8 @@ export interface Projeto {
   /** Nome exibido na página pública (denormalizado, sem depender de login). */
   cliente_nome: string | null
   descricao: string | null
+  /** Data de início do projeto (YYYY-MM-DD). Opcional. */
+  inicio?: string | null
   fases: FaseProjeto[]
   status: ProjetoStatus
   token: string
@@ -55,6 +77,7 @@ export interface Projeto {
 export interface ModeloFaseItem {
   nome: string
   descricao?: string
+  responsavel?: Responsavel
 }
 
 export interface ModeloFases {
@@ -72,8 +95,8 @@ export const MODELOS_FASES: ModeloFases[] = [
     fases: [
       { nome: 'Revelação de Essência', descricao: 'IKIGAI Empresarial + Escuta Estratégica com os fundadores.' },
       { nome: 'Base Estratégica + Identidade Verbal', descricao: 'Toda a inteligência da marca em um documento estratégico.' },
-      { nome: 'Identidade Visual', descricao: 'Tradução da essência em expressão estética. Parceria VM Rocks Design (Gabi Lucato).' },
-      { nome: 'Personalização Instagram e WhatsApp', descricao: 'Canais de contato alinhados à identidade da marca. Parceria VM Rocks Design (Gabi Lucato).' },
+      { nome: 'Identidade Visual', descricao: 'Tradução da essência em expressão estética. Parceria VM Rocks Design (Gabi Lucato).', responsavel: 'VM' },
+      { nome: 'Personalização Instagram e WhatsApp', descricao: 'Canais de contato alinhados à identidade da marca. Parceria VM Rocks Design (Gabi Lucato).', responsavel: 'VM' },
       { nome: 'Linha de Produtos e Serviços', descricao: 'Reorganização estratégica da oferta, nomeação e proposta de valor.' },
       { nome: 'Plano de Comunicação + Agente de IA', descricao: 'Pilares, calendário editorial e 01 agente de inteligência artificial personalizado no ChatGPT, treinado com a essência da sua marca.' },
     ],
@@ -140,6 +163,59 @@ export function progressoProjeto(p: Pick<Projeto, 'fases'>): number {
   return Math.round((feitas / p.fases.length) * 100)
 }
 
+// ---- Pendências (visão geral de tudo que falta) -----------------------------
+
+/** Uma etapa em aberto (pendente ou em andamento) de algum projeto. */
+export interface Pendencia {
+  projeto_id: string
+  projeto_nome: string
+  cliente_nome: string | null
+  fase_idx: number
+  fase_nome: string
+  fase_desc: string | null
+  status: FaseStatus
+  responsavel: Responsavel
+  data: string | null
+}
+
+/**
+ * Junta as etapas em aberto de todos os projetos (ignora projetos concluídos e
+ * etapas já concluídas). `filtro` limita por responsável (KA ou VM).
+ * Ordena: em andamento primeiro, depois por data (com data antes de sem data).
+ */
+export function pendenciasDeProjetos(
+  projetos: Projeto[],
+  filtro: Responsavel | 'todas' = 'todas',
+): Pendencia[] {
+  const out: Pendencia[] = []
+  for (const p of projetos) {
+    if (p.status === 'concluido') continue
+    p.fases.forEach((f, i) => {
+      if (f.status === 'concluida') return
+      const responsavel = f.responsavel ?? 'KA'
+      if (filtro !== 'todas' && responsavel !== filtro) return
+      out.push({
+        projeto_id: p.id,
+        projeto_nome: p.nome,
+        cliente_nome: p.cliente_nome,
+        fase_idx: i,
+        fase_nome: f.nome,
+        fase_desc: f.descricao ?? null,
+        status: f.status,
+        responsavel,
+        data: f.data ?? null,
+      })
+    })
+  }
+  return out.sort((a, b) => {
+    if (a.status !== b.status) return a.status === 'andamento' ? -1 : 1
+    if (a.data && b.data) return a.data.localeCompare(b.data)
+    if (a.data) return -1
+    if (b.data) return 1
+    return 0
+  })
+}
+
 // ---- CRUD --------------------------------------------------------------------
 
 export async function listarProjetos(): Promise<Projeto[]> {
@@ -152,6 +228,7 @@ export async function criarProjeto(dados: {
   cliente_id: string | null
   cliente_nome: string | null
   descricao: string | null
+  inicio?: string | null
   fases: ModeloFaseItem[]
 }): Promise<Projeto> {
   const novo = {
@@ -159,11 +236,14 @@ export async function criarProjeto(dados: {
     cliente_id: dados.cliente_id,
     cliente_nome: dados.cliente_nome,
     descricao: dados.descricao,
+    inicio: dados.inicio ?? null,
     fases: dados.fases.map<FaseProjeto>((fase) => ({
       nome: fase.nome,
       descricao: fase.descricao ?? null,
       status: 'pendente',
       concluida_em: null,
+      responsavel: fase.responsavel ?? responsavelPadrao(fase.nome),
+      data: null,
     })),
     status: 'ativo' as ProjetoStatus,
     token: novoToken(),
@@ -176,7 +256,7 @@ export async function criarProjeto(dados: {
 
 export async function salvarProjeto(
   id: string,
-  dados: Partial<Pick<Projeto, 'nome' | 'cliente_nome' | 'descricao' | 'fases' | 'status'>>,
+  dados: Partial<Pick<Projeto, 'nome' | 'cliente_nome' | 'descricao' | 'inicio' | 'fases' | 'status'>>,
 ): Promise<Projeto> {
   await updateDoc(doc(db, 'projetos', id), { ...dados, atualizado_em: agora() })
   const d = await getDoc(doc(db, 'projetos', id))
@@ -248,6 +328,7 @@ export interface ProjetoPublico {
   nome: string
   cliente_nome: string | null
   descricao: string | null
+  inicio?: string | null
   fases: FaseProjeto[]
   status: ProjetoStatus
   atualizado_em: string

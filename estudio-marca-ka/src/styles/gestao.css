@@ -781,7 +781,369 @@
 .fase__edit input:first-of-type {
   font-weight: 600;
 }
+.fase__edit-linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.fase__edit-linha label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--t-400);
+}
+.fase__edit-linha select,
+.fase__edit-linha input {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(61, 107, 126, 0.4);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  background: var(--bg-1);
+}
 .fase__edit-acoes {
   display: flex;
   gap: 0.35rem;
+}
+
+/* ---- Início do projeto ---- */
+.proj-inicio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--t-500);
+}
+.proj-inicio input {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  text-transform: none;
+  letter-spacing: 0;
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 8px;
+  padding: 0.4rem 0.55rem;
+  background: var(--bg-1);
+}
+
+/* ---- Responsável (KA / VM Rocks) ---- */
+.resp-badge {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: 100px;
+  padding: 0.16rem 0.5rem;
+  margin-left: 6px;
+}
+.resp--KA {
+  color: var(--essencia);
+  background: rgba(61, 107, 126, 0.12);
+}
+.resp--VM {
+  color: #8a4b1f;
+  background: rgba(196, 120, 48, 0.16);
+}
+.fase__data {
+  margin-left: 6px;
+  color: var(--t-400);
+  font-size: 0.7rem;
+}
+.add-fase__resp,
+.add-fase__data {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 8px;
+  padding: 0.5rem 0.6rem;
+  background: var(--bg-1);
+}
+
+/* ---- Segmento Projetos / Pendências ---- */
+.seg {
+  display: inline-flex;
+  border: 1px solid rgba(15, 25, 35, 0.12);
+  border-radius: 100px;
+  overflow: hidden;
+  background: var(--bg-1);
+}
+.seg button {
+  font-family: var(--body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--t-500);
+  background: transparent;
+  border: none;
+  padding: 0.45rem 0.95rem;
+  cursor: pointer;
+}
+.seg button.seg__on {
+  color: #fff;
+  background: var(--essencia);
+}
+
+/* ---- Chips de filtro ---- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.pend-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+.chip {
+  font-family: var(--body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--t-500);
+  background: var(--bg-1);
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 100px;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.chip--on {
+  color: #fff;
+  background: var(--essencia);
+  border-color: var(--essencia);
+}
+.chip__n {
+  display: inline-block;
+  min-width: 1.1em;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  border-radius: 100px;
+  padding: 0 0.35em;
+  margin-left: 0.2em;
+  background: rgba(15, 25, 35, 0.1);
+}
+.chip--on .chip__n {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* ---- Lista de pendências ---- */
+.pend-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.pend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 12px;
+  padding: 0.65rem 0.8rem;
+  background: var(--bg-1);
+  cursor: pointer;
+  transition: 0.15s;
+}
+.pend-item:hover {
+  border-color: var(--essencia);
+}
+.pend-item__corpo {
+  flex: 1;
+  min-width: 0;
+}
+.pend-item__fase {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.pend-item__proj {
+  font-size: 0.75rem;
+  color: var(--t-500);
+}
+.pend-item__dir {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  flex: none;
+}
+.pend-item__data {
+  font-size: 0.7rem;
+  color: var(--t-400);
+}
+
+/* ---- Painel de Atividades da Kelly ---- */
+.add-ativ {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1.4rem;
+}
+.add-ativ input:first-of-type {
+  flex: 1 1 220px;
+}
+.add-ativ input,
+.add-ativ select {
+  font-family: var(--body);
+  font-size: 0.9rem;
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 8px;
+  padding: 0.6rem 0.7rem;
+  background: var(--bg-1);
+}
+.ativ-grupo {
+  margin-bottom: 1.6rem;
+}
+.ativ-grupo__tit {
+  font-family: var(--body);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
+  border-bottom: 2px solid;
+}
+.ativ-grupo__tit.cat--trabalho {
+  color: var(--essencia);
+  border-color: rgba(61, 107, 126, 0.4);
+}
+.ativ-grupo__tit.cat--bia {
+  color: #7a5099;
+  border-color: rgba(122, 80, 153, 0.4);
+}
+.ativ-grupo__tit.cat--pessoal {
+  color: #8a4b1f;
+  border-color: rgba(196, 120, 48, 0.4);
+}
+.ativ-vazio {
+  color: var(--t-400);
+  font-size: 0.82rem;
+  padding: 0.2rem 0 0.6rem;
+}
+.ativ {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 12px;
+  padding: 0.55rem 0.75rem;
+  background: var(--bg-1);
+  margin-bottom: 0.4rem;
+}
+.ativ--projeto {
+  background: rgba(61, 107, 126, 0.05);
+  border-color: rgba(61, 107, 126, 0.18);
+}
+.ativ__check {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(15, 25, 35, 0.2);
+  background: #fff;
+  color: var(--essencia);
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.ativ__check:hover {
+  transform: scale(1.08);
+}
+.ativ--feito .ativ__check {
+  background: #2e6b45;
+  border-color: #2e6b45;
+  color: #fff;
+}
+.ativ__corpo {
+  flex: 1;
+  min-width: 0;
+}
+.ativ__corpo--btn {
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  padding: 0.1rem 0.2rem;
+  border-radius: 8px;
+}
+.ativ__corpo--btn:hover {
+  background: rgba(15, 25, 35, 0.04);
+}
+.ativ__titulo {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.ativ--feito .ativ__titulo {
+  text-decoration: line-through;
+  color: var(--t-400);
+}
+.ativ__sub {
+  font-size: 0.74rem;
+  color: var(--t-500);
+}
+.ativ__tag {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--essencia);
+  background: rgba(61, 107, 126, 0.14);
+  border-radius: 100px;
+  padding: 0.05rem 0.45rem;
+  margin-right: 0.4rem;
+}
+.ativ__acoes {
+  display: flex;
+  gap: 0.25rem;
+  flex: none;
+}
+.ativ--edit {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+.ativ--edit > input {
+  font-family: var(--body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid rgba(61, 107, 126, 0.4);
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+  background: var(--bg-1);
+}
+.ativ__edit-linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+.ativ__edit-linha select,
+.ativ__edit-linha input {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(61, 107, 126, 0.4);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  background: var(--bg-1);
+}
+@media (max-width: 640px) {
+  .ativ {
+    flex-wrap: wrap;
+  }
+  .ativ__acoes {
+    width: 100%;
+    justify-content: flex-end;
+  }
 }

@@ -381,6 +381,50 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
   é salva na coleção `fases_biblioteca` (`salvarFaseSalva`, id=slug do nome);
   o formulário de nova fase tem `datalist` das fases salvas e autopreenche a
   descrição. Regra: só a KA.
+- **Editar fase é INLINE** (sem a janelinha do navegador — `window.prompt` é
+  suprimido no iPhone): clicar no nome ou em "Editar" abre campos inline
+  (nome, descrição, responsável, data) com Salvar/Cancelar (Enter/Esc). O
+  formulário de **nova fase fica no TOPO** da lista.
+- **Arrastar para reordenar:** cada fase tem alça `⠿`; usa **Pointer Events**
+  (`iniciarArraste`) e escuta no `window` até soltar — funciona no **toque do
+  iPhone** (o `draggable` nativo do HTML NÃO dispara no touch).
+
+### Projetos — datas, responsável (KA/VM) e pendências (jul/2026)
+
+- **Data de início do projeto** (`Projeto.inicio`, YYYY-MM-DD, opcional):
+  campo no "Novo projeto" e editável no detalhe. Aparece na hero pública.
+- **Data por etapa** (`FaseProjeto.data`, opcional): data prevista/marcada de
+  cada fase. Na página do cliente vira "· previsto DD/MM" nas fases não
+  concluídas.
+- **Responsável por etapa** (`FaseProjeto.responsavel: 'KA' | 'VM'`; `VM` =
+  **VM Rocks**, parceira). `responsavelPadrao(nome)` põe as etapas de **visual**
+  e **instagram** como VM por padrão (regex), o resto KA — sempre editável.
+  Rótulos em `ROTULO_RESP`. No modelo Marca com Essência©, as fases
+  "Identidade Visual" e "Personalização Instagram e WhatsApp" já vêm VM. O
+  responsável NÃO aparece na página do cliente (é interno).
+- **Visão de Pendências:** no topo da aba Projetos, um segmento
+  **Projetos / Pendências**. Em Pendências, `pendenciasDeProjetos(projetos,
+  filtro)` junta todas as etapas em aberto (não concluídas, de projetos não
+  concluídos) e o filtro por chips mostra **Todas / KA / VM Rocks** com
+  contagem. Clicar numa pendência abre o projeto.
+
+### Atividades da Kelly (painel pessoal — jul/2026)
+
+Aba **Atividades 🔒** (restrita à admin, `GestaoAtividades.tsx`): junta as
+pendências de **trabalho** (etapas da **KA** vindas dos projetos dos clientes,
+via `pendenciasDeProjetos(..., 'KA')`) com tarefas que a Kelly adiciona à mão,
+tudo separado em **Trabalho, BIA e Pessoal** (chips com contagem + grupos
+coloridos).
+
+- **Dados:** coleção `atividades` (`src/lib/atividades.ts`) — `{titulo,
+  categoria: 'trabalho'|'bia'|'pessoal', feito, data, criado_em}`. CRUD:
+  `listarAtividades`, `criarAtividade`, `alternarAtividade`, `editarAtividade`,
+  `excluirAtividade`, **`duplicarAtividade`** (botão "Duplicar" em cada item).
+- **Pendências de trabalho** (dos projetos) aparecem no grupo Trabalho com a
+  etiqueta "projeto"; a bolinha marca a etapa como **concluída** direto (edita
+  o projeto). Itens pessoais têm check (feito/não), editar inline, duplicar e
+  excluir.
+- **Regra Firestore:** `atividades` = só a KA (modo produção).
 
 ### WhatsApp (Caminho 1 — links wa.me, jul/2026)
 
@@ -574,7 +618,8 @@ estudio-marca-ka/
     │   ├── supabase.ts, api.ts, storage.ts, database.types.ts
     │   ├── gestao.ts               # dados de orçamentos/contratos/cobranças
     │   ├── cuidadoras.ts           # cuidadoras + documentos (compressão)
-    │   ├── projetos.ts             # projetos + fases + tempo real (onSnapshot)
+    │   ├── projetos.ts             # projetos + fases + responsável/data + pendências
+    │   ├── atividades.ts           # painel pessoal da KA (Trabalho/BIA/Pessoal)
     ├── styles/
     │   ├── global.css              # tema base (KA)
     │   ├── painel.css              # grades do painel (clientes + templates)

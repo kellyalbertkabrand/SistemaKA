@@ -10,10 +10,19 @@ import { GestaoContratos } from './gestao/GestaoContratos'
 import { GestaoCobrancas } from './gestao/GestaoCobrancas'
 import { GestaoCuidadoras } from './gestao/GestaoCuidadoras'
 import { GestaoProjetos } from './gestao/GestaoProjetos'
+import { GestaoAtividades } from './gestao/GestaoAtividades'
 import '../styles/painel.css'
 import '../styles/gestao.css'
 
-type Aba = 'estudio' | 'clientes' | 'projetos' | 'orcamentos' | 'contratos' | 'cobrancas' | 'cuidadoras'
+type Aba =
+  | 'estudio'
+  | 'clientes'
+  | 'projetos'
+  | 'orcamentos'
+  | 'contratos'
+  | 'cobrancas'
+  | 'atividades'
+  | 'cuidadoras'
 
 // Rótulos curtos para o menu (estilo site: maiúsculas, poucos caracteres).
 // No desktop, o grupo "Gestão" abre como MENU SUSPENSO; no celular, os
@@ -31,6 +40,7 @@ const MENU: ItemMenu[] = [
       { id: 'cobrancas', rotulo: 'Cobranças' },
     ],
   },
+  { id: 'atividades', rotulo: 'Atividades' },
   { id: 'cuidadoras', rotulo: 'Cuidadoras' },
 ]
 
@@ -41,6 +51,7 @@ const CABECALHOS: Record<Aba, { titulo: string; sub: string }> = {
   contratos: { titulo: 'Contratos', sub: 'Modelo padrão, contratos gerados e assinaturas (aceite digital).' },
   cobrancas: { titulo: 'Cobranças', sub: 'Mensalidades e cobranças avulsas — boleto, PIX e cartão via Mercado Pago.' },
   projetos: { titulo: 'Projetos', sub: 'Fases de cada projeto — um clique para avançar; o cliente acompanha pelo link em tempo real.' },
+  atividades: { titulo: 'Atividades 🔒', sub: 'Seu painel pessoal — pendências dos clientes (KA) junto com Trabalho, BIA e Pessoal.' },
   cuidadoras: { titulo: 'Cuidadoras 🔒', sub: 'Seu controle pessoal — cadastro pelo link, ficha e documentos de cada cuidadora.' },
 }
 
@@ -153,6 +164,11 @@ export function AdminPanel() {
             {aba === 'projetos' && (
               <GateAdmin>
                 <GestaoProjetos />
+              </GateAdmin>
+            )}
+            {aba === 'atividades' && (
+              <GateAdmin>
+                <GestaoAtividades />
               </GateAdmin>
             )}
           </>
