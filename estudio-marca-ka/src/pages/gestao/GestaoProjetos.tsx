@@ -6,12 +6,15 @@ import {
   criarProjeto,
   excluirProjeto,
   linkPublicoProjeto,
+  listarFasesSalvas,
   listarProjetos,
   MODELOS_FASES,
   progressoProjeto,
   proximoStatusFase,
+  salvarFaseSalva,
   salvarProjeto,
   type FaseProjeto,
+  type FaseSalva,
   type Projeto,
   type ProjetoStatus,
 } from '../../lib/projetos'
@@ -300,11 +303,21 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
   const [msg, setMsg] = useState<string | null>(null)
   const [salvando, setSalvando] = useState(false)
   const [clientes, setClientes] = useState<Cliente[]>([])
+  const [fasesSalvas, setFasesSalvas] = useState<FaseSalva[]>([])
+  const [novaNome, setNovaNome] = useState('')
+  const [novaDesc, setNovaDesc] = useState('')
+
+  function recarregarSalvas() {
+    listarFasesSalvas()
+      .then(setFasesSalvas)
+      .catch(() => {})
+  }
 
   useEffect(() => {
     listarClientes()
       .then(setClientes)
       .catch(() => setClientes([]))
+    recarregarSalvas()
   }, [])
 
   const pct = progressoProjeto(p)
@@ -359,6 +372,18 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     const nome = window.prompt('Nome da fase:', p.fases[i].nome)
     if (!nome?.trim()) return
     void aplicar({ fases: p.fases.map((f, idx) => (idx === i ? { ...f, nome: nome.trim() } : f)) })
+    void salvarFaseSalva(nome.trim(), p.fases[i].descricao)
+    recarregarSalvas()
+  }
+
+  function editarDescricaoFase(i: number) {
+    const d = window.prompt('Descrição da fase (o cliente vê):', p.fases[i].descricao ?? '')
+    if (d === null) return
+    void aplicar({
+      fases: p.fases.map((f, idx) => (idx === i ? { ...f, descricao: d.trim() || null } : f)),
+    })
+    void salvarFaseSalva(p.fases[i].nome, d)
+    recarregarSalvas()
   }
 
   function removerFase(i: number) {
@@ -366,12 +391,27 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     void aplicar({ fases: p.fases.filter((_, idx) => idx !== i) })
   }
 
-  function adicionarFase() {
-    const nome = window.prompt('Nome da nova fase:')
-    if (!nome?.trim()) return
-    void aplicar({
-      fases: [...p.fases, { nome: nome.trim(), status: 'pendente', concluida_em: null }],
+  async function adicionarFase() {
+    const nome = novaNome.trim()
+    if (!nome) return
+    const descricao = novaDesc.trim() || null
+    await aplicar({
+      fases: [...p.fases, { nome, descricao, status: 'pendente', concluida_em: null }],
     })
+    // Salva na biblioteca para reusar em outros projetos.
+    void salvarFaseSalva(nome, descricao)
+    setNovaNome('')
+    setNovaDesc('')
+    recarregarSalvas()
+  }
+
+  // Ao digitar/escolher um nome já salvo, sugere a descrição guardada.
+  function mudarNovaNome(v: string) {
+    setNovaNome(v)
+    if (!novaDesc.trim()) {
+      const achou = fasesSalvas.find((fs) => fs.nome.toLowerCase() === v.trim().toLowerCase())
+      if (achou?.descricao) setNovaDesc(achou.descricao)
+    }
   }
 
   function moverFase(i: number, delta: -1 | 1) {
@@ -445,6 +485,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
               </button>
               <div className="fase__info">
                 <div className="fase__nome">{f.nome}</div>
+                {f.descricao && <div className="fase__desc">{f.descricao}</div>}
                 <div className="fase__meta">
                   {ROTULO_FASE[f.status]}
                   {f.concluida_em && ` em ${formatarData(f.concluida_em)}`}
@@ -460,6 +501,9 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
                 <button className="btn-mini" disabled={salvando} onClick={() => renomearFase(i)}>
                   Renomear
                 </button>
+                <button className="btn-mini" disabled={salvando} onClick={() => editarDescricaoFase(i)}>
+                  Descrição
+                </button>
                 <button className="btn-mini btn-mini--perigo" disabled={salvando} onClick={() => removerFase(i)}>
                   ✕
                 </button>
@@ -468,15 +512,31 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
           ))}
         </div>
 
-        <p style={{ marginTop: '0.9rem' }}>
-          <button className="btn-mini" disabled={salvando} onClick={adicionarFase}>
-            + Adicionar fase
+        <div className="add-fase">
+          <input
+            list="fases-salvas"
+            value={novaNome}
+            onChange={(e) => mudarNovaNome(e.target.value)}
+            placeholder="Nome da nova fase"
+          />
+          <input
+            value={novaDesc}
+            onChange={(e) => setNovaDesc(e.target.value)}
+            placeholder="Descrição (o cliente vê)"
+          />
+          <button className="btn-mini" disabled={salvando || !novaNome.trim()} onClick={() => void adicionarFase()}>
+            + Adicionar
           </button>
-        </p>
+          <datalist id="fases-salvas">
+            {fasesSalvas.map((fs) => (
+              <option key={fs.id} value={fs.nome} />
+            ))}
+          </datalist>
+        </div>
 
         <p style={{ marginTop: '0.6rem', fontSize: '0.75rem', color: 'var(--t-400)' }}>
-          Dica: clique na bolinha de uma fase para avançar (pendente → em andamento → concluída).
-          O cliente vê a mudança na hora pelo link.
+          Clique na bolinha para avançar a fase (pendente → em andamento → concluída). As fases que
+          você escreve ficam <strong>salvas</strong> — comece a digitar o nome e a descrição aparece.
         </p>
       </div>
     </>

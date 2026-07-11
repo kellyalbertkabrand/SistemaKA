@@ -14,19 +14,18 @@ const LOGO_BRANCA = '/clientes/ka/ka-branco.png'
 // Dados de demonstração (só em desenvolvimento, token "demo"): permite ver o
 // layout da página sem banco — /projeto/demo
 const DEMO: Proj = {
-  nome: 'Identidade visual · Shapes',
-  cliente_nome: 'Shapes',
-  descricao:
-    'Construção da identidade visual completa: conceito, cores, tipografia e aplicações para redes sociais.',
+  nome: 'Marca com Essência©',
+  cliente_nome: 'Cliente exemplo',
+  descricao: 'Acompanhe aqui, em tempo real, cada etapa do seu projeto de marca.',
   status: 'ativo',
   atualizado_em: new Date().toISOString(),
   fases: [
-    { nome: 'Briefing e imersão', status: 'concluida', concluida_em: '2026-06-24T12:00:00Z' },
-    { nome: 'Pesquisa e direção criativa', status: 'concluida', concluida_em: '2026-06-30T12:00:00Z' },
-    { nome: 'Criação do conceito', status: 'concluida', concluida_em: '2026-07-02T12:00:00Z' },
-    { nome: 'Apresentação da proposta', status: 'andamento', concluida_em: null },
-    { nome: 'Rodada de ajustes', status: 'pendente', concluida_em: null },
-    { nome: 'Entrega final + manual da marca', status: 'pendente', concluida_em: null },
+    { nome: 'Revelação de Essência', descricao: 'IKIGAI Empresarial + Escuta Estratégica com os fundadores.', status: 'concluida', concluida_em: '2026-06-24T12:00:00Z' },
+    { nome: 'Base Estratégica + Identidade Verbal', descricao: 'Toda a inteligência da marca em um documento estratégico.', status: 'concluida', concluida_em: '2026-06-30T12:00:00Z' },
+    { nome: 'Identidade Visual', descricao: 'Tradução da essência em expressão estética. Parceria VM Rocks Design (Gabi Lucato).', status: 'andamento', concluida_em: null },
+    { nome: 'Personalização Instagram e WhatsApp', descricao: 'Canais de contato alinhados à identidade da marca.', status: 'pendente', concluida_em: null },
+    { nome: 'Linha de Produtos e Serviços', descricao: 'Reorganização estratégica da oferta, nomeação e proposta de valor.', status: 'pendente', concluida_em: null },
+    { nome: 'Plano de Comunicação + Agente de IA', descricao: 'Pilares, calendário editorial e 01 agente de IA personalizado no ChatGPT, treinado com a essência da sua marca.', status: 'pendente', concluida_em: null },
   ],
 }
 
@@ -164,6 +163,7 @@ export function ProjetoPublico() {
               </div>
               <div className="proj-fase__corpo">
                 <div className="proj-fase__nome">{f.nome}</div>
+                {f.descricao && <div className="proj-fase__desc">{f.descricao}</div>}
                 <div className="proj-fase__meta">
                   {f.status === 'concluida' &&
                     `Concluída${f.concluida_em ? ` · ${formatarData(f.concluida_em)}` : ''}`}

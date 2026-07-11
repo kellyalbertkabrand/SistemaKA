@@ -336,3 +336,11 @@
   color: var(--t-400);
   margin-top: 0.35rem;
 }
+
+/* Descrição da etapa na página do cliente */
+.proj-fase__desc {
+  font-size: 0.85rem;
+  color: var(--t-500);
+  line-height: 1.55;
+  margin-top: 0.25rem;
+}

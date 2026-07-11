@@ -373,6 +373,14 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
   página do cliente atualiza EM TEMPO REAL quando a KA marca uma fase.
 - **Regras:** `projetos` = leitura pública (token no doc, como orçamentos),
   escrita só a KA.
+- **Modelos de fases** em `MODELOS_FASES`: **Marca com Essência©** (6 etapas
+  COM descrição), Identidade visual, Social media, Site, Personalizado. Cada
+  fase tem `nome` + `descricao` opcional (o cliente vê a descrição sob o nome,
+  no admin e na linha do tempo pública).
+- **Biblioteca de fases (reuso):** toda fase que a KA escreve (nome+descrição)
+  é salva na coleção `fases_biblioteca` (`salvarFaseSalva`, id=slug do nome);
+  o formulário de nova fase tem `datalist` das fases salvas e autopreenche a
+  descrição. Regra: só a KA.
 
 ### WhatsApp (Caminho 1 — links wa.me, jul/2026)
 

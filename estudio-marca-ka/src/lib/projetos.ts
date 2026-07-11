@@ -9,6 +9,7 @@ import {
   onSnapshot,
   orderBy,
   query,
+  setDoc,
   updateDoc,
   where,
 } from 'firebase/firestore'
@@ -28,6 +29,8 @@ export type ProjetoStatus = 'ativo' | 'pausado' | 'concluido'
 
 export interface FaseProjeto {
   nome: string
+  /** Descrição curta da etapa (o cliente vê abaixo do nome). */
+  descricao?: string | null
   status: FaseStatus
   /** Data em que foi concluída (ISO), para mostrar ao cliente. */
   concluida_em: string | null
@@ -49,48 +52,67 @@ export interface Projeto {
 
 // ---- Modelos de fases padrão (é só escolher ao criar o projeto) --------------
 
+export interface ModeloFaseItem {
+  nome: string
+  descricao?: string
+}
+
 export interface ModeloFases {
   id: string
   nome: string
-  fases: string[]
+  fases: ModeloFaseItem[]
 }
+
+const so = (nomes: string[]): ModeloFaseItem[] => nomes.map((nome) => ({ nome }))
 
 export const MODELOS_FASES: ModeloFases[] = [
   {
+    id: 'marca-essencia',
+    nome: 'Marca com Essência©',
+    fases: [
+      { nome: 'Revelação de Essência', descricao: 'IKIGAI Empresarial + Escuta Estratégica com os fundadores.' },
+      { nome: 'Base Estratégica + Identidade Verbal', descricao: 'Toda a inteligência da marca em um documento estratégico.' },
+      { nome: 'Identidade Visual', descricao: 'Tradução da essência em expressão estética. Parceria VM Rocks Design (Gabi Lucato).' },
+      { nome: 'Personalização Instagram e WhatsApp', descricao: 'Canais de contato alinhados à identidade da marca. Parceria VM Rocks Design (Gabi Lucato).' },
+      { nome: 'Linha de Produtos e Serviços', descricao: 'Reorganização estratégica da oferta, nomeação e proposta de valor.' },
+      { nome: 'Plano de Comunicação + Agente de IA', descricao: 'Pilares, calendário editorial e 01 agente de inteligência artificial personalizado no ChatGPT, treinado com a essência da sua marca.' },
+    ],
+  },
+  {
     id: 'identidade',
     nome: 'Identidade visual',
-    fases: [
+    fases: so([
       'Briefing e imersão',
       'Pesquisa e direção criativa',
       'Criação do conceito',
       'Apresentação da proposta',
       'Rodada de ajustes',
       'Entrega final + manual da marca',
-    ],
+    ]),
   },
   {
     id: 'social',
     nome: 'Social media / templates',
-    fases: [
+    fases: so([
       'Briefing',
       'Direção visual dos posts',
       'Criação dos layouts',
       'Validação com o cliente',
       'Templates no sistema',
       'Entrega e treinamento',
-    ],
+    ]),
   },
   {
     id: 'site',
     nome: 'Site / landing page',
-    fases: [
+    fases: so([
       'Briefing e conteúdo',
       'Estrutura das páginas',
       'Design',
       'Desenvolvimento',
       'Revisão do cliente',
       'Publicação',
-    ],
+    ]),
   },
   {
     id: 'personalizado',
@@ -130,15 +152,16 @@ export async function criarProjeto(dados: {
   cliente_id: string | null
   cliente_nome: string | null
   descricao: string | null
-  fases: string[]
+  fases: ModeloFaseItem[]
 }): Promise<Projeto> {
   const novo = {
     nome: dados.nome,
     cliente_id: dados.cliente_id,
     cliente_nome: dados.cliente_nome,
     descricao: dados.descricao,
-    fases: dados.fases.map<FaseProjeto>((nome) => ({
-      nome,
+    fases: dados.fases.map<FaseProjeto>((fase) => ({
+      nome: fase.nome,
+      descricao: fase.descricao ?? null,
       status: 'pendente',
       concluida_em: null,
     })),
@@ -166,6 +189,50 @@ export async function excluirProjeto(id: string): Promise<void> {
 
 export function linkPublicoProjeto(token: string): string {
   return `${window.location.origin}/projeto/${token}`
+}
+
+// ---- Biblioteca de fases (reuso) ---------------------------------------------
+// Toda fase que a KA escreve fica salva aqui para reaproveitar em outros
+// projetos (coleção `fases_biblioteca`, id = slug do nome).
+
+export interface FaseSalva {
+  id: string
+  nome: string
+  descricao: string | null
+  criado_em: string
+}
+
+function slug(texto: string): string {
+  return (
+    texto
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '')
+      .slice(0, 60) || novoToken()
+  )
+}
+
+export async function listarFasesSalvas(): Promise<FaseSalva[]> {
+  const snap = await getDocs(query(collection(db, 'fases_biblioteca'), orderBy('nome')))
+  return snap.docs.map((d) => comId<FaseSalva>(d.id, d.data()))
+}
+
+/** Salva (ou atualiza) uma fase na biblioteca, para reusar depois. */
+export async function salvarFaseSalva(nome: string, descricao?: string | null): Promise<void> {
+  const n = nome.trim()
+  if (!n) return
+  await setDoc(
+    doc(db, 'fases_biblioteca', slug(n)),
+    { nome: n, descricao: descricao?.trim() || null, criado_em: agora() },
+    { merge: true },
+  )
+}
+
+export async function excluirFaseSalva(id: string): Promise<void> {
+  await deleteDoc(doc(db, 'fases_biblioteca', id))
 }
 
 /** Próximo status ao clicar na fase: pendente → andamento → concluída → pendente. */

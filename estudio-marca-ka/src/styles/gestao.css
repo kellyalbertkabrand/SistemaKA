@@ -663,3 +663,34 @@
 .wa-btn--go:hover {
   background: #17663f;
 }
+
+/* ---- Fase: descrição e formulário de nova fase ---- */
+.fase__desc {
+  font-size: 0.78rem;
+  color: var(--t-500);
+  line-height: 1.45;
+  margin: 0.1rem 0 0.15rem;
+}
+.add-fase {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.9rem;
+  padding-top: 0.9rem;
+  border-top: 1px dashed rgba(15, 25, 35, 0.12);
+}
+.add-fase input {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+  background: var(--bg-1);
+}
+.add-fase input:first-of-type {
+  flex: 1 1 180px;
+}
+.add-fase input:nth-of-type(2) {
+  flex: 2 1 260px;
+}
