@@ -358,6 +358,22 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
   completo em `supabase/functions/README.md`.
 - Dev local: `?preview-gate` na URL pula o gate (só em `import.meta.env.DEV`).
 
+### Projetos (acompanhamento pelo cliente em TEMPO REAL — jul/2026)
+
+Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
+
+- **Modelo:** doc na coleção `projetos` com as FASES embutidas (array
+  `{nome, status: pendente|andamento|concluida, concluida_em}`) — simples de
+  alimentar: clicar na bolinha da fase avança o status (ciclo). Modelos de
+  fases padrão em `MODELOS_FASES` (`src/lib/projetos.ts`): identidade visual,
+  social media, site, personalizado. Fases podem ser adicionadas/renomeadas/
+  reordenadas/removidas depois.
+- **Link do cliente:** `/projeto/:token` (`ProjetoPublico.tsx`) — linha do
+  tempo com barra de progresso; usa **onSnapshot** (query por token), então a
+  página do cliente atualiza EM TEMPO REAL quando a KA marca uma fase.
+- **Regras:** `projetos` = leitura pública (token no doc, como orçamentos),
+  escrita só a KA.
+
 ### Cuidadoras (controle PESSOAL da KA — jul/2026)
 
 Aba **Cuidadoras 🔒** no painel (restrita à admin): gestão das cuidadoras
@@ -532,6 +548,7 @@ estudio-marca-ka/
     │   ├── supabase.ts, api.ts, storage.ts, database.types.ts
     │   ├── gestao.ts               # dados de orçamentos/contratos/cobranças
     │   ├── cuidadoras.ts           # cuidadoras + documentos (compressão)
+    │   ├── projetos.ts             # projetos + fases + tempo real (onSnapshot)
     ├── styles/
     │   ├── global.css              # tema base (KA)
     │   ├── painel.css              # grades do painel (clientes + templates)

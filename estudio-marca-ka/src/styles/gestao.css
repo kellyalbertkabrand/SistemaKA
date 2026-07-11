@@ -372,3 +372,181 @@
     padding: 0;
   }
 }
+
+/* ---- Projetos: progresso, fases (admin) e linha do tempo (cliente) ---- */
+.progresso {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.progresso__barra {
+  flex: 1;
+  height: 8px;
+  border-radius: 100px;
+  background: rgba(15, 25, 35, 0.08);
+  overflow: hidden;
+  min-width: 90px;
+}
+.progresso__barra--grande {
+  height: 12px;
+}
+.progresso__barra span {
+  display: block;
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, var(--dourado), var(--essencia));
+  transition: width 0.4s ease;
+}
+.progresso__pct {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--t-500);
+  font-variant-numeric: tabular-nums;
+}
+
+.fases {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.fase {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 12px;
+  padding: 0.6rem 0.8rem;
+  background: var(--bg-1);
+}
+.fase--concluida {
+  background: rgba(46, 107, 69, 0.06);
+  border-color: rgba(46, 107, 69, 0.2);
+}
+.fase--andamento {
+  background: rgba(61, 107, 126, 0.06);
+  border-color: rgba(61, 107, 126, 0.25);
+}
+.fase__status {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 50%;
+  border: 2px solid rgba(15, 25, 35, 0.2);
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1;
+  color: var(--essencia);
+  transition: 0.15s;
+}
+.fase--concluida .fase__status {
+  background: #2e6b45;
+  border-color: #2e6b45;
+  color: #fff;
+}
+.fase--andamento .fase__status {
+  border-color: var(--essencia);
+  color: var(--essencia);
+}
+.fase__status:hover {
+  transform: scale(1.08);
+}
+.fase__info {
+  flex: 1;
+  min-width: 0;
+}
+.fase__nome {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.fase--concluida .fase__nome {
+  color: #2e6b45;
+}
+.fase__meta {
+  font-size: 0.7rem;
+  color: var(--t-400);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.fase__acoes {
+  display: flex;
+  gap: 0.2rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+@media (max-width: 640px) {
+  .fase {
+    flex-wrap: wrap;
+  }
+  .fase__acoes {
+    width: 100%;
+  }
+}
+
+/* Linha do tempo pública (página do cliente) */
+.linha-tempo {
+  position: relative;
+  padding-left: 8px;
+}
+.lt-fase {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  padding: 0 0 1.4rem 0;
+}
+.lt-fase:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 17px;
+  top: 36px;
+  bottom: 0;
+  width: 2px;
+  background: rgba(15, 25, 35, 0.12);
+}
+.lt-fase--concluida:not(:last-child)::before {
+  background: rgba(46, 107, 69, 0.4);
+}
+.lt-fase__ponto {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.95rem;
+  border: 2px solid rgba(15, 25, 35, 0.18);
+  background: #fff;
+  color: var(--essencia);
+  z-index: 1;
+}
+.lt-fase--concluida .lt-fase__ponto {
+  background: #2e6b45;
+  border-color: #2e6b45;
+  color: #fff;
+}
+.lt-fase--andamento .lt-fase__ponto {
+  border-color: var(--essencia);
+  animation: pulso 1.6s ease-in-out infinite;
+}
+@keyframes pulso {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(61, 107, 126, 0.3); }
+  50% { box-shadow: 0 0 0 7px rgba(61, 107, 126, 0.08); }
+}
+.lt-fase__nome {
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding-top: 6px;
+}
+.lt-fase--concluida .lt-fase__nome {
+  color: #2e6b45;
+}
+.lt-fase--pendente .lt-fase__nome {
+  color: var(--t-500);
+}
+.lt-fase__meta {
+  font-size: 0.72rem;
+  color: var(--t-400);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}

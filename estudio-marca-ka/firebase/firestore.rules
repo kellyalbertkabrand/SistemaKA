@@ -62,6 +62,13 @@ service cloud.firestore {
 //       allow write: if ehKA();
 //     }
 //
+//     // PROJETOS: a KA gerencia; o cliente acompanha pelo link /projeto/:token
+//     // (leitura pública, como os orçamentos — quem não tem o token não acha).
+//     match /projetos/{id} {
+//       allow read: if true;
+//       allow write: if ehKA();
+//     }
+//
 //     // CUIDADORAS (controle pessoal da KA): o link público /cadastro-cuidadora
 //     // pode CRIAR a ficha e os documentos anexados; ler/editar/apagar só a KA.
 //     match /cuidadoras/{id} {
