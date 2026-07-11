@@ -11,22 +11,28 @@ export function telefoneParaWa(telefone: string): string | null {
 }
 
 /**
- * Abre o WhatsApp com a mensagem pronta. Se o telefone estiver vazio ou
- * inválido, pede o número na hora (com DDD). Devolve true se abriu.
+ * Abre o WhatsApp com a mensagem pronta. Mostra uma confirmação com o nome do
+ * destinatário e o número da ficha JÁ PREENCHIDO — é só dar OK (ou trocar o
+ * número ali mesmo, se quiser enviar a outra pessoa). Devolve true se abriu.
  */
-export function abrirWhatsApp(telefone: string | null | undefined, mensagem: string): boolean {
-  let tel = telefone?.trim() ?? ''
-  if (!tel || !telefoneParaWa(tel)) {
-    const digitado = window.prompt(
-      'WhatsApp do cliente (com DDD, ex.: 41 99999-0000):',
-      tel,
-    )
-    if (digitado === null) return false
-    tel = digitado
-  }
-  const numero = telefoneParaWa(tel)
+export function abrirWhatsApp(
+  telefone: string | null | undefined,
+  mensagem: string,
+  destinatario?: string | null,
+): boolean {
+  const tel = telefone?.trim() ?? ''
+  const quem = destinatario?.trim()
+  const digitado = window.prompt(
+    (quem ? `Enviar WhatsApp para ${quem}.\n` : 'Enviar WhatsApp.\n') +
+      (tel
+        ? 'Confirme o número (OK) ou troque para enviar a outra pessoa:'
+        : 'Sem telefone na ficha — digite o número (com DDD, ex.: 41 99999-0000):'),
+    tel,
+  )
+  if (digitado === null) return false
+  const numero = telefoneParaWa(digitado)
   if (!numero) {
-    window.alert('Número inválido — confira o DDD (ex.: 41 99999-0000).')
+    window.alert('Número inválido — use DDD + número (ex.: 41 99999-0000).')
     return false
   }
   window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`, '_blank', 'noopener')

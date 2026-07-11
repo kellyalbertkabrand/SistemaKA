@@ -326,7 +326,11 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
       '',
       '— Kelly',
     )
-    abrirWhatsApp(cliente?.telefone, linhas.join('\n'))
+    abrirWhatsApp(
+      cliente?.telefone,
+      linhas.join('\n'),
+      cliente?.responsavel ?? p.cliente_nome,
+    )
   }
 
   async function aplicar(dados: Partial<Pick<Projeto, 'nome' | 'descricao' | 'fases' | 'status' | 'cliente_nome'>>) {

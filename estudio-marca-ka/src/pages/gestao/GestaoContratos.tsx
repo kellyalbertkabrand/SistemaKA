@@ -69,7 +69,11 @@ export function GestaoContratos() {
       '',
       'Qualquer dúvida, me chama! — Kelly',
     ].join('\n')
-    abrirWhatsApp(cliente?.telefone, mensagem)
+    abrirWhatsApp(
+      cliente?.telefone,
+      mensagem,
+      cliente ? (cliente.responsavel ?? cliente.nome_marca) : c.titulo,
+    )
   }
 
   async function cancelar(c: Contrato) {

@@ -51,7 +51,11 @@ export function GestaoCobrancas() {
       linhas.push('', `Você pode pagar por aqui (cartão, boleto ou PIX): ${c.link_pagamento}`)
     }
     linhas.push('', 'Qualquer dúvida, me chama! — Kelly')
-    abrirWhatsApp(cliente?.telefone, linhas.join('\n'))
+    abrirWhatsApp(
+      cliente?.telefone,
+      linhas.join('\n'),
+      cliente ? (cliente.responsavel ?? cliente.nome_marca) : null,
+    )
   }
 
   async function recarregar() {

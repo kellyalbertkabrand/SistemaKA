@@ -76,7 +76,7 @@ export function GestaoOrcamentos() {
       '',
       'Qualquer dúvida, me chama! — Kelly',
     ].join('\n')
-    abrirWhatsApp(cliente?.telefone, mensagem)
+    abrirWhatsApp(cliente?.telefone, mensagem, o.destinatario_nome || cliente?.nome_marca)
   }
 
   async function enviar(o: Orcamento) {
