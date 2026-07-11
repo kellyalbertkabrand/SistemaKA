@@ -22,6 +22,15 @@ const BADGE_COBRANCA: Record<CobrancaStatus, string> = {
   cancelada: 'badge--cinza',
 }
 
+// Soma `k` meses a uma data YYYY-MM-DD (para os vencimentos das parcelas).
+function somarMeses(iso: string, k: number): string {
+  const [y, m, d] = iso.split('-').map(Number)
+  const dt = new Date(y, m - 1 + k, d)
+  const mm = String(dt.getMonth() + 1).padStart(2, '0')
+  const dd = String(dt.getDate()).padStart(2, '0')
+  return `${dt.getFullYear()}-${mm}-${dd}`
+}
+
 // Cobranças: mensalidades (geradas por mês) + avulsas (de orçamento aprovado).
 // O link de pagamento (cartão/boleto/PIX) vem do Mercado Pago via Edge Function.
 export function GestaoCobrancas() {
@@ -38,6 +47,8 @@ export function GestaoCobrancas() {
   const [novaDesc, setNovaDesc] = useState('')
   const [novoValor, setNovoValor] = useState('')
   const [novoVenc, setNovoVenc] = useState('')
+  const [novaForma, setNovaForma] = useState<'avista' | 'parcelado' | 'mensal'>('avista')
+  const [novaVezes, setNovaVezes] = useState('2')
   // Colar link de pagamento (inline, por linha)
   const [linkPara, setLinkPara] = useState<string | null>(null)
   const [linkTemp, setLinkTemp] = useState('')
@@ -119,6 +130,8 @@ export function GestaoCobrancas() {
     setNovaDesc('')
     setNovoValor('')
     setNovoVenc(new Date().toISOString().slice(0, 10))
+    setNovaForma('avista')
+    setNovaVezes('2')
     setErro(null)
     setCriando(true)
   }
@@ -129,6 +142,8 @@ export function GestaoCobrancas() {
     setNovaDesc(c.descricao)
     setNovoValor(String(c.valor))
     setNovoVenc(c.vencimento)
+    setNovaForma(c.tipo === 'mensalidade' ? 'mensal' : 'avista')
+    setNovaVezes('2')
     setErro(null)
     setCriando(true)
   }
@@ -145,27 +160,47 @@ export function GestaoCobrancas() {
       setErro('Preencha o cliente, a descrição, um valor maior que zero e o vencimento.')
       return
     }
+    // Parcelado → N cobranças (uma por mês); mensal → 1 cobrança de mensalidade.
+    const parcelas = novaForma === 'parcelado' ? Math.min(24, Math.max(2, Number(novaVezes) || 2)) : 1
+    const tipo = novaForma === 'mensal' ? 'mensalidade' : 'avulsa'
+    const descBase = novaDesc.trim()
     setOcupado('nova')
     setErro(null)
     try {
-      if (editandoId) {
+      if (editandoId && parcelas === 1) {
+        // Editar uma cobrança simples: só atualiza os campos.
         await atualizarCobranca(editandoId, {
           cliente_id: cliente.id,
-          descricao: novaDesc.trim(),
+          descricao: descBase,
           valor,
           vencimento: novoVenc,
         })
         mostrar('Cobrança atualizada')
       } else {
-        await criarCobranca({
-          cliente_id: cliente.id,
-          tipo: 'avulsa',
-          descricao: novaDesc.trim(),
-          valor,
-          vencimento: novoVenc,
-          telefone: cliente.telefone ?? null,
-        })
-        mostrar('Cobrança criada')
+        // Criar (ou, ao editar em parcelado, vira a 1ª parcela + cria as demais).
+        for (let k = 0; k < parcelas; k++) {
+          const desc = parcelas > 1 ? `${descBase} (${k + 1}/${parcelas})` : descBase
+          const venc = somarMeses(novoVenc, k)
+          if (editandoId && k === 0) {
+            await atualizarCobranca(editandoId, { cliente_id: cliente.id, descricao: desc, valor, vencimento: venc })
+          } else {
+            await criarCobranca({
+              cliente_id: cliente.id,
+              tipo,
+              descricao: desc,
+              valor,
+              vencimento: venc,
+              telefone: cliente.telefone ?? null,
+            })
+          }
+        }
+        mostrar(
+          parcelas > 1
+            ? `${parcelas} parcelas criadas (uma por mês)`
+            : editandoId
+              ? 'Cobrança atualizada'
+              : 'Cobrança criada',
+        )
       }
       fecharForm()
       await recarregar()
@@ -266,6 +301,9 @@ export function GestaoCobrancas() {
   const pendentes = lista.filter((c) => c.status === 'pendente' || c.status === 'atrasada')
   const totalPendente = pendentes.reduce((t, c) => t + Number(c.valor), 0)
 
+  const nParcelas = novaForma === 'parcelado' ? Math.min(24, Math.max(2, Number(novaVezes) || 2)) : 1
+  const valorNum = Number(novoValor.replace(',', '.')) || 0
+
   return (
     <>
       <div className="gestao-acoes">
@@ -309,7 +347,34 @@ export function GestaoCobrancas() {
               />
             </div>
             <div className="field">
-              <label>Valor (R$)</label>
+              <label>Forma de pagamento</label>
+              <select value={novaForma} onChange={(e) => setNovaForma(e.target.value as typeof novaForma)}>
+                <option value="avista">À vista</option>
+                <option value="parcelado">Parcelado</option>
+                <option value="mensal">Cobrança mensal</option>
+              </select>
+            </div>
+            {novaForma === 'parcelado' && (
+              <div className="field">
+                <label>Em quantas vezes</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={2}
+                  value={novaVezes}
+                  onChange={(e) => setNovaVezes(e.target.value.replace(/\D/g, ''))}
+                  placeholder="ex.: 2"
+                />
+              </div>
+            )}
+            <div className="field">
+              <label>
+                {novaForma === 'parcelado'
+                  ? 'Valor de cada parcela (R$)'
+                  : novaForma === 'mensal'
+                    ? 'Valor por mês (R$)'
+                    : 'Valor (R$)'}
+              </label>
               <input
                 type="number"
                 inputMode="decimal"
@@ -321,13 +386,27 @@ export function GestaoCobrancas() {
               />
             </div>
             <div className="field">
-              <label>Vencimento</label>
+              <label>{novaForma === 'parcelado' ? '1º vencimento' : 'Vencimento'}</label>
               <input type="date" value={novoVenc} onChange={(e) => setNovoVenc(e.target.value)} />
             </div>
           </div>
+
+          {novaForma === 'parcelado' && valorNum > 0 && (
+            <p style={{ fontSize: '0.8rem', color: 'var(--t-500)', margin: '0.2rem 0 0.4rem' }}>
+              {nParcelas}× de {formatarBRL(valorNum)} = <strong>{formatarBRL(nParcelas * valorNum)}</strong>. O
+              sistema cria {nParcelas} cobranças, uma por mês a partir do 1º vencimento.
+            </p>
+          )}
+
           <p style={{ display: 'flex', gap: '0.6rem', marginTop: '0.2rem' }}>
             <button className="btn" disabled={ocupado === 'nova'} onClick={() => void salvarForm()}>
-              {ocupado === 'nova' ? 'Salvando…' : editandoId ? 'Salvar alterações' : 'Criar cobrança'}
+              {ocupado === 'nova'
+                ? 'Salvando…'
+                : editandoId
+                  ? 'Salvar alterações'
+                  : novaForma === 'parcelado'
+                    ? 'Criar parcelas'
+                    : 'Criar cobrança'}
             </button>
             <button className="btn--voltar" onClick={fecharForm}>
               Cancelar

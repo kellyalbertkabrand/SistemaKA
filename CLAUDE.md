@@ -385,6 +385,12 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
   - **EDITAR cobrança** (jul/2026): botão "Editar" em cada cobrança abre o mesmo
     formulário pré-preenchido (o combinado muda — cliente paga diferente);
     `atualizarCobranca` agora aceita `descricao`/`cliente_id` além de valor/venc.
+  - **FORMA de pagamento na cobrança** (jul/2026): À vista / Parcelado /
+    Cobrança mensal. Em **parcelado** aparece "Em quantas vezes" + "valor de
+    cada parcela"; ao salvar, o sistema cria **N cobranças** (uma por mês, a
+    partir do 1º vencimento, `somarMeses`) com descrição `(k/N)`. Mensal = 1
+    cobrança tipo `mensalidade`. No modo editar, parcelado transforma a atual na
+    1ª parcela e cria as demais.
 - **EDITAR orçamento:** botão "Editar" em TODOS os orçamentos (não só rascunho)
   + clicar no título abre o editor (`setEditando`).
 - **EDITAR no Financeiro:** cada item do painel Financeiro é um botão que leva

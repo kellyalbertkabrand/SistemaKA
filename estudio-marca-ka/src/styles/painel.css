@@ -274,12 +274,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.55rem;
-  aspect-ratio: 1 / 1;
+  gap: 0.35rem;
+  min-height: 82px;
   background: #fff;
   border: 1px solid rgba(15, 25, 35, 0.09);
-  border-radius: 16px;
-  padding: 1rem;
+  border-radius: 14px;
+  padding: 0.8rem 0.7rem;
   cursor: pointer;
   transition: 0.15s;
   font-family: var(--body);
@@ -290,11 +290,11 @@
   box-shadow: 0 10px 26px rgba(15, 25, 35, 0.08);
 }
 .atalho-card__ico {
-  font-size: 2rem;
+  font-size: 1.6rem;
   line-height: 1;
 }
 .atalho-card__nome {
-  font-size: 0.92rem;
+  font-size: 0.86rem;
   font-weight: 600;
   color: var(--t-900);
   text-align: center;
@@ -302,5 +302,6 @@
 @media (max-width: 480px) {
   .grade-atalhos {
     grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
   }
 }
