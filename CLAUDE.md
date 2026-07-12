@@ -596,6 +596,31 @@ Na ficha do cliente (`GestaoClientes.tsx` → `PagamentosContrato`), a seção
     envia); quando o **login por papel** (parceiro) entrar, essa é exatamente a
     tela que a VM verá (o caixa `caixa` e o resto ficam fora do escopo dela).
     O `caixa` pessoal (entradas/saídas) é sempre só da KA.
+  - **Robustez financeira (jul/2026 — auditoria de especialista):**
+    - **`parseValorBR` determinístico** (`src/lib/ui.ts`): resolve ponto×vírgula
+      pelo ÚLTIMO separador; "1.500"→1500, "1.234.567"→1234567, "1.234,56"→
+      1234.56; sanitiza sinal; arredonda 2 casas (17 casos testados). Antes
+      "1.500" virava R$ 1,50 (silencioso). Usado em TODOS os campos de dinheiro
+      (Cobranças passou a usar ele + `inputMode="decimal"` texto no lugar de
+      `type=number`, que no iPhone briga com a vírgula).
+    - **Arredondamento de centavos** (`arredondar`/`somarDinheiro` em `ui.ts`):
+      toda soma/agregação de dinheiro passa a arredondar (Financeiro,
+      `financeiro.ts`, totalPendente) — o total exibido bate com a soma das
+      linhas.
+    - **Status "atrasada" DERIVADO** (`statusEfetivo` em `gestao.ts`): cobrança
+      `pendente` com vencimento < hoje (LOCAL) aparece como **atrasada** (antes
+      "atrasada" era enum morto). Usado no badge, no filtro e no card de risco.
+    - **`pago_em` em data LOCAL** (`hojeLocal`) + **escolher a data do
+      pagamento** ao "Marcar paga" (seletor inline, default hoje) — corrige o
+      off-by-one do UTC que jogava um pagamento da noite para o mês seguinte.
+    - **`somarMeses` com clamp de dia** (31/01 +1mês → 28/02, não 03/03).
+    - **`valor_vm ≤ valor`** validado. **Filtro por status** (chips com
+      contagem: Todas/Pendentes/Atrasadas/Pagas/Canceladas; atrasadas em
+      vermelho) na aba Cobranças + resumo "X atrasado".
+    - **Pendente (roadmap financeiro):** contas a PAGAR (despesa futura) +
+      "saldo previsto"; "recebido no mês"/filtro por período no caixa;
+      categorias de entrada/saída; pagamento parcial/juros; unificar fonte da
+      VM (cobrança×contrato) p/ não haver risco de dupla contagem.
   - **VM na cobrança + "a receber" por mês (jul/2026):** a cobrança tem
     `vm_participa: boolean` + `valor_vm` (checkbox "VM Rocks participa" + campo
     de valor no form de Cobranças; o valor da VM pode diferir do total; vazio =

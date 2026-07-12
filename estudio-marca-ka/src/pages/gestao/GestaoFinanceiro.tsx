@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { listarClientes } from '../../lib/api'
-import { formatarBRL, formatarData, listarCobrancas } from '../../lib/gestao'
+import { formatarBRL, formatarData, listarCobrancas, statusEfetivo } from '../../lib/gestao'
 import type { Cliente, Cobranca } from '../../lib/database.types'
 import { linhasFinanceiro, resumoPorQuem, rotuloForma } from '../../lib/financeiro'
 import {
@@ -14,7 +14,7 @@ import {
 } from '../../lib/caixa'
 import { useToast } from '../../components/Toast'
 import { confirmar } from '../../lib/confirmar'
-import { parseValorBR } from '../../lib/ui'
+import { arredondar, parseValorBR, somarDinheiro } from '../../lib/ui'
 
 // ============================================================================
 // FINANCEIRO — gestor de caixa PESSOAL da KA. Junta:
@@ -108,9 +108,14 @@ export function GestaoFinanceiro() {
     return (id: string | null) => (id ? (m.get(id) ?? '') : '')
   }, [clientes])
 
-  // A receber = cobranças em aberto (pendente/atrasada), agrupadas por mês.
-  const aReceber = cobrancas.filter((c) => c.status === 'pendente' || c.status === 'atrasada')
-  const totalAReceber = aReceber.reduce((s, c) => s + Number(c.valor || 0), 0)
+  // A receber = cobranças em aberto (pendente/atrasada — status derivado por
+  // data), agrupadas por mês.
+  const emAberto = (c: Cobranca) => {
+    const s = statusEfetivo(c)
+    return s === 'pendente' || s === 'atrasada'
+  }
+  const aReceber = cobrancas.filter(emAberto)
+  const totalAReceber = somarDinheiro(aReceber.map((c) => Number(c.valor || 0)))
   const aReceberPorMes = agruparPorMes(aReceber, (c) => c.vencimento, (c) => Number(c.valor || 0))
 
   // Movimentações do caixa = cobranças PAGAS (entradas automáticas) + lançamentos à mão.
@@ -138,29 +143,29 @@ export function GestaoFinanceiro() {
     return [...deCobranca, ...deMao].sort((a, b) => (a.data < b.data ? 1 : a.data > b.data ? -1 : 0))
   }, [cobrancas, lancamentos, nomeCliente])
 
-  const totalEntradas = movimentos.filter((m) => m.tipo === 'entrada').reduce((s, m) => s + m.valor, 0)
-  const totalSaidas = movimentos.filter((m) => m.tipo === 'saida').reduce((s, m) => s + m.valor, 0)
-  const saldo = totalEntradas - totalSaidas
+  const totalEntradas = somarDinheiro(movimentos.filter((m) => m.tipo === 'entrada').map((m) => m.valor))
+  const totalSaidas = somarDinheiro(movimentos.filter((m) => m.tipo === 'saida').map((m) => m.valor))
+  const saldo = arredondar(totalEntradas - totalSaidas)
 
   // "Quem tem a receber" (KA/VM Rocks) — dos pagamentos do contrato.
   const linhas = linhasFinanceiro(clientes)
   const resumo = resumoPorQuem(linhas)
-  const totalContratoUnico = linhas.reduce((s, l) => s + l.unico, 0)
-  const totalContratoMensal = linhas.reduce((s, l) => s + l.mensal, 0)
+  const totalContratoUnico = somarDinheiro(linhas.map((l) => l.unico))
+  const totalContratoMensal = somarDinheiro(linhas.map((l) => l.mensal))
 
   // Só o que é da VM Rocks (o que ela tem a receber nos clientes que atende com
   // a KA). É a única coisa que a VM enxerga — nunca o caixa da KA.
   const linhasVM = linhas.filter((l) => l.rotulo === 'VM Rocks')
-  const totalVMUnico = linhasVM.reduce((s, l) => s + l.unico, 0)
-  const totalVMMensal = linhasVM.reduce((s, l) => s + l.mensal, 0)
+  const totalVMUnico = somarDinheiro(linhasVM.map((l) => l.unico))
+  const totalVMMensal = somarDinheiro(linhasVM.map((l) => l.mensal))
 
   // Cobranças em aberto onde a VM participa (valor dela = valor_vm, ou o total
   // se não foi informado) — agrupadas por mês.
   const valorDaVM = (c: Cobranca) => Number(c.valor_vm ?? c.valor ?? 0)
   const vmCobrancas = aReceber.filter((c) => c.vm_participa)
   const vmCobrancasPorMes = agruparPorMes(vmCobrancas, (c) => c.vencimento, valorDaVM)
-  const totalVMCobrancas = vmCobrancas.reduce((s, c) => s + valorDaVM(c), 0)
-  const totalVMGeral = totalVMUnico + totalVMCobrancas
+  const totalVMCobrancas = somarDinheiro(vmCobrancas.map(valorDaVM))
+  const totalVMGeral = arredondar(totalVMUnico + totalVMCobrancas)
 
   function abrirForm(tipo: TipoLancamento) {
     setFormTipo(tipo)
@@ -440,7 +445,7 @@ export function GestaoFinanceiro() {
                           <div className="mov__desc">{c.descricao}</div>
                           <div className="mov__meta">
                             {nomeCliente(c.cliente_id) || 'sem cliente'} · vence {formatarData(c.vencimento)}
-                            {c.status === 'atrasada' ? ' · atrasada' : ''}
+                            {statusEfetivo(c) === 'atrasada' ? ' · atrasada' : ''}
                             {c.vm_participa ? ' · VM Rocks' : ''}
                           </div>
                         </div>

@@ -1,4 +1,5 @@
 import type { Cliente, PagamentoContrato } from './database.types'
+import { arredondar } from './ui'
 
 // ============================================================================
 // Financeiro — soma "quanto cada um tem a receber" a partir dos pagamentos do
@@ -80,8 +81,8 @@ export function resumoPorQuem(linhas: LinhaFinanceiro[]): ResumoQuem[] {
   const map = new Map<string, ResumoQuem>()
   for (const l of linhas) {
     const cur = map.get(l.rotulo) ?? { chave: l.rotulo, unico: 0, mensal: 0, qtd: 0 }
-    cur.unico += l.unico
-    cur.mensal += l.mensal
+    cur.unico = arredondar(cur.unico + l.unico)
+    cur.mensal = arredondar(cur.mensal + l.mensal)
     cur.qtd += 1
     map.set(l.rotulo, cur)
   }

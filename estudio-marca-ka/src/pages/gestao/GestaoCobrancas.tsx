@@ -9,13 +9,14 @@ import {
   gerarMensalidades,
   listarCobrancas,
   marcarCobrancaPaga,
+  statusEfetivo,
   formatarBRL,
   formatarData,
 } from '../../lib/gestao'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
-import { autoAltura } from '../../lib/ui'
+import { autoAltura, parseValorBR, somarDinheiro, hojeLocal } from '../../lib/ui'
 import { rotuloStatus } from '../../lib/rotulos'
 import { Busca, normalizar } from '../../components/Busca'
 
@@ -27,9 +28,13 @@ const BADGE_COBRANCA: Record<CobrancaStatus, string> = {
 }
 
 // Soma `k` meses a uma data YYYY-MM-DD (para os vencimentos das parcelas).
+// Faz o "clamp" do dia: se o dia não existe no mês alvo (ex.: 31/01 + 1 mês),
+// usa o último dia do mês (28/02) em vez de rolar para março.
 function somarMeses(iso: string, k: number): string {
   const [y, m, d] = iso.split('-').map(Number)
-  const dt = new Date(y, m - 1 + k, d)
+  const alvoMes = m - 1 + k
+  const ultimoDia = new Date(y, alvoMes + 1, 0).getDate() // dia 0 do mês seguinte = último do alvo
+  const dt = new Date(y, alvoMes, Math.min(d, ultimoDia))
   const mm = String(dt.getMonth() + 1).padStart(2, '0')
   const dd = String(dt.getDate()).padStart(2, '0')
   return `${dt.getFullYear()}-${mm}-${dd}`
@@ -45,6 +50,7 @@ export function GestaoCobrancas() {
   const [ocupado, setOcupado] = useState<string | null>(null) // id da linha em ação
   const [carregando, setCarregando] = useState(true)
   const [busca, setBusca] = useState('')
+  const [filtroStatus, setFiltroStatus] = useState<'todos' | CobrancaStatus>('todos')
   // Formulário de cobrança avulsa (criar OU editar) — sem window.prompt.
   const [criando, setCriando] = useState(false)
   const [editandoId, setEditandoId] = useState<string | null>(null)
@@ -60,6 +66,9 @@ export function GestaoCobrancas() {
   // Colar link de pagamento (inline, por linha)
   const [linkPara, setLinkPara] = useState<string | null>(null)
   const [linkTemp, setLinkTemp] = useState('')
+  // Marcar como paga: escolher a DATA do pagamento (inline, por linha)
+  const [pagarPara, setPagarPara] = useState<string | null>(null)
+  const [pagarData, setPagarData] = useState('')
 
   const nomeCliente = useMemo(() => {
     const m = new Map(clientes.map((c) => [c.id, c.nome_marca]))
@@ -70,11 +79,19 @@ export function GestaoCobrancas() {
 
   const listaFiltrada = useMemo(() => {
     const q = normalizar(busca).trim()
-    if (!q) return lista
-    return lista.filter((c) =>
-      normalizar(`${nomeCliente(c.cliente_id)} ${c.descricao ?? ''}`).includes(q),
-    )
-  }, [lista, busca, nomeCliente])
+    return lista.filter((c) => {
+      if (filtroStatus !== 'todos' && statusEfetivo(c) !== filtroStatus) return false
+      if (q && !normalizar(`${nomeCliente(c.cliente_id)} ${c.descricao ?? ''}`).includes(q)) return false
+      return true
+    })
+  }, [lista, busca, filtroStatus, nomeCliente])
+
+  // Contagem por status (usando o status efetivo, com "atrasada" derivada).
+  const contagem = useMemo(() => {
+    const c = { pendente: 0, atrasada: 0, paga: 0, cancelada: 0 } as Record<CobrancaStatus, number>
+    for (const cb of lista) c[statusEfetivo(cb)]++
+    return c
+  }, [lista])
 
   function cobrarWhatsApp(c: Cobranca) {
     const cliente = c.cliente_id ? clientePorId.get(c.cliente_id) : null
@@ -181,7 +198,7 @@ export function GestaoCobrancas() {
 
   async function salvarForm() {
     const cliente = clientes.find((c) => c.id === novoCli)
-    const valor = Number(novoValor.replace(',', '.'))
+    const valor = parseValorBR(novoValor)
     if (!cliente || !novaDesc.trim() || !valor || valor <= 0 || !novoVenc) {
       setErro('Preencha o cliente, a descrição, um valor maior que zero e o vencimento.')
       return
@@ -191,7 +208,11 @@ export function GestaoCobrancas() {
     const tipo = novaForma === 'mensal' ? 'mensalidade' : 'avulsa'
     const descBase = novaDesc.trim()
     // Valor da VM: se ela participa e o campo ficou vazio, herda o valor total.
-    const valorVM = novaVM ? (novoValorVM.trim() ? Number(novoValorVM.replace(',', '.')) : valor) : null
+    const valorVM = novaVM ? (novoValorVM.trim() ? parseValorBR(novoValorVM) : valor) : null
+    if (valorVM != null && valorVM > valor) {
+      setErro('O valor da VM Rocks não pode ser maior que o valor cobrado do cliente.')
+      return
+    }
     setOcupado('nova')
     setErro(null)
     try {
@@ -293,11 +314,21 @@ export function GestaoCobrancas() {
     avisar('Link de pagamento copiado, envie ao cliente.')
   }
 
-  async function marcarPaga(c: Cobranca) {
-    setOcupado(c.id)
+  // Abre o seletor de data do pagamento (default hoje).
+  function abrirMarcarPaga(c: Cobranca) {
+    setLinkPara(null)
+    setPagarPara(c.id)
+    setPagarData(hojeLocal())
+  }
+
+  async function confirmarPaga() {
+    if (!pagarPara) return
+    setOcupado(pagarPara)
     try {
-      await marcarCobrancaPaga(c.id)
+      await marcarCobrancaPaga(pagarPara, pagarData || hojeLocal())
+      setPagarPara(null)
       await recarregar()
+      mostrar('Cobrança marcada como paga ✓', 'ok')
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
     } finally {
@@ -336,11 +367,16 @@ export function GestaoCobrancas() {
     }
   }
 
-  const pendentes = lista.filter((c) => c.status === 'pendente' || c.status === 'atrasada')
-  const totalPendente = pendentes.reduce((t, c) => t + Number(c.valor), 0)
+  const pendentes = lista.filter((c) => {
+    const s = statusEfetivo(c)
+    return s === 'pendente' || s === 'atrasada'
+  })
+  const totalPendente = somarDinheiro(pendentes.map((c) => Number(c.valor)))
+  const atrasadas = lista.filter((c) => statusEfetivo(c) === 'atrasada')
+  const totalAtrasado = somarDinheiro(atrasadas.map((c) => Number(c.valor)))
 
   const nParcelas = novaForma === 'parcelado' ? Math.min(24, Math.max(2, Number(novaVezes) || 2)) : 1
-  const valorNum = Number(novoValor.replace(',', '.')) || 0
+  const valorNum = parseValorBR(novoValor)
 
   return (
     <>
@@ -354,10 +390,36 @@ export function GestaoCobrancas() {
         <span className="espaco" />
         {pendentes.length > 0 && (
           <span style={{ fontSize: '0.8rem', color: 'var(--t-500)' }}>
-            {pendentes.length} pendente(s) · {formatarBRL(totalPendente)}
+            {pendentes.length} em aberto · {formatarBRL(totalPendente)}
+            {totalAtrasado > 0 && (
+              <>
+                {' '}
+                · <strong style={{ color: 'var(--erro)' }}>{formatarBRL(totalAtrasado)} atrasado</strong>
+              </>
+            )}
           </span>
         )}
       </div>
+
+      {lista.length > 0 && (
+        <div className="chips" style={{ marginBottom: '0.6rem' }}>
+          {([
+            ['todos', 'Todas', lista.length],
+            ['pendente', 'Pendentes', contagem.pendente],
+            ['atrasada', 'Atrasadas', contagem.atrasada],
+            ['paga', 'Pagas', contagem.paga],
+            ['cancelada', 'Canceladas', contagem.cancelada],
+          ] as const).map(([val, rot, n]) => (
+            <button
+              key={val}
+              className={`chip ${filtroStatus === val ? 'chip--on' : ''} ${val === 'atrasada' && n > 0 ? 'chip--alerta' : ''}`}
+              onClick={() => setFiltroStatus(val)}
+            >
+              {rot} <span className="chip__n">{n}</span>
+            </button>
+          ))}
+        </div>
+      )}
 
       {erro && !criando && <div className="erro-msg">{erro}</div>}
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
@@ -420,13 +482,11 @@ export function GestaoCobrancas() {
                     : 'Valor (R$)'}
               </label>
               <input
-                type="number"
+                type="text"
                 inputMode="decimal"
-                min={0}
-                step="0.01"
                 value={novoValor}
                 onChange={(e) => setNovoValor(e.target.value)}
-                placeholder="ex.: 500"
+                placeholder="ex.: 1.500,00"
               />
             </div>
             <div className="field">
@@ -446,10 +506,8 @@ export function GestaoCobrancas() {
               <div className="field">
                 <label>Valor da VM Rocks (R$)</label>
                 <input
-                  type="number"
+                  type="text"
                   inputMode="decimal"
-                  min={0}
-                  step="0.01"
                   value={novoValorVM}
                   onChange={(e) => setNovoValorVM(e.target.value)}
                   placeholder={`igual ao total (${novoValor || '0'})`}
@@ -537,7 +595,10 @@ export function GestaoCobrancas() {
                   <td className="num" data-label="Valor">{formatarBRL(c.valor)}</td>
                   <td data-label="Vencimento">{formatarData(c.vencimento)}</td>
                   <td data-label="Status">
-                    <span className={`badge ${BADGE_COBRANCA[c.status]}`}>{rotuloStatus('cobranca', c.status)}</span>
+                    {(() => {
+                      const s = statusEfetivo(c)
+                      return <span className={`badge ${BADGE_COBRANCA[s]}`}>{rotuloStatus('cobranca', s)}</span>
+                    })()}
                   </td>
                   <td data-label="Pagamento">
                     {c.link_pagamento ? (
@@ -584,7 +645,7 @@ export function GestaoCobrancas() {
                         <button
                           className="btn-mini"
                           disabled={ocupado === c.id}
-                          onClick={() => void marcarPaga(c)}
+                          onClick={() => abrirMarcarPaga(c)}
                         >
                           Marcar paga
                         </button>
@@ -595,6 +656,25 @@ export function GestaoCobrancas() {
                         >
                           Cancelar
                         </button>
+                        {pagarPara === c.id && (
+                          <div className="colar-link">
+                            <label style={{ fontSize: '0.78rem', color: 'var(--t-500)' }}>
+                              Data do pagamento
+                            </label>
+                            <input
+                              type="date"
+                              autoFocus
+                              value={pagarData}
+                              onChange={(e) => setPagarData(e.target.value)}
+                            />
+                            <button className="btn-mini" disabled={ocupado === c.id} onClick={() => void confirmarPaga()}>
+                              Confirmar
+                            </button>
+                            <button className="btn-mini" onClick={() => setPagarPara(null)}>
+                              Cancelar
+                            </button>
+                          </div>
+                        )}
                         {linkPara === c.id && (
                           <div className="colar-link">
                             <input

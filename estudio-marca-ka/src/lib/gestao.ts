@@ -70,6 +70,26 @@ export function formatarData(d: string | null | undefined): string {
   return data.toLocaleDateString('pt-BR')
 }
 
+// Data de hoje no fuso LOCAL como "YYYY-MM-DD" (não usar toISOString/UTC).
+function hojeLocalISO(): string {
+  const d = new Date()
+  const mm = String(d.getMonth() + 1).padStart(2, '0')
+  const dd = String(d.getDate()).padStart(2, '0')
+  return `${d.getFullYear()}-${mm}-${dd}`
+}
+
+// STATUS EFETIVO de uma cobrança: se está "pendente" e o vencimento já passou,
+// ela é "atrasada" (o status era só armazenado e nunca virava atrasada sozinho).
+// Derivado na leitura — não depende de nenhuma rotina que grave o estado.
+export function statusEfetivo(
+  c: { status: Cobranca['status']; vencimento: string | null | undefined },
+): Cobranca['status'] {
+  if (c.status === 'pendente' && c.vencimento && c.vencimento.slice(0, 10) < hojeLocalISO()) {
+    return 'atrasada'
+  }
+  return c.status
+}
+
 // ---- Ficha do cliente ---------------------------------------------------------
 
 export type FichaCliente = Partial<
@@ -697,8 +717,10 @@ export async function excluirCobranca(id: string): Promise<void> {
   await deleteDoc(doc(db, 'cobrancas', id))
 }
 
-export async function marcarCobrancaPaga(id: string): Promise<Cobranca> {
-  return atualizarCobranca(id, { status: 'paga', pago_em: agora() })
+export async function marcarCobrancaPaga(id: string, dataPagamento?: string): Promise<Cobranca> {
+  // Guarda a data do pagamento em LOCAL (YYYY-MM-DD): evita o off-by-one do UTC
+  // que jogava um pagamento da noite para o mês seguinte no fluxo de caixa.
+  return atualizarCobranca(id, { status: 'paga', pago_em: dataPagamento || hojeLocalISO() })
 }
 
 /**

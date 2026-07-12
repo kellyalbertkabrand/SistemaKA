@@ -44,6 +44,17 @@
   color: #8a4b1f;
 }
 
+/* Chip de filtro em estado de ALERTA (ex.: cobranças atrasadas > 0) */
+.chip--alerta {
+  border-color: rgba(178, 58, 58, 0.5);
+  color: var(--erro);
+}
+.chip--alerta.chip--on {
+  background: var(--erro);
+  color: #fff;
+  border-color: var(--erro);
+}
+
 /* Checkbox "VM Rocks participa" na cobrança */
 .check-vm {
   display: flex;
