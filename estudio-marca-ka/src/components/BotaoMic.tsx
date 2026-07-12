@@ -18,9 +18,9 @@ export function BotaoMic({
       aria-label={gravando ? 'Parar de gravar' : 'Ditar por voz'}
     >
       <span className="btn-mic__ico" aria-hidden>
-        {gravando ? '⏺' : '🎤'}
+        {gravando ? '⏹' : '🎤'}
       </span>
-      <span className="btn-mic__txt">{gravando ? 'Gravando…' : 'Falar'}</span>
+      <span className="btn-mic__txt">{gravando ? 'Parar' : 'Falar'}</span>
     </button>
   )
 }

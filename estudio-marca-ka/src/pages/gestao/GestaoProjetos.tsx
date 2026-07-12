@@ -887,9 +887,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
                         {rotuloResp(f.responsavel)}
                       </span>
                       {f.data && (
-                        <span className="fase__data" style={{ textTransform: 'none', letterSpacing: 0 }}>
-                          📅 {formatarData(f.data)}
-                        </span>
+                        <span className="fase__data data-chip">📅 {formatarData(f.data)}</span>
                       )}
                       {f.concluida_em && (
                         <span style={{ marginLeft: 6, color: 'var(--t-400)', textTransform: 'none', letterSpacing: 0 }}>

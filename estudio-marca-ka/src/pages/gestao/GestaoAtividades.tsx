@@ -348,7 +348,7 @@ export function GestaoAtividades() {
           <form className="add-ativ" onSubmit={(e) => void addNovo(e)}>
             <div className="campo-mic campo-mic--cresce">
               <textarea
-                rows={2}
+                rows={1}
                 value={novoTitulo}
                 ref={autoAltura}
                 onChange={(e) => {
@@ -494,8 +494,12 @@ export function GestaoAtividades() {
                         <span className="ativ__tag">projeto</span>
                         {it.pd.projeto_nome}
                         {it.pd.cliente_nome ? ` · ${it.pd.cliente_nome}` : ''}
-                        {it.pd.data && <> · 📅 {formatarData(it.pd.data)}</>}
                       </div>
+                      {it.pd.data && (
+                        <div className="ativ__data">
+                          <span className="data-chip">📅 {formatarData(it.pd.data)}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ) : (() => {
@@ -566,7 +570,11 @@ export function GestaoAtividades() {
                     </button>
                     <button className="ativ__corpo ativ__corpo--btn" onClick={() => iniciarEdicao(a)} title="Editar">
                       <div className="ativ__titulo">{a.titulo}</div>
-                      {a.data && <div className="ativ__sub">📅 {formatarData(a.data)}</div>}
+                      {a.data && (
+                        <div className="ativ__data">
+                          <span className="data-chip">📅 {formatarData(a.data)}</span>
+                        </div>
+                      )}
                     </button>
                     <div className="ativ__acoes">
                       <button className="btn-mini" disabled={salvando} title="Duplicar" onClick={() => void duplicar(a)}>
