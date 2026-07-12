@@ -319,3 +319,64 @@
     gap: 0.6rem;
   }
 }
+
+/* ============================================================
+   Home compacta: TODOS os quadradinhos cabem numa tela só,
+   sem precisar rolar (pedido da KA).
+   ============================================================ */
+.page--inicio {
+  padding-top: 1.2rem;
+  padding-bottom: 1.2rem;
+}
+.page__head--inicio {
+  margin-bottom: 0.9rem;
+}
+.page__head--inicio h1 {
+  font-size: 1.45rem;
+}
+.page__head--inicio p {
+  font-size: 0.8rem;
+  margin-top: 0.15rem;
+}
+.home-atalhos .atalho-grupo {
+  margin-bottom: 0.8rem;
+}
+.home-atalhos .atalho-grupo:last-child {
+  margin-bottom: 0;
+}
+.home-atalhos .atalho-grupo__tit {
+  margin-bottom: 0.4rem;
+  font-size: 0.62rem;
+}
+.home-atalhos .grade-atalhos {
+  gap: 0.5rem;
+}
+.home-atalhos .atalho-card {
+  min-height: 0;
+  padding: 0.6rem 0.5rem;
+  gap: 0.25rem;
+  border-radius: 12px;
+}
+.home-atalhos .atalho-card__ico svg {
+  width: 22px;
+  height: 22px;
+}
+.home-atalhos .atalho-card__nome {
+  font-size: 0.8rem;
+}
+
+/* Telas curtas: aperta ainda mais para garantir que caiba sem rolagem */
+@media (max-height: 740px) {
+  .page--inicio {
+    padding-top: 0.9rem;
+  }
+  .home-atalhos .atalho-grupo {
+    margin-bottom: 0.6rem;
+  }
+  .home-atalhos .atalho-card {
+    padding: 0.45rem 0.4rem;
+  }
+  .home-atalhos .atalho-card__nome {
+    font-size: 0.76rem;
+  }
+}

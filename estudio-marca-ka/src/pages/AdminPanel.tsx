@@ -204,7 +204,7 @@ export function AdminPanel() {
         ativo={aba}
         onSelecionar={(id) => irPara(id as Aba)}
       />
-      <div className="page">
+      <div className={`page${aba === 'inicio' ? ' page--inicio' : ''}`}>
         {aba === 'estudio' && slug ? (
           <>
             <p style={{ marginBottom: '1rem' }}>
@@ -216,28 +216,31 @@ export function AdminPanel() {
           </>
         ) : (
           <>
-            <div className="page__head">
+            <div className={`page__head${aba === 'inicio' ? ' page__head--inicio' : ''}`}>
               <div className="eyebrow">Painel KA</div>
               <h1>{cab.titulo}</h1>
               <p>{cab.sub}</p>
             </div>
 
-            {aba === 'inicio' &&
-              GRUPOS.map((g) => (
-                <div key={g.titulo} className="atalho-grupo">
-                  <div className="atalho-grupo__tit">{g.titulo}</div>
-                  <div className="grade-atalhos">
-                    {g.itens.map((t) => (
-                      <button key={t.id} className="atalho-card" onClick={() => irPara(t.id)}>
-                        <span className="atalho-card__ico">
-                          <IconeAtalho nome={t.icone} />
-                        </span>
-                        <span className="atalho-card__nome">{t.rotulo}</span>
-                      </button>
-                    ))}
+            {aba === 'inicio' && (
+              <div className="home-atalhos">
+                {GRUPOS.map((g) => (
+                  <div key={g.titulo} className="atalho-grupo">
+                    <div className="atalho-grupo__tit">{g.titulo}</div>
+                    <div className="grade-atalhos">
+                      {g.itens.map((t) => (
+                        <button key={t.id} className="atalho-card" onClick={() => irPara(t.id)}>
+                          <span className="atalho-card__ico">
+                            <IconeAtalho nome={t.icone} />
+                          </span>
+                          <span className="atalho-card__nome">{t.rotulo}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+            )}
 
             {aba === 'estudio' && (
               <>
