@@ -27,6 +27,8 @@ import {
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
+import { autoAltura } from '../../lib/ui'
+import { rotuloStatus } from '../../lib/rotulos'
 
 const BADGE_PROJETO: Record<ProjetoStatus, string> = {
   ativo: 'badge--azul',
@@ -220,11 +222,13 @@ export function GestaoProjetos() {
                   p.fases.find((f) => f.status === 'pendente')
                 return (
                   <tr key={p.id}>
-                    <td>
-                      <strong>{p.nome}</strong>
+                    <td className="cel-nome" data-label="Projeto">
+                      <button className="cel-abrir" onClick={() => setSel(p)} title="Abrir projeto">
+                        <strong>{p.nome}</strong>
+                      </button>
                     </td>
-                    <td>{p.cliente_nome || '-'}</td>
-                    <td>
+                    <td data-label="Cliente">{p.cliente_nome || '-'}</td>
+                    <td data-label="Progresso">
                       <div className="progresso">
                         <div className="progresso__barra">
                           <span style={{ width: `${pct}%` }} />
@@ -237,11 +241,11 @@ export function GestaoProjetos() {
                         </div>
                       )}
                     </td>
-                    <td>
-                      <span className={`badge ${BADGE_PROJETO[p.status]}`}>{p.status}</span>
+                    <td data-label="Status">
+                      <span className={`badge ${BADGE_PROJETO[p.status]}`}>{rotuloStatus('projeto', p.status)}</span>
                     </td>
                     <td className="acoes">
-                      <button className="btn-mini" onClick={() => setSel(p)}>
+                      <button className="btn-mini" onClick={() => setSel(p)} title="Abrir projeto">
                         Abrir
                       </button>
                       <button className="btn-mini" onClick={() => void copiarLink(p)}>
@@ -777,9 +781,15 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
             onChange={(e) => mudarNovaNome(e.target.value)}
             placeholder="Nome da nova fase"
           />
-          <input
+          <textarea
+            rows={1}
+            className="add-fase__desc"
             value={novaDesc}
-            onChange={(e) => setNovaDesc(e.target.value)}
+            ref={autoAltura}
+            onChange={(e) => {
+              setNovaDesc(e.target.value)
+              autoAltura(e.currentTarget)
+            }}
             placeholder="Descrição (o cliente vê)"
           />
           <SeletorResponsavel value={novaResp} onChange={setNovaResp} clienteNome={p.cliente_nome} />
@@ -848,12 +858,21 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
                       if (e.key === 'Escape') setEditIdx(null)
                     }}
                   />
-                  <input
+                  <textarea
+                    rows={1}
+                    className="fase__edit-desc"
                     value={editDesc}
-                    onChange={(e) => setEditDesc(e.target.value)}
+                    ref={autoAltura}
+                    onChange={(e) => {
+                      setEditDesc(e.target.value)
+                      autoAltura(e.currentTarget)
+                    }}
                     placeholder="Descrição (o cliente vê)"
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') void salvarEdicao()
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault()
+                        void salvarEdicao()
+                      }
                       if (e.key === 'Escape') setEditIdx(null)
                     }}
                   />

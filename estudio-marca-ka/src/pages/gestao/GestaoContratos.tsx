@@ -3,6 +3,7 @@ import type { Cliente, Contrato, ContratoStatus, ModeloContrato } from '../../li
 import { confirmar } from '../../lib/confirmar'
 import { listarClientes } from '../../lib/api'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
+import { rotuloStatus } from '../../lib/rotulos'
 import {
   atualizarContrato,
   criarContratoDoModelo,
@@ -37,10 +38,9 @@ export function GestaoContratos() {
   async function recarregar() {
     try {
       setCarregando(true)
-      setLista(await listarContratos())
-      listarClientes()
-        .then(setClientes)
-        .catch(() => setClientes([]))
+      const [cs, cl] = await Promise.all([listarContratos(), listarClientes()])
+      setLista(cs)
+      setClientes(cl)
       setErro(null)
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
@@ -138,7 +138,7 @@ export function GestaoContratos() {
             <h1>{vendo.titulo}</h1>
             <div className="pub-doc__meta">
               criado em {formatarData(vendo.criado_em)} ·{' '}
-              <span className={`badge ${BADGE_CONTRATO[vendo.status]}`}>{vendo.status}</span>
+              <span className={`badge ${BADGE_CONTRATO[vendo.status]}`}>{rotuloStatus('contrato', vendo.status)}</span>
             </div>
           </div>
           <pre className="conteudo">{vendo.conteudo}</pre>
@@ -206,7 +206,7 @@ export function GestaoContratos() {
                       : '-'}
                   </td>
                   <td data-label="Status">
-                    <span className={`badge ${BADGE_CONTRATO[c.status]}`}>{c.status}</span>
+                    <span className={`badge ${BADGE_CONTRATO[c.status]}`}>{rotuloStatus('contrato', c.status)}</span>
                   </td>
                   <td className="acoes">
                     <button className="btn-mini" onClick={() => setVendo(c)}>

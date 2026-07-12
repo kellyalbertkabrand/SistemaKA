@@ -8,6 +8,8 @@ import { CamposEditor } from './CamposEditor'
 import { PreviewCheia } from './PreviewCheia'
 import { salvarRascunho, lerRascunho, limparRascunho } from '../lib/persistencia'
 import { useHistorico } from '../lib/historico'
+import { confirmar } from '../lib/confirmar'
+import { useToast } from './Toast'
 import './editor.css'
 
 // Editor de peça: formulário (à esquerda) + pré-visualização ao vivo (à direita),
@@ -29,6 +31,7 @@ function sanearValores(v: ValoresPeca): ValoresPeca {
 }
 
 export function EditorPeca({ template }: { template: Template }) {
+  const { mostrar } = useToast()
   // Rascunho por template: se travar/recarregar, a peça volta preenchida.
   const CHAVE = `rascunho-peca-${template.id}`
   const inicial = useRef<{ valores: ValoresPeca; recuperado: boolean } | null>(null)
@@ -107,9 +110,9 @@ export function EditorPeca({ template }: { template: Template }) {
   }
 
   // Limpa a peça e o rascunho salvo (recomeça do zero).
-  function limparPeca() {
+  async function limparPeca() {
     if (ocupado) return
-    if (!confirm('Limpar tudo e começar do zero?')) return
+    if (!(await confirmar('Limpar tudo e começar do zero?', { perigo: true, confirmar: 'Limpar' }))) return
     limparRascunho(CHAVE)
     reporValores(valoresPadrao(template.campos))
     setRecuperado(false)
@@ -139,7 +142,7 @@ export function EditorPeca({ template }: { template: Template }) {
     } catch (e) {
       // Cancelamento pelo usuário: não é erro, some sem alerta e mantém o trabalho.
       if ((e as Error).message !== CANCELADO && (e as Error).name !== 'AbortError') {
-        alert((e as Error).message)
+        mostrar((e as Error).message, 'erro')
       }
     } finally {
       abortRef.current = null

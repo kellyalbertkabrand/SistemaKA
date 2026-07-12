@@ -1,6 +1,7 @@
 import type { Campo, ValoresPeca } from '../templates/types'
 import { FORMAS } from '../templates/formas'
 import { TEXTURAS_KA, estiloTextura } from '../templates/ka/texturas'
+import { useToast } from './Toast'
 
 interface Props {
   campos: Campo[]
@@ -45,15 +46,17 @@ function reduzirImagem(file: File, maxDim: number, qualidade: number): Promise<s
 }
 
 export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
+  const { mostrar } = useToast()
   async function handleImagem(id: string, file: File | undefined) {
     if (!file) return
     const ehVideo = file.type.startsWith('video')
     const limite = ehVideo ? MAX_VIDEO_MB : MAX_IMAGEM_MB
     if (file.size > limite * 1024 * 1024) {
-      alert(
+      mostrar(
         `Arquivo muito grande: ${(file.size / 1024 / 1024).toFixed(0)} MB. ` +
           `O máximo para ${ehVideo ? 'vídeo' : 'imagem'} é ${limite} MB. ` +
-          (ehVideo ? 'Dica: corte o vídeo (até ~60s) ou exporte em MP4 mais leve.' : ''),
+          (ehVideo ? 'Corte o vídeo (até ~60s) ou exporte em MP4 mais leve.' : ''),
+        'erro',
       )
       return
     }

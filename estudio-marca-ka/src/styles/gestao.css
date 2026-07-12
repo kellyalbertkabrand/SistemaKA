@@ -2,6 +2,14 @@
    Gestão interna — abas, tabelas, badges, formulários e fichas
    ============================================================ */
 
+/* Textarea que cresce sozinha (usada onde antes era um input de uma linha) */
+.campo-cresce {
+  min-height: 2.4em;
+  line-height: 1.4;
+  resize: vertical;
+  overflow: hidden;
+}
+
 /* ---- Abas do painel ---- */
 .painel-abas {
   display: flex;
@@ -693,7 +701,8 @@
   padding-top: 0.6rem;
   border-top: 1px dashed rgba(15, 25, 35, 0.12);
 }
-.add-fase input {
+.add-fase input,
+.add-fase__desc {
   font-family: var(--body);
   font-size: 0.85rem;
   border: 1px solid rgba(15, 25, 35, 0.14);
@@ -704,8 +713,27 @@
 .add-fase input:first-of-type {
   flex: 1 1 180px;
 }
-.add-fase input:nth-of-type(2) {
+/* Descrição da fase: caixa que cresce sozinha (texto que o cliente lê) */
+.add-fase__desc {
   flex: 2 1 260px;
+  min-height: 2.4em;
+  line-height: 1.4;
+  resize: vertical;
+  overflow: hidden;
+}
+.fase__edit-desc {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--body);
+  font-size: 0.9rem;
+  border: 1px solid rgba(61, 107, 126, 0.4);
+  border-radius: 8px;
+  padding: 0.5rem 0.6rem;
+  background: var(--bg-1);
+  min-height: 2.4em;
+  line-height: 1.4;
+  resize: vertical;
+  overflow: hidden;
 }
 
 /* ---- Seletor de status da fase (colorido) ---- */

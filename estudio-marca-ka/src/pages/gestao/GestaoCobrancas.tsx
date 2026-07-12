@@ -15,6 +15,8 @@ import {
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
+import { autoAltura } from '../../lib/ui'
+import { rotuloStatus } from '../../lib/rotulos'
 
 const BADGE_COBRANCA: Record<CobrancaStatus, string> = {
   pendente: 'badge--azul',
@@ -228,8 +230,8 @@ export function GestaoCobrancas() {
     } catch (e) {
       setErro(
         (e instanceof Error ? e.message : String(e)) +
-          ', a função "mp-criar-cobranca" precisa estar publicada no Supabase com o segredo ' +
-          'MP_ACCESS_TOKEN. Enquanto isso, você pode colar um link manual (botão ao lado).',
+          ' O link automático do Mercado Pago depende de uma Cloud Function (plano Blaze). ' +
+          'Enquanto isso, use "Colar link" para colar um link de pagamento manual.',
       )
     } finally {
       setOcupado(null)
@@ -346,10 +348,16 @@ export function GestaoCobrancas() {
             </div>
             <div className="field">
               <label>Descrição</label>
-              <input
+              <textarea
+                rows={1}
+                className="campo-cresce"
                 value={novaDesc}
-                onChange={(e) => setNovaDesc(e.target.value)}
-                placeholder="ex.: Criação de logo"
+                ref={autoAltura}
+                onChange={(e) => {
+                  setNovaDesc(e.target.value)
+                  autoAltura(e.currentTarget)
+                }}
+                placeholder="ex.: Criação de logo + identidade"
               />
             </div>
             <div className="field">
@@ -463,7 +471,7 @@ export function GestaoCobrancas() {
                   <td className="num" data-label="Valor">{formatarBRL(c.valor)}</td>
                   <td data-label="Vencimento">{formatarData(c.vencimento)}</td>
                   <td data-label="Status">
-                    <span className={`badge ${BADGE_COBRANCA[c.status]}`}>{c.status}</span>
+                    <span className={`badge ${BADGE_COBRANCA[c.status]}`}>{rotuloStatus('cobranca', c.status)}</span>
                   </td>
                   <td data-label="Pagamento">
                     {c.link_pagamento ? (

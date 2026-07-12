@@ -15,6 +15,8 @@ import {
   CANCELADO,
 } from '../lib/exportarVideo'
 import { metaPadrao } from '../lib/assinatura'
+import { confirmar } from '../lib/confirmar'
+import { useToast } from './Toast'
 import './carrossel.css'
 import './editor.css'
 
@@ -77,6 +79,7 @@ function campoTextoPrincipal(t: Template): string | null {
 // Construtor de carrossel: até 10 slides; em cada slide a pessoa escolhe o
 // template e preenche os campos. Baixa slide a slide ou tudo num .zip.
 export function Carrossel({ templates }: { templates: Template[] }) {
+  const { mostrar } = useToast()
   const porId = (id: string) => templates.find((t) => t.id === id) ?? templates[0]
 
   const seqRef = useRef(0)
@@ -171,9 +174,9 @@ export function Carrossel({ templates }: { templates: Template[] }) {
     setSel(slides.length)
   }
 
-  function removeSlide(i: number) {
+  async function removeSlide(i: number) {
     if (ocupado || slides.length <= 1) return
-    if (!confirm(`Apagar o slide ${i + 1}? Não dá para desfazer.`)) return
+    if (!(await confirmar(`Apagar o slide ${i + 1}? Não dá para desfazer.`, { perigo: true, confirmar: 'Apagar' }))) return
     setSlides((s) => s.filter((_, idx) => idx !== i))
     setSel((cur) => Math.max(0, cur > i ? cur - 1 : cur === i ? Math.min(i, slides.length - 2) : cur))
   }
@@ -191,9 +194,9 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   }
 
   // Começa um carrossel do zero, apagando o rascunho salvo.
-  function comecarNovo() {
+  async function comecarNovo() {
     if (ocupado) return
-    if (!confirm('Começar um carrossel novo? O atual será apagado.')) return
+    if (!(await confirmar('Começar um carrossel novo? O atual será apagado.', { perigo: true, confirmar: 'Começar novo' }))) return
     limparRascunho(CHAVE)
     seqRef.current = 0
     reporSlides([novoSlide()])
@@ -213,14 +216,17 @@ export function Carrossel({ templates }: { templates: Template[] }) {
 
   // Cria vários slides de uma vez a partir dos textos colados, todos no mesmo
   // layout escolhido. Depois é só ajustar cada um (cor, foto, texto).
-  function gerarEmLote() {
+  async function gerarEmLote() {
     if (ocupado) return
     const textos = quebrarEmSlides(textoLote, MAX_SLIDES)
     if (!textos.length) {
-      alert('Cole os textos primeiro. Separe cada slide com uma linha em branco.')
+      mostrar('Cole os textos primeiro. Separe cada slide com uma linha em branco.', 'erro')
       return
     }
-    if (slides.some(slideComConteudo) && !confirm(`Isto vai substituir o carrossel atual por ${textos.length} slide(s) novo(s). Continuar?`)) {
+    if (
+      slides.some(slideComConteudo) &&
+      !(await confirmar(`Isto vai substituir o carrossel atual por ${textos.length} slide(s) novo(s). Continuar?`, { perigo: true, confirmar: 'Substituir' }))
+    ) {
       return
     }
     const t = porId(tplLote)
@@ -298,7 +304,7 @@ export function Carrossel({ templates }: { templates: Template[] }) {
     } catch (e) {
       // Cancelamento pelo usuário: não é erro, some sem alerta e mantém o carrossel.
       if ((e as Error).message !== CANCELADO && (e as Error).name !== 'AbortError') {
-        alert((e as Error).message)
+        mostrar((e as Error).message, 'erro')
       }
     } finally {
       abortRef.current = null

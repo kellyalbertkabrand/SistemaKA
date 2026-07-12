@@ -81,6 +81,33 @@ Clientes no sistema:
   negócio / Pessoal** (`GRUPOS` + `IconeAtalho` SVG de linha na identidade da
   KA; estilos `.atalho-grupo`/`.grade-atalhos`/`.atalho-card` em `painel.css`).
   Clicar no **logotipo** (`SiteHeader`, agora `<Link to="/">`) volta pra home.
+  A home é **compacta** (`.page--inicio`/`.home-atalhos`): os 9 atalhos cabem
+  numa tela só, sem rolar (testado em iPhone SE/14/Pro Max).
+- **Varredura de fluidez (jul/2026) — helpers compartilhados + diálogos nativos
+  eliminados.** Auditoria profunda (navegação, CRUD, formulários/mobile,
+  consistência). O que foi padronizado:
+  - **`src/lib/ui.ts`** (`autoAltura` p/ textarea que cresce; `parseValorBR`
+    p/ "1.500,00" → número), **`src/lib/rotulos.ts`** (`rotuloStatus(tipo,
+    valor)` — status legível "Em andamento"/"Rascunho"/"Paga" em vez do enum
+    cru), **`src/hooks/useCopiar.ts`** (`useCopiar()` = copiar + toast +
+    fallback, no lugar das ~6 cópias de "copiar link" com feedback divergente).
+  - **Todos os `window.prompt/confirm/alert` do Estúdio migrados** (o iPhone os
+    suprime → "botão não faz nada"): `EditorPeca`/`Carrossel` usam `confirmar()`
+    e toast; `CamposEditor` usa toast; **Cuidadora nova** cria direto e abre a
+    ficha (sem prompt).
+  - **Falhas silenciosas** viram toast (Atividades: excluir/toggle/editar/
+    reordenar avisam quando o Firestore falha — acaba o "sumiu e voltou").
+  - **Criar cliente sem duplicar** (`novoIdRef` — retentativa vira update) +
+    toast; mensalidade aceita vírgula (campo texto + `parseValorBR`).
+  - **Teclado certo no mobile**: telefone `type="tel"` (Clientes/Cuidadoras/
+    Orçamentos). **Descrições** viram caixa que cresce (fase do projeto,
+    cobrança). **Tabela de Projetos** vira cartão no celular (`data-label`/
+    `cel-nome`) e o nome abre a ficha (como nas outras).
+  - **Textos corrigidos** (pós-Firebase): convite não promete e-mail que não
+    existe; erro do Mercado Pago não cita mais Supabase.
+  - **Pendente (roadmap, itens maiores):** ficha aberta na URL (`?aba=x&id=`)
+    p/ F5 e "voltar" do navegador não perderem o lugar; busca/filtro/ordenação
+    nas listas; migrar TODO `.nota`/`.erro-msg` inline restante para toast.
 
 O app independente vive em **`estudio-marca-ka/`**. (Na raiz do repo também há
 um sistema de notícias em Python, separado, que não tem relação com este app.)

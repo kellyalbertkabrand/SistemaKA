@@ -18,6 +18,9 @@ import {
 } from '../../lib/cuidadoras'
 import { formatarData } from '../../lib/gestao'
 import { confirmar } from '../../lib/confirmar'
+import { useToast } from '../../components/Toast'
+import { useCopiar } from '../../hooks/useCopiar'
+import { rotuloStatus } from '../../lib/rotulos'
 
 const BADGE_CUIDADORA: Record<CuidadoraStatus, string> = {
   pendente: 'badge--dourado',
@@ -28,10 +31,12 @@ const BADGE_CUIDADORA: Record<CuidadoraStatus, string> = {
 // CUIDADORAS — controle pessoal da KA: cadastro (manual ou pelo link público),
 // ficha com os dados e documentos anexados de cada cuidadora.
 export function GestaoCuidadoras() {
+  const { mostrar } = useToast()
+  const copiar = useCopiar()
   const [lista, setLista] = useState<Cuidadora[]>([])
   const [sel, setSel] = useState<Cuidadora | null>(null)
   const [erro, setErro] = useState<string | null>(null)
-  const [msg, setMsg] = useState<string | null>(null)
+  const [criando, setCriando] = useState(false)
   const [carregando, setCarregando] = useState(true)
 
   async function recarregar() {
@@ -51,29 +56,44 @@ export function GestaoCuidadoras() {
   }, [])
 
   async function copiarLinkCadastro() {
-    await navigator.clipboard.writeText(linkPublicoCadastroCuidadora())
-    setMsg(
-      'Link de cadastro copiado. Envie por WhatsApp para a pessoa que vai começar. ' +
-        'Ela preenche os dados, anexa os documentos e aparece aqui como "pendente".',
+    await copiar(
+      linkPublicoCadastroCuidadora(),
+      'Link de cadastro copiado. Envie no WhatsApp para a pessoa preencher a ficha.',
     )
-    setTimeout(() => setMsg(null), 6000)
   }
 
+  // Cria uma ficha em branco e abre para preencher — sem window.prompt (que o
+  // Safari do iPhone suprime, fazendo o botão "não fazer nada").
   async function nova() {
-    const nome = window.prompt('Nome da cuidadora:')
-    if (!nome?.trim()) return
+    if (criando) return
+    setCriando(true)
     try {
-      const c = await criarCuidadora({ nome: nome.trim() })
-      await recarregar()
+      const c = await criarCuidadora({ nome: 'Nova cuidadora' })
+      setLista((l) => [c, ...l])
       setSel(c)
+      mostrar('Ficha criada — preencha o nome e os dados.', 'ok')
     } catch (e) {
-      setErro(e instanceof Error ? e.message : String(e))
+      mostrar(e instanceof Error ? e.message : String(e), 'erro')
+    } finally {
+      setCriando(false)
     }
   }
 
   function abrir(c: Cuidadora) {
     setSel(c)
     if (!c.revisado) void marcarCuidadoraRevisada(c.id)
+  }
+
+  async function excluir(c: Cuidadora) {
+    if (!(await confirmar(`Excluir ${c.nome} e todos os documentos? Não dá para desfazer.`, { perigo: true, confirmar: 'Excluir' }))) return
+    setLista((l) => l.filter((x) => x.id !== c.id))
+    try {
+      await excluirCuidadora(c.id)
+      mostrar('Cuidadora excluída.', 'ok')
+    } catch (e) {
+      mostrar(e instanceof Error ? e.message : String(e), 'erro')
+      void recarregar()
+    }
   }
 
   if (sel) {
@@ -91,17 +111,16 @@ export function GestaoCuidadoras() {
   return (
     <>
       <div className="gestao-acoes">
-        <button className="btn" onClick={() => void copiarLinkCadastro()}>
-          Copiar link de cadastro
-        </button>
-        <button className="btn--voltar" onClick={() => void nova()}>
+        <button className="btn" onClick={() => void nova()} disabled={criando}>
           + Nova cuidadora
+        </button>
+        <button className="btn--ghost" onClick={() => void copiarLinkCadastro()}>
+          Copiar link de cadastro
         </button>
         <span className="espaco" />
       </div>
 
       {erro && <div className="erro-msg">{erro}</div>}
-      {msg && <div className="nota">{msg}</div>}
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
 
       {!carregando && lista.length === 0 && !erro && (
@@ -135,19 +154,22 @@ export function GestaoCuidadoras() {
                       <strong>{c.nome}</strong>
                     </button>
                     {!c.revisado && (
-                      <span className="badge badge--vermelho" style={{ marginLeft: 8 }}>
-                        novo
+                      <span className="badge badge--verde" style={{ marginLeft: 8 }}>
+                        NOVO
                       </span>
                     )}
                   </td>
                   <td data-label="Telefone">{c.telefone || '-'}</td>
                   <td data-label="Início">{c.inicio ? formatarData(c.inicio) : '-'}</td>
                   <td data-label="Status">
-                    <span className={`badge ${BADGE_CUIDADORA[c.status]}`}>{c.status}</span>
+                    <span className={`badge ${BADGE_CUIDADORA[c.status]}`}>{rotuloStatus('cuidadora', c.status)}</span>
                   </td>
                   <td className="acoes">
-                    <button className="btn-mini" onClick={() => abrir(c)}>
-                      Abrir ficha
+                    <button className="btn-mini" onClick={() => abrir(c)} title="Abrir ficha">
+                      Abrir
+                    </button>
+                    <button className="btn-mini btn-mini--perigo" onClick={() => void excluir(c)} title="Excluir">
+                      ✕
                     </button>
                   </td>
                 </tr>
@@ -223,7 +245,7 @@ function FichaCuidadoraView({ cuidadora, aoVoltar }: { cuidadora: Cuidadora; aoV
             </div>
             <div className="field">
               <label>Telefone / WhatsApp</label>
-              <input value={f.telefone ?? ''} onChange={(e) => campo('telefone', e.target.value || null)} />
+              <input type="tel" inputMode="tel" value={f.telefone ?? ''} onChange={(e) => campo('telefone', e.target.value || null)} />
             </div>
             <div className="field">
               <label>CPF</label>

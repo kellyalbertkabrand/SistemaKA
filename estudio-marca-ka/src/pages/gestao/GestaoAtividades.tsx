@@ -4,6 +4,7 @@ import { BotaoMic } from '../../components/BotaoMic'
 import { useToast } from '../../components/Toast'
 import { useDitado } from '../../hooks/useDitado'
 import { confirmar } from '../../lib/confirmar'
+import { autoAltura } from '../../lib/ui'
 import {
   listarProjetos,
   pendenciasDeProjetos,
@@ -34,14 +35,6 @@ import {
 // ============================================================================
 
 const ORDEM: CategoriaAtividade[] = CATEGORIAS
-
-// Faz a caixa de texto crescer sozinha conforme o conteúdo (some com a barra de
-// rolagem e mostra a tarefa inteira, sem cortar numa linha só).
-function autoAltura(el: HTMLTextAreaElement | null) {
-  if (!el) return
-  el.style.height = 'auto'
-  el.style.height = `${el.scrollHeight}px`
-}
 
 export function GestaoAtividades() {
   const { mostrar } = useToast()
@@ -171,6 +164,7 @@ export function GestaoAtividades() {
     try {
       await alternarAtividade(a.id, feito)
     } catch {
+      mostrar('Não deu para salvar, tente de novo.', 'erro')
       void recarregar()
     }
   }
@@ -193,7 +187,9 @@ export function GestaoAtividades() {
     setAtividades((l) => l.filter((x) => x.id !== a.id))
     try {
       await excluirAtividade(a.id)
+      mostrar('Tarefa excluída.', 'ok')
     } catch {
+      mostrar('Não deu para excluir, tente de novo.', 'erro')
       void recarregar()
     }
   }
@@ -219,6 +215,7 @@ export function GestaoAtividades() {
     try {
       await reordenarAtividades(arr.map((a) => a.id))
     } catch {
+      mostrar('Não deu para reordenar, tente de novo.', 'erro')
       void recarregar()
     }
   }
@@ -275,6 +272,7 @@ export function GestaoAtividades() {
     try {
       await editarAtividade(editId, dados)
     } catch {
+      mostrar('Não deu para salvar, tente de novo.', 'erro')
       void recarregar()
     }
   }

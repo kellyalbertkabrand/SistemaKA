@@ -1,6 +1,10 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { confirmar } from '../../lib/confirmar'
+import { useToast } from '../../components/Toast'
+import { useCopiar } from '../../hooks/useCopiar'
+import { parseValorBR } from '../../lib/ui'
+import { rotuloStatus } from '../../lib/rotulos'
 import type { Cliente, Usuario, PagamentoContrato } from '../../lib/database.types'
 import {
   criarCliente,
@@ -28,17 +32,19 @@ function ehNovo(c: Cliente): boolean {
 // Clientes & Acessos: ficha completa de cada cliente (dados cadastrais,
 // cobrança/mensalidade) + quem tem login vinculado à marca.
 export function GestaoClientes() {
+  const { mostrar } = useToast()
+  const copiar = useCopiar()
   const [params, setParams] = useSearchParams()
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [sel, setSel] = useState<Cliente | 'novo' | null>(null)
   const [erro, setErro] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
-  const [msg, setMsg] = useState<string | null>(null)
 
   async function copiarLinkCadastro() {
-    await navigator.clipboard.writeText(linkPublicoCadastro())
-    setMsg('Link de cadastro copiado! Envie ao cliente para ele preencher a ficha.')
-    setTimeout(() => setMsg(null), 5000)
+    await copiar(
+      linkPublicoCadastro(),
+      'Link de cadastro copiado! Envie ao cliente para preencher a ficha.',
+    )
   }
 
   // Abrir a ficha de um cadastro novo já o marca como visto (tira o "NOVO").
@@ -55,11 +61,13 @@ export function GestaoClientes() {
       { perigo: true, confirmar: 'Excluir' },
     )
     if (!ok) return
+    setClientes((l) => l.filter((x) => x.id !== c.id))
     try {
       await excluirCliente(c.id)
-      await recarregar()
+      mostrar('Cliente excluído.', 'ok')
     } catch (e) {
-      setErro(e instanceof Error ? e.message : String(e))
+      mostrar(e instanceof Error ? e.message : String(e), 'erro')
+      void recarregar()
     }
   }
 
@@ -128,8 +136,7 @@ export function GestaoClientes() {
           <span className="badge badge--verde">NOVO</span> na lista abaixo. Abra a ficha para revisar.
         </div>
       )}
-      {msg && <div className="nota">{msg}</div>}
-      {erro && <div className="erro-msg">{erro}</div>}
+      {erro && <div className="erro-msg" role="alert">{erro}</div>}
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
 
       {!carregando && clientes.length === 0 && !erro && (
@@ -180,7 +187,7 @@ export function GestaoClientes() {
                   </td>
                   <td data-label="Status">
                     <span className={`badge ${c.status === 'ativo' ? 'badge--verde' : 'badge--cinza'}`}>
-                      {c.status}
+                      {rotuloStatus('cliente', c.status)}
                     </span>
                   </td>
                   <td className="acoes">
@@ -205,12 +212,19 @@ export function GestaoClientes() {
 // Ficha do cliente: dados cadastrais + cobrança + acessos.
 // ---------------------------------------------------------------------------
 function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente | null; aoVoltar: () => void }) {
+  const { mostrar } = useToast()
   const criando = !cliente
   const [f, setF] = useState<FichaCliente>(
     cliente ? { ...cliente } : { status: 'ativo', dia_vencimento: 10, cobranca_ativa: false },
   )
+  // Valor digitado como texto (aceita "1.500,00"); vira número só ao salvar.
+  const [valorMensalTxt, setValorMensalTxt] = useState(
+    cliente?.valor_mensalidade != null ? String(cliente.valor_mensalidade).replace('.', ',') : '',
+  )
+  // Se a 1ª gravação (criar) já rodou, guarda o id para o "Salvar de novo" não
+  // criar um cliente duplicado — vira só uma atualização da ficha.
+  const novoIdRef = useRef<string | null>(null)
   const [salvando, setSalvando] = useState(false)
-  const [msg, setMsg] = useState<string | null>(null)
   const [erro, setErro] = useState<string | null>(null)
 
   function campo<K extends keyof FichaCliente>(k: K, v: FichaCliente[K]) {
@@ -225,32 +239,34 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente | null; aoVolt
     }
     setSalvando(true)
     setErro(null)
+    const valor = valorMensalTxt.trim() ? parseValorBR(valorMensalTxt) : null
     const dados: FichaCliente = {
       ...f,
       nome_marca: f.nome_marca.trim(),
-      valor_mensalidade:
-        f.valor_mensalidade == null || Number.isNaN(Number(f.valor_mensalidade))
-          ? null
-          : Number(f.valor_mensalidade),
+      valor_mensalidade: valor,
       dia_vencimento: Math.min(28, Math.max(1, Number(f.dia_vencimento) || 10)),
     }
     try {
       if (criando) {
-        // Cria o cliente e já grava a ficha completa; volta para a lista.
-        const novo = await criarCliente({
-          nome_marca: dados.nome_marca!,
-          instagram_handle: dados.instagram_handle ?? null,
-          segmento: dados.segmento ?? null,
-          site: dados.site ?? null,
-        })
-        await salvarFichaCliente(novo.id, dados)
+        // Cria o cliente (uma vez só, mesmo em retentativa) e grava a ficha.
+        if (!novoIdRef.current) {
+          const novo = await criarCliente({
+            nome_marca: dados.nome_marca!,
+            instagram_handle: dados.instagram_handle ?? null,
+            segmento: dados.segmento ?? null,
+            site: dados.site ?? null,
+          })
+          novoIdRef.current = novo.id
+        }
+        await salvarFichaCliente(novoIdRef.current, dados)
+        mostrar('Cliente criado ✓', 'ok')
         aoVoltar()
         return
       }
       await salvarFichaCliente(cliente!.id, dados)
-      setMsg('Ficha salva.')
-      setTimeout(() => setMsg(null), 2500)
+      mostrar('Ficha salva ✓', 'ok')
     } catch (err) {
+      mostrar(err instanceof Error ? err.message : String(err), 'erro')
       setErro(err instanceof Error ? err.message : String(err))
     } finally {
       setSalvando(false)
@@ -288,7 +304,7 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente | null; aoVolt
             </div>
             <div className="field">
               <label>Telefone / WhatsApp</label>
-              <input value={f.telefone ?? ''} onChange={(e) => campo('telefone', e.target.value || null)} />
+              <input type="tel" inputMode="tel" value={f.telefone ?? ''} onChange={(e) => campo('telefone', e.target.value || null)} />
             </div>
             <div className="field">
               <label>Instagram</label>
@@ -389,11 +405,11 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente | null; aoVolt
             <div className="field">
               <label>Mensalidade (R$)</label>
               <input
-                type="number"
-                min={0}
-                step="0.01"
-                value={f.valor_mensalidade ?? ''}
-                onChange={(e) => campo('valor_mensalidade', e.target.value === '' ? null : Number(e.target.value))}
+                type="text"
+                inputMode="decimal"
+                placeholder="0,00"
+                value={valorMensalTxt}
+                onChange={(e) => setValorMensalTxt(e.target.value)}
               />
             </div>
             <div className="field">
@@ -438,7 +454,6 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente | null; aoVolt
             <button className="btn" type="submit" disabled={salvando}>
               {salvando ? 'Salvando…' : 'Salvar ficha'}
             </button>
-            {msg && <span style={{ color: '#2e6b45', fontSize: '0.8rem' }}>{msg}</span>}
           </p>
         </form>
       </div>
@@ -690,15 +705,14 @@ function Acessos({ cliente, slug }: { cliente: Cliente; slug: string | null }) {
     setMsg(null)
     try {
       await convidarUsuario(email.trim().toLowerCase(), cliente.id, slug)
-      setMsg(`Convite enviado para ${email.trim()}. A pessoa recebe um link para criar a senha.`)
+      setMsg(
+        `Convite registrado para ${email.trim()}. Peça para a pessoa entrar (login com o Google ` +
+          `ou criar a senha) usando exatamente este e-mail — o acesso à marca é vinculado no 1º login.`,
+      )
       setEmail('')
       await recarregar()
     } catch (err) {
-      setErro(
-        (err instanceof Error ? err.message : String(err)) +
-          ', se a função "convidar-usuario" ainda não foi publicada no Supabase, convide pelo ' +
-          'painel (Authentication → Users → Invite user) e depois vincule aqui embaixo.',
-      )
+      setErro(err instanceof Error ? err.message : String(err))
     } finally {
       setOcupado(false)
     }

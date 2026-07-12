@@ -22,6 +22,7 @@ import {
   type NovoOrcamento,
 } from '../../lib/gestao'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
+import { rotuloStatus } from '../../lib/rotulos'
 
 const BADGE_ORC: Record<OrcamentoStatus, string> = {
   rascunho: 'badge--cinza',
@@ -169,7 +170,7 @@ export function GestaoOrcamentos() {
                   <td className="num" data-label="Valor">{formatarBRL(o.valor_total)}</td>
                   <td data-label="Validade">{formatarData(o.validade)}</td>
                   <td data-label="Status">
-                    <span className={`badge ${BADGE_ORC[o.status]}`}>{o.status}</span>
+                    <span className={`badge ${BADGE_ORC[o.status]}`}>{rotuloStatus('orcamento', o.status)}</span>
                   </td>
                   <td className="acoes">
                     {o.status === 'rascunho' && (
@@ -264,12 +265,17 @@ function EditorOrcamento({
 
   async function salvar(e: FormEvent) {
     e.preventDefault()
+    const itens = f.itens.filter((i) => i.descricao.trim())
+    if (itens.length === 0) {
+      setErro('Adicione ao menos um item (descrição e valor) antes de salvar.')
+      return
+    }
     setSalvando(true)
     setErro(null)
     try {
       const dados: NovoOrcamento = {
         ...f,
-        itens: f.itens.filter((i) => i.descricao.trim()),
+        itens,
         valor_total: total,
       }
       if (original) await atualizarOrcamento(original.id, dados)
@@ -366,6 +372,8 @@ function EditorOrcamento({
             <div className="field">
               <label>WhatsApp do destinatário</label>
               <input
+                type="tel"
+                inputMode="tel"
                 value={f.destinatario_telefone ?? ''}
                 onChange={(e) => campo('destinatario_telefone', e.target.value || null)}
                 placeholder="ex.: 41 99999-0000"
