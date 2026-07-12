@@ -77,6 +77,9 @@ service cloud.firestore {
 //     // Caixa pessoal da KA (Financeiro: entradas e saídas): só a KA.
 //     match /caixa/{id} { allow read, write: if ehKA(); }
 //
+//     // Métricas de acesso ao site (Relatórios → Desempenho do site): só a KA.
+//     match /site_metricas/{id} { allow read, write: if ehKA(); }
+//
 //     // CUIDADORAS (controle pessoal da KA): o link público /cadastro-cuidadora
 //     // pode CRIAR a ficha e os documentos anexados; ler/editar/apagar só a KA.
 //     match /cuidadoras/{id} {

@@ -3,6 +3,7 @@ import type { Cliente, Cobranca } from '../../lib/database.types'
 import { formatarBRL, formatarData, statusEfetivo } from '../../lib/gestao'
 import { somarDinheiro, arredondar, hojeLocal } from '../../lib/ui'
 import type { Lancamento } from '../../lib/caixa'
+import { DesempenhoSite } from './DesempenhoSite'
 
 // ============================================================================
 // RELATÓRIOS FINANCEIROS — escolhe um período e gera um relatório (recebido,
@@ -39,6 +40,7 @@ export function RelatorioFinanceiro({
   clientes: Cliente[]
 }) {
   const agora = new Date()
+  const [tipo, setTipo] = useState<'financeiro' | 'site'>('financeiro')
   const [ini, setIni] = useState(primeiroDia(agora.getFullYear(), agora.getMonth() + 1))
   const [fim, setFim] = useState(ultimoDia(agora.getFullYear(), agora.getMonth() + 1))
   const [rotuloPeriodo, setRotuloPeriodo] = useState('Este mês')
@@ -162,6 +164,19 @@ export function RelatorioFinanceiro({
 
   return (
     <div className="relatorio">
+      <div className="seg seg--rel nao-imprimir">
+        <button className={tipo === 'financeiro' ? 'seg__on' : ''} onClick={() => setTipo('financeiro')}>
+          Financeiro
+        </button>
+        <button className={tipo === 'site' ? 'seg__on' : ''} onClick={() => setTipo('site')}>
+          Desempenho do site
+        </button>
+      </div>
+
+      {tipo === 'site' && <DesempenhoSite cobrancas={cobrancas} />}
+
+      {tipo === 'financeiro' && (
+        <>
       {/* Controles (não vão para o PDF) */}
       <div className="rel-controles nao-imprimir">
         <div className="chips">
@@ -338,6 +353,8 @@ export function RelatorioFinanceiro({
 
         <div className="rel-doc__rodape">KA | Inteligência para Marcas · Kelly Albert</div>
       </div>
+        </>
+      )}
     </div>
   )
 }

@@ -538,6 +538,65 @@
   color: var(--erro);
 }
 
+/* ---- Desempenho do site ---- */
+.seg--rel {
+  margin-bottom: 1rem;
+}
+.site-aviso {
+  font-size: 0.8rem;
+  color: var(--t-600, #4a5560);
+  background: rgba(61, 107, 126, 0.07);
+  border: 1px solid rgba(61, 107, 126, 0.2);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.9rem;
+  line-height: 1.4;
+}
+.site-aviso a {
+  color: var(--essencia);
+  font-weight: 600;
+}
+.grafico-barras {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  height: 178px;
+  padding: 1.4rem 0.2rem 0;
+  overflow-x: auto;
+}
+.gb-col {
+  flex: 1 0 42px;
+  min-width: 42px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 0.3rem;
+}
+.gb-barra {
+  width: 70%;
+  min-height: 3px;
+  background: linear-gradient(180deg, var(--essencia), rgba(61, 107, 126, 0.7));
+  border-radius: 6px 6px 0 0;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.gb-valor {
+  position: absolute;
+  top: -1.1rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--marinho);
+  white-space: nowrap;
+}
+.gb-rot {
+  font-size: 0.62rem;
+  color: var(--t-500);
+  white-space: nowrap;
+}
+
 /* ---- Impressão (contrato/orçamento/relatório → PDF pelo navegador) ---- */
 @media print {
   body {

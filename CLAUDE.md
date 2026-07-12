@@ -649,6 +649,18 @@ Na ficha do cliente (`GestaoClientes.tsx` → `PagamentosContrato`), a seção
     `.nao-imprimir`) e **Baixar CSV** (com BOM p/ Excel). "Recebido" = cobranças
     PAGAS com `pago_em` no período (sempre KA) + lançamentos do caixa no período
     (por escopo). Estilos `.rel-*` em gestao.css.
+  - **Desempenho do site (jul/2026) — `DesempenhoSite.tsx` + `src/lib/site.ts`:**
+    2º sub-toggle dos Relatórios ("Financeiro / Desempenho do site"). Dashboard
+    das métricas de acesso ao site (kellyalbert.com.br): a KA **registra por
+    mês** (coleção `site_metricas`, id = "YYYY-MM" → upsert) visitas,
+    visitantes, páginas, leads e origem (opcional). Mostra cards do último mês
+    (com % de conversão e páginas/visita), **gráfico de barras** de visitas por
+    mês (`.grafico-barras`) e o **cruzamento Site × receita** (visitas × leads ×
+    receita paga do mês × R$/visita). Imprimir/PDF + CSV. ⚠️ **NÃO puxa o
+    tráfego sozinho** (app só front-end): os números são inseridos à mão (copia
+    do analytics); automatizar (Google Analytics/Netlify/Plausible) exige
+    backend/credenciais → plano Blaze. Aviso disso fica no topo do painel. Regra
+    Firestore `site_metricas` = só a KA.
 - **Dia do vencimento:** input de texto `inputMode="numeric"` que normaliza
   (não fica mais com "0" fixo/`025`); clampa 1–28 ao salvar.
 
