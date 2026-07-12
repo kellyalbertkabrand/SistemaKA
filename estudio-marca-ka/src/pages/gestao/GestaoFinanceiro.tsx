@@ -27,6 +27,32 @@ import { parseValorBR } from '../../lib/ui'
 
 const hoje = () => new Date().toISOString().slice(0, 10)
 
+// "2026-07-..." → "julho de 2026"
+function rotuloMes(chave: string): string {
+  const [y, m] = chave.split('-')
+  if (!y || !m) return 'Sem data'
+  return new Date(Number(y), Number(m) - 1, 1)
+    .toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+    .replace(/^./, (c) => c.toUpperCase())
+}
+
+// Agrupa itens por mês (YYYY-MM da data), somando o valor. Meses em ordem.
+function agruparPorMes<T>(
+  itens: T[],
+  getData: (t: T) => string,
+  getValor: (t: T) => number,
+): { chave: string; total: number; itens: T[] }[] {
+  const map = new Map<string, { chave: string; total: number; itens: T[] }>()
+  for (const it of itens) {
+    const chave = (getData(it) || '').slice(0, 7) || 'sem-data'
+    const cur = map.get(chave) ?? { chave, total: 0, itens: [] }
+    cur.total += getValor(it)
+    cur.itens.push(it)
+    map.set(chave, cur)
+  }
+  return [...map.values()].sort((a, b) => (a.chave < b.chave ? -1 : 1))
+}
+
 interface Mov {
   chave: string
   tipo: TipoLancamento
@@ -82,9 +108,10 @@ export function GestaoFinanceiro() {
     return (id: string | null) => (id ? (m.get(id) ?? '') : '')
   }, [clientes])
 
-  // A receber = cobranças em aberto (pendente/atrasada).
+  // A receber = cobranças em aberto (pendente/atrasada), agrupadas por mês.
   const aReceber = cobrancas.filter((c) => c.status === 'pendente' || c.status === 'atrasada')
   const totalAReceber = aReceber.reduce((s, c) => s + Number(c.valor || 0), 0)
+  const aReceberPorMes = agruparPorMes(aReceber, (c) => c.vencimento, (c) => Number(c.valor || 0))
 
   // Movimentações do caixa = cobranças PAGAS (entradas automáticas) + lançamentos à mão.
   const movimentos: Mov[] = useMemo(() => {
@@ -126,6 +153,14 @@ export function GestaoFinanceiro() {
   const linhasVM = linhas.filter((l) => l.rotulo === 'VM Rocks')
   const totalVMUnico = linhasVM.reduce((s, l) => s + l.unico, 0)
   const totalVMMensal = linhasVM.reduce((s, l) => s + l.mensal, 0)
+
+  // Cobranças em aberto onde a VM participa (valor dela = valor_vm, ou o total
+  // se não foi informado) — agrupadas por mês.
+  const valorDaVM = (c: Cobranca) => Number(c.valor_vm ?? c.valor ?? 0)
+  const vmCobrancas = aReceber.filter((c) => c.vm_participa)
+  const vmCobrancasPorMes = agruparPorMes(vmCobrancas, (c) => c.vencimento, valorDaVM)
+  const totalVMCobrancas = vmCobrancas.reduce((s, c) => s + valorDaVM(c), 0)
+  const totalVMGeral = totalVMUnico + totalVMCobrancas
 
   function abrirForm(tipo: TipoLancamento) {
     setFormTipo(tipo)
@@ -214,10 +249,11 @@ export function GestaoFinanceiro() {
           <div className="fin-cards">
             <div className="fin-card fin-card--vm">
               <div className="fin-card__quem">VM Rocks tem a receber</div>
-              <div className="fin-card__valor">{formatarBRL(totalVMUnico)}</div>
+              <div className="fin-card__valor">{formatarBRL(totalVMGeral)}</div>
               {totalVMMensal > 0 && <div className="fin-card__mensal">+ {formatarBRL(totalVMMensal)}/mês</div>}
               <div className="fin-card__qtd">
-                {linhasVM.length} {linhasVM.length === 1 ? 'pagamento' : 'pagamentos'} · {new Set(linhasVM.map((l) => l.cliente_id)).size} cliente(s)
+                {vmCobrancas.length + linhasVM.length} item(ns) ·{' '}
+                {new Set([...vmCobrancas.map((c) => c.cliente_id), ...linhasVM.map((l) => l.cliente_id)]).size} cliente(s)
               </div>
             </div>
           </div>
@@ -228,42 +264,76 @@ export function GestaoFinanceiro() {
             {' '}o seu caixa nem as finanças dos outros clientes.
           </p>
 
-          {linhasVM.length === 0 ? (
+          {vmCobrancas.length === 0 && linhasVM.length === 0 ? (
             <div className="card">
               <h3>Nada a receber para a VM Rocks ainda.</h3>
               <p>
-                Na ficha de um cliente (aba <strong>Clientes</strong> → “Pagamentos do contrato”),
-                marque um pagamento com <strong>quem recebe = VM Rocks</strong>. Ele aparece aqui.
+                Ao criar uma cobrança (aba <strong>Cobranças</strong>), marque{' '}
+                <strong>“VM Rocks participa”</strong> e informe o valor dela. Ou, na ficha de um
+                cliente, marque um pagamento com <strong>quem recebe = VM Rocks</strong>. Aparece aqui.
               </p>
             </div>
           ) : (
             <>
-              <p className="fin-dica">Toque num item para editar na ficha do cliente.</p>
-              <div className="fin-lista">
-                {linhasVM
-                  .slice()
-                  .sort((a, b) => b.unico + b.mensal - (a.unico + a.mensal))
-                  .map((l, i) => (
-                    <button
-                      key={`${l.cliente_id}-${i}`}
-                      className="fin-item fin-item--btn"
-                      onClick={() => setParams({ aba: 'clientes', id: l.cliente_id })}
-                      title="Editar na ficha do cliente"
-                    >
-                      <div className="fin-item__corpo">
-                        <div className="fin-item__cliente">{l.cliente_nome}</div>
-                        <div className="fin-item__meta">
-                          {rotuloForma(l, formatarBRL)}
-                          {l.data ? ` · ${formatarData(l.data)}` : ''}
-                        </div>
+              {/* Cobranças da VM, por mês */}
+              {vmCobrancasPorMes.length > 0 && (
+                <section className="fin-secao">
+                  <h3 className="fin-secao__tit">A receber — por mês (cobranças)</h3>
+                  {vmCobrancasPorMes.map((g) => (
+                    <div key={g.chave} className="mes-grupo">
+                      <div className="mes-grupo__cab">
+                        <span className="mes-grupo__nome">{rotuloMes(g.chave)}</span>
+                        <span className="mes-grupo__total">{formatarBRL(g.total)}</span>
                       </div>
-                      <div className="fin-item__valor">
-                        {l.unico > 0 && formatarBRL(l.unico)}
-                        {l.mensal > 0 && `${formatarBRL(l.mensal)}/mês`}
+                      <div className="fin-lista">
+                        {g.itens.map((c) => (
+                          <div key={c.id} className="mov mov--receber">
+                            <div className="mov__corpo">
+                              <div className="mov__desc">{c.descricao}</div>
+                              <div className="mov__meta">
+                                {nomeCliente(c.cliente_id) || 'sem cliente'} · vence {formatarData(c.vencimento)}
+                              </div>
+                            </div>
+                            <div className="mov__valor mov__valor--receber">{formatarBRL(valorDaVM(c))}</div>
+                          </div>
+                        ))}
                       </div>
-                    </button>
+                    </div>
                   ))}
-              </div>
+                </section>
+              )}
+
+              {/* Pagamentos de contrato marcados como VM */}
+              {linhasVM.length > 0 && (
+                <section className="fin-secao">
+                  <h3 className="fin-secao__tit">Por contrato</h3>
+                  <div className="fin-lista">
+                    {linhasVM
+                      .slice()
+                      .sort((a, b) => b.unico + b.mensal - (a.unico + a.mensal))
+                      .map((l, i) => (
+                        <button
+                          key={`${l.cliente_id}-${i}`}
+                          className="fin-item fin-item--btn"
+                          onClick={() => setParams({ aba: 'clientes', id: l.cliente_id })}
+                          title="Editar na ficha do cliente"
+                        >
+                          <div className="fin-item__corpo">
+                            <div className="fin-item__cliente">{l.cliente_nome}</div>
+                            <div className="fin-item__meta">
+                              {rotuloForma(l, formatarBRL)}
+                              {l.data ? ` · ${formatarData(l.data)}` : ''}
+                            </div>
+                          </div>
+                          <div className="fin-item__valor">
+                            {l.unico > 0 && formatarBRL(l.unico)}
+                            {l.mensal > 0 && `${formatarBRL(l.mensal)}/mês`}
+                          </div>
+                        </button>
+                      ))}
+                  </div>
+                </section>
+              )}
             </>
           )}
         </>
@@ -353,24 +423,33 @@ export function GestaoFinanceiro() {
             </div>
           )}
 
-          {/* A receber (cobranças em aberto) */}
+          {/* A receber (cobranças em aberto) — POR MÊS */}
           {aReceber.length > 0 && (
             <section className="fin-secao">
-              <h3 className="fin-secao__tit">A receber — cobranças em aberto</h3>
-              <div className="fin-lista">
-                {aReceber.map((c) => (
-                  <div key={c.id} className="mov mov--receber">
-                    <div className="mov__corpo">
-                      <div className="mov__desc">{c.descricao}</div>
-                      <div className="mov__meta">
-                        {nomeCliente(c.cliente_id) || 'sem cliente'} · vence {formatarData(c.vencimento)}
-                        {c.status === 'atrasada' ? ' · atrasada' : ''}
-                      </div>
-                    </div>
-                    <div className="mov__valor mov__valor--receber">{formatarBRL(c.valor)}</div>
+              <h3 className="fin-secao__tit">A receber — por mês</h3>
+              {aReceberPorMes.map((g) => (
+                <div key={g.chave} className="mes-grupo">
+                  <div className="mes-grupo__cab">
+                    <span className="mes-grupo__nome">{rotuloMes(g.chave)}</span>
+                    <span className="mes-grupo__total">{formatarBRL(g.total)}</span>
                   </div>
-                ))}
-              </div>
+                  <div className="fin-lista">
+                    {g.itens.map((c) => (
+                      <div key={c.id} className="mov mov--receber">
+                        <div className="mov__corpo">
+                          <div className="mov__desc">{c.descricao}</div>
+                          <div className="mov__meta">
+                            {nomeCliente(c.cliente_id) || 'sem cliente'} · vence {formatarData(c.vencimento)}
+                            {c.status === 'atrasada' ? ' · atrasada' : ''}
+                            {c.vm_participa ? ' · VM Rocks' : ''}
+                          </div>
+                        </div>
+                        <div className="mov__valor mov__valor--receber">{formatarBRL(c.valor)}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </section>
           )}
 

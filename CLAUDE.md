@@ -596,6 +596,13 @@ Na ficha do cliente (`GestaoClientes.tsx` → `PagamentosContrato`), a seção
     envia); quando o **login por papel** (parceiro) entrar, essa é exatamente a
     tela que a VM verá (o caixa `caixa` e o resto ficam fora do escopo dela).
     O `caixa` pessoal (entradas/saídas) é sempre só da KA.
+  - **VM na cobrança + "a receber" por mês (jul/2026):** a cobrança tem
+    `vm_participa: boolean` + `valor_vm` (checkbox "VM Rocks participa" + campo
+    de valor no form de Cobranças; o valor da VM pode diferir do total; vazio =
+    herda o total). Cobranças em aberto com `vm_participa` entram na visão da VM
+    (por valor_vm). O Financeiro mostra o **"A receber" agrupado por MÊS**
+    (`agruparPorMes`/`rotuloMes` em GestaoFinanceiro), tanto no Meu caixa quanto
+    na visão VM (com total por mês). Etiqueta `VM` na linha da cobrança.
 - **Dia do vencimento:** input de texto `inputMode="numeric"` que normaliza
   (não fica mais com "0" fixo/`025`); clampa 1–28 ao salvar.
 

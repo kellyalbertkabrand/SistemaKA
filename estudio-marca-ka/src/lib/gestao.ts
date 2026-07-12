@@ -651,7 +651,7 @@ export type NovaCobranca = Pick<
   Cobranca,
   'cliente_id' | 'tipo' | 'descricao' | 'valor' | 'vencimento'
 > &
-  Partial<Pick<Cobranca, 'competencia' | 'link_pagamento' | 'telefone'>>
+  Partial<Pick<Cobranca, 'competencia' | 'link_pagamento' | 'telefone' | 'vm_participa' | 'valor_vm'>>
 
 export async function criarCobranca(dados: NovaCobranca): Promise<Cobranca> {
   const novo = limpar({
@@ -661,6 +661,8 @@ export async function criarCobranca(dados: NovaCobranca): Promise<Cobranca> {
     descricao: dados.descricao,
     valor: dados.valor,
     vencimento: dados.vencimento,
+    vm_participa: dados.vm_participa ?? false,
+    valor_vm: dados.valor_vm ?? null,
     telefone: dados.telefone ?? null,
     competencia: dados.competencia ?? null,
     status: 'pendente',
@@ -679,7 +681,10 @@ export async function criarCobranca(dados: NovaCobranca): Promise<Cobranca> {
 export async function atualizarCobranca(
   id: string,
   dados: Partial<
-    Pick<Cobranca, 'status' | 'link_pagamento' | 'pago_em' | 'vencimento' | 'valor' | 'descricao' | 'cliente_id'>
+    Pick<
+      Cobranca,
+      'status' | 'link_pagamento' | 'pago_em' | 'vencimento' | 'valor' | 'descricao' | 'cliente_id' | 'vm_participa' | 'valor_vm'
+    >
   >,
 ): Promise<Cobranca> {
   await updateDoc(doc(db, 'cobrancas', id), limpar({ ...dados }))

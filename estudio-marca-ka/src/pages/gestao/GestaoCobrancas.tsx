@@ -54,6 +54,9 @@ export function GestaoCobrancas() {
   const [novoVenc, setNovoVenc] = useState('')
   const [novaForma, setNovaForma] = useState<'avista' | 'parcelado' | 'mensal'>('avista')
   const [novaVezes, setNovaVezes] = useState('2')
+  // VM Rocks participa desta cobrança? (aparece na visão financeira dela)
+  const [novaVM, setNovaVM] = useState(false)
+  const [novoValorVM, setNovoValorVM] = useState('')
   // Colar link de pagamento (inline, por linha)
   const [linkPara, setLinkPara] = useState<string | null>(null)
   const [linkTemp, setLinkTemp] = useState('')
@@ -147,6 +150,8 @@ export function GestaoCobrancas() {
     setNovoVenc(new Date().toISOString().slice(0, 10))
     setNovaForma('avista')
     setNovaVezes('2')
+    setNovaVM(false)
+    setNovoValorVM('')
     setErro(null)
     setCriando(true)
   }
@@ -163,6 +168,8 @@ export function GestaoCobrancas() {
     setNovoVenc(c.vencimento)
     setNovaForma(c.tipo === 'mensalidade' ? 'mensal' : 'avista')
     setNovaVezes('2')
+    setNovaVM(c.vm_participa ?? false)
+    setNovoValorVM(c.valor_vm != null ? String(c.valor_vm).replace('.', ',') : '')
     setErro(null)
     setCriando(true)
   }
@@ -183,6 +190,8 @@ export function GestaoCobrancas() {
     const parcelas = novaForma === 'parcelado' ? Math.min(24, Math.max(2, Number(novaVezes) || 2)) : 1
     const tipo = novaForma === 'mensal' ? 'mensalidade' : 'avulsa'
     const descBase = novaDesc.trim()
+    // Valor da VM: se ela participa e o campo ficou vazio, herda o valor total.
+    const valorVM = novaVM ? (novoValorVM.trim() ? Number(novoValorVM.replace(',', '.')) : valor) : null
     setOcupado('nova')
     setErro(null)
     try {
@@ -193,6 +202,8 @@ export function GestaoCobrancas() {
           descricao: descBase,
           valor,
           vencimento: novoVenc,
+          vm_participa: novaVM,
+          valor_vm: valorVM,
         })
         mostrar('Cobrança atualizada')
       } else {
@@ -201,7 +212,14 @@ export function GestaoCobrancas() {
           const desc = parcelas > 1 ? `${descBase} (${k + 1}/${parcelas})` : descBase
           const venc = somarMeses(novoVenc, k)
           if (editandoId && k === 0) {
-            await atualizarCobranca(editandoId, { cliente_id: cliente.id, descricao: desc, valor, vencimento: venc })
+            await atualizarCobranca(editandoId, {
+              cliente_id: cliente.id,
+              descricao: desc,
+              valor,
+              vencimento: venc,
+              vm_participa: novaVM,
+              valor_vm: valorVM,
+            })
           } else {
             await criarCobranca({
               cliente_id: cliente.id,
@@ -210,6 +228,8 @@ export function GestaoCobrancas() {
               valor,
               vencimento: venc,
               telefone: cliente.telefone ?? null,
+              vm_participa: novaVM,
+              valor_vm: valorVM,
             })
           }
         }
@@ -413,6 +433,30 @@ export function GestaoCobrancas() {
               <label>{novaForma === 'parcelado' ? '1º vencimento' : 'Vencimento'}</label>
               <input type="date" value={novoVenc} onChange={(e) => setNovoVenc(e.target.value)} />
             </div>
+
+            <div className="field campo-toda">
+              <label className="check-vm">
+                <input type="checkbox" checked={novaVM} onChange={(e) => setNovaVM(e.target.checked)} />
+                <span>
+                  <strong>VM Rocks participa</strong> desta cobrança (aparece no financeiro dela)
+                </span>
+              </label>
+            </div>
+            {novaVM && (
+              <div className="field">
+                <label>Valor da VM Rocks (R$)</label>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  step="0.01"
+                  value={novoValorVM}
+                  onChange={(e) => setNovoValorVM(e.target.value)}
+                  placeholder={`igual ao total (${novoValor || '0'})`}
+                />
+                <span className="campo-ajuda">Deixe vazio se for o mesmo valor cobrado do cliente.</span>
+              </div>
+            )}
           </div>
 
           {novaForma === 'parcelado' && valorNum > 0 && (
@@ -482,6 +526,11 @@ export function GestaoCobrancas() {
                     {c.tipo === 'mensalidade' && (
                       <span className="badge badge--dourado" style={{ marginLeft: 6 }}>
                         mensal
+                      </span>
+                    )}
+                    {c.vm_participa && (
+                      <span className="badge badge--vm-mini" style={{ marginLeft: 6 }} title={c.valor_vm != null ? `VM Rocks: ${formatarBRL(c.valor_vm)}` : 'VM Rocks'}>
+                        VM
                       </span>
                     )}
                   </td>

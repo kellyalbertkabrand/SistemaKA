@@ -179,6 +179,11 @@ export interface Cobranca {
   descricao: string
   valor: number
   vencimento: string
+  /** VM Rocks participa desta cobrança (aparece na visão financeira dela). */
+  vm_participa?: boolean | null
+  /** Quanto a VM Rocks tem a receber nesta cobrança (às vezes difere do valor
+   * total cobrado do cliente). Usado só quando `vm_participa`. */
+  valor_vm?: number | null
   /** Telefone do destinatário (copiado do orçamento), para o WhatsApp. */
   telefone?: string | null
   competencia: string | null
