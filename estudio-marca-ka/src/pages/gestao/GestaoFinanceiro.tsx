@@ -46,6 +46,9 @@ export function GestaoFinanceiro() {
   const [lancamentos, setLancamentos] = useState<Lancamento[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
+  // Visão: "Meu caixa" (pessoal da KA) OU "A receber da VM Rocks" (só o que é
+  // dela — é a prévia do que a VM verá quando entrar com o login por papel).
+  const [visao, setVisao] = useState<'caixa' | 'vm'>('caixa')
 
   // Formulário de entrada/saída (à mão)
   const [formTipo, setFormTipo] = useState<TipoLancamento | null>(null)
@@ -118,6 +121,12 @@ export function GestaoFinanceiro() {
   const totalContratoUnico = linhas.reduce((s, l) => s + l.unico, 0)
   const totalContratoMensal = linhas.reduce((s, l) => s + l.mensal, 0)
 
+  // Só o que é da VM Rocks (o que ela tem a receber nos clientes que atende com
+  // a KA). É a única coisa que a VM enxerga — nunca o caixa da KA.
+  const linhasVM = linhas.filter((l) => l.rotulo === 'VM Rocks')
+  const totalVMUnico = linhasVM.reduce((s, l) => s + l.unico, 0)
+  const totalVMMensal = linhasVM.reduce((s, l) => s + l.mensal, 0)
+
   function abrirForm(tipo: TipoLancamento) {
     setFormTipo(tipo)
     setEditId(null)
@@ -189,6 +198,78 @@ export function GestaoFinanceiro() {
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
 
       {!carregando && (
+        <div className="seg" style={{ marginBottom: '1rem' }}>
+          <button className={visao === 'caixa' ? 'seg__on' : ''} onClick={() => setVisao('caixa')}>
+            Meu caixa
+          </button>
+          <button className={visao === 'vm' ? 'seg__on' : ''} onClick={() => setVisao('vm')}>
+            A receber — VM Rocks
+          </button>
+        </div>
+      )}
+
+      {/* ===== VISÃO VM ROCKS — só o que é dela (prévia do login da parceira) ===== */}
+      {!carregando && visao === 'vm' && (
+        <>
+          <div className="fin-cards">
+            <div className="fin-card fin-card--vm">
+              <div className="fin-card__quem">VM Rocks tem a receber</div>
+              <div className="fin-card__valor">{formatarBRL(totalVMUnico)}</div>
+              {totalVMMensal > 0 && <div className="fin-card__mensal">+ {formatarBRL(totalVMMensal)}/mês</div>}
+              <div className="fin-card__qtd">
+                {linhasVM.length} {linhasVM.length === 1 ? 'pagamento' : 'pagamentos'} · {new Set(linhasVM.map((l) => l.cliente_id)).size} cliente(s)
+              </div>
+            </div>
+          </div>
+
+          <p className="fin-dica">
+            Esta é a visão que a <strong>VM Rocks</strong> terá quando entrar com o login dela: só
+            o que ela tem a receber, nos clientes que atende com você. Ela <strong>não vê</strong>
+            {' '}o seu caixa nem as finanças dos outros clientes.
+          </p>
+
+          {linhasVM.length === 0 ? (
+            <div className="card">
+              <h3>Nada a receber para a VM Rocks ainda.</h3>
+              <p>
+                Na ficha de um cliente (aba <strong>Clientes</strong> → “Pagamentos do contrato”),
+                marque um pagamento com <strong>quem recebe = VM Rocks</strong>. Ele aparece aqui.
+              </p>
+            </div>
+          ) : (
+            <>
+              <p className="fin-dica">Toque num item para editar na ficha do cliente.</p>
+              <div className="fin-lista">
+                {linhasVM
+                  .slice()
+                  .sort((a, b) => b.unico + b.mensal - (a.unico + a.mensal))
+                  .map((l, i) => (
+                    <button
+                      key={`${l.cliente_id}-${i}`}
+                      className="fin-item fin-item--btn"
+                      onClick={() => setParams({ aba: 'clientes', id: l.cliente_id })}
+                      title="Editar na ficha do cliente"
+                    >
+                      <div className="fin-item__corpo">
+                        <div className="fin-item__cliente">{l.cliente_nome}</div>
+                        <div className="fin-item__meta">
+                          {rotuloForma(l, formatarBRL)}
+                          {l.data ? ` · ${formatarData(l.data)}` : ''}
+                        </div>
+                      </div>
+                      <div className="fin-item__valor">
+                        {l.unico > 0 && formatarBRL(l.unico)}
+                        {l.mensal > 0 && `${formatarBRL(l.mensal)}/mês`}
+                      </div>
+                    </button>
+                  ))}
+              </div>
+            </>
+          )}
+        </>
+      )}
+
+      {!carregando && visao === 'caixa' && (
         <>
           {/* Resumo em cards */}
           <div className="fin-cards">

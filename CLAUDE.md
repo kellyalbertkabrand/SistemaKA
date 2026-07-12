@@ -587,6 +587,15 @@ Na ficha do cliente (`GestaoClientes.tsx` → `PagamentosContrato`), a seção
     (operacional, com vencimento/status/link); **Financeiro** = seu caixa
     (o que entrou e saiu + o que falta receber). Estilos `.fin-*`/`.mov-*`/
     `.caixa-form` em gestao.css. Regra Firestore: `caixa` = só a KA.
+  - **Separação de acesso KA × VM Rocks (jul/2026):** o Financeiro tem um
+    seletor **"Meu caixa" / "A receber — VM Rocks"**. A visão VM
+    (`visao==='vm'`) mostra **só** as linhas `quem==='vm'` (VM Rocks) dos
+    `pagamentos_contrato` — o que ela tem a receber nos clientes que atende com
+    a KA — com total, lista por cliente e aviso de que ela **não vê o caixa da
+    KA nem as finanças dos outros clientes**. Hoje é uma **prévia** (a KA vê/
+    envia); quando o **login por papel** (parceiro) entrar, essa é exatamente a
+    tela que a VM verá (o caixa `caixa` e o resto ficam fora do escopo dela).
+    O `caixa` pessoal (entradas/saídas) é sempre só da KA.
 - **Dia do vencimento:** input de texto `inputMode="numeric"` que normaliza
   (não fica mais com "0" fixo/`025`); clampa 1–28 ao salvar.
 
