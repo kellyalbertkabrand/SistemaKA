@@ -631,6 +631,14 @@ Na ficha do cliente (`GestaoClientes.tsx` → `PagamentosContrato`), a seção
     (por valor_vm). O Financeiro mostra o **"A receber" agrupado por MÊS**
     (`agruparPorMes`/`rotuloMes` em GestaoFinanceiro), tanto no Meu caixa quanto
     na visão VM (com total por mês). Etiqueta `VM` na linha da cobrança.
+  - **Mensalidades projetadas nos próximos meses (jul/2026):** uma cobrança
+    `tipo='mensalidade'` em aberto agora se **repete** no "A receber por mês"
+    dos próximos 12 meses (`expandirReceber`/`somarMesesISO`/`OcorReceber` em
+    GestaoFinanceiro) — o mês do vencimento é REAL, os seguintes são
+    **"previsto"** (linha tracejada + etiqueta). Dedupe por
+    cliente+descrição+mês (o real tem prioridade sobre o previsto, evita dupla
+    contagem se a mensalidade real do mês já existir). Vale no Meu caixa e na
+    visão VM (por valor_vm). Avulsas/parcelas não projetam.
 - **Dia do vencimento:** input de texto `inputMode="numeric"` que normaliza
   (não fica mais com "0" fixo/`025`); clampa 1–28 ao salvar.
 

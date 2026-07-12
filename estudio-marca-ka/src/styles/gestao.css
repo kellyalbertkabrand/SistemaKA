@@ -1823,6 +1823,17 @@
   border-left-color: #c47830;
   background: rgba(196, 120, 48, 0.04);
 }
+/* Ocorrência PROJETADA (mensalidade recorrente nos próximos meses) */
+.mov--previsto {
+  border-left-style: dashed;
+  opacity: 0.82;
+}
+.mov__tag--prev {
+  margin-left: 0.4rem;
+  color: var(--essencia);
+  background: rgba(61, 107, 126, 0.14);
+  vertical-align: middle;
+}
 .mov__corpo {
   flex: 1;
   min-width: 0;

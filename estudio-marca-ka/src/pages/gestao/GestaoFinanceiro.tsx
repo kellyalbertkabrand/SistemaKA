@@ -54,6 +54,52 @@ function agruparPorMes<T>(
   return [...map.values()].sort((a, b) => (a.chave < b.chave ? -1 : 1))
 }
 
+const mesDe = (iso: string) => (iso || '').slice(0, 7)
+
+// Soma `k` meses a uma data YYYY-MM-DD, com clamp de dia (31/01 +1 → 28/02).
+function somarMesesISO(iso: string, k: number): string {
+  const [y, m, d] = iso.split('-').map(Number)
+  const alvo = m - 1 + k
+  const ultimo = new Date(y, alvo + 1, 0).getDate()
+  const dt = new Date(y, alvo, Math.min(d, ultimo))
+  const mm = String(dt.getMonth() + 1).padStart(2, '0')
+  const dd = String(dt.getDate()).padStart(2, '0')
+  return `${dt.getFullYear()}-${mm}-${dd}`
+}
+
+// Ocorrência de "a receber": uma cobrança num mês. Mensalidades geram uma
+// ocorrência REAL (no mês do vencimento) + ocorrências PROJETADAS nos meses
+// seguintes (recorrência), até o horizonte. Assim a mensalidade aparece em
+// todos os próximos meses, não só no que foi lançada.
+export interface OcorReceber {
+  c: Cobranca
+  venc: string
+  projetada: boolean
+}
+
+function expandirReceber(cobs: Cobranca[], hojeChave: string, fimChave: string): OcorReceber[] {
+  const out: OcorReceber[] = []
+  const vistos = new Set<string>() // cliente|descrição|mês (real tem prioridade)
+  for (const c of cobs) {
+    out.push({ c, venc: c.vencimento, projetada: false })
+    if (c.tipo === 'mensalidade') vistos.add(`${c.cliente_id}|${c.descricao}|${mesDe(c.vencimento)}`)
+  }
+  for (const c of cobs) {
+    if (c.tipo !== 'mensalidade') continue
+    for (let k = 1; k <= 24; k++) {
+      const venc = somarMesesISO(c.vencimento, k)
+      const mc = mesDe(venc)
+      if (mc > fimChave) break
+      if (mc < hojeChave) continue
+      const chave = `${c.cliente_id}|${c.descricao}|${mc}`
+      if (vistos.has(chave)) continue
+      vistos.add(chave)
+      out.push({ c, venc, projetada: true })
+    }
+  }
+  return out
+}
+
 interface Mov {
   chave: string
   tipo: TipoLancamento
@@ -119,7 +165,12 @@ export function GestaoFinanceiro() {
   }
   const aReceber = cobrancas.filter(emAberto)
   const totalAReceber = somarDinheiro(aReceber.map((c) => Number(c.valor || 0)))
-  const aReceberPorMes = agruparPorMes(aReceber, (c) => c.vencimento, (c) => Number(c.valor || 0))
+  // Projeta as mensalidades para os próximos meses (recorrência) — até 12 meses.
+  const hojeChave = mesDe(hoje())
+  const fimChave = mesDe(somarMesesISO(hoje(), 12))
+  const ocorReceber = expandirReceber(aReceber, hojeChave, fimChave)
+  const aReceberPorMes = agruparPorMes(ocorReceber, (o) => o.venc, (o) => Number(o.c.valor || 0))
+  const temMensalidade = aReceber.some((c) => c.tipo === 'mensalidade')
 
   // Movimentações do caixa = cobranças PAGAS (entradas automáticas) + lançamentos à mão.
   const movimentos: Mov[] = useMemo(() => {
@@ -168,7 +219,8 @@ export function GestaoFinanceiro() {
   // se não foi informado) — agrupadas por mês.
   const valorDaVM = (c: Cobranca) => Number(c.valor_vm ?? c.valor ?? 0)
   const vmCobrancas = aReceber.filter((c) => c.vm_participa)
-  const vmCobrancasPorMes = agruparPorMes(vmCobrancas, (c) => c.vencimento, valorDaVM)
+  const vmOcor = expandirReceber(vmCobrancas, hojeChave, fimChave)
+  const vmCobrancasPorMes = agruparPorMes(vmOcor, (o) => o.venc, (o) => valorDaVM(o.c))
   const totalVMCobrancas = somarDinheiro(vmCobrancas.map(valorDaVM))
   const totalVMGeral = arredondar(totalVMUnico + totalVMCobrancas)
 
@@ -298,15 +350,18 @@ export function GestaoFinanceiro() {
                         <span className="mes-grupo__total">{formatarBRL(g.total)}</span>
                       </div>
                       <div className="fin-lista">
-                        {g.itens.map((c) => (
-                          <div key={c.id} className="mov mov--receber">
+                        {g.itens.map((o, i) => (
+                          <div key={`${o.c.id}-${i}`} className={`mov mov--receber ${o.projetada ? 'mov--previsto' : ''}`}>
                             <div className="mov__corpo">
-                              <div className="mov__desc">{c.descricao}</div>
+                              <div className="mov__desc">
+                                {o.c.descricao}
+                                {o.projetada && <span className="mov__tag mov__tag--prev">previsto</span>}
+                              </div>
                               <div className="mov__meta">
-                                {nomeCliente(c.cliente_id) || 'sem cliente'} · vence {formatarData(c.vencimento)}
+                                {nomeCliente(o.c.cliente_id) || 'sem cliente'} · vence {formatarData(o.venc)}
                               </div>
                             </div>
-                            <div className="mov__valor mov__valor--receber">{formatarBRL(valorDaVM(c))}</div>
+                            <div className="mov__valor mov__valor--receber">{formatarBRL(valorDaVM(o.c))}</div>
                           </div>
                         ))}
                       </div>
@@ -454,10 +509,15 @@ export function GestaoFinanceiro() {
             </div>
           )}
 
-          {/* A receber (cobranças em aberto) — POR MÊS */}
+          {/* A receber (cobranças em aberto) — POR MÊS, com mensalidades projetadas */}
           {aReceber.length > 0 && (
             <section className="fin-secao">
               <h3 className="fin-secao__tit">A receber — por mês</h3>
+              {temMensalidade && (
+                <p className="fin-dica" style={{ marginTop: 0 }}>
+                  As <strong>mensalidades</strong> se repetem nos próximos meses (marcadas “previsto”).
+                </p>
+              )}
               {aReceberPorMes.map((g) => (
                 <div key={g.chave} className="mes-grupo">
                   <div className="mes-grupo__cab">
@@ -465,17 +525,20 @@ export function GestaoFinanceiro() {
                     <span className="mes-grupo__total">{formatarBRL(g.total)}</span>
                   </div>
                   <div className="fin-lista">
-                    {g.itens.map((c) => (
-                      <div key={c.id} className="mov mov--receber">
+                    {g.itens.map((o, i) => (
+                      <div key={`${o.c.id}-${i}`} className={`mov mov--receber ${o.projetada ? 'mov--previsto' : ''}`}>
                         <div className="mov__corpo">
-                          <div className="mov__desc">{c.descricao}</div>
+                          <div className="mov__desc">
+                            {o.c.descricao}
+                            {o.projetada && <span className="mov__tag mov__tag--prev">previsto</span>}
+                          </div>
                           <div className="mov__meta">
-                            {nomeCliente(c.cliente_id) || 'sem cliente'} · vence {formatarData(c.vencimento)}
-                            {statusEfetivo(c) === 'atrasada' ? ' · atrasada' : ''}
-                            {c.vm_participa ? ' · VM Rocks' : ''}
+                            {nomeCliente(o.c.cliente_id) || 'sem cliente'} · vence {formatarData(o.venc)}
+                            {!o.projetada && statusEfetivo(o.c) === 'atrasada' ? ' · atrasada' : ''}
+                            {o.c.vm_participa ? ' · VM Rocks' : ''}
                           </div>
                         </div>
-                        <div className="mov__valor mov__valor--receber">{formatarBRL(c.valor)}</div>
+                        <div className="mov__valor mov__valor--receber">{formatarBRL(o.c.valor)}</div>
                       </div>
                     ))}
                   </div>
