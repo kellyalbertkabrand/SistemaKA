@@ -12,6 +12,7 @@ import { GestaoCuidadoras } from './gestao/GestaoCuidadoras'
 import { GestaoProjetos } from './gestao/GestaoProjetos'
 import { GestaoAtividades } from './gestao/GestaoAtividades'
 import { GestaoFinanceiro } from './gestao/GestaoFinanceiro'
+import { GestaoRelatorios } from './gestao/GestaoRelatorios'
 import '../styles/painel.css'
 import '../styles/gestao.css'
 
@@ -24,6 +25,7 @@ type Aba =
   | 'contratos'
   | 'cobrancas'
   | 'financeiro'
+  | 'relatorios'
   | 'atividades'
   | 'cuidadoras'
 
@@ -43,6 +45,7 @@ const GRUPOS: { titulo: string; itens: { id: Aba; rotulo: string; icone: string 
       { id: 'contratos', rotulo: 'Contratos', icone: 'contratos' },
       { id: 'cobrancas', rotulo: 'Cobranças', icone: 'cobrancas' },
       { id: 'financeiro', rotulo: 'Financeiro', icone: 'financeiro' },
+      { id: 'relatorios', rotulo: 'Relatórios', icone: 'relatorios' },
     ],
   },
   {
@@ -116,6 +119,15 @@ function IconeAtalho({ nome }: { nome: string }) {
           <path d="M7.5 14l3-3.2 2.6 2.4 4.4-4.7" />
         </svg>
       )
+    case 'relatorios':
+      return (
+        <svg {...p}>
+          <rect x="5" y="3" width="14" height="18" rx="1.6" />
+          <path d="M9 8h6" />
+          <path d="M9 12h6M9 16h3" />
+          <path d="M15.5 15.5l1.2 1.2 2-2.2" />
+        </svg>
+      )
     case 'atividades':
       return (
         <svg {...p}>
@@ -149,6 +161,7 @@ const MENU: ItemMenu[] = [
       { id: 'contratos', rotulo: 'Contratos' },
       { id: 'cobrancas', rotulo: 'Cobranças' },
       { id: 'financeiro', rotulo: 'Financeiro' },
+      { id: 'relatorios', rotulo: 'Relatórios' },
     ],
   },
   { id: 'atividades', rotulo: 'Atividades' },
@@ -162,7 +175,8 @@ const CABECALHOS: Record<Aba, { titulo: string; sub: string }> = {
   orcamentos: { titulo: 'Orçamentos', sub: 'Monte a proposta, envie o link; aprovado, vira contrato + cobrança.' },
   contratos: { titulo: 'Contratos', sub: 'Modelo padrão, contratos gerados e assinaturas (aceite digital).' },
   cobrancas: { titulo: 'Cobranças', sub: 'Mensalidades e cobranças avulsas — boleto, PIX e cartão via Mercado Pago.' },
-  financeiro: { titulo: 'Financeiro 🔒', sub: 'Quanto cada um tem a receber (KA, VM Rocks…), somando os pagamentos de todos os contratos.' },
+  financeiro: { titulo: 'Financeiro 🔒', sub: 'Seu caixa: entradas e saídas, a receber e quanto é seu vs da VM Rocks.' },
+  relatorios: { titulo: 'Relatórios 🔒', sub: 'Gere relatórios financeiros por período e acompanhe o desempenho do site.' },
   projetos: { titulo: 'Projetos', sub: 'Fases de cada projeto — um clique para avançar; o cliente acompanha pelo link em tempo real.' },
   atividades: { titulo: 'Atividades 🔒', sub: 'Seu painel pessoal — pendências dos clientes (KA) junto com Trabalho, BIA e Pessoal.' },
   cuidadoras: { titulo: 'Cuidadoras 🔒', sub: 'Seu controle pessoal — cadastro pelo link, ficha e documentos de cada cuidadora.' },
@@ -176,6 +190,7 @@ const ABAS_VALIDAS: Aba[] = [
   'contratos',
   'cobrancas',
   'financeiro',
+  'relatorios',
   'atividades',
   'cuidadoras',
 ]
@@ -327,6 +342,11 @@ export function AdminPanel() {
             {aba === 'financeiro' && (
               <GateAdmin>
                 <GestaoFinanceiro />
+              </GateAdmin>
+            )}
+            {aba === 'relatorios' && (
+              <GateAdmin>
+                <GestaoRelatorios />
               </GateAdmin>
             )}
             {aba === 'atividades' && (

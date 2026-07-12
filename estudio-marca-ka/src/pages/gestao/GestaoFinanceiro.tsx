@@ -16,7 +16,6 @@ import {
 import { useToast } from '../../components/Toast'
 import { confirmar } from '../../lib/confirmar'
 import { arredondar, parseValorBR, somarDinheiro } from '../../lib/ui'
-import { RelatorioFinanceiro } from './RelatorioFinanceiro'
 
 // ============================================================================
 // FINANCEIRO — gestor de caixa PESSOAL da KA. Junta:
@@ -123,7 +122,7 @@ export function GestaoFinanceiro() {
   const [erro, setErro] = useState<string | null>(null)
   // Visão: "Meu caixa" (pessoal da KA) OU "A receber da VM Rocks" (só o que é
   // dela — é a prévia do que a VM verá quando entrar com o login por papel).
-  const [visao, setVisao] = useState<'caixa' | 'vm' | 'relatorios'>('caixa')
+  const [visao, setVisao] = useState<'caixa' | 'vm'>('caixa')
 
   // Formulário de entrada/saída (à mão)
   const [formTipo, setFormTipo] = useState<TipoLancamento | null>(null)
@@ -303,16 +302,9 @@ export function GestaoFinanceiro() {
             Meu caixa
           </button>
           <button className={visao === 'vm' ? 'seg__on' : ''} onClick={() => setVisao('vm')}>
-            VM Rocks
-          </button>
-          <button className={visao === 'relatorios' ? 'seg__on' : ''} onClick={() => setVisao('relatorios')}>
-            Relatórios
+            A receber — VM Rocks
           </button>
         </div>
-      )}
-
-      {!carregando && visao === 'relatorios' && (
-        <RelatorioFinanceiro cobrancas={cobrancas} lancamentos={lancamentos} clientes={clientes} />
       )}
 
       {/* ===== VISÃO VM ROCKS — só o que é dela (prévia do login da parceira) ===== */}

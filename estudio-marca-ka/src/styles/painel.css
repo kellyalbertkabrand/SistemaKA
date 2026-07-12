@@ -368,15 +368,36 @@
 /* Telas curtas: aperta ainda mais para garantir que caiba sem rolagem */
 @media (max-height: 740px) {
   .page--inicio {
-    padding-top: 0.9rem;
+    padding-top: 0.8rem;
+    padding-bottom: 0.7rem;
+  }
+  .page__head--inicio {
+    margin-bottom: 0.55rem;
+  }
+  .page__head--inicio h1 {
+    font-size: 1.3rem;
+  }
+  .page__head--inicio p {
+    display: none;
   }
   .home-atalhos .atalho-grupo {
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.5rem;
+  }
+  .home-atalhos .atalho-grupo__tit {
+    margin-bottom: 0.3rem;
+    font-size: 0.58rem;
+  }
+  .home-atalhos .grade-atalhos {
+    gap: 0.4rem;
   }
   .home-atalhos .atalho-card {
-    padding: 0.45rem 0.4rem;
+    padding: 0.4rem 0.4rem;
+  }
+  .home-atalhos .atalho-card__ico svg {
+    width: 20px;
+    height: 20px;
   }
   .home-atalhos .atalho-card__nome {
-    font-size: 0.76rem;
+    font-size: 0.75rem;
   }
 }

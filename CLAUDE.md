@@ -55,8 +55,15 @@ Clientes no sistema:
 - **Home = atalhos** (`aba='inicio'`, padrão sem `?aba`): a raiz mostra
   "quadradinhos" (`.grade-atalhos`/`.atalho-card`, `ATALHOS` no AdminPanel) —
   um por seção (Estúdio, Clientes, Projetos, Orçamentos, Contratos, Cobranças,
-  Financeiro, Atividades, Cuidadoras). O Estúdio deixou de ser a home (virou um
-  atalho); o menu suspenso continua igual.
+  Financeiro, Relatórios, Atividades, Cuidadoras). O Estúdio deixou de ser a
+  home (virou um atalho); o menu suspenso continua igual.
+- **Aba Relatórios 🔒** (`GestaoRelatorios.tsx` → `RelatorioFinanceiro.tsx`):
+  aba própria (não é mais um segmento do Financeiro). Carrega clientes +
+  cobranças + lançamentos e mostra o sub-toggle **Financeiro / Desempenho do
+  site**. Está no grupo "Gestão do negócio" da home, no menu Gestão e em
+  `ABAS_VALIDAS`/`CABECALHOS`. Home passou a 10 atalhos — o `@media
+  (max-height:740px)` aperta mais (esconde o subtítulo, ícones/nomes menores)
+  p/ caber no iPhone SE.
 - **Acessibilidade/toque:** `:focus-visible` global (foco de teclado), alvos de
   toque ≥40px no celular, `prefers-reduced-motion` respeitado, `-webkit-tap-
   highlight-color` (ver fim de `global.css`/`gestao.css`).
