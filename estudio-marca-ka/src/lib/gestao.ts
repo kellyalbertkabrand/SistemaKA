@@ -1,7 +1,6 @@
 import {
   addDoc,
   collection,
-  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -13,6 +12,7 @@ import {
   where,
 } from 'firebase/firestore'
 import { db } from './firebase'
+import { moverParaLixeira } from './lixeira'
 import type {
   Cliente,
   Cobranca,
@@ -203,14 +203,14 @@ export async function marcarClienteRevisado(id: string): Promise<void> {
  * ligados a ele NÃO são apagados juntos — apague-os nas respectivas abas.
  */
 export async function excluirCliente(id: string): Promise<void> {
-  await deleteDoc(doc(db, 'clientes', id))
+  await moverParaLixeira('clientes', id)
 }
 
 // ---- Orçamentos -------------------------------------------------------------
 
 export async function listarOrcamentos(): Promise<Orcamento[]> {
   const snap = await getDocs(query(collection(db, 'orcamentos'), orderBy('criado_em', 'desc')))
-  return snap.docs.map((d) => comId<Orcamento>(d.id, d.data()))
+  return snap.docs.filter((d) => !d.data().excluido_em).map((d) => comId<Orcamento>(d.id, d.data()))
 }
 
 export type NovoOrcamento = Pick<
@@ -263,7 +263,7 @@ export async function enviarOrcamento(id: string): Promise<Orcamento> {
 }
 
 export async function excluirOrcamento(id: string): Promise<void> {
-  await deleteDoc(doc(db, 'orcamentos', id))
+  await moverParaLixeira('orcamentos', id)
 }
 
 export function linkPublicoOrcamento(token: string): string {
@@ -484,7 +484,7 @@ export async function responderOrcamento(
 
 export async function listarContratos(): Promise<Contrato[]> {
   const snap = await getDocs(query(collection(db, 'contratos'), orderBy('criado_em', 'desc')))
-  return snap.docs.map((d) => comId<Contrato>(d.id, d.data()))
+  return snap.docs.filter((d) => !d.data().excluido_em).map((d) => comId<Contrato>(d.id, d.data()))
 }
 
 export async function criarContrato(
@@ -551,7 +551,7 @@ export async function atualizarContrato(
 }
 
 export async function excluirContrato(id: string): Promise<void> {
-  await deleteDoc(doc(db, 'contratos', id))
+  await moverParaLixeira('contratos', id)
 }
 
 export function linkPublicoContrato(token: string): string {
@@ -648,7 +648,7 @@ export async function salvarModeloContrato(
 
 export async function listarCobrancas(): Promise<Cobranca[]> {
   const snap = await getDocs(query(collection(db, 'cobrancas'), orderBy('vencimento', 'desc')))
-  return snap.docs.map((d) => comId<Cobranca>(d.id, d.data()))
+  return snap.docs.filter((d) => !d.data().excluido_em).map((d) => comId<Cobranca>(d.id, d.data()))
 }
 
 export type NovaCobranca = Pick<
@@ -696,9 +696,9 @@ export async function atualizarCobranca(
   return comId<Cobranca>(d.id, d.data() ?? {})
 }
 
-/** Exclui a cobrança de vez (para limpar testes; para histórico use "cancelar"). */
+/** Manda a cobrança para a Lixeira (dá para restaurar; esvaziar apaga de vez). */
 export async function excluirCobranca(id: string): Promise<void> {
-  await deleteDoc(doc(db, 'cobrancas', id))
+  await moverParaLixeira('cobrancas', id)
 }
 
 export async function marcarCobrancaPaga(id: string, dataPagamento?: string): Promise<Cobranca> {

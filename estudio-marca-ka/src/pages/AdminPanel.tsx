@@ -13,6 +13,7 @@ import { GestaoProjetos } from './gestao/GestaoProjetos'
 import { GestaoAtividades } from './gestao/GestaoAtividades'
 import { GestaoFinanceiro } from './gestao/GestaoFinanceiro'
 import { GestaoRelatorios } from './gestao/GestaoRelatorios'
+import { GestaoLixeira } from './gestao/GestaoLixeira'
 import '../styles/painel.css'
 import '../styles/gestao.css'
 
@@ -28,6 +29,7 @@ type Aba =
   | 'relatorios'
   | 'atividades'
   | 'cuidadoras'
+  | 'lixeira'
 
 // Atalhos da HOME, agrupados por categoria. Ícones de linha (elegantes, no
 // dourado da marca) desenhados abaixo em IconeAtalho.
@@ -166,6 +168,7 @@ const MENU: ItemMenu[] = [
   },
   { id: 'atividades', rotulo: 'Atividades' },
   { id: 'cuidadoras', rotulo: 'Cuidadoras' },
+  { id: 'lixeira', rotulo: 'Lixeira' },
 ]
 
 const CABECALHOS: Record<Aba, { titulo: string; sub: string }> = {
@@ -180,6 +183,7 @@ const CABECALHOS: Record<Aba, { titulo: string; sub: string }> = {
   projetos: { titulo: 'Projetos', sub: 'Fases de cada projeto — um clique para avançar; o cliente acompanha pelo link em tempo real.' },
   atividades: { titulo: 'Atividades 🔒', sub: 'Seu painel pessoal — pendências dos clientes (KA) junto com Trabalho, BIA e Pessoal.' },
   cuidadoras: { titulo: 'Cuidadoras 🔒', sub: 'Seu controle pessoal — cadastro pelo link, ficha e documentos de cada cuidadora.' },
+  lixeira: { titulo: 'Lixeira 🗑️', sub: 'Itens excluídos. Restaure o que apagou por engano ou esvazie de vez.' },
 }
 
 const ABAS_VALIDAS: Aba[] = [
@@ -193,6 +197,7 @@ const ABAS_VALIDAS: Aba[] = [
   'relatorios',
   'atividades',
   'cuidadoras',
+  'lixeira',
 ]
 
 // Painel da KA: estúdio (aberto) + gestão (restrita à admin logada).
@@ -352,6 +357,11 @@ export function AdminPanel() {
             {aba === 'atividades' && (
               <GateAdmin>
                 <GestaoAtividades />
+              </GateAdmin>
+            )}
+            {aba === 'lixeira' && (
+              <GateAdmin>
+                <GestaoLixeira />
               </GateAdmin>
             )}
           </>

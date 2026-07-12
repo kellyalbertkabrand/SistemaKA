@@ -77,6 +77,18 @@ Clientes no sistema:
 - **Overflow horizontal travado** em `html`/`body`/`#root` (`overflow-x: clip`)
   e o menu-gaveta do celular rola quando tem muitos itens (`overflow-y: auto`,
   não corta mais — ver `menu.css`).
+- **Lixeira / exclusão reversível (jul/2026) — `src/lib/lixeira.ts` +
+  `GestaoLixeira.tsx`.** Excluir NÃO apaga de vez: o doc ganha `excluido_em`
+  (soft delete) e some das listas (filtro `!d.data().excluido_em` no cliente,
+  para não quebrar docs antigos sem o campo). As `excluir*` de clientes,
+  projetos, orçamentos, contratos, cobranças, caixa (lançamentos), cuidadoras e
+  atividades chamam `moverParaLixeira(colecao, id)`. A aba **Lixeira 🗑️**
+  (menu Gestão / `?aba=lixeira`, fora da home p/ manter 10 atalhos) lista tudo
+  agrupado por tipo com **Restaurar** (`restaurarItem` → `excluido_em:null`) e
+  **✕ apagar de vez** (`excluirDefinitivo` → `deleteDoc`), além de **Esvaziar
+  lixeira** (`esvaziarLixeira`). Cuidadora vai p/ lixeira mantendo a subcoleção
+  `documentos` (restaura completa). `site_metricas` não entra na lixeira (upsert
+  por mês). `FONTES` em `lixeira.ts` mapeia coleção→rótulo.
 - **Confirmação PRÓPRIA (`src/lib/confirmar.ts`):** `await confirmar(msg,
   { perigo?, confirmar? })` abre uma caixa DOM (mesmo estilo `.wa-overlay`/
   `.wa-box`, botão de perigo `.wa-btn--perigo`) no lugar de `window.confirm`.

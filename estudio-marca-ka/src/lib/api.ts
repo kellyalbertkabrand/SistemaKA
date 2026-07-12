@@ -45,7 +45,7 @@ function limpar<T extends Record<string, unknown>>(obj: T): T {
 
 export async function listarClientes(): Promise<Cliente[]> {
   const snap = await getDocs(query(collection(db, 'clientes'), orderBy('criado_em', 'desc')))
-  return snap.docs.map((d) => comId<Cliente>(d.id, d.data()))
+  return snap.docs.filter((d) => !d.data().excluido_em).map((d) => comId<Cliente>(d.id, d.data()))
 }
 
 export async function obterCliente(id: string): Promise<Cliente | null> {

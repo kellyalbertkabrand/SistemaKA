@@ -14,6 +14,7 @@ import {
   where,
 } from 'firebase/firestore'
 import { db } from './firebase'
+import { moverParaLixeira } from './lixeira'
 
 // ============================================================================
 // PROJETOS — gestão simples do andamento de cada trabalho.
@@ -233,7 +234,7 @@ export function pendenciasDeProjetos(
 
 export async function listarProjetos(): Promise<Projeto[]> {
   const snap = await getDocs(query(collection(db, 'projetos'), orderBy('criado_em', 'desc')))
-  return snap.docs.map((d) => comId<Projeto>(d.id, d.data()))
+  return snap.docs.filter((d) => !d.data().excluido_em).map((d) => comId<Projeto>(d.id, d.data()))
 }
 
 export async function criarProjeto(dados: {
@@ -277,7 +278,7 @@ export async function salvarProjeto(
 }
 
 export async function excluirProjeto(id: string): Promise<void> {
-  await deleteDoc(doc(db, 'projetos', id))
+  await moverParaLixeira('projetos', id)
 }
 
 function slugMarca(rotulo: string): string {

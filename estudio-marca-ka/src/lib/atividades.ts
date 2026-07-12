@@ -1,7 +1,6 @@
 import {
   addDoc,
   collection,
-  deleteDoc,
   doc,
   getDocs,
   orderBy,
@@ -9,6 +8,7 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import { db } from './firebase'
+import { moverParaLixeira } from './lixeira'
 
 // ============================================================================
 // ATIVIDADES DA KELLY — painel pessoal.
@@ -45,7 +45,9 @@ const agora = () => new Date().toISOString()
 
 export async function listarAtividades(): Promise<Atividade[]> {
   const snap = await getDocs(query(collection(db, 'atividades'), orderBy('criado_em', 'desc')))
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Atividade, 'id'>) }))
+  return snap.docs
+    .filter((d) => !d.data().excluido_em)
+    .map((d) => ({ id: d.id, ...(d.data() as Omit<Atividade, 'id'>) }))
 }
 
 export async function criarAtividade(dados: {
@@ -84,7 +86,7 @@ export async function editarAtividade(
 }
 
 export async function excluirAtividade(id: string): Promise<void> {
-  await deleteDoc(doc(db, 'atividades', id))
+  await moverParaLixeira('atividades', id)
 }
 
 /** Duplica uma atividade (mesmo título/categoria/data, começa como não feita). */

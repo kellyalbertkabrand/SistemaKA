@@ -10,6 +10,7 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import { db } from './firebase'
+import { moverParaLixeira } from './lixeira'
 
 // ============================================================================
 // CUIDADORAS — controle PESSOAL da KA (não é parte do negócio de design).
@@ -73,7 +74,7 @@ export type FichaCuidadora = Partial<
 
 export async function listarCuidadoras(): Promise<Cuidadora[]> {
   const snap = await getDocs(query(collection(db, 'cuidadoras'), orderBy('criado_em', 'desc')))
-  return snap.docs.map((d) => comId<Cuidadora>(d.id, d.data()))
+  return snap.docs.filter((d) => !d.data().excluido_em).map((d) => comId<Cuidadora>(d.id, d.data()))
 }
 
 export async function criarCuidadora(dados: FichaCuidadora): Promise<Cuidadora> {
@@ -108,10 +109,8 @@ export async function marcarCuidadoraRevisada(id: string): Promise<void> {
 }
 
 export async function excluirCuidadora(id: string): Promise<void> {
-  // Remove primeiro os documentos anexados (subcoleção não some sozinha).
-  const docs = await getDocs(collection(db, 'cuidadoras', id, 'documentos'))
-  await Promise.all(docs.docs.map((d) => deleteDoc(d.ref)))
-  await deleteDoc(doc(db, 'cuidadoras', id))
+  // Vai para a Lixeira (mantém os documentos anexados para poder restaurar).
+  await moverParaLixeira('cuidadoras', id)
 }
 
 // ---- Cadastro público (link para a nova cuidadora) ---------------------------

@@ -1,5 +1,6 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, orderBy, query, updateDoc } from 'firebase/firestore'
+import { addDoc, collection, doc, getDocs, orderBy, query, updateDoc } from 'firebase/firestore'
 import { db } from './firebase'
+import { moverParaLixeira } from './lixeira'
 
 // ============================================================================
 // CAIXA — gestor financeiro PESSOAL da KA: entradas e saídas lançadas à mão.
@@ -31,7 +32,9 @@ const agora = () => new Date().toISOString()
 
 export async function listarLancamentos(): Promise<Lancamento[]> {
   const snap = await getDocs(query(collection(db, 'caixa'), orderBy('data', 'desc')))
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Lancamento, 'id'>) }))
+  return snap.docs
+    .filter((d) => !d.data().excluido_em)
+    .map((d) => ({ id: d.id, ...(d.data() as Omit<Lancamento, 'id'>) }))
 }
 
 export async function criarLancamento(
@@ -50,5 +53,5 @@ export async function atualizarLancamento(
 }
 
 export async function excluirLancamento(id: string): Promise<void> {
-  await deleteDoc(doc(db, 'caixa', id))
+  await moverParaLixeira('caixa', id)
 }

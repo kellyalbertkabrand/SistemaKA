@@ -335,7 +335,14 @@ export function GestaoFinanceiro() {
       } else {
         const novo = await criarLancamento(dados)
         setLancamentos((l) => [novo, ...l])
-        mostrar(formTipo === 'entrada' ? 'Entrada lançada ✓' : 'Saída lançada ✓', 'ok')
+        mostrar(
+          formTipo !== 'entrada'
+            ? 'Saída lançada ✓'
+            : fRecebido
+              ? 'Entrada lançada em Entradas ✓'
+              : 'Lançado em “A receber” ✓ (toque em “Recebi” quando o dinheiro entrar)',
+          'ok',
+        )
       }
       fecharForm()
     } catch (e) {
