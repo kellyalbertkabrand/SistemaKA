@@ -586,8 +586,16 @@ Na ficha do cliente (`GestaoClientes.tsx` → `PagamentosContrato`), a seção
     (origem `cobranca`, não editáveis aqui); **cobranças em aberto**
     (pendente/atrasada) aparecem em **"A receber"**.
   - **Entradas e saídas à mão** — coleção `caixa` (`{tipo:'entrada'|'saida',
-    descricao, valor, data}`; CRUD em `caixa.ts`): botões **+ Entrada / − Saída**
-    (form inline, valor aceita vírgula via `parseValorBR`), editar/excluir.
+    descricao, valor, data, escopo:'ka'|'pessoal', recebido?:boolean}`; CRUD em
+    `caixa.ts`): botões **+ Entrada / − Saída** (form inline, valor aceita
+    vírgula via `parseValorBR`), editar/excluir.
+  - **Entrada "a receber" à mão (jul/2026):** ao lançar uma ENTRADA há o toggle
+    **"Já recebi (entrou)" / "A receber"** (`recebido`). Se "a receber", a
+    entrada NÃO conta em Entradas/saldo — entra em **"A receber"** (card +
+    seção por mês, junto das cobranças em aberto, com etiqueta KA/Pessoal) e tem
+    botão **"Recebi"** (`marcarRecebida` → `recebido:true`) que a move para
+    Entradas. Serve p/ contas que a KA lança direto no caixa sem virar cobrança.
+    `ehAReceberManual`/`recebTodos`/`RecebItem` em GestaoFinanceiro.
   - **Resumo em 4 cards:** Saldo em caixa (= entradas − saídas), A receber,
     Entradas, Saídas. Movimentações listadas por data (verde +, vermelho −).
   - **"Por contrato — quem tem a receber (KA/VM Rocks)"** (o antigo Financeiro,

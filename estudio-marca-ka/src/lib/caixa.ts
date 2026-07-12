@@ -19,6 +19,10 @@ export interface Lancamento {
   valor: number
   data: string // YYYY-MM-DD
   escopo?: EscopoLancamento | null
+  // Só p/ ENTRADAS: já foi recebida (entra em Entradas/saldo) ou ainda é
+  // "a receber" (entra em A receber). Ausente/true = recebida (compatível com
+  // os lançamentos antigos, que eram sempre realizados).
+  recebido?: boolean | null
   categoria?: string | null
   criado_em: string
 }

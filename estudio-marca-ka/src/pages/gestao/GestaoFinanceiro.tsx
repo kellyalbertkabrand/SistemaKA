@@ -112,6 +112,21 @@ interface Mov {
   lancamento?: Lancamento
 }
 
+// Item da lista "A receber" (cobrança projetada OU entrada à mão a receber).
+interface RecebItem {
+  chave: string
+  descricao: string
+  cliente: string
+  data: string
+  valor: number
+  escopo: EscopoLancamento
+  origem: 'cobranca' | 'manual'
+  projetada: boolean
+  atrasada: boolean
+  vmParticipa: boolean
+  lancamento?: Lancamento
+}
+
 export function GestaoFinanceiro() {
   const { mostrar } = useToast()
   const [, setParams] = useSearchParams()
@@ -131,6 +146,7 @@ export function GestaoFinanceiro() {
   const [fValor, setFValor] = useState('')
   const [fData, setFData] = useState(hoje())
   const [fEscopo, setFEscopo] = useState<EscopoLancamento>('ka')
+  const [fRecebido, setFRecebido] = useState(true) // entrada: já recebida ou a receber
   const [salvando, setSalvando] = useState(false)
 
   async function recarregar() {
@@ -157,22 +173,60 @@ export function GestaoFinanceiro() {
     return (id: string | null) => (id ? (m.get(id) ?? '') : '')
   }, [clientes])
 
+  // Um lançamento à mão que é ENTRADA ainda NÃO recebida = "a receber".
+  const ehAReceberManual = (l: Lancamento) => l.tipo === 'entrada' && l.recebido === false
+
   // A receber = cobranças em aberto (pendente/atrasada — status derivado por
-  // data), agrupadas por mês.
+  // data) + entradas à mão marcadas como "a receber".
   const emAberto = (c: Cobranca) => {
     const s = statusEfetivo(c)
     return s === 'pendente' || s === 'atrasada'
   }
   const aReceber = cobrancas.filter(emAberto)
-  const totalAReceber = somarDinheiro(aReceber.map((c) => Number(c.valor || 0)))
+  const lancAReceber = lancamentos.filter(ehAReceberManual)
+  const totalAReceber = somarDinheiro([
+    ...aReceber.map((c) => Number(c.valor || 0)),
+    ...lancAReceber.map((l) => Number(l.valor || 0)),
+  ])
   // Projeta as mensalidades para os próximos meses (recorrência) — até 12 meses.
   const hojeChave = mesDe(hoje())
   const fimChave = mesDe(somarMesesISO(hoje(), 12))
   const ocorReceber = expandirReceber(aReceber, hojeChave, fimChave)
-  const aReceberPorMes = agruparPorMes(ocorReceber, (o) => o.venc, (o) => Number(o.c.valor || 0))
   const temMensalidade = aReceber.some((c) => c.tipo === 'mensalidade')
 
-  // Movimentações do caixa = cobranças PAGAS (entradas automáticas) + lançamentos à mão.
+  // Lista unificada de "a receber" (cobranças projetadas + entradas à mão),
+  // agrupada por mês. Cada item guarda a origem para saber o que renderizar.
+  const recebTodos: RecebItem[] = [
+    ...ocorReceber.map((o) => ({
+      chave: `cob-${o.c.id}-${o.venc}`,
+      descricao: o.c.descricao,
+      cliente: nomeCliente(o.c.cliente_id) || 'sem cliente',
+      data: o.venc,
+      valor: Number(o.c.valor || 0),
+      escopo: 'ka' as EscopoLancamento,
+      origem: 'cobranca' as const,
+      projetada: o.projetada,
+      atrasada: !o.projetada && statusEfetivo(o.c) === 'atrasada',
+      vmParticipa: !!o.c.vm_participa,
+    })),
+    ...lancAReceber.map((l) => ({
+      chave: `man-${l.id}`,
+      descricao: l.descricao,
+      cliente: '',
+      data: l.data,
+      valor: Number(l.valor || 0),
+      escopo: l.escopo ?? 'ka',
+      origem: 'manual' as const,
+      projetada: false,
+      atrasada: l.data < hoje(),
+      vmParticipa: false,
+      lancamento: l,
+    })),
+  ]
+  const aReceberPorMes = agruparPorMes(recebTodos, (r) => r.data, (r) => r.valor)
+
+  // Movimentações do caixa = cobranças PAGAS (entradas automáticas) + lançamentos
+  // à mão JÁ realizados (entradas recebidas + todas as saídas).
   const movimentos: Mov[] = useMemo(() => {
     const deCobranca: Mov[] = cobrancas
       .filter((c) => c.status === 'paga')
@@ -186,16 +240,18 @@ export function GestaoFinanceiro() {
         escopo: 'ka' as const,
         cliente: nomeCliente(c.cliente_id),
       }))
-    const deMao: Mov[] = lancamentos.map((l) => ({
-      chave: l.id,
-      tipo: l.tipo,
-      descricao: l.descricao,
-      valor: Number(l.valor || 0),
-      data: l.data,
-      origem: 'manual' as const,
-      escopo: l.escopo ?? 'ka',
-      lancamento: l,
-    }))
+    const deMao: Mov[] = lancamentos
+      .filter((l) => !(l.tipo === 'entrada' && l.recebido === false))
+      .map((l) => ({
+        chave: l.id,
+        tipo: l.tipo,
+        descricao: l.descricao,
+        valor: Number(l.valor || 0),
+        data: l.data,
+        origem: 'manual' as const,
+        escopo: l.escopo ?? 'ka',
+        lancamento: l,
+      }))
     return [...deCobranca, ...deMao].sort((a, b) => (a.data < b.data ? 1 : a.data > b.data ? -1 : 0))
   }, [cobrancas, lancamentos, nomeCliente])
 
@@ -231,6 +287,7 @@ export function GestaoFinanceiro() {
     setFValor('')
     setFData(hoje())
     setFEscopo('ka')
+    setFRecebido(true)
   }
 
   function editar(l: Lancamento) {
@@ -240,6 +297,7 @@ export function GestaoFinanceiro() {
     setFValor(String(l.valor).replace('.', ','))
     setFData(l.data)
     setFEscopo(l.escopo ?? 'ka')
+    setFRecebido(l.recebido !== false)
   }
 
   function fecharForm() {
@@ -261,7 +319,15 @@ export function GestaoFinanceiro() {
     }
     setSalvando(true)
     try {
-      const dados = { tipo: formTipo, descricao, valor, data: fData || hoje(), escopo: fEscopo }
+      const dados = {
+        tipo: formTipo,
+        descricao,
+        valor,
+        data: fData || hoje(),
+        escopo: fEscopo,
+        // Só entradas têm "recebido"; saídas são sempre realizadas.
+        recebido: formTipo === 'entrada' ? fRecebido : true,
+      }
       if (editId) {
         await atualizarLancamento(editId, dados)
         setLancamentos((l) => l.map((x) => (x.id === editId ? { ...x, ...dados } : x)))
@@ -285,6 +351,18 @@ export function GestaoFinanceiro() {
     try {
       await excluirLancamento(l.id)
       mostrar('Lançamento excluído.', 'ok')
+    } catch (e) {
+      mostrar(e instanceof Error ? e.message : String(e), 'erro')
+      void recarregar()
+    }
+  }
+
+  // Marca uma entrada "a receber" como RECEBIDA (passa a contar em Entradas/saldo).
+  async function marcarRecebida(l: Lancamento) {
+    setLancamentos((x) => x.map((y) => (y.id === l.id ? { ...y, recebido: true } : y)))
+    try {
+      await atualizarLancamento(l.id, { recebido: true })
+      mostrar('Marcada como recebida ✓', 'ok')
     } catch (e) {
       mostrar(e instanceof Error ? e.message : String(e), 'erro')
       void recarregar()
@@ -418,7 +496,10 @@ export function GestaoFinanceiro() {
             <div className="fin-card fin-card--receber">
               <div className="fin-card__quem">A receber</div>
               <div className="fin-card__valor">{formatarBRL(totalAReceber)}</div>
-              <div className="fin-card__qtd">{aReceber.length} cobrança(s) em aberto</div>
+              <div className="fin-card__qtd">
+                {aReceber.length + lancAReceber.length} em aberto
+                {lancAReceber.length > 0 ? ` (${lancAReceber.length} à mão)` : ''}
+              </div>
             </div>
             <div className="fin-card fin-card--entrada">
               <div className="fin-card__quem">Entradas</div>
@@ -497,6 +578,22 @@ export function GestaoFinanceiro() {
                     </button>
                   </div>
                 </div>
+                {formTipo === 'entrada' && (
+                  <div className="field campo-toda">
+                    <label>Já recebeu esse valor?</label>
+                    <div className="seg seg--escopo">
+                      <button type="button" className={fRecebido ? 'seg__on' : ''} onClick={() => setFRecebido(true)}>
+                        Já recebi (entrou)
+                      </button>
+                      <button type="button" className={!fRecebido ? 'seg__on' : ''} onClick={() => setFRecebido(false)}>
+                        A receber
+                      </button>
+                    </div>
+                    <span className="campo-ajuda">
+                      {fRecebido ? 'Entra em Entradas e no saldo.' : 'Entra em “A receber” até você marcar como recebida.'}
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="caixa-form__acoes">
                 <button className="btn" disabled={salvando} onClick={() => void salvar()}>
@@ -510,7 +607,7 @@ export function GestaoFinanceiro() {
           )}
 
           {/* A receber (cobranças em aberto) — POR MÊS, com mensalidades projetadas */}
-          {aReceber.length > 0 && (
+          {recebTodos.length > 0 && (
             <section className="fin-secao">
               <h3 className="fin-secao__tit">A receber — por mês</h3>
               {temMensalidade && (
@@ -525,20 +622,40 @@ export function GestaoFinanceiro() {
                     <span className="mes-grupo__total">{formatarBRL(g.total)}</span>
                   </div>
                   <div className="fin-lista">
-                    {g.itens.map((o, i) => (
-                      <div key={`${o.c.id}-${i}`} className={`mov mov--receber ${o.projetada ? 'mov--previsto' : ''}`}>
+                    {g.itens.map((r) => (
+                      <div key={r.chave} className={`mov mov--receber ${r.projetada ? 'mov--previsto' : ''}`}>
                         <div className="mov__corpo">
                           <div className="mov__desc">
-                            {o.c.descricao}
-                            {o.projetada && <span className="mov__tag mov__tag--prev">previsto</span>}
+                            {r.descricao}
+                            {r.projetada && <span className="mov__tag mov__tag--prev">previsto</span>}
+                            {r.origem === 'manual' && (
+                              <span className={`mov__escopo mov__escopo--${r.escopo}`} style={{ marginLeft: '0.4rem' }}>
+                                {r.escopo === 'pessoal' ? 'Pessoal' : 'KA'}
+                              </span>
+                            )}
                           </div>
                           <div className="mov__meta">
-                            {nomeCliente(o.c.cliente_id) || 'sem cliente'} · vence {formatarData(o.venc)}
-                            {!o.projetada && statusEfetivo(o.c) === 'atrasada' ? ' · atrasada' : ''}
-                            {o.c.vm_participa ? ' · VM Rocks' : ''}
+                            {r.origem === 'cobranca'
+                              ? `${r.cliente} · vence ${formatarData(r.data)}`
+                              : `lançada à mão · ${formatarData(r.data)}`}
+                            {r.atrasada ? ' · atrasada' : ''}
+                            {r.vmParticipa ? ' · VM Rocks' : ''}
                           </div>
                         </div>
-                        <div className="mov__valor mov__valor--receber">{formatarBRL(o.c.valor)}</div>
+                        <div className="mov__valor mov__valor--receber">{formatarBRL(r.valor)}</div>
+                        {r.origem === 'manual' && r.lancamento && (
+                          <div className="mov__acoes">
+                            <button className="btn-mini" onClick={() => void marcarRecebida(r.lancamento!)} title="Marcar como recebida">
+                              Recebi
+                            </button>
+                            <button className="btn-mini" onClick={() => editar(r.lancamento!)}>
+                              Editar
+                            </button>
+                            <button className="btn-mini btn-mini--perigo" onClick={() => void excluir(r.lancamento!)} title="Excluir">
+                              ✕
+                            </button>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
