@@ -4,6 +4,8 @@ import { confirmar } from '../../lib/confirmar'
 import { listarClientes } from '../../lib/api'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import { rotuloStatus } from '../../lib/rotulos'
+import { useFichaUrl } from '../../hooks/useFichaUrl'
+import { Busca, normalizar } from '../../components/Busca'
 import {
   atualizarContrato,
   criarContratoDoModelo,
@@ -25,13 +27,29 @@ const BADGE_CONTRATO: Record<ContratoStatus, string> = {
 // Contratos: gerados automaticamente na aprovação do orçamento; aqui a KA
 // acompanha, copia o link de assinatura e edita o MODELO padrão.
 export function GestaoContratos() {
+  const { idAberto, abrir: abrirUrl, fechar } = useFichaUrl('id')
   const [lista, setLista] = useState<Contrato[]>([])
-  const [vendo, setVendo] = useState<Contrato | null>(null)
-  const [editandoModelo, setEditandoModelo] = useState(false)
-  const [criando, setCriando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
+  const [busca, setBusca] = useState('')
+
+  const listaFiltrada = (() => {
+    const q = normalizar(busca).trim()
+    if (!q) return lista
+    return lista.filter((c) =>
+      normalizar(`${c.titulo} ${c.assinatura_nome ?? ''}`).includes(q),
+    )
+  })()
+
+  // Sub-telas na URL: ?id=novo (gerar), ?id=modelo (editar modelo),
+  // ?id=<uuid> (ver contrato) — F5 e "voltar" do navegador funcionam.
+  const criando = idAberto === 'novo'
+  const editandoModelo = idAberto === 'modelo'
+  const vendo: Contrato | null =
+    idAberto && idAberto !== 'novo' && idAberto !== 'modelo'
+      ? (lista.find((c) => c.id === idAberto) ?? null)
+      : null
 
   const [clientes, setClientes] = useState<Cliente[]>([])
 
@@ -102,17 +120,16 @@ export function GestaoContratos() {
   }
 
   if (editandoModelo) {
-    return <EditorModelo aoVoltar={() => setEditandoModelo(false)} />
+    return <EditorModelo aoVoltar={fechar} />
   }
 
   if (criando) {
     return (
       <NovoContrato
-        aoVoltar={() => setCriando(false)}
+        aoVoltar={fechar}
         aoCriar={(c) => {
-          setCriando(false)
-          void recarregar()
-          setVendo(c)
+          setLista((l) => [c, ...l])
+          abrirUrl(c.id)
         }}
       />
     )
@@ -122,7 +139,7 @@ export function GestaoContratos() {
     return (
       <>
         <p className="nao-imprimir" style={{ marginBottom: '1rem', display: 'flex', gap: '0.6rem' }}>
-          <button className="btn--voltar" onClick={() => setVendo(null)}>
+          <button className="btn--voltar" onClick={fechar}>
             ← Contratos
           </button>
           <button className="btn--voltar" onClick={() => window.print()}>
@@ -157,10 +174,10 @@ export function GestaoContratos() {
     <>
       <div className="gestao-acoes">
         <span className="espaco" />
-        <button className="btn--voltar" onClick={() => setEditandoModelo(true)}>
+        <button className="btn--voltar" onClick={() => abrirUrl('modelo')}>
           Editar modelo de contrato
         </button>
-        <button className="btn" onClick={() => setCriando(true)}>
+        <button className="btn" onClick={() => abrirUrl('novo')}>
           + Novo contrato
         </button>
       </div>
@@ -180,6 +197,13 @@ export function GestaoContratos() {
       )}
 
       {lista.length > 0 && (
+        <Busca valor={busca} aoMudar={setBusca} placeholder="Buscar contrato por título…" />
+      )}
+      {lista.length > 0 && listaFiltrada.length === 0 && (
+        <p className="ativ-vazio">Nenhum contrato encontrado para “{busca}”.</p>
+      )}
+
+      {listaFiltrada.length > 0 && (
         <div className="tabela-wrap">
           <table className="tabela">
             <thead>
@@ -192,10 +216,10 @@ export function GestaoContratos() {
               </tr>
             </thead>
             <tbody>
-              {lista.map((c) => (
+              {listaFiltrada.map((c) => (
                 <tr key={c.id}>
                   <td className="cel-nome" data-label="Contrato">
-                    <button className="cel-abrir" onClick={() => setVendo(c)} title="Ver contrato">
+                    <button className="cel-abrir" onClick={() => abrirUrl(c.id)} title="Ver contrato">
                       <strong>{c.titulo}</strong>
                     </button>
                   </td>
@@ -209,7 +233,7 @@ export function GestaoContratos() {
                     <span className={`badge ${BADGE_CONTRATO[c.status]}`}>{rotuloStatus('contrato', c.status)}</span>
                   </td>
                   <td className="acoes">
-                    <button className="btn-mini" onClick={() => setVendo(c)}>
+                    <button className="btn-mini" onClick={() => abrirUrl(c.id)}>
                       Ver
                     </button>
                     {c.status !== 'cancelado' && c.status !== 'assinado' && (

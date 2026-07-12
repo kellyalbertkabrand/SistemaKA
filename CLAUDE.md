@@ -105,9 +105,22 @@ Clientes no sistema:
     `cel-nome`) e o nome abre a ficha (como nas outras).
   - **Textos corrigidos** (pós-Firebase): convite não promete e-mail que não
     existe; erro do Mercado Pago não cita mais Supabase.
-  - **Pendente (roadmap, itens maiores):** ficha aberta na URL (`?aba=x&id=`)
-    p/ F5 e "voltar" do navegador não perderem o lugar; busca/filtro/ordenação
-    nas listas; migrar TODO `.nota`/`.erro-msg` inline restante para toast.
+  - **Pendente (roadmap, itens maiores):** ordenação/paginação nas listas;
+    migrar TODO `.nota`/`.erro-msg` inline restante para toast; guardas de
+    clique-duplo (`ocupado`) nas ações de lista de Orçamentos/Contratos.
+- **Ficha aberta na URL (jul/2026) — `src/hooks/useFichaUrl.ts`.** A ficha/
+  detalhe/editor aberto agora vive na URL (`?aba=<x>&id=<uuid>`, ou `id=novo`;
+  Contratos usa `id=modelo`; o Estúdio usa `?aba=estudio&marca=<slug>`). Assim
+  **F5 reabre a ficha**, o **"voltar" do navegador a fecha** (não sai da seção)
+  e a ficha vira **link compartilhável**. `abrir()` empilha histórico, `fechar()`
+  substitui. Aplicado em Clientes, Projetos, Orçamentos, Contratos, Cuidadoras e
+  no Estúdio (`AdminPanel`). O `sel`/`editando`/`vendo` viram valores DERIVADOS
+  do parâmetro + a lista carregada (nada de `useState` de seleção). O cross-link
+  do Financeiro agora usa `?aba=clientes&id=<id>` (persistente).
+- **Busca nas listas (jul/2026) — `src/components/Busca.tsx`** (`<Busca>` +
+  `normalizar()` sem acento/caixa). Campo de busca por texto em Clientes,
+  Cuidadoras, Orçamentos, Contratos e Cobranças (filtro no cliente; some com
+  "Nenhum … encontrado" quando não acha). Estilos `.busca*` em `gestao.css`.
 
 O app independente vive em **`estudio-marca-ka/`**. (Na raiz do repo também há
 um sistema de notícias em Python, separado, que não tem relação com este app.)

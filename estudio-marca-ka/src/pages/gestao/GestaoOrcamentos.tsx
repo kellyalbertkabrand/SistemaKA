@@ -23,6 +23,8 @@ import {
 } from '../../lib/gestao'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import { rotuloStatus } from '../../lib/rotulos'
+import { useFichaUrl } from '../../hooks/useFichaUrl'
+import { Busca, normalizar } from '../../components/Busca'
 
 const BADGE_ORC: Record<OrcamentoStatus, string> = {
   rascunho: 'badge--cinza',
@@ -35,12 +37,29 @@ const BADGE_ORC: Record<OrcamentoStatus, string> = {
 // Orçamentos: a KA monta, envia o link ao cliente; ao aprovar, o sistema gera
 // contrato + cobrança automaticamente (RPC responder_orcamento).
 export function GestaoOrcamentos() {
+  const { idAberto, abrir: abrirUrl, fechar } = useFichaUrl('id')
   const [lista, setLista] = useState<Orcamento[]>([])
   const [clientes, setClientes] = useState<Cliente[]>([])
-  const [editando, setEditando] = useState<Orcamento | 'novo' | null>(null)
   const [erro, setErro] = useState<string | null>(null)
   const [msg, setMsg] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
+  const [busca, setBusca] = useState('')
+
+  const listaFiltrada = (() => {
+    const q = normalizar(busca).trim()
+    if (!q) return lista
+    return lista.filter((o) =>
+      normalizar(`${o.titulo} ${o.destinatario_nome ?? ''}`).includes(q),
+    )
+  })()
+
+  // Editor aberto vem da URL (?id=<uuid> ou ?id=novo).
+  const editando: Orcamento | 'novo' | null =
+    idAberto === 'novo'
+      ? 'novo'
+      : idAberto
+        ? (lista.find((o) => o.id === idAberto) ?? null)
+        : null
 
   async function recarregar() {
     try {
@@ -112,10 +131,11 @@ export function GestaoOrcamentos() {
   if (editando) {
     return (
       <EditorOrcamento
+        key={idAberto ?? 'novo'}
         original={editando === 'novo' ? null : editando}
         clientes={clientes}
         aoVoltar={() => {
-          setEditando(null)
+          fechar()
           void recarregar()
         }}
       />
@@ -126,7 +146,7 @@ export function GestaoOrcamentos() {
     <>
       <div className="gestao-acoes">
         <span className="espaco" />
-        <button className="btn" onClick={() => setEditando('novo')}>
+        <button className="btn" onClick={() => abrirUrl('novo')}>
           + Novo orçamento
         </button>
       </div>
@@ -146,6 +166,13 @@ export function GestaoOrcamentos() {
       )}
 
       {lista.length > 0 && (
+        <Busca valor={busca} aoMudar={setBusca} placeholder="Buscar por título ou destinatário…" />
+      )}
+      {lista.length > 0 && listaFiltrada.length === 0 && (
+        <p className="ativ-vazio">Nenhum orçamento encontrado para “{busca}”.</p>
+      )}
+
+      {listaFiltrada.length > 0 && (
         <div className="tabela-wrap">
           <table className="tabela">
             <thead>
@@ -159,10 +186,10 @@ export function GestaoOrcamentos() {
               </tr>
             </thead>
             <tbody>
-              {lista.map((o) => (
+              {listaFiltrada.map((o) => (
                 <tr key={o.id}>
                   <td className="cel-nome" data-label="Título">
-                    <button className="cel-abrir" onClick={() => setEditando(o)} title="Abrir proposta">
+                    <button className="cel-abrir" onClick={() => abrirUrl(o.id)} title="Abrir proposta">
                       <strong>{o.titulo}</strong>
                     </button>
                   </td>
@@ -175,7 +202,7 @@ export function GestaoOrcamentos() {
                   <td className="acoes">
                     {o.status === 'rascunho' && (
                       <>
-                        <button className="btn-mini" onClick={() => setEditando(o)}>
+                        <button className="btn-mini" onClick={() => abrirUrl(o.id)}>
                           Editar
                         </button>
                         <button className="btn-mini" onClick={() => void enviar(o)}>
@@ -188,7 +215,7 @@ export function GestaoOrcamentos() {
                     )}
                     {o.status !== 'rascunho' && (
                       <>
-                        <button className="btn-mini" onClick={() => setEditando(o)}>
+                        <button className="btn-mini" onClick={() => abrirUrl(o.id)}>
                           Editar
                         </button>
                         <button className="btn-mini btn-mini--whats" onClick={() => enviarWhatsApp(o)}>

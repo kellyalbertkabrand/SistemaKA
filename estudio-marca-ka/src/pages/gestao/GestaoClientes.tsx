@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import { confirmar } from '../../lib/confirmar'
+import { useFichaUrl } from '../../hooks/useFichaUrl'
+import { Busca, normalizar } from '../../components/Busca'
 import { useToast } from '../../components/Toast'
 import { useCopiar } from '../../hooks/useCopiar'
 import { parseValorBR } from '../../lib/ui'
@@ -34,11 +35,30 @@ function ehNovo(c: Cliente): boolean {
 export function GestaoClientes() {
   const { mostrar } = useToast()
   const copiar = useCopiar()
-  const [params, setParams] = useSearchParams()
+  const { idAberto, abrir: abrirUrl, fechar } = useFichaUrl('id')
   const [clientes, setClientes] = useState<Cliente[]>([])
-  const [sel, setSel] = useState<Cliente | 'novo' | null>(null)
   const [erro, setErro] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
+  const [busca, setBusca] = useState('')
+
+  const clientesFiltrados = (() => {
+    const q = normalizar(busca).trim()
+    if (!q) return clientes
+    return clientes.filter((c) =>
+      normalizar(
+        `${c.nome_marca} ${c.responsavel ?? ''} ${c.telefone ?? ''} ${c.email_contato ?? ''} ${c.segmento ?? ''} ${c.instagram_handle ?? ''} ${c.slug ?? ''}`,
+      ).includes(q),
+    )
+  })()
+
+  // A ficha aberta vem da URL (?id=<uuid> ou ?id=novo): F5 e "voltar" do
+  // navegador funcionam e o link é compartilhável.
+  const sel: Cliente | 'novo' | null =
+    idAberto === 'novo'
+      ? 'novo'
+      : idAberto
+        ? (clientes.find((c) => c.id === idAberto) ?? null)
+        : null
 
   async function copiarLinkCadastro() {
     await copiar(
@@ -50,7 +70,7 @@ export function GestaoClientes() {
   // Abrir a ficha de um cadastro novo já o marca como visto (tira o "NOVO").
   function abrir(c: Cliente) {
     if (ehNovo(c)) void marcarClienteRevisado(c.id).catch(() => {})
-    setSel(c)
+    abrirUrl(c.id)
   }
 
   async function excluir(c: Cliente) {
@@ -90,27 +110,21 @@ export function GestaoClientes() {
     void recarregar()
   }, [])
 
-  // Veio do Financeiro com ?cliente=<id> → abre a ficha desse cliente e limpa
-  // o parâmetro (pra não reabrir ao fechar).
+  // Abriu um cadastro do link público (?id=<uuid>) → tira o "NOVO" ao ver.
   useEffect(() => {
-    const id = params.get('cliente')
-    if (!id || clientes.length === 0) return
-    const c = clientes.find((x) => x.id === id)
-    if (c) {
-      abrir(c)
-      const p = new URLSearchParams(params)
-      p.delete('cliente')
-      setParams(p, { replace: true })
-    }
+    if (!idAberto || idAberto === 'novo') return
+    const c = clientes.find((x) => x.id === idAberto)
+    if (c && ehNovo(c)) void marcarClienteRevisado(c.id).catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clientes])
+  }, [idAberto, clientes])
 
   if (sel) {
     return (
       <FichaDoCliente
+        key={idAberto ?? 'novo'}
         cliente={sel === 'novo' ? null : sel}
         aoVoltar={() => {
-          setSel(null)
+          fechar()
           void recarregar()
         }}
       />
@@ -124,7 +138,7 @@ export function GestaoClientes() {
         <button className="btn--voltar" onClick={() => void copiarLinkCadastro()}>
           Copiar link de cadastro
         </button>
-        <button className="btn" onClick={() => setSel('novo')}>
+        <button className="btn" onClick={() => abrirUrl('novo')}>
           + Novo cliente
         </button>
       </div>
@@ -150,6 +164,13 @@ export function GestaoClientes() {
       )}
 
       {clientes.length > 0 && (
+        <Busca valor={busca} aoMudar={setBusca} placeholder="Buscar cliente por nome, responsável…" />
+      )}
+      {clientes.length > 0 && clientesFiltrados.length === 0 && (
+        <p className="ativ-vazio">Nenhum cliente encontrado para “{busca}”.</p>
+      )}
+
+      {clientesFiltrados.length > 0 && (
         <div className="tabela-wrap">
           <table className="tabela">
             <thead>
@@ -163,7 +184,7 @@ export function GestaoClientes() {
               </tr>
             </thead>
             <tbody>
-              {clientes.map((c) => (
+              {clientesFiltrados.map((c) => (
                 <tr key={c.id}>
                   <td className="cel-nome" data-label="Marca">
                     <button className="cel-abrir" onClick={() => abrir(c)} title="Abrir ficha">

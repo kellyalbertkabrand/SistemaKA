@@ -17,6 +17,7 @@ import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
 import { autoAltura } from '../../lib/ui'
 import { rotuloStatus } from '../../lib/rotulos'
+import { Busca, normalizar } from '../../components/Busca'
 
 const BADGE_COBRANCA: Record<CobrancaStatus, string> = {
   pendente: 'badge--azul',
@@ -43,6 +44,7 @@ export function GestaoCobrancas() {
   const [erro, setErro] = useState<string | null>(null)
   const [ocupado, setOcupado] = useState<string | null>(null) // id da linha em ação
   const [carregando, setCarregando] = useState(true)
+  const [busca, setBusca] = useState('')
   // Formulário de cobrança avulsa (criar OU editar) — sem window.prompt.
   const [criando, setCriando] = useState(false)
   const [editandoId, setEditandoId] = useState<string | null>(null)
@@ -62,6 +64,14 @@ export function GestaoCobrancas() {
   }, [clientes])
 
   const clientePorId = useMemo(() => new Map(clientes.map((c) => [c.id, c])), [clientes])
+
+  const listaFiltrada = useMemo(() => {
+    const q = normalizar(busca).trim()
+    if (!q) return lista
+    return lista.filter((c) =>
+      normalizar(`${nomeCliente(c.cliente_id)} ${c.descricao ?? ''}`).includes(q),
+    )
+  }, [lista, busca, nomeCliente])
 
   function cobrarWhatsApp(c: Cobranca) {
     const cliente = c.cliente_id ? clientePorId.get(c.cliente_id) : null
@@ -443,6 +453,13 @@ export function GestaoCobrancas() {
       )}
 
       {lista.length > 0 && (
+        <Busca valor={busca} aoMudar={setBusca} placeholder="Buscar por cliente ou descrição…" />
+      )}
+      {lista.length > 0 && listaFiltrada.length === 0 && (
+        <p className="ativ-vazio">Nenhuma cobrança encontrada para “{busca}”.</p>
+      )}
+
+      {listaFiltrada.length > 0 && (
         <div className="tabela-wrap">
           <table className="tabela">
             <thead>
@@ -457,7 +474,7 @@ export function GestaoCobrancas() {
               </tr>
             </thead>
             <tbody>
-              {lista.map((c) => (
+              {listaFiltrada.map((c) => (
                 <tr key={c.id}>
                   <td className="cel-nome" data-label="Cliente">{nomeCliente(c.cliente_id)}</td>
                   <td data-label="Descrição">

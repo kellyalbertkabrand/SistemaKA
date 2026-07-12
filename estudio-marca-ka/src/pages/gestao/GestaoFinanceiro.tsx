@@ -95,7 +95,7 @@ export function GestaoFinanceiro() {
               <button
                 key={`${l.cliente_id}-${i}`}
                 className="fin-item fin-item--btn"
-                onClick={() => setParams({ aba: 'clientes', cliente: l.cliente_id })}
+                onClick={() => setParams({ aba: 'clientes', id: l.cliente_id })}
                 title="Editar na ficha do cliente"
               >
                 <div className="fin-item__corpo">

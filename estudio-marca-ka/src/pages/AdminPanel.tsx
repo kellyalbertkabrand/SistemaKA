@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { SiteHeader, type ItemMenu } from '../components/SiteHeader'
 import { clientesComTemplates } from '../templates/registry'
@@ -188,13 +187,20 @@ export function AdminPanel() {
   const [params, setParams] = useSearchParams()
   const paramAba = params.get('aba') as Aba | null
   const aba: Aba = paramAba && ABAS_VALIDAS.includes(paramAba) ? paramAba : 'inicio'
-  const [slug, setSlug] = useState<string | null>(null)
+  // A marca aberta no Estúdio também vive na URL (?aba=estudio&marca=<slug>):
+  // F5 e "voltar" do navegador não perdem o estúdio do cliente.
+  const slug = aba === 'estudio' ? params.get('marca') : null
   const clientes = clientesComTemplates()
   const cab = CABECALHOS[aba]
 
   function irPara(id: Aba) {
-    setSlug(null)
     setParams(id === 'inicio' ? {} : { aba: id })
+  }
+  function abrirMarca(s: string) {
+    setParams({ aba: 'estudio', marca: s })
+  }
+  function fecharMarca() {
+    setParams({ aba: 'estudio' })
   }
 
   return (
@@ -208,7 +214,7 @@ export function AdminPanel() {
         {aba === 'estudio' && slug ? (
           <>
             <p style={{ marginBottom: '1rem' }}>
-              <button className="btn--voltar" onClick={() => setSlug(null)}>
+              <button className="btn--voltar" onClick={fecharMarca}>
                 ← Todos os clientes
               </button>
             </p>
@@ -254,7 +260,7 @@ export function AdminPanel() {
                   {clientes.map((c) => {
                     const m = marcaVisual(c.slug)
                     return (
-                      <button key={c.slug} className="cliente-card" onClick={() => setSlug(c.slug)}>
+                      <button key={c.slug} className="cliente-card" onClick={() => abrirMarca(c.slug)}>
                         <div
                           className="cliente-card__capa"
                           style={{

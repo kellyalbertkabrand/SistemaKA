@@ -20,7 +20,9 @@ import { formatarData } from '../../lib/gestao'
 import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
 import { useCopiar } from '../../hooks/useCopiar'
+import { useFichaUrl } from '../../hooks/useFichaUrl'
 import { rotuloStatus } from '../../lib/rotulos'
+import { Busca, normalizar } from '../../components/Busca'
 
 const BADGE_CUIDADORA: Record<CuidadoraStatus, string> = {
   pendente: 'badge--dourado',
@@ -33,11 +35,23 @@ const BADGE_CUIDADORA: Record<CuidadoraStatus, string> = {
 export function GestaoCuidadoras() {
   const { mostrar } = useToast()
   const copiar = useCopiar()
+  const { idAberto, abrir: abrirUrl, fechar } = useFichaUrl('id')
   const [lista, setLista] = useState<Cuidadora[]>([])
-  const [sel, setSel] = useState<Cuidadora | null>(null)
   const [erro, setErro] = useState<string | null>(null)
   const [criando, setCriando] = useState(false)
   const [carregando, setCarregando] = useState(true)
+  const [busca, setBusca] = useState('')
+
+  const listaFiltrada = (() => {
+    const q = normalizar(busca).trim()
+    if (!q) return lista
+    return lista.filter((c) =>
+      normalizar(`${c.nome} ${c.telefone ?? ''} ${c.cpf ?? ''}`).includes(q),
+    )
+  })()
+
+  // Ficha aberta vem da URL (?id=<uuid>): F5 e "voltar" do navegador funcionam.
+  const sel: Cuidadora | null = idAberto ? (lista.find((c) => c.id === idAberto) ?? null) : null
 
   async function recarregar() {
     try {
@@ -70,7 +84,7 @@ export function GestaoCuidadoras() {
     try {
       const c = await criarCuidadora({ nome: 'Nova cuidadora' })
       setLista((l) => [c, ...l])
-      setSel(c)
+      abrirUrl(c.id)
       mostrar('Ficha criada — preencha o nome e os dados.', 'ok')
     } catch (e) {
       mostrar(e instanceof Error ? e.message : String(e), 'erro')
@@ -80,7 +94,7 @@ export function GestaoCuidadoras() {
   }
 
   function abrir(c: Cuidadora) {
-    setSel(c)
+    abrirUrl(c.id)
     if (!c.revisado) void marcarCuidadoraRevisada(c.id)
   }
 
@@ -99,9 +113,10 @@ export function GestaoCuidadoras() {
   if (sel) {
     return (
       <FichaCuidadoraView
+        key={sel.id}
         cuidadora={sel}
         aoVoltar={() => {
-          setSel(null)
+          fechar()
           void recarregar()
         }}
       />
@@ -135,6 +150,13 @@ export function GestaoCuidadoras() {
       )}
 
       {lista.length > 0 && (
+        <Busca valor={busca} aoMudar={setBusca} placeholder="Buscar cuidadora por nome, telefone…" />
+      )}
+      {lista.length > 0 && listaFiltrada.length === 0 && (
+        <p className="ativ-vazio">Nenhuma cuidadora encontrada para “{busca}”.</p>
+      )}
+
+      {listaFiltrada.length > 0 && (
         <div className="tabela-wrap">
           <table className="tabela">
             <thead>
@@ -147,7 +169,7 @@ export function GestaoCuidadoras() {
               </tr>
             </thead>
             <tbody>
-              {lista.map((c) => (
+              {listaFiltrada.map((c) => (
                 <tr key={c.id}>
                   <td className="cel-nome" data-label="Nome">
                     <button className="cel-abrir" onClick={() => abrir(c)} title="Abrir ficha">

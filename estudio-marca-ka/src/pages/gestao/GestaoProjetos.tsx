@@ -29,6 +29,7 @@ import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
 import { autoAltura } from '../../lib/ui'
 import { rotuloStatus } from '../../lib/rotulos'
+import { useFichaUrl } from '../../hooks/useFichaUrl'
 
 const BADGE_PROJETO: Record<ProjetoStatus, string> = {
   ativo: 'badge--azul',
@@ -52,11 +53,15 @@ const BADGE_FASE: Record<FaseStatus, string> = {
 // o cliente acompanha o andamento em tempo real.
 export function GestaoProjetos() {
   const { mostrar } = useToast()
+  const { idAberto, abrir: abrirUrl, fechar } = useFichaUrl('id')
   const [lista, setLista] = useState<Projeto[]>([])
-  const [sel, setSel] = useState<Projeto | null>(null)
-  const [criando, setCriando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
+
+  // Projeto aberto / criação vêm da URL (?id=<uuid> ou ?id=novo).
+  const criando = idAberto === 'novo'
+  const sel: Projeto | null =
+    idAberto && idAberto !== 'novo' ? (lista.find((p) => p.id === idAberto) ?? null) : null
   // Visão: lista de projetos OU painel de pendências (com filtro por responsável)
   const [vista, setVista] = useState<'projetos' | 'pendencias'>('projetos')
   const [filtroResp, setFiltroResp] = useState<Responsavel | 'todas'>('todas')
@@ -95,11 +100,10 @@ export function GestaoProjetos() {
   if (criando) {
     return (
       <NovoProjeto
-        aoVoltar={() => setCriando(false)}
+        aoVoltar={fechar}
         aoCriar={(p) => {
-          setCriando(false)
-          void recarregar()
-          setSel(p)
+          setLista((l) => [p, ...l])
+          abrirUrl(p.id)
         }}
       />
     )
@@ -108,9 +112,10 @@ export function GestaoProjetos() {
   if (sel) {
     return (
       <DetalheProjeto
+        key={sel.id}
         original={sel}
         aoVoltar={() => {
-          setSel(null)
+          fechar()
           void recarregar()
         }}
       />
@@ -134,7 +139,7 @@ export function GestaoProjetos() {
           </button>
         </div>
         <span className="espaco" />
-        <button className="btn" onClick={() => setCriando(true)}>
+        <button className="btn" onClick={() => abrirUrl('novo')}>
           + Novo projeto
         </button>
       </div>
@@ -170,7 +175,7 @@ export function GestaoProjetos() {
                 <button
                   key={`${pd.projeto_id}-${pd.fase_idx}`}
                   className="pend-item"
-                  onClick={() => setSel(lista.find((x) => x.id === pd.projeto_id) ?? null)}
+                  onClick={() => abrirUrl(pd.projeto_id)}
                   title="Abrir o projeto"
                 >
                   <span className={`resp-badge resp--${respClasse(pd.responsavel)}`}>{rotuloResp(pd.responsavel)}</span>
@@ -223,7 +228,7 @@ export function GestaoProjetos() {
                 return (
                   <tr key={p.id}>
                     <td className="cel-nome" data-label="Projeto">
-                      <button className="cel-abrir" onClick={() => setSel(p)} title="Abrir projeto">
+                      <button className="cel-abrir" onClick={() => abrirUrl(p.id)} title="Abrir projeto">
                         <strong>{p.nome}</strong>
                       </button>
                     </td>
@@ -245,7 +250,7 @@ export function GestaoProjetos() {
                       <span className={`badge ${BADGE_PROJETO[p.status]}`}>{rotuloStatus('projeto', p.status)}</span>
                     </td>
                     <td className="acoes">
-                      <button className="btn-mini" onClick={() => setSel(p)} title="Abrir projeto">
+                      <button className="btn-mini" onClick={() => abrirUrl(p.id)} title="Abrir projeto">
                         Abrir
                       </button>
                       <button className="btn-mini" onClick={() => void copiarLink(p)}>
