@@ -1846,6 +1846,29 @@
   border-radius: 100px;
   padding: 0.03rem 0.4rem;
 }
+.mov__escopo {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  border-radius: 100px;
+  padding: 0.03rem 0.45rem;
+}
+.mov__escopo--ka {
+  color: var(--essencia);
+  background: rgba(61, 107, 126, 0.14);
+}
+.mov__escopo--pessoal {
+  color: #6b4a86;
+  background: rgba(107, 74, 134, 0.14);
+}
+/* Segmento Pessoal/KA no formulário do caixa */
+.seg--escopo {
+  display: flex;
+  width: 100%;
+}
+.seg--escopo button {
+  flex: 1;
+}
 .mov__valor {
   flex: none;
   font-family: var(--heading);

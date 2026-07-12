@@ -9,6 +9,7 @@ import {
   criarLancamento,
   excluirLancamento,
   listarLancamentos,
+  type EscopoLancamento,
   type Lancamento,
   type TipoLancamento,
 } from '../../lib/caixa'
@@ -60,6 +61,7 @@ interface Mov {
   valor: number
   data: string
   origem: 'cobranca' | 'manual'
+  escopo?: EscopoLancamento | null
   cliente?: string
   lancamento?: Lancamento
 }
@@ -82,6 +84,7 @@ export function GestaoFinanceiro() {
   const [fDesc, setFDesc] = useState('')
   const [fValor, setFValor] = useState('')
   const [fData, setFData] = useState(hoje())
+  const [fEscopo, setFEscopo] = useState<EscopoLancamento>('ka')
   const [salvando, setSalvando] = useState(false)
 
   async function recarregar() {
@@ -129,6 +132,7 @@ export function GestaoFinanceiro() {
         valor: Number(c.valor || 0),
         data: (c.pago_em ?? c.vencimento ?? '').slice(0, 10),
         origem: 'cobranca' as const,
+        escopo: 'ka' as const,
         cliente: nomeCliente(c.cliente_id),
       }))
     const deMao: Mov[] = lancamentos.map((l) => ({
@@ -138,6 +142,7 @@ export function GestaoFinanceiro() {
       valor: Number(l.valor || 0),
       data: l.data,
       origem: 'manual' as const,
+      escopo: l.escopo ?? 'ka',
       lancamento: l,
     }))
     return [...deCobranca, ...deMao].sort((a, b) => (a.data < b.data ? 1 : a.data > b.data ? -1 : 0))
@@ -173,6 +178,7 @@ export function GestaoFinanceiro() {
     setFDesc('')
     setFValor('')
     setFData(hoje())
+    setFEscopo('ka')
   }
 
   function editar(l: Lancamento) {
@@ -181,6 +187,7 @@ export function GestaoFinanceiro() {
     setFDesc(l.descricao)
     setFValor(String(l.valor).replace('.', ','))
     setFData(l.data)
+    setFEscopo(l.escopo ?? 'ka')
   }
 
   function fecharForm() {
@@ -202,7 +209,7 @@ export function GestaoFinanceiro() {
     }
     setSalvando(true)
     try {
-      const dados = { tipo: formTipo, descricao, valor, data: fData || hoje() }
+      const dados = { tipo: formTipo, descricao, valor, data: fData || hoje(), escopo: fEscopo }
       if (editId) {
         await atualizarLancamento(editId, dados)
         setLancamentos((l) => l.map((x) => (x.id === editId ? { ...x, ...dados } : x)))
@@ -416,6 +423,25 @@ export function GestaoFinanceiro() {
                   <label>Data</label>
                   <input type="date" value={fData} onChange={(e) => setFData(e.target.value)} />
                 </div>
+                <div className="field campo-toda">
+                  <label>É da KA ou pessoal?</label>
+                  <div className="seg seg--escopo">
+                    <button
+                      type="button"
+                      className={fEscopo === 'ka' ? 'seg__on' : ''}
+                      onClick={() => setFEscopo('ka')}
+                    >
+                      KA (negócio)
+                    </button>
+                    <button
+                      type="button"
+                      className={fEscopo === 'pessoal' ? 'seg__on' : ''}
+                      onClick={() => setFEscopo('pessoal')}
+                    >
+                      Pessoal
+                    </button>
+                  </div>
+                </div>
               </div>
               <div className="caixa-form__acoes">
                 <button className="btn" disabled={salvando} onClick={() => void salvar()}>
@@ -471,6 +497,10 @@ export function GestaoFinanceiro() {
                       <div className="mov__desc">{m.descricao}</div>
                       <div className="mov__meta">
                         {formatarData(m.data)}
+                        {' · '}
+                        <span className={`mov__escopo mov__escopo--${m.escopo ?? 'ka'}`}>
+                          {m.escopo === 'pessoal' ? 'Pessoal' : 'KA'}
+                        </span>
                         {m.origem === 'cobranca' && (
                           <>
                             {' '}

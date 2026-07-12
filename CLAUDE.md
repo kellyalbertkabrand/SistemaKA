@@ -403,9 +403,12 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
   (colunas novas em `clientes`: responsavel, telefone, endereço, observações,
   documento, mensalidade, dia_vencimento, cobranca_ativa, slug).
 - **Fluxo do orçamento:** KA monta (itens + valores) → envia link público
-  `/orcamento/:token` → cliente aprova (nome+CPF/CNPJ) → RPC
-  `responder_orcamento` gera **contrato** (do modelo com {{placeholders}}) e
-  **cobrança** automaticamente; recusa também é registrada.
+  `/orcamento/:token` → cliente aprova (nome+CPF/CNPJ) → `responderOrcamento`
+  gera **só o contrato** (do modelo com {{placeholders}}); recusa registrada.
+  ⚠️ **Cobrança automática DESLIGADA (KA, jul/2026):** aprovar NÃO cria mais a
+  cobrança — a KA lança cada cobrança à mão (aba Cobranças). Para RELIGAR no
+  futuro, ver o comentário em `responderOrcamento` (recriar a cobrança avulsa +
+  gravar `cobranca_id`).
 - **Proposta no layout KA (jul/2026):** o editor de orçamento tem o bloco
   opcional "Proposta no layout KA" (campo `proposta: PropostaCampos` no
   orçamento; botão "Preencher com o modelo padrão" =

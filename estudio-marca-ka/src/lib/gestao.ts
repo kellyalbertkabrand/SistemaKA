@@ -461,27 +461,11 @@ export async function responderOrcamento(
   })
   const contratoRef = await addDoc(collection(db, 'contratos'), contrato)
 
-  // Cobrança avulsa correspondente (vencimento em 7 dias).
-  const venc = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
-  const cobranca = limpar({
-    cliente_id: o.cliente_id,
-    orcamento_id: o.id,
-    tipo: 'avulsa',
-    descricao: o.titulo,
-    valor: o.valor_total,
-    vencimento: venc,
-    telefone: o.destinatario_telefone ?? null,
-    competencia: null,
-    status: 'pendente',
-    mp_preference_id: null,
-    mp_payment_id: null,
-    link_pagamento: null,
-    boleto_url: null,
-    boleto_linha_digitavel: null,
-    pago_em: null,
-    criado_em: quando,
-  })
-  const cobrancaRef = await addDoc(collection(db, 'cobrancas'), cobranca)
+  // COBRANÇA AUTOMÁTICA — DESLIGADA (decisão da KA, jul/2026): por enquanto a KA
+  // lança CADA cobrança à mão (aba Cobranças), então aprovar um orçamento gera
+  // só o contrato, não a cobrança. Para RELIGAR no futuro, recrie aqui a
+  // cobrança avulsa (vencimento ~7 dias, valor = o.valor_total, tipo 'avulsa')
+  // e grave o `cobranca_id` no orçamento abaixo.
 
   await updateDoc(doc(db, 'orcamentos', o.id), {
     status: 'aprovado',
@@ -490,7 +474,7 @@ export async function responderOrcamento(
     destinatario_documento: docFinal,
     modelo_contrato_id: modelo?.id ?? null,
     contrato_id: contratoRef.id,
-    cobranca_id: cobrancaRef.id,
+    cobranca_id: null,
   })
 
   return contratoToken

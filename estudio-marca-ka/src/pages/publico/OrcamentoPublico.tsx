@@ -12,7 +12,8 @@ import { PropostaDoc } from './PropostaDoc'
 import '../../styles/gestao.css'
 
 // Página que o cliente/prospect abre pelo link enviado pela KA.
-// Aprovar gera contrato + cobrança e leva direto à página do contrato.
+// Aprovar gera o contrato e leva direto à página do contrato (a cobrança a KA
+// lança à mão por enquanto — geração automática desligada).
 export function OrcamentoPublico() {
   const { token } = useParams<{ token: string }>()
   const navigate = useNavigate()

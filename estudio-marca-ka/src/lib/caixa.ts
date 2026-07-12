@@ -9,6 +9,8 @@ import { db } from './firebase'
 // ============================================================================
 
 export type TipoLancamento = 'entrada' | 'saida'
+// Escopo do dinheiro: da KA (negócio de design) ou pessoal da Kelly.
+export type EscopoLancamento = 'ka' | 'pessoal'
 
 export interface Lancamento {
   id: string
@@ -16,6 +18,7 @@ export interface Lancamento {
   descricao: string
   valor: number
   data: string // YYYY-MM-DD
+  escopo?: EscopoLancamento | null
   categoria?: string | null
   criado_em: string
 }
