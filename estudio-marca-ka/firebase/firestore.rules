@@ -74,6 +74,9 @@ service cloud.firestore {
 //     // Atividades pessoais da KA (painel Trabalho/BIA/Pessoal): só a KA.
 //     match /atividades/{id} { allow read, write: if ehKA(); }
 //
+//     // Caixa pessoal da KA (Financeiro: entradas e saídas): só a KA.
+//     match /caixa/{id} { allow read, write: if ehKA(); }
+//
 //     // CUIDADORAS (controle pessoal da KA): o link público /cadastro-cuidadora
 //     // pode CRIAR a ficha e os documentos anexados; ler/editar/apagar só a KA.
 //     match /cuidadoras/{id} {

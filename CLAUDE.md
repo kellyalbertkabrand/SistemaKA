@@ -569,11 +569,24 @@ Na ficha do cliente (`GestaoClientes.tsx` → `PagamentosContrato`), a seção
 - **Resumo "A receber neste contrato"** (`.resumo-receber`): soma por quem —
   ex.: KA R$X · VM Rocks R$Y (+ R$Z/mês). É o que dá pra VM acompanhar quanto
   tem a receber (o painel financeiro só-da-VM depende do modo seguro/login).
-- **Aba Financeiro 🔒** (`GestaoFinanceiro.tsx` + `src/lib/financeiro.ts`):
-  visão consolidada somando os `pagamentos_contrato` de TODOS os clientes —
-  cartões por quem (KA/VM Rocks/…), total geral (único + `/mês`), filtro por
-  chips e lista por cliente/forma. Hoje a KA vê tudo; a versão que a VM acessa
-  (só o dela) entra junto com o login por papel. Estilos `.fin-*` em gestao.css.
+- **Aba Financeiro 🔒 = GESTOR DE CAIXA PESSOAL da KA** (`GestaoFinanceiro.tsx`
+  + `src/lib/caixa.ts` + `src/lib/financeiro.ts`, jul/2026). Junta três fontes
+  num fluxo de caixa só:
+  - **Cobranças PAGAS** (aba Cobranças) entram como **ENTRADAS automáticas**
+    (origem `cobranca`, não editáveis aqui); **cobranças em aberto**
+    (pendente/atrasada) aparecem em **"A receber"**.
+  - **Entradas e saídas à mão** — coleção `caixa` (`{tipo:'entrada'|'saida',
+    descricao, valor, data}`; CRUD em `caixa.ts`): botões **+ Entrada / − Saída**
+    (form inline, valor aceita vírgula via `parseValorBR`), editar/excluir.
+  - **Resumo em 4 cards:** Saldo em caixa (= entradas − saídas), A receber,
+    Entradas, Saídas. Movimentações listadas por data (verde +, vermelho −).
+  - **"Por contrato — quem tem a receber (KA/VM Rocks)"** (o antigo Financeiro,
+    somando os `pagamentos_contrato`) virou um bloco `<details>` recolhível no
+    fim; cada item leva à ficha do cliente (`?aba=clientes&id=`).
+  - Diferença p/ a KA: **Cobranças** = o que você cobra de cada cliente
+    (operacional, com vencimento/status/link); **Financeiro** = seu caixa
+    (o que entrou e saiu + o que falta receber). Estilos `.fin-*`/`.mov-*`/
+    `.caixa-form` em gestao.css. Regra Firestore: `caixa` = só a KA.
 - **Dia do vencimento:** input de texto `inputMode="numeric"` que normaliza
   (não fica mais com "0" fixo/`025`); clampa 1–28 ao salvar.
 

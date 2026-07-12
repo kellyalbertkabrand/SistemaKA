@@ -1,117 +1,397 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { listarClientes } from '../../lib/api'
-import { formatarBRL, formatarData } from '../../lib/gestao'
-import type { Cliente } from '../../lib/database.types'
+import { formatarBRL, formatarData, listarCobrancas } from '../../lib/gestao'
+import type { Cliente, Cobranca } from '../../lib/database.types'
 import { linhasFinanceiro, resumoPorQuem, rotuloForma } from '../../lib/financeiro'
+import {
+  atualizarLancamento,
+  criarLancamento,
+  excluirLancamento,
+  listarLancamentos,
+  type Lancamento,
+  type TipoLancamento,
+} from '../../lib/caixa'
+import { useToast } from '../../components/Toast'
+import { confirmar } from '../../lib/confirmar'
+import { parseValorBR } from '../../lib/ui'
 
 // ============================================================================
-// FINANCEIRO — visão consolidada de "quanto cada um tem a receber", somando os
-// pagamentos do contrato de TODOS os clientes. KA vê tudo; a versão que a VM
-// acessa (só o que é dela) entra junto com o login por papel.
+// FINANCEIRO — gestor de caixa PESSOAL da KA. Junta:
+//  - COBRANÇAS pagas (aba Cobranças) → entram como ENTRADAS automáticas;
+//  - COBRANÇAS em aberto → aparecem em "A receber";
+//  - ENTRADAS e SAÍDAS lançadas à mão aqui (coleção `caixa`).
+// Saldo = entradas (recebidas) − saídas. Também mostra, num bloco à parte,
+// "quem tem a receber" (KA/VM Rocks) vindo dos pagamentos do contrato.
 // ============================================================================
+
+const hoje = () => new Date().toISOString().slice(0, 10)
+
+interface Mov {
+  chave: string
+  tipo: TipoLancamento
+  descricao: string
+  valor: number
+  data: string
+  origem: 'cobranca' | 'manual'
+  cliente?: string
+  lancamento?: Lancamento
+}
 
 export function GestaoFinanceiro() {
+  const { mostrar } = useToast()
   const [, setParams] = useSearchParams()
   const [clientes, setClientes] = useState<Cliente[]>([])
+  const [cobrancas, setCobrancas] = useState<Cobranca[]>([])
+  const [lancamentos, setLancamentos] = useState<Lancamento[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
-  const [filtro, setFiltro] = useState<string>('todos')
+
+  // Formulário de entrada/saída (à mão)
+  const [formTipo, setFormTipo] = useState<TipoLancamento | null>(null)
+  const [editId, setEditId] = useState<string | null>(null)
+  const [fDesc, setFDesc] = useState('')
+  const [fValor, setFValor] = useState('')
+  const [fData, setFData] = useState(hoje())
+  const [salvando, setSalvando] = useState(false)
+
+  async function recarregar() {
+    try {
+      setCarregando(true)
+      const [cs, cb, lc] = await Promise.all([listarClientes(), listarCobrancas(), listarLancamentos()])
+      setClientes(cs)
+      setCobrancas(cb)
+      setLancamentos(lc)
+      setErro(null)
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : String(e))
+    } finally {
+      setCarregando(false)
+    }
+  }
 
   useEffect(() => {
-    listarClientes()
-      .then((cs) => setClientes(cs))
-      .catch((e) => setErro(e instanceof Error ? e.message : String(e)))
-      .finally(() => setCarregando(false))
+    void recarregar()
   }, [])
 
+  const nomeCliente = useMemo(() => {
+    const m = new Map(clientes.map((c) => [c.id, c.nome_marca]))
+    return (id: string | null) => (id ? (m.get(id) ?? '') : '')
+  }, [clientes])
+
+  // A receber = cobranças em aberto (pendente/atrasada).
+  const aReceber = cobrancas.filter((c) => c.status === 'pendente' || c.status === 'atrasada')
+  const totalAReceber = aReceber.reduce((s, c) => s + Number(c.valor || 0), 0)
+
+  // Movimentações do caixa = cobranças PAGAS (entradas automáticas) + lançamentos à mão.
+  const movimentos: Mov[] = useMemo(() => {
+    const deCobranca: Mov[] = cobrancas
+      .filter((c) => c.status === 'paga')
+      .map((c) => ({
+        chave: `cob-${c.id}`,
+        tipo: 'entrada' as const,
+        descricao: c.descricao,
+        valor: Number(c.valor || 0),
+        data: (c.pago_em ?? c.vencimento ?? '').slice(0, 10),
+        origem: 'cobranca' as const,
+        cliente: nomeCliente(c.cliente_id),
+      }))
+    const deMao: Mov[] = lancamentos.map((l) => ({
+      chave: l.id,
+      tipo: l.tipo,
+      descricao: l.descricao,
+      valor: Number(l.valor || 0),
+      data: l.data,
+      origem: 'manual' as const,
+      lancamento: l,
+    }))
+    return [...deCobranca, ...deMao].sort((a, b) => (a.data < b.data ? 1 : a.data > b.data ? -1 : 0))
+  }, [cobrancas, lancamentos, nomeCliente])
+
+  const totalEntradas = movimentos.filter((m) => m.tipo === 'entrada').reduce((s, m) => s + m.valor, 0)
+  const totalSaidas = movimentos.filter((m) => m.tipo === 'saida').reduce((s, m) => s + m.valor, 0)
+  const saldo = totalEntradas - totalSaidas
+
+  // "Quem tem a receber" (KA/VM Rocks) — dos pagamentos do contrato.
   const linhas = linhasFinanceiro(clientes)
   const resumo = resumoPorQuem(linhas)
-  const totalUnico = linhas.reduce((s, l) => s + l.unico, 0)
-  const totalMensal = linhas.reduce((s, l) => s + l.mensal, 0)
+  const totalContratoUnico = linhas.reduce((s, l) => s + l.unico, 0)
+  const totalContratoMensal = linhas.reduce((s, l) => s + l.mensal, 0)
 
-  const lista = (filtro === 'todos' ? linhas : linhas.filter((l) => l.rotulo === filtro)).sort(
-    (a, b) => b.unico + b.mensal - (a.unico + a.mensal),
-  )
+  function abrirForm(tipo: TipoLancamento) {
+    setFormTipo(tipo)
+    setEditId(null)
+    setFDesc('')
+    setFValor('')
+    setFData(hoje())
+  }
+
+  function editar(l: Lancamento) {
+    setFormTipo(l.tipo)
+    setEditId(l.id)
+    setFDesc(l.descricao)
+    setFValor(String(l.valor).replace('.', ','))
+    setFData(l.data)
+  }
+
+  function fecharForm() {
+    setFormTipo(null)
+    setEditId(null)
+  }
+
+  async function salvar() {
+    if (!formTipo) return
+    const descricao = fDesc.trim()
+    const valor = parseValorBR(fValor)
+    if (!descricao) {
+      mostrar('Escreva uma descrição.', 'erro')
+      return
+    }
+    if (!valor || valor <= 0) {
+      mostrar('Informe um valor maior que zero.', 'erro')
+      return
+    }
+    setSalvando(true)
+    try {
+      const dados = { tipo: formTipo, descricao, valor, data: fData || hoje() }
+      if (editId) {
+        await atualizarLancamento(editId, dados)
+        setLancamentos((l) => l.map((x) => (x.id === editId ? { ...x, ...dados } : x)))
+        mostrar('Lançamento atualizado ✓', 'ok')
+      } else {
+        const novo = await criarLancamento(dados)
+        setLancamentos((l) => [novo, ...l])
+        mostrar(formTipo === 'entrada' ? 'Entrada lançada ✓' : 'Saída lançada ✓', 'ok')
+      }
+      fecharForm()
+    } catch (e) {
+      mostrar(e instanceof Error ? e.message : String(e), 'erro')
+    } finally {
+      setSalvando(false)
+    }
+  }
+
+  async function excluir(l: Lancamento) {
+    if (!(await confirmar(`Excluir "${l.descricao}"?`, { perigo: true, confirmar: 'Excluir' }))) return
+    setLancamentos((x) => x.filter((y) => y.id !== l.id))
+    try {
+      await excluirLancamento(l.id)
+      mostrar('Lançamento excluído.', 'ok')
+    } catch (e) {
+      mostrar(e instanceof Error ? e.message : String(e), 'erro')
+      void recarregar()
+    }
+  }
 
   return (
     <>
-      {erro && <div className="erro-msg">{erro}</div>}
+      {erro && <div className="erro-msg" role="alert">{erro}</div>}
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
 
-      {!carregando && linhas.length === 0 && !erro && (
-        <div className="card">
-          <h3>Ainda não há pagamentos lançados.</h3>
-          <p>
-            Cadastre os pagamentos na ficha de cada cliente (aba <strong>Clientes</strong> →
-            “Pagamentos do contrato”), marcando <strong>quem recebe</strong> (KA, VM Rocks…). O
-            total a receber aparece aqui, separado por pessoa.
-          </p>
-        </div>
-      )}
-
-      {!carregando && linhas.length > 0 && (
+      {!carregando && (
         <>
-          <div className="fin-total">
-            Total a receber:{' '}
-            <strong>{formatarBRL(totalUnico)}</strong>
-            {totalMensal > 0 && <> + <strong>{formatarBRL(totalMensal)}/mês</strong></>}
+          {/* Resumo em cards */}
+          <div className="fin-cards">
+            <div className="fin-card fin-card--saldo">
+              <div className="fin-card__quem">Saldo em caixa</div>
+              <div className="fin-card__valor">{formatarBRL(saldo)}</div>
+              <div className="fin-card__qtd">entradas − saídas</div>
+            </div>
+            <div className="fin-card fin-card--receber">
+              <div className="fin-card__quem">A receber</div>
+              <div className="fin-card__valor">{formatarBRL(totalAReceber)}</div>
+              <div className="fin-card__qtd">{aReceber.length} cobrança(s) em aberto</div>
+            </div>
+            <div className="fin-card fin-card--entrada">
+              <div className="fin-card__quem">Entradas</div>
+              <div className="fin-card__valor">{formatarBRL(totalEntradas)}</div>
+              <div className="fin-card__qtd">recebidas</div>
+            </div>
+            <div className="fin-card fin-card--saida">
+              <div className="fin-card__quem">Saídas</div>
+              <div className="fin-card__valor">{formatarBRL(totalSaidas)}</div>
+              <div className="fin-card__qtd">despesas</div>
+            </div>
           </div>
 
-          <div className="fin-cards">
-            {resumo.map((r) => (
-              <div
-                key={r.chave}
-                className={`fin-card ${r.chave === 'VM Rocks' ? 'fin-card--vm' : r.chave === 'KA' ? 'fin-card--ka' : ''}`}
-              >
-                <div className="fin-card__quem">{r.chave}</div>
-                <div className="fin-card__valor">{formatarBRL(r.unico)}</div>
-                {r.mensal > 0 && <div className="fin-card__mensal">+ {formatarBRL(r.mensal)}/mês</div>}
-                <div className="fin-card__qtd">
-                  {r.qtd} {r.qtd === 1 ? 'pagamento' : 'pagamentos'}
+          <p className="fin-dica">
+            As <strong>cobranças pagas</strong> (aba Cobranças) entram aqui como entradas
+            automaticamente. Acrescente outras entradas e as saídas abaixo.
+          </p>
+
+          {/* Botões / formulário de entrada e saída */}
+          <div className="gestao-acoes">
+            <button className="btn" onClick={() => abrirForm('entrada')}>
+              + Entrada
+            </button>
+            <button className="btn btn--saida" onClick={() => abrirForm('saida')}>
+              − Saída
+            </button>
+            <span className="espaco" />
+          </div>
+
+          {formTipo && (
+            <div className="card caixa-form">
+              <h3>
+                {editId ? 'Editar' : formTipo === 'entrada' ? 'Nova entrada' : 'Nova saída'}
+                {!editId && (formTipo === 'entrada' ? ' (dinheiro que entrou)' : ' (despesa)')}
+              </h3>
+              <div className="caixa-form__linha">
+                <div className="field campo-toda">
+                  <label>Descrição</label>
+                  <input
+                    autoFocus
+                    value={fDesc}
+                    onChange={(e) => setFDesc(e.target.value)}
+                    placeholder={formTipo === 'entrada' ? 'ex.: Trabalho avulso — logo' : 'ex.: Assinatura Canva'}
+                  />
+                </div>
+                <div className="field">
+                  <label>Valor (R$)</label>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={fValor}
+                    onChange={(e) => setFValor(e.target.value)}
+                    placeholder="0,00"
+                  />
+                </div>
+                <div className="field">
+                  <label>Data</label>
+                  <input type="date" value={fData} onChange={(e) => setFData(e.target.value)} />
                 </div>
               </div>
-            ))}
-          </div>
+              <div className="caixa-form__acoes">
+                <button className="btn" disabled={salvando} onClick={() => void salvar()}>
+                  {salvando ? 'Salvando…' : 'Salvar'}
+                </button>
+                <button className="btn--ghost" onClick={fecharForm}>
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          )}
 
-          <div className="chips" style={{ margin: '0.2rem 0 1rem' }}>
-            <button className={`chip ${filtro === 'todos' ? 'chip--on' : ''}`} onClick={() => setFiltro('todos')}>
-              Todos
-            </button>
-            {resumo.map((r) => (
-              <button
-                key={r.chave}
-                className={`chip ${filtro === r.chave ? 'chip--on' : ''}`}
-                onClick={() => setFiltro(r.chave)}
-              >
-                {r.chave}
-              </button>
-            ))}
-          </div>
-
-          <p className="fin-dica">Toque num pagamento para editar na ficha do cliente.</p>
-          <div className="fin-lista">
-            {lista.map((l, i) => (
-              <button
-                key={`${l.cliente_id}-${i}`}
-                className="fin-item fin-item--btn"
-                onClick={() => setParams({ aba: 'clientes', id: l.cliente_id })}
-                title="Editar na ficha do cliente"
-              >
-                <div className="fin-item__corpo">
-                  <div className="fin-item__cliente">{l.cliente_nome}</div>
-                  <div className="fin-item__meta">
-                    {rotuloForma(l, formatarBRL)} · para <strong>{l.rotulo}</strong>
-                    {l.data ? ` · ${formatarData(l.data)}` : ''}
+          {/* A receber (cobranças em aberto) */}
+          {aReceber.length > 0 && (
+            <section className="fin-secao">
+              <h3 className="fin-secao__tit">A receber — cobranças em aberto</h3>
+              <div className="fin-lista">
+                {aReceber.map((c) => (
+                  <div key={c.id} className="mov mov--receber">
+                    <div className="mov__corpo">
+                      <div className="mov__desc">{c.descricao}</div>
+                      <div className="mov__meta">
+                        {nomeCliente(c.cliente_id) || 'sem cliente'} · vence {formatarData(c.vencimento)}
+                        {c.status === 'atrasada' ? ' · atrasada' : ''}
+                      </div>
+                    </div>
+                    <div className="mov__valor mov__valor--receber">{formatarBRL(c.valor)}</div>
                   </div>
-                </div>
-                <div className="fin-item__valor">
-                  {l.unico > 0 && formatarBRL(l.unico)}
-                  {l.mensal > 0 && `${formatarBRL(l.mensal)}/mês`}
-                </div>
-              </button>
-            ))}
-          </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Movimentações (entradas e saídas) */}
+          <section className="fin-secao">
+            <h3 className="fin-secao__tit">Entradas e saídas</h3>
+            {movimentos.length === 0 ? (
+              <p className="ativ-vazio">Nada lançado ainda. Use “+ Entrada” ou “− Saída” acima.</p>
+            ) : (
+              <div className="fin-lista">
+                {movimentos.map((m) => (
+                  <div key={m.chave} className={`mov mov--${m.tipo}`}>
+                    <div className="mov__corpo">
+                      <div className="mov__desc">{m.descricao}</div>
+                      <div className="mov__meta">
+                        {formatarData(m.data)}
+                        {m.origem === 'cobranca' && (
+                          <>
+                            {' '}
+                            · <span className="mov__tag">cobrança</span>
+                            {m.cliente ? ` ${m.cliente}` : ''}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div className={`mov__valor mov__valor--${m.tipo}`}>
+                      {m.tipo === 'entrada' ? '+ ' : '− '}
+                      {formatarBRL(m.valor)}
+                    </div>
+                    {m.origem === 'manual' && m.lancamento && (
+                      <div className="mov__acoes">
+                        <button className="btn-mini" onClick={() => editar(m.lancamento!)}>
+                          Editar
+                        </button>
+                        <button
+                          className="btn-mini btn-mini--perigo"
+                          onClick={() => void excluir(m.lancamento!)}
+                          title="Excluir"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          {/* Quem tem a receber (KA / VM Rocks) — dos pagamentos do contrato */}
+          {linhas.length > 0 && (
+            <details className="fin-detalhes">
+              <summary>
+                Por contrato — quem tem a receber (KA, VM Rocks…):{' '}
+                <strong>{formatarBRL(totalContratoUnico)}</strong>
+                {totalContratoMensal > 0 && <> + {formatarBRL(totalContratoMensal)}/mês</>}
+              </summary>
+              <div className="fin-cards" style={{ marginTop: '0.8rem' }}>
+                {resumo.map((r) => (
+                  <div
+                    key={r.chave}
+                    className={`fin-card ${r.chave === 'VM Rocks' ? 'fin-card--vm' : r.chave === 'KA' ? 'fin-card--ka' : ''}`}
+                  >
+                    <div className="fin-card__quem">{r.chave}</div>
+                    <div className="fin-card__valor">{formatarBRL(r.unico)}</div>
+                    {r.mensal > 0 && <div className="fin-card__mensal">+ {formatarBRL(r.mensal)}/mês</div>}
+                    <div className="fin-card__qtd">
+                      {r.qtd} {r.qtd === 1 ? 'pagamento' : 'pagamentos'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="fin-dica" style={{ marginTop: '0.6rem' }}>
+                Toque num item para editar na ficha do cliente.
+              </p>
+              <div className="fin-lista">
+                {linhas
+                  .slice()
+                  .sort((a, b) => b.unico + b.mensal - (a.unico + a.mensal))
+                  .map((l, i) => (
+                    <button
+                      key={`${l.cliente_id}-${i}`}
+                      className="fin-item fin-item--btn"
+                      onClick={() => setParams({ aba: 'clientes', id: l.cliente_id })}
+                      title="Editar na ficha do cliente"
+                    >
+                      <div className="fin-item__corpo">
+                        <div className="fin-item__cliente">{l.cliente_nome}</div>
+                        <div className="fin-item__meta">
+                          {rotuloForma(l, formatarBRL)} · para <strong>{l.rotulo}</strong>
+                          {l.data ? ` · ${formatarData(l.data)}` : ''}
+                        </div>
+                      </div>
+                      <div className="fin-item__valor">
+                        {l.unico > 0 && formatarBRL(l.unico)}
+                        {l.mensal > 0 && `${formatarBRL(l.mensal)}/mês`}
+                      </div>
+                    </button>
+                  ))}
+              </div>
+            </details>
+          )}
         </>
       )}
     </>

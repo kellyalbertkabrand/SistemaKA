@@ -1711,6 +1711,146 @@
   background: rgba(61, 107, 126, 0.04);
 }
 
+/* ---- Financeiro: gestor de caixa pessoal (entradas/saídas) ---- */
+.fin-card--saldo {
+  border-color: rgba(21, 37, 53, 0.5);
+  background: rgba(21, 37, 53, 0.05);
+}
+.fin-card--saldo .fin-card__quem {
+  color: var(--marinho);
+}
+.fin-card--receber .fin-card__quem {
+  color: #8a4b1f;
+}
+.fin-card--entrada .fin-card__valor {
+  color: #2e6b45;
+}
+.fin-card--saida .fin-card__valor {
+  color: var(--erro);
+}
+.btn--saida {
+  background: var(--erro);
+  border-color: var(--erro);
+}
+.caixa-form {
+  margin-bottom: 1.1rem;
+}
+.caixa-form h3 {
+  margin-bottom: 0.7rem;
+  font-size: 1rem;
+}
+.caixa-form__linha {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+}
+@media (min-width: 560px) {
+  .caixa-form__linha {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+}
+.caixa-form__acoes {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+}
+.fin-secao {
+  margin-top: 1.4rem;
+}
+.fin-secao__tit {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--dourado);
+  margin-bottom: 0.55rem;
+}
+.mov {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-left-width: 3px;
+  border-radius: 12px;
+  padding: 0.6rem 0.85rem;
+  background: #fff;
+}
+.mov--entrada {
+  border-left-color: #2e6b45;
+}
+.mov--saida {
+  border-left-color: var(--erro);
+}
+.mov--receber {
+  border-left-color: #c47830;
+  background: rgba(196, 120, 48, 0.04);
+}
+.mov__corpo {
+  flex: 1;
+  min-width: 0;
+}
+.mov__desc {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.mov__meta {
+  font-size: 0.74rem;
+  color: var(--t-500);
+}
+.mov__tag {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8a4b1f;
+  background: rgba(196, 120, 48, 0.14);
+  border-radius: 100px;
+  padding: 0.03rem 0.4rem;
+}
+.mov__valor {
+  flex: none;
+  font-family: var(--heading);
+  font-size: 1rem;
+  white-space: nowrap;
+}
+.mov__valor--entrada {
+  color: #2e6b45;
+}
+.mov__valor--saida {
+  color: var(--erro);
+}
+.mov__valor--receber {
+  color: #8a4b1f;
+}
+.mov__acoes {
+  flex: none;
+  display: flex;
+  gap: 0.25rem;
+}
+.fin-detalhes {
+  margin-top: 1.6rem;
+  border-top: 1px dashed rgba(15, 25, 35, 0.14);
+  padding-top: 0.9rem;
+}
+.fin-detalhes summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--t-700);
+}
+.fin-detalhes summary strong {
+  color: var(--t-900);
+}
+@media (max-width: 640px) {
+  .mov {
+    flex-wrap: wrap;
+  }
+  .mov__acoes {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
 /* Atividades: arrastar para reordenar (usa .fase__handle) */
 .ativ--arrastando {
   opacity: 0.5;
