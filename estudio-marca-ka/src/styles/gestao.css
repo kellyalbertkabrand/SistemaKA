@@ -449,13 +449,121 @@
   margin-top: 1.6rem;
 }
 
-/* ---- Impressão (contrato/orçamento → PDF pelo navegador) ---- */
+/* ---- Relatórios financeiros ---- */
+.rel-controles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: flex-end;
+  margin-bottom: 1.2rem;
+}
+.rel-datas {
+  display: flex;
+  gap: 0.6rem;
+}
+.rel-datas label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.72rem;
+  color: var(--t-500);
+  gap: 0.2rem;
+}
+.rel-datas input {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  background: var(--bg-1);
+}
+.rel-acoes {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+.rel-doc__head {
+  margin-bottom: 1.1rem;
+}
+.rel-doc__head h1 {
+  font-size: 1.5rem;
+}
+.rel-doc__periodo {
+  font-size: 0.82rem;
+  color: var(--t-500);
+  margin-top: 0.2rem;
+}
+.rel-doc__rodape {
+  margin-top: 1.6rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(15, 25, 35, 0.12);
+  font-size: 0.75rem;
+  color: var(--t-400);
+  text-align: center;
+}
+.rel-secao {
+  margin-top: 1.3rem;
+}
+.rel-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.rel-tabela th {
+  text-align: left;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--t-500);
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.14);
+}
+.rel-tabela td {
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.06);
+}
+.rel-num {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.rel-vence {
+  white-space: nowrap;
+  color: var(--t-500);
+  font-size: 0.8rem;
+}
+.rel-mais {
+  color: #2e6b45;
+}
+.rel-menos {
+  color: var(--erro);
+}
+
+/* ---- Impressão (contrato/orçamento/relatório → PDF pelo navegador) ---- */
 @media print {
   body {
     background: #fff;
   }
+  .ka-top {
+    display: none !important;
+  }
+  .page {
+    padding: 0 !important;
+    max-width: none !important;
+  }
   .nao-imprimir {
     display: none !important;
+  }
+  .rel-doc {
+    color: #111;
+  }
+  .fin-cards {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+  .rel-tabela {
+    page-break-inside: auto;
+  }
+  .rel-secao {
+    page-break-inside: avoid;
   }
   .pub-wrap {
     padding: 0;

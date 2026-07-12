@@ -639,6 +639,16 @@ Na ficha do cliente (`GestaoClientes.tsx` → `PagamentosContrato`), a seção
     cliente+descrição+mês (o real tem prioridade sobre o previsto, evita dupla
     contagem se a mensalidade real do mês já existir). Vale no Meu caixa e na
     visão VM (por valor_vm). Avulsas/parcelas não projetam.
+  - **Relatórios financeiros (jul/2026) — `RelatorioFinanceiro.tsx`:** 3ª aba do
+    seletor do Financeiro ("Meu caixa / VM Rocks / **Relatórios**"). Escolhe o
+    período (presets Este mês / Mês passado / Este ano + De/Até) e gera:
+    resumo em 4 cards (Recebido, Saídas, Saldo do período, A receber que vence
+    no período + atrasado), **KA × Pessoal**, **recebido por cliente**,
+    **a receber por cliente** e a lista de **movimentações**.
+    **Imprimir/Salvar PDF** (`window.print`; `@media print` esconde `.ka-top` e
+    `.nao-imprimir`) e **Baixar CSV** (com BOM p/ Excel). "Recebido" = cobranças
+    PAGAS com `pago_em` no período (sempre KA) + lançamentos do caixa no período
+    (por escopo). Estilos `.rel-*` em gestao.css.
 - **Dia do vencimento:** input de texto `inputMode="numeric"` que normaliza
   (não fica mais com "0" fixo/`025`); clampa 1–28 ao salvar.
 

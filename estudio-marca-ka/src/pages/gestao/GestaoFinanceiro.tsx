@@ -16,6 +16,7 @@ import {
 import { useToast } from '../../components/Toast'
 import { confirmar } from '../../lib/confirmar'
 import { arredondar, parseValorBR, somarDinheiro } from '../../lib/ui'
+import { RelatorioFinanceiro } from './RelatorioFinanceiro'
 
 // ============================================================================
 // FINANCEIRO — gestor de caixa PESSOAL da KA. Junta:
@@ -122,7 +123,7 @@ export function GestaoFinanceiro() {
   const [erro, setErro] = useState<string | null>(null)
   // Visão: "Meu caixa" (pessoal da KA) OU "A receber da VM Rocks" (só o que é
   // dela — é a prévia do que a VM verá quando entrar com o login por papel).
-  const [visao, setVisao] = useState<'caixa' | 'vm'>('caixa')
+  const [visao, setVisao] = useState<'caixa' | 'vm' | 'relatorios'>('caixa')
 
   // Formulário de entrada/saída (à mão)
   const [formTipo, setFormTipo] = useState<TipoLancamento | null>(null)
@@ -297,14 +298,21 @@ export function GestaoFinanceiro() {
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
 
       {!carregando && (
-        <div className="seg" style={{ marginBottom: '1rem' }}>
+        <div className="seg nao-imprimir" style={{ marginBottom: '1rem' }}>
           <button className={visao === 'caixa' ? 'seg__on' : ''} onClick={() => setVisao('caixa')}>
             Meu caixa
           </button>
           <button className={visao === 'vm' ? 'seg__on' : ''} onClick={() => setVisao('vm')}>
-            A receber — VM Rocks
+            VM Rocks
+          </button>
+          <button className={visao === 'relatorios' ? 'seg__on' : ''} onClick={() => setVisao('relatorios')}>
+            Relatórios
           </button>
         </div>
+      )}
+
+      {!carregando && visao === 'relatorios' && (
+        <RelatorioFinanceiro cobrancas={cobrancas} lancamentos={lancamentos} clientes={clientes} />
       )}
 
       {/* ===== VISÃO VM ROCKS — só o que é dela (prévia do login da parceira) ===== */}
