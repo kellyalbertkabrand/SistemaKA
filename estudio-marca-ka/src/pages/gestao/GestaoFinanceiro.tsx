@@ -189,6 +189,15 @@ export function GestaoFinanceiro() {
     ...aReceber.map((c) => Number(c.valor || 0)),
     ...lancAReceber.map((l) => Number(l.valor || 0)),
   ])
+  // A receber separado por escopo: cobranças são sempre KA; as entradas à mão
+  // "a receber" seguem o escopo escolhido (KA ou Pessoal).
+  const aReceberKA = somarDinheiro([
+    ...aReceber.map((c) => Number(c.valor || 0)),
+    ...lancAReceber.filter((l) => (l.escopo ?? 'ka') === 'ka').map((l) => Number(l.valor || 0)),
+  ])
+  const aReceberPessoal = somarDinheiro(
+    lancAReceber.filter((l) => l.escopo === 'pessoal').map((l) => Number(l.valor || 0)),
+  )
   // Projeta as mensalidades para os próximos meses (recorrência) — até 12 meses.
   const hojeChave = mesDe(hoje())
   const fimChave = mesDe(somarMesesISO(hoje(), 12))
@@ -537,8 +546,16 @@ export function GestaoFinanceiro() {
               <div className="fin-card__qtd">entradas − saídas</div>
             </div>
             <div className="fin-card fin-card--receber">
-              <div className="fin-card__quem">A receber</div>
+              <div className="fin-card__quem">A receber (total)</div>
               <div className="fin-card__valor">{formatarBRL(totalAReceber)}</div>
+              <div className="fin-card__quebra">
+                <span>
+                  <em>KA</em> {formatarBRL(aReceberKA)}
+                </span>
+                <span>
+                  <em>Pessoal</em> {formatarBRL(aReceberPessoal)}
+                </span>
+              </div>
               <div className="fin-card__qtd">
                 {aReceber.length + lancAReceber.length} em aberto
                 {lancAReceber.length > 0 ? ` (${lancAReceber.length} à mão)` : ''}

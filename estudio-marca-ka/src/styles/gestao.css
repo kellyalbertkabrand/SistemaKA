@@ -1837,6 +1837,25 @@
   color: #2e6b45;
   font-weight: 600;
 }
+/* Quebra do "A receber" por escopo (KA / Pessoal) dentro do card */
+.fin-card__quebra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin: 0.2rem 0 0.1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #8a4b1f;
+}
+.fin-card__quebra em {
+  font-style: normal;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.66rem;
+  color: var(--t-500);
+  margin-right: 0.3rem;
+}
 .fin-card__qtd {
   font-size: 0.72rem;
   color: var(--t-400);
