@@ -540,6 +540,17 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
 - **Data por etapa** (`FaseProjeto.data`, opcional): data prevista/marcada de
   cada fase. Na página do cliente vira "· previsto DD/MM" nas fases não
   concluídas.
+- **Tarefas do CLIENTE (cobrar) — jul/2026:** o responsável da etapa pode ser
+  `'CLIENTE'` (o próprio cliente do projeto precisa fazer). `SeletorResponsavel`
+  tem a opção **Cliente**; `rotuloResp('CLIENTE')='Cliente'`,
+  `respClasse('CLIENTE')='CLIENTE'` (verde). Na aba **Pendências** há o chip
+  **Cliente** e no detalhe do projeto um botão **"Cobrar cliente ({n})"** que
+  abre o WhatsApp listando o que falta ele entregar. Em **Atividades** há a
+  categoria nova **Cliente** (`CategoriaAtividade` inclui `'cliente'`;
+  `Atividade.cliente_id/cliente_nome` opcionais p/ o WhatsApp): junta as
+  pendências `'CLIENTE'` dos projetos + tarefas manuais do cliente, cada uma com
+  botão **Cobrar** (`abrirWhatsApp`). Cores `.resp--CLIENTE`/`.cat--cliente`/
+  `.ativ--cliente`/`.chip--cliente` (verde) em gestao.css.
 - **Responsável por etapa** (`FaseProjeto.responsavel: string`): valores
   especiais `'KA'` (Kelly) e `'VM'` (**VM Rocks**, parceira) — usados nos
   filtros; ou o **nome do cliente** do projeto, ou **qualquer texto livre**

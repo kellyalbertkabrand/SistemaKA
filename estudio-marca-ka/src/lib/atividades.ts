@@ -19,12 +19,14 @@ import { moverParaLixeira } from './lixeira'
 // coleção `atividades` do Firestore (só a KA vê).
 // ============================================================================
 
-export type CategoriaAtividade = 'trabalho' | 'bia' | 'pessoal'
+// 'cliente' = tarefa que o CLIENTE precisa fazer (a KA cobra dele).
+export type CategoriaAtividade = 'trabalho' | 'cliente' | 'bia' | 'pessoal'
 
-export const CATEGORIAS: CategoriaAtividade[] = ['trabalho', 'bia', 'pessoal']
+export const CATEGORIAS: CategoriaAtividade[] = ['trabalho', 'cliente', 'bia', 'pessoal']
 
 export const ROTULO_CATEGORIA: Record<CategoriaAtividade, string> = {
   trabalho: 'Trabalho',
+  cliente: 'Cliente',
   bia: 'BIA',
   pessoal: 'Pessoal',
 }
@@ -38,6 +40,9 @@ export interface Atividade {
   data: string | null
   /** Ordem manual (arrastar). Menor = mais em cima. Ausente = tratado como 0. */
   ordem?: number
+  /** Só p/ categoria 'cliente': quem é o cliente a cobrar (para o WhatsApp). */
+  cliente_id?: string | null
+  cliente_nome?: string | null
   criado_em: string
 }
 
@@ -56,12 +61,16 @@ export async function criarAtividade(dados: {
   data: string | null
   /** Ordem inicial (opcional): use um valor pequeno para nascer no topo. */
   ordem?: number
+  cliente_id?: string | null
+  cliente_nome?: string | null
 }): Promise<Atividade> {
   const nova = {
     titulo: dados.titulo.trim(),
     categoria: dados.categoria,
     data: dados.data,
     ordem: dados.ordem ?? 0,
+    cliente_id: dados.cliente_id ?? null,
+    cliente_nome: dados.cliente_nome ?? null,
     feito: false,
     criado_em: agora(),
   }
@@ -80,7 +89,7 @@ export async function alternarAtividade(id: string, feito: boolean): Promise<voi
 
 export async function editarAtividade(
   id: string,
-  dados: Partial<Pick<Atividade, 'titulo' | 'categoria' | 'data'>>,
+  dados: Partial<Pick<Atividade, 'titulo' | 'categoria' | 'data' | 'cliente_id' | 'cliente_nome'>>,
 ): Promise<void> {
   await updateDoc(doc(db, 'atividades', id), dados)
 }
@@ -91,5 +100,11 @@ export async function excluirAtividade(id: string): Promise<void> {
 
 /** Duplica uma atividade (mesmo título/categoria/data, começa como não feita). */
 export async function duplicarAtividade(a: Atividade): Promise<Atividade> {
-  return criarAtividade({ titulo: a.titulo, categoria: a.categoria, data: a.data })
+  return criarAtividade({
+    titulo: a.titulo,
+    categoria: a.categoria,
+    data: a.data,
+    cliente_id: a.cliente_id ?? null,
+    cliente_nome: a.cliente_nome ?? null,
+  })
 }

@@ -54,6 +54,15 @@
   color: #fff;
   border-color: var(--erro);
 }
+.chip--cliente {
+  border-color: rgba(46, 107, 69, 0.5);
+  color: #2e6b45;
+}
+.chip--cliente.chip--on {
+  background: #2e6b45;
+  color: #fff;
+  border-color: #2e6b45;
+}
 
 /* Checkbox "VM Rocks participa" na cobrança */
 .check-vm {
@@ -1151,6 +1160,10 @@
   color: #8a4b1f;
   background: rgba(196, 120, 48, 0.16);
 }
+.resp--CLIENTE {
+  color: #2e6b45;
+  background: rgba(46, 107, 69, 0.14);
+}
 .resp--outro {
   color: #6b4b8a;
   background: rgba(107, 75, 138, 0.14);
@@ -1466,6 +1479,10 @@
   color: #8a4b1f;
   border-color: rgba(196, 120, 48, 0.4);
 }
+.ativ-grupo__tit.cat--cliente {
+  color: #2e6b45;
+  border-color: rgba(46, 107, 69, 0.4);
+}
 .ativ-vazio {
   color: var(--t-400);
   font-size: 0.82rem;
@@ -1484,6 +1501,11 @@
 .ativ--projeto {
   background: rgba(61, 107, 126, 0.05);
   border-color: rgba(61, 107, 126, 0.18);
+}
+/* Tarefa do cliente (a cobrar) — acento verde */
+.ativ--cliente {
+  background: rgba(46, 107, 69, 0.05);
+  border-color: rgba(46, 107, 69, 0.22);
 }
 .ativ__check {
   flex: none;

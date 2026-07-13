@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { formatarData } from '../../lib/gestao'
+import { listarClientes } from '../../lib/api'
+import type { Cliente } from '../../lib/database.types'
+import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import { BotaoMic } from '../../components/BotaoMic'
 import { useToast } from '../../components/Toast'
 import { useDitado } from '../../hooks/useDitado'
@@ -39,6 +42,7 @@ const ORDEM: CategoriaAtividade[] = CATEGORIAS
 export function GestaoAtividades() {
   const { mostrar } = useToast()
   const [projetos, setProjetos] = useState<Projeto[]>([])
+  const [clientes, setClientes] = useState<Cliente[]>([])
   const [atividades, setAtividades] = useState<Atividade[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
@@ -50,6 +54,7 @@ export function GestaoAtividades() {
   const [novoTitulo, setNovoTitulo] = useState('')
   const [novaCategoria, setNovaCategoria] = useState<CategoriaAtividade>('pessoal')
   const [novaData, setNovaData] = useState('')
+  const [novoClienteId, setNovoClienteId] = useState('') // só p/ categoria 'cliente'
   // Modo "colar várias" (uma por linha) e ditado por voz
   const [modoColar, setModoColar] = useState(false)
   const [textoColar, setTextoColar] = useState('')
@@ -71,9 +76,10 @@ export function GestaoAtividades() {
   async function recarregar() {
     try {
       setCarregando(true)
-      const [ps, as] = await Promise.all([listarProjetos(), listarAtividades()])
+      const [ps, as, cs] = await Promise.all([listarProjetos(), listarAtividades(), listarClientes()])
       setProjetos(ps)
       setAtividades(as)
+      setClientes(cs)
       setErro(null)
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
@@ -88,6 +94,38 @@ export function GestaoAtividades() {
 
   // Pendências de trabalho (etapas da KA em aberto, de todos os projetos).
   const pendKA = pendenciasDeProjetos(projetos, 'KA')
+  // Pendências do CLIENTE (etapas que o cliente precisa fazer — a KA cobra).
+  const pendCliente = pendenciasDeProjetos(projetos, 'CLIENTE')
+
+  // Pendência de projeto do cliente OU atividade manual da categoria 'cliente'
+  // → cobra no WhatsApp (usa o telefone do cliente, se houver).
+  function cobrarProjetoCliente(pd: Pendencia) {
+    const proj = projetos.find((p) => p.id === pd.projeto_id)
+    const cli = proj?.cliente_id ? clientes.find((c) => c.id === proj.cliente_id) : null
+    const nome = primeiroNome(cli?.responsavel ?? pd.cliente_nome)
+    const linhas = [
+      `Oi${nome ? `, ${nome}` : ''}! Tudo bem? 😊`,
+      '',
+      `Para seguirmos com o projeto ${pd.projeto_nome}, preciso de você:`,
+      `• ${pd.fase_nome}${pd.data ? ` (até ${formatarData(pd.data)})` : ''}`,
+      '',
+      'Assim que me enviar, sigo com a próxima etapa. Obrigada! Kelly',
+    ]
+    abrirWhatsApp(cli?.telefone, linhas.join('\n'), cli?.responsavel ?? pd.cliente_nome)
+  }
+
+  function cobrarAtividadeCliente(a: Atividade) {
+    const cli = a.cliente_id ? clientes.find((c) => c.id === a.cliente_id) : null
+    const nome = primeiroNome(cli?.responsavel ?? a.cliente_nome)
+    const linhas = [
+      `Oi${nome ? `, ${nome}` : ''}! Tudo bem? 😊`,
+      '',
+      `Passando pra lembrar: ${a.titulo}${a.data ? ` (até ${formatarData(a.data)})` : ''}`,
+      '',
+      'Qualquer coisa, me chama! Kelly',
+    ]
+    abrirWhatsApp(cli?.telefone, linhas.join('\n'), cli?.responsavel ?? a.cliente_nome ?? null)
+  }
 
   // Menor `ordem` de uma categoria (para novos itens nascerem no topo).
   function menorOrdem(cat: CategoriaAtividade): number {
@@ -97,6 +135,13 @@ export function GestaoAtividades() {
   async function addNovo(e: FormEvent) {
     e.preventDefault()
     await criarUma()
+  }
+
+  // Cliente escolhido (só quando a categoria é 'cliente').
+  function dadosCliente() {
+    if (novaCategoria !== 'cliente' || !novoClienteId) return { cliente_id: null, cliente_nome: null }
+    const c = clientes.find((x) => x.id === novoClienteId)
+    return { cliente_id: c?.id ?? null, cliente_nome: c?.nome_marca ?? null }
   }
 
   async function criarUma() {
@@ -109,6 +154,7 @@ export function GestaoAtividades() {
         categoria: novaCategoria,
         data: novaData || null,
         ordem: menorOrdem(novaCategoria) - 1,
+        ...dadosCliente(),
       })
       setAtividades((l) => [nova, ...l])
       setNovoTitulo('')
@@ -142,6 +188,7 @@ export function GestaoAtividades() {
             categoria: novaCategoria,
             data: novaData || null,
             ordem: base - (n - i),
+            ...dadosCliente(),
           }),
         )
       }
@@ -300,7 +347,9 @@ export function GestaoAtividades() {
   // Quantidade em aberto por categoria (trabalho conta as pendências de projeto).
   function abertosDe(cat: CategoriaAtividade): number {
     const pessoais = atividades.filter((a) => a.categoria === cat && !a.feito).length
-    return cat === 'trabalho' ? pessoais + pendKA.length : pessoais
+    if (cat === 'trabalho') return pessoais + pendKA.length
+    if (cat === 'cliente') return pessoais + pendCliente.length
+    return pessoais
   }
   const totalAberto = ORDEM.reduce((s, c) => s + abertosDe(c), 0)
 
@@ -372,6 +421,16 @@ export function GestaoAtividades() {
                 </option>
               ))}
             </select>
+            {novaCategoria === 'cliente' && (
+              <select value={novoClienteId} onChange={(e) => setNovoClienteId(e.target.value)} title="Cliente a cobrar">
+                <option value="">Cliente (p/ cobrar)…</option>
+                {clientes.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nome_marca}
+                  </option>
+                ))}
+              </select>
+            )}
             <input type="date" value={novaData} onChange={(e) => setNovaData(e.target.value)} title="Data (opcional)" />
             <button className="btn" type="submit" disabled={salvando || !novoTitulo.trim()}>
               + Adicionar
@@ -398,6 +457,16 @@ export function GestaoAtividades() {
                   </option>
                 ))}
               </select>
+              {novaCategoria === 'cliente' && (
+                <select value={novoClienteId} onChange={(e) => setNovoClienteId(e.target.value)} title="Cliente a cobrar">
+                  <option value="">Cliente (p/ cobrar)…</option>
+                  {clientes.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.nome_marca}
+                    </option>
+                  ))}
+                </select>
+              )}
               <input type="date" value={novaData} onChange={(e) => setNovaData(e.target.value)} title="Data (opcional)" />
               <span className="add-ativ__conta">
                 {linhasColar.length} {linhasColar.length === 1 ? 'tarefa' : 'tarefas'}
@@ -431,7 +500,7 @@ export function GestaoAtividades() {
       {!carregando &&
         categoriasVisiveis.map((cat) => {
           const pessoais = atividades.filter((a) => a.categoria === cat)
-          const pendencias = cat === 'trabalho' ? pendKA : []
+          const pendencias = cat === 'trabalho' ? pendKA : cat === 'cliente' ? pendCliente : []
           const vazio = pessoais.length === 0 && pendencias.length === 0
 
           // Junta pendências de projeto + atividades pessoais numa lista só e
@@ -477,7 +546,7 @@ export function GestaoAtividades() {
 
               {itens.map((it) =>
                 it.tipo === 'pend' ? (
-                  <div key={it.chave} className="ativ ativ--projeto">
+                  <div key={it.chave} className={`ativ ativ--projeto ${cat === 'cliente' ? 'ativ--cliente' : ''}`}>
                     <button
                       className="ativ__check"
                       disabled={salvando}
@@ -499,6 +568,17 @@ export function GestaoAtividades() {
                         </div>
                       )}
                     </div>
+                    {cat === 'cliente' && (
+                      <div className="ativ__acoes">
+                        <button
+                          className="btn-mini btn-mini--whats"
+                          title="Cobrar o cliente no WhatsApp"
+                          onClick={() => cobrarProjetoCliente(it.pd)}
+                        >
+                          Cobrar
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ) : (() => {
                   const a = it.a
@@ -568,6 +648,14 @@ export function GestaoAtividades() {
                     </button>
                     <button className="ativ__corpo ativ__corpo--btn" onClick={() => iniciarEdicao(a)} title="Editar">
                       <div className="ativ__titulo">{a.titulo}</div>
+                      <div className="ativ__sub">
+                        {a.categoria === 'cliente' && a.cliente_nome && (
+                          <>
+                            <span className="ativ__tag">cliente</span>
+                            {a.cliente_nome}
+                          </>
+                        )}
+                      </div>
                       {a.data && (
                         <div className="ativ__data">
                           <span className="data-chip">📅 {formatarData(a.data)}</span>
@@ -575,6 +663,15 @@ export function GestaoAtividades() {
                       )}
                     </button>
                     <div className="ativ__acoes">
+                      {a.categoria === 'cliente' && (
+                        <button
+                          className="btn-mini btn-mini--whats"
+                          title="Cobrar o cliente no WhatsApp"
+                          onClick={() => cobrarAtividadeCliente(a)}
+                        >
+                          Cobrar
+                        </button>
+                      )}
                       <button className="btn-mini" disabled={salvando} title="Duplicar" onClick={() => void duplicar(a)}>
                         Duplicar
                       </button>

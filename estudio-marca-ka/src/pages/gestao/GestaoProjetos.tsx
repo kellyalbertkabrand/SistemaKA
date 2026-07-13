@@ -125,7 +125,17 @@ export function GestaoProjetos() {
   const pendTodas = pendenciasDeProjetos(lista, 'todas')
   const pendKA = pendenciasDeProjetos(lista, 'KA')
   const pendVM = pendenciasDeProjetos(lista, 'VM')
-  const pend = filtroResp === 'KA' ? pendKA : filtroResp === 'VM' ? pendVM : pendTodas
+  const pendCliente = pendenciasDeProjetos(lista, 'CLIENTE')
+  const pend =
+    filtroResp === 'KA'
+      ? pendKA
+      : filtroResp === 'VM'
+        ? pendVM
+        : filtroResp === 'CLIENTE'
+          ? pendCliente
+          : pendTodas
+  const contaPend = (f: typeof filtroResp) =>
+    f === 'todas' ? pendTodas.length : f === 'KA' ? pendKA.length : f === 'VM' ? pendVM.length : pendCliente.length
 
   return (
     <>
@@ -150,16 +160,13 @@ export function GestaoProjetos() {
       {vista === 'pendencias' && (
         <>
           <div className="pend-filtros">
-            {(['todas', 'KA', 'VM'] as const).map((f) => (
+            {(['todas', 'KA', 'VM', 'CLIENTE'] as const).map((f) => (
               <button
                 key={f}
-                className={`chip ${filtroResp === f ? 'chip--on' : ''}`}
+                className={`chip ${filtroResp === f ? 'chip--on' : ''} ${f === 'CLIENTE' && pendCliente.length > 0 ? 'chip--cliente' : ''}`}
                 onClick={() => setFiltroResp(f)}
               >
-                {f === 'todas' ? 'Todas' : rotuloResp(f)}{' '}
-                <span className="chip__n">
-                  {f === 'todas' ? pendTodas.length : f === 'KA' ? pendKA.length : pendVM.length}
-                </span>
+                {f === 'todas' ? 'Todas' : rotuloResp(f)} <span className="chip__n">{contaPend(f)}</span>
               </button>
             ))}
           </div>
@@ -403,7 +410,7 @@ function SeletorResponsavel({
       ? 'KA'
       : value === 'VM'
         ? 'VM'
-        : clienteNome && value === clienteNome
+        : value === 'CLIENTE'
           ? 'cliente'
           : 'outro'
   return (
@@ -415,13 +422,13 @@ function SeletorResponsavel({
           const o = e.target.value
           if (o === 'KA') onChange('KA')
           else if (o === 'VM') onChange('VM')
-          else if (o === 'cliente') onChange(clienteNome ?? '')
+          else if (o === 'cliente') onChange('CLIENTE') // tarefa do cliente (cobrar)
           else onChange('') // "outro": começa vazio para digitar
         }}
       >
         <option value="KA">KA</option>
         <option value="VM">VM Rocks</option>
-        {clienteNome && <option value="cliente">{clienteNome} (cliente)</option>}
+        <option value="cliente">{clienteNome ? `${clienteNome} (cliente)` : 'Cliente (fazer)'}</option>
         <option value="outro">Outro (escrever)</option>
       </select>
       {opt === 'outro' && (
@@ -671,6 +678,24 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     setEditandoCliente(false)
   }
 
+  // Tarefas que o CLIENTE precisa fazer (etapas em aberto com responsável Cliente).
+  const tarefasCliente = p.fases.filter((f) => f.responsavel === 'CLIENTE' && f.status !== 'concluida')
+
+  // Cobra o cliente no WhatsApp, listando o que falta ele fazer.
+  function cobrarClienteWhatsApp() {
+    const cliente = p.cliente_id ? clientes.find((c) => c.id === p.cliente_id) : null
+    const nome = primeiroNome(cliente?.responsavel ?? p.cliente_nome)
+    const linhas = [
+      `Oi${nome ? `, ${nome}` : ''}! Tudo bem? 😊`,
+      '',
+      `Para seguirmos com o projeto ${p.nome}, preciso de você:`,
+      ...tarefasCliente.map((f) => `• ${f.nome}${f.data ? ` (até ${formatarData(f.data)})` : ''}`),
+      '',
+      'Assim que me enviar, sigo com a próxima etapa. Obrigada! Kelly',
+    ]
+    abrirWhatsApp(cliente?.telefone, linhas.join('\n'), cliente?.responsavel ?? p.cliente_nome)
+  }
+
   return (
     <>
       <p style={{ marginBottom: '1rem', display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
@@ -683,6 +708,11 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
         <button className="btn--voltar btn--voltar-whats" onClick={avisarWhatsApp}>
           Avisar no WhatsApp
         </button>
+        {tarefasCliente.length > 0 && (
+          <button className="btn--voltar btn--voltar-whats" onClick={cobrarClienteWhatsApp}>
+            Cobrar cliente ({tarefasCliente.length})
+          </button>
+        )}
       </p>
 
       {erro && <div className="erro-msg">{erro}</div>}
