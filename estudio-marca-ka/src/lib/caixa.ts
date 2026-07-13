@@ -34,6 +34,31 @@ export interface Lancamento {
 
 const agora = () => new Date().toISOString()
 
+// ============================================================================
+// REGRA ÚNICA do que conta no SALDO (fonte da verdade — usada em todas as telas
+// pra não haver divergência). Princípio: o dinheiro só entra/sai do caixa
+// quando VOCÊ confirma. Nada conta "sozinho".
+//
+//  • ENTRADA só conta em Entradas/saldo quando `recebido === true`.
+//  • SAÍDA  só conta em Saídas/saldo   quando `pago === true`.
+//
+// Qualquer lançamento SEM confirmação (inclusive os antigos, sem o campo) fica
+// em "A receber" / "Contas a pagar" — nunca no saldo. Isso conserta o caso do
+// lançamento antigo (sem a marca) que aparecia no saldo como se já tivesse
+// entrado.
+// ============================================================================
+
+/** Entrada confirmada como recebida (conta em Entradas/saldo). */
+export const entradaRecebida = (l: Lancamento) => l.tipo === 'entrada' && l.recebido === true
+/** Saída confirmada como paga (conta em Saídas/saldo). */
+export const saidaPaga = (l: Lancamento) => l.tipo === 'saida' && l.pago === true
+/** Já mexeu no caixa (entrada recebida OU saída paga). */
+export const lancamentoRealizado = (l: Lancamento) => entradaRecebida(l) || saidaPaga(l)
+/** Entrada ainda A RECEBER (não confirmada — inclui lançamentos antigos). */
+export const entradaAReceber = (l: Lancamento) => l.tipo === 'entrada' && l.recebido !== true
+/** Saída ainda A PAGAR (não confirmada). */
+export const contaAPagar = (l: Lancamento) => l.tipo === 'saida' && l.pago !== true
+
 export async function listarLancamentos(): Promise<Lancamento[]> {
   const snap = await getDocs(query(collection(db, 'caixa'), orderBy('data', 'desc')))
   return snap.docs

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import type { Cliente, Cobranca } from '../../lib/database.types'
 import { formatarBRL, formatarData, statusEfetivo } from '../../lib/gestao'
 import { somarDinheiro, arredondar, hojeLocal } from '../../lib/ui'
-import type { Lancamento } from '../../lib/caixa'
+import { lancamentoRealizado, type Lancamento } from '../../lib/caixa'
 import { DesempenhoSite } from './DesempenhoSite'
 
 // ============================================================================
@@ -95,8 +95,7 @@ export function RelatorioFinanceiro({
     // saída paga). Entradas "a receber" e contas "a pagar" ainda não mexeram
     // no caixa, então não entram no relatório de realizado.
     for (const l of lancamentos) {
-      const realizadoL = !(l.tipo === 'entrada' && l.recebido === false) && !(l.tipo === 'saida' && l.pago === false)
-      if (realizadoL && noPeriodo(l.data)) {
+      if (lancamentoRealizado(l) && noPeriodo(l.data)) {
         linhas.push({
           data: l.data,
           tipo: l.tipo,

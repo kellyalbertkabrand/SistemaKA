@@ -620,6 +620,17 @@ Na ficha do cliente (`GestaoClientes.tsx` → `PagamentosContrato`), a seção
     = saldo + a receber − a pagar) quando há algo em aberto. O **relatório**
     (`RelatorioFinanceiro`) passou a contar só lançamentos REALIZADOS (entrada
     recebida, saída paga) — antes contava "a receber"/"a pagar" como realizados.
+  - **REGRA ÚNICA do saldo (jul/2026 — `caixa.ts`):** o dinheiro só conta no
+    caixa quando VOCÊ confirma — **entrada** só entra em Entradas/saldo com
+    `recebido === true`; **saída** só entra em Saídas/saldo com `pago === true`.
+    Qualquer lançamento **sem confirmação** (inclusive os ANTIGOS, sem o campo,
+    ou restaurados da lixeira) fica em **"A receber" / "Contas a pagar"**, nunca
+    no saldo. Conserta o bug do lançamento antigo (sem a marca) que aparecia no
+    saldo como se já tivesse entrado. Predicados compartilhados
+    `entradaRecebida`/`saidaPaga`/`lancamentoRealizado`/`entradaAReceber`/
+    `contaAPagar` são a fonte da verdade (usados no Financeiro E nos Relatórios,
+    p/ não divergir). **Padrão do form:** ENTRADA nasce "A receber" (nada entra
+    no saldo sozinho); SAÍDA nasce "Já paga".
   - **Resumo em 5 cards:** Saldo em caixa (= entradas − saídas; + linha
     "previsto"), A receber, A pagar, Entradas, Saídas. Movimentações listadas por
     data (verde +, vermelho −).

@@ -6,8 +6,11 @@ import type { Cliente, Cobranca } from '../../lib/database.types'
 import { linhasFinanceiro, resumoPorQuem, rotuloForma } from '../../lib/financeiro'
 import {
   atualizarLancamento,
+  contaAPagar,
   criarLancamento,
+  entradaAReceber,
   excluirLancamento,
+  lancamentoRealizado,
   listarLancamentos,
   type EscopoLancamento,
   type Lancamento,
@@ -174,8 +177,9 @@ export function GestaoFinanceiro() {
     return (id: string | null) => (id ? (m.get(id) ?? '') : '')
   }, [clientes])
 
-  // Um lançamento à mão que é ENTRADA ainda NÃO recebida = "a receber".
-  const ehAReceberManual = (l: Lancamento) => l.tipo === 'entrada' && l.recebido === false
+  // Um lançamento à mão que é ENTRADA ainda NÃO confirmada = "a receber".
+  // (regra única em caixa.ts — inclui lançamentos antigos, sem a marca)
+  const ehAReceberManual = entradaAReceber
 
   // A receber = cobranças em aberto (pendente/atrasada — status derivado por
   // data) + entradas à mão marcadas como "a receber".
@@ -251,11 +255,7 @@ export function GestaoFinanceiro() {
         cliente: nomeCliente(c.cliente_id),
       }))
     const deMao: Mov[] = lancamentos
-      .filter(
-        (l) =>
-          !(l.tipo === 'entrada' && l.recebido === false) &&
-          !(l.tipo === 'saida' && l.pago === false),
-      )
+      .filter(lancamentoRealizado)
       .map((l) => ({
         chave: l.id,
         tipo: l.tipo,
@@ -273,10 +273,10 @@ export function GestaoFinanceiro() {
   const totalSaidas = somarDinheiro(movimentos.filter((m) => m.tipo === 'saida').map((m) => m.valor))
   const saldo = arredondar(totalEntradas - totalSaidas)
 
-  // Contas a PAGAR = saídas à mão marcadas como "a pagar" (pago === false).
+  // Contas a PAGAR = saídas ainda não confirmadas como pagas (pago !== true).
   // Ficam fora do saldo até a KA marcar "Pago" (aí viram Saídas). Agrupadas
   // por mês para o planejamento do que vence.
-  const contasPagar = lancamentos.filter((l) => l.tipo === 'saida' && l.pago === false)
+  const contasPagar = lancamentos.filter(contaAPagar)
   const totalAPagar = somarDinheiro(contasPagar.map((l) => Number(l.valor || 0)))
   const aPagarPorMes = agruparPorMes(contasPagar, (l) => l.data, (l) => Number(l.valor || 0))
   // Saldo previsto = o que sobra depois de receber o que está em aberto e pagar
@@ -311,7 +311,10 @@ export function GestaoFinanceiro() {
     setFValor('')
     setFData(hoje())
     setFEscopo('ka')
-    setFRecebido(true)
+    // Padrão seguro: ENTRADA começa "a receber" (nada entra no saldo sozinho;
+    // você confirma com "Recebi" quando o dinheiro cair). SAÍDA começa "já paga"
+    // (o normal é lançar uma despesa que já saiu).
+    setFRecebido(tipo === 'entrada' ? false : true)
     setFPago(true)
   }
 
@@ -322,8 +325,10 @@ export function GestaoFinanceiro() {
     setFValor(String(l.valor).replace('.', ','))
     setFData(l.data)
     setFEscopo(l.escopo ?? 'ka')
-    setFRecebido(l.recebido !== false)
-    setFPago(l.pago !== false)
+    // Só é "recebida"/"paga" se confirmada de verdade (=== true); antigo sem a
+    // marca abre como "a receber"/"a pagar", coerente com a regra do saldo.
+    setFRecebido(l.recebido === true)
+    setFPago(l.pago === true)
   }
 
   function fecharForm() {
