@@ -475,8 +475,20 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
   // o "draggable" nativo do HTML não dispara no toque do iPhone)
   const [dragIdx, setDragIdx] = useState<number | null>(null)
   const [overIdx, setOverIdx] = useState<number | null>(null)
+  const [movidoIdx, setMovidoIdx] = useState<number | null>(null) // fase que acabou de mudar de lugar (flash)
   const rowsRef = useRef<(HTMLDivElement | null)[]>([])
   const dragState = useRef<{ de: number; para: number } | null>(null)
+  const movidoTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Destaca (flash) a fase que acabou de mudar de lugar, por ~1,3s.
+  function marcarMovido(idx: number) {
+    setMovidoIdx(idx)
+    if (movidoTimer.current) clearTimeout(movidoTimer.current)
+    movidoTimer.current = setTimeout(() => setMovidoIdx(null), 1300)
+  }
+  useEffect(() => () => {
+    if (movidoTimer.current) clearTimeout(movidoTimer.current)
+  }, [])
 
   function recarregarSalvas() {
     listarFasesSalvas()
@@ -589,6 +601,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     const [item] = fases.splice(de, 1)
     fases.splice(para, 0, item)
     void aplicar({ fases })
+    marcarMovido(para) // flash no destino p/ ficar claro para onde foi
   }
 
   // Começa a arrastar pela alça. Usa Pointer Events (dedo ou mouse) e escuta
@@ -601,11 +614,20 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     const mover = (ev: PointerEvent) => {
       if (!dragState.current) return
       const y = ev.clientY
+      // Alvo = a fase cujo CENTRO está mais perto do dedo/cursor. Assim não há
+      // "zona morta" entre as linhas (antes só mudava se soltasse exatamente
+      // dentro da linha — por isso alguns itens "não moviam").
       let alvo = dragState.current.de
+      let melhor = Infinity
       rowsRef.current.forEach((el, idx) => {
         if (!el) return
         const r = el.getBoundingClientRect()
-        if (y >= r.top && y <= r.bottom) alvo = idx
+        const centro = (r.top + r.bottom) / 2
+        const dist = Math.abs(y - centro)
+        if (dist < melhor) {
+          melhor = dist
+          alvo = idx
+        }
       })
       dragState.current.para = alvo
       setOverIdx(alvo)
@@ -863,7 +885,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
               }}
               className={`fase fase--${f.status} ${dragIdx === i ? 'fase--arrastando' : ''} ${
                 overIdx === i && dragIdx !== null && dragIdx !== i ? 'fase--alvo' : ''
-              }`}
+              } ${movidoIdx === i ? 'fase--movido' : ''}`}
             >
               <span
                 className="fase__handle"
@@ -951,6 +973,24 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
                     </div>
                   </button>
                   <div className="fase__acoes">
+                    <span className="mover-btns">
+                      <button
+                        className="btn-mover"
+                        disabled={salvando || i === 0}
+                        title="Mover para cima"
+                        onClick={() => reordenar(i, i - 1)}
+                      >
+                        ↑
+                      </button>
+                      <button
+                        className="btn-mover"
+                        disabled={salvando || i === p.fases.length - 1}
+                        title="Mover para baixo"
+                        onClick={() => reordenar(i, i + 1)}
+                      >
+                        ↓
+                      </button>
+                    </span>
                     <select
                       className={`fase-status-sel status-${f.status}`}
                       value={f.status}

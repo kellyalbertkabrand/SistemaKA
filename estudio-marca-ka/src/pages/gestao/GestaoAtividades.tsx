@@ -70,8 +70,19 @@ export function GestaoAtividades() {
   // Arrastar para reordenar (Pointer Events — funciona no toque do iPhone)
   const [dragId, setDragId] = useState<string | null>(null)
   const [overId, setOverId] = useState<string | null>(null)
+  const [movidoId, setMovidoId] = useState<string | null>(null) // item que acabou de mudar (flash)
   const rowsRef = useRef<Map<string, HTMLElement>>(new Map())
   const dragRef = useRef<{ cat: CategoriaAtividade; de: string; para: string } | null>(null)
+  const movidoTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  function marcarMovido(id: string) {
+    setMovidoId(id)
+    if (movidoTimer.current) clearTimeout(movidoTimer.current)
+    movidoTimer.current = setTimeout(() => setMovidoId(null), 1300)
+  }
+  useEffect(() => () => {
+    if (movidoTimer.current) clearTimeout(movidoTimer.current)
+  }, [])
 
   async function recarregar() {
     try {
@@ -259,12 +270,22 @@ export function GestaoAtividades() {
     arr.splice(para, 0, item)
     const pos = new Map(arr.map((a, i) => [a.id, i]))
     setAtividades((l) => l.map((a) => (pos.has(a.id) ? { ...a, ordem: pos.get(a.id) } : a)))
+    marcarMovido(deId) // flash no item que mudou
     try {
       await reordenarAtividades(arr.map((a) => a.id))
     } catch {
       mostrar('Não deu para reordenar, tente de novo.', 'erro')
       void recarregar()
     }
+  }
+
+  // Mover um item uma posição para cima/baixo pelos botões ↑/↓ (sem arrastar).
+  function moverAtividade(cat: CategoriaAtividade, id: string, dir: -1 | 1) {
+    const arr = pessoaisOrdenadas(cat)
+    const i = arr.findIndex((a) => a.id === id)
+    const j = i + dir
+    if (i < 0 || j < 0 || j >= arr.length) return
+    void aplicarReordem(cat, id, arr[j].id)
   }
 
   function iniciarArraste(e: React.PointerEvent, cat: CategoriaAtividade, id: string) {
@@ -276,14 +297,18 @@ export function GestaoAtividades() {
       const st = dragRef.current
       if (!st) return
       const y = ev.clientY
+      // Alvo = a tarefa cujo CENTRO está mais perto do dedo/cursor (sem "zona
+      // morta" entre linhas — antes só movia se soltasse exatamente na linha).
       let alvo = st.de
+      let melhor = Infinity
       for (const a of pessoaisOrdenadas(st.cat)) {
         const el = rowsRef.current.get(a.id)
         if (!el) continue
         const r = el.getBoundingClientRect()
-        if (y >= r.top && y <= r.bottom) {
+        const dist = Math.abs(y - (r.top + r.bottom) / 2)
+        if (dist < melhor) {
+          melhor = dist
           alvo = a.id
-          break
         }
       }
       st.para = alvo
@@ -493,13 +518,15 @@ export function GestaoAtividades() {
 
       {!carregando && ordenar === 'padrao' && atividades.length > 0 && (
         <p className="dica-voz" style={{ marginTop: 0 }}>
-          Segure a alça <span aria-hidden>⠿</span> e arraste para reordenar suas tarefas.
+          Use os botões <span aria-hidden>↑ ↓</span> (ou segure a alça <span aria-hidden>⠿</span> e arraste) para
+          reordenar. O item que muda de lugar pisca em dourado.
         </p>
       )}
 
       {!carregando &&
         categoriasVisiveis.map((cat) => {
           const pessoais = atividades.filter((a) => a.categoria === cat)
+          const ordemPessoais = pessoaisOrdenadas(cat)
           const pendencias = cat === 'trabalho' ? pendKA : cat === 'cliente' ? pendCliente : []
           const vazio = pessoais.length === 0 && pendencias.length === 0
 
@@ -628,16 +655,36 @@ export function GestaoAtividades() {
                     }}
                     className={`ativ ${a.feito ? 'ativ--feito' : ''} ${dragId === a.id ? 'ativ--arrastando' : ''} ${
                       overId === a.id && dragId && dragId !== a.id ? 'ativ--alvo' : ''
-                    }`}
+                    } ${movidoId === a.id ? 'ativ--movido' : ''}`}
                   >
                     {ordenar === 'padrao' && (
-                      <span
-                        className="fase__handle"
-                        title="Segure e arraste para reordenar"
-                        onPointerDown={(e) => iniciarArraste(e, cat, a.id)}
-                      >
-                        ⠿
-                      </span>
+                      <>
+                        <span className="mover-btns mover-btns--col">
+                          <button
+                            className="btn-mover"
+                            disabled={salvando || ordemPessoais.findIndex((x) => x.id === a.id) <= 0}
+                            title="Mover para cima"
+                            onClick={() => moverAtividade(cat, a.id, -1)}
+                          >
+                            ↑
+                          </button>
+                          <button
+                            className="btn-mover"
+                            disabled={salvando || ordemPessoais.findIndex((x) => x.id === a.id) >= ordemPessoais.length - 1}
+                            title="Mover para baixo"
+                            onClick={() => moverAtividade(cat, a.id, 1)}
+                          >
+                            ↓
+                          </button>
+                        </span>
+                        <span
+                          className="fase__handle"
+                          title="Segure e arraste para reordenar"
+                          onPointerDown={(e) => iniciarArraste(e, cat, a.id)}
+                        >
+                          ⠿
+                        </span>
+                      </>
                     )}
                     <button
                       className="ativ__check"
