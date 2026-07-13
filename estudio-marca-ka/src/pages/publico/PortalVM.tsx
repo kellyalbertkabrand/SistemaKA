@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
 import { listarClientes } from '../../lib/api'
 import { formatarBRL, formatarData, listarCobrancas, statusEfetivo } from '../../lib/gestao'
 import { listarProjetos, pendenciasDeProjetos, type Pendencia, type Projeto } from '../../lib/projetos'
 import { linhasFinanceiro, rotuloForma, type LinhaFinanceiro } from '../../lib/financeiro'
 import type { Cliente, Cobranca } from '../../lib/database.types'
 import { somarDinheiro, arredondar } from '../../lib/ui'
-import { TOKEN_PORTAL_VM } from '../../lib/vm'
 import '../../styles/gestao.css'
 import '../../styles/projeto.css'
 
@@ -20,9 +18,6 @@ import '../../styles/projeto.css'
 const ROTULO_FASE = { pendente: 'A seguir', andamento: '● Em andamento', concluida: 'Concluída' }
 
 export function PortalVM() {
-  const { token } = useParams<{ token: string }>()
-  const tokenOk = token === TOKEN_PORTAL_VM
-
   const [projetos, setProjetos] = useState<Projeto[] | null>(null)
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [cobrancas, setCobrancas] = useState<Cobranca[]>([])
@@ -30,10 +25,6 @@ export function PortalVM() {
   const [erro, setErro] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!tokenOk) {
-      setCarregando(false)
-      return
-    }
     Promise.all([listarProjetos(), listarClientes(), listarCobrancas()])
       .then(([ps, cs, cb]) => {
         setProjetos(ps)
@@ -42,20 +33,7 @@ export function PortalVM() {
       })
       .catch((e) => setErro(e instanceof Error ? e.message : String(e)))
       .finally(() => setCarregando(false))
-  }, [tokenOk])
-
-  if (!tokenOk) {
-    return (
-      <div className="pub-wrap">
-        <div className="pub-doc">
-          <h1>Link inválido</h1>
-          <p style={{ marginTop: '0.6rem', color: 'var(--t-500)' }}>
-            Confira se o link foi copiado por inteiro, ou peça um novo à Kelly.
-          </p>
-        </div>
-      </div>
-    )
-  }
+  }, [])
 
   if (carregando) {
     return (
@@ -70,8 +48,19 @@ export function PortalVM() {
 
   const nomeCliente = (id: string | null) => (id ? clientes.find((c) => c.id === id)?.nome_marca ?? '' : '')
 
-  // Tarefas da VM (etapas em aberto onde o responsável é a VM).
+  // Tarefas da VM (etapas em aberto onde o responsável é a VM), AGRUPADAS por
+  // cliente — assim a VM vê organizado quem é quem.
   const tarefas: Pendencia[] = projetos ? pendenciasDeProjetos(projetos, 'VM') : []
+  const tarefasPorCliente = (() => {
+    const map = new Map<string, { cliente: string; itens: Pendencia[] }>()
+    for (const pd of tarefas) {
+      const cliente = pd.cliente_nome || 'Sem cliente'
+      const cur = map.get(cliente) ?? { cliente, itens: [] }
+      cur.itens.push(pd)
+      map.set(cliente, cur)
+    }
+    return [...map.values()].sort((a, b) => a.cliente.localeCompare(b.cliente))
+  })()
 
   // A receber da VM: cobranças em aberto onde ela participa + pagamentos de
   // contrato marcados como "VM Rocks".
@@ -163,28 +152,34 @@ export function PortalVM() {
         )}
       </div>
 
-      {/* ===== TAREFAS DA VM ===== */}
+      {/* ===== TAREFAS DA VM (agrupadas por cliente) ===== */}
       <div className="proj-card">
         <div className="proj-card__titulo">Suas tarefas nos projetos</div>
         {tarefas.length === 0 ? (
           <p className="ativ-vazio">Nenhuma etapa sua em aberto. Tudo em dia ✨</p>
         ) : (
-          <div className="vm-tarefas">
-            {tarefas.map((pd) => (
-              <div key={`${pd.projeto_id}-${pd.fase_idx}`} className={`vm-tarefa vm-tarefa--${pd.status}`}>
-                <div className="vm-tarefa__ponto">{pd.status === 'andamento' ? '●' : '○'}</div>
-                <div className="vm-tarefa__corpo">
-                  <div className="vm-tarefa__fase">{pd.fase_nome}</div>
-                  {pd.fase_desc && <div className="vm-tarefa__desc">{pd.fase_desc}</div>}
-                  <div className="vm-tarefa__meta">
-                    {pd.projeto_nome}
-                    {pd.cliente_nome ? ` · ${pd.cliente_nome}` : ''} · {ROTULO_FASE[pd.status]}
-                    {pd.data ? ` · previsto ${formatarData(pd.data)}` : ''}
+          tarefasPorCliente.map((g) => (
+            <section key={g.cliente} className="vm-grupo">
+              <h3 className="vm-grupo__cli">
+                {g.cliente} <span className="vm-grupo__n">{g.itens.length}</span>
+              </h3>
+              <div className="vm-tarefas">
+                {g.itens.map((pd) => (
+                  <div key={`${pd.projeto_id}-${pd.fase_idx}`} className={`vm-tarefa vm-tarefa--${pd.status}`}>
+                    <div className="vm-tarefa__ponto">{pd.status === 'andamento' ? '●' : '○'}</div>
+                    <div className="vm-tarefa__corpo">
+                      <div className="vm-tarefa__fase">{pd.fase_nome}</div>
+                      {pd.fase_desc && <div className="vm-tarefa__desc">{pd.fase_desc}</div>}
+                      <div className="vm-tarefa__meta">
+                        {pd.projeto_nome} · {ROTULO_FASE[pd.status]}
+                        {pd.data ? ` · previsto ${formatarData(pd.data)}` : ''}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </section>
+          ))
         )}
       </div>
 

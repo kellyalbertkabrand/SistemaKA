@@ -2216,6 +2216,32 @@
   color: var(--t-500);
   font-weight: 600;
 }
+.vm-grupo {
+  margin-top: 1rem;
+}
+.vm-grupo:first-of-type {
+  margin-top: 0.4rem;
+}
+.vm-grupo__cli {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--heading);
+  font-size: 1.05rem;
+  color: var(--marinho);
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(184, 155, 106, 0.35);
+}
+.vm-grupo__n {
+  font-family: var(--body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--dourado);
+  background: rgba(184, 155, 106, 0.16);
+  border-radius: 100px;
+  padding: 0.05rem 0.5rem;
+}
 .vm-tarefas {
   display: flex;
   flex-direction: column;
