@@ -1805,6 +1805,44 @@
   padding: 0.9rem 1rem;
   background: #fff;
 }
+/* Agrupamento dos cards: "No seu caixa" x "Ainda em aberto" */
+.fin-grupo {
+  margin-bottom: 1rem;
+}
+.fin-grupo .fin-cards {
+  margin-bottom: 0;
+}
+.fin-grupo__tit {
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--dourado);
+  margin-bottom: 0.5rem;
+}
+/* Saldo em destaque (hero): ocupa a linha toda e a fonte maior */
+.fin-card--hero {
+  grid-column: 1 / -1;
+}
+.fin-card--hero .fin-card__valor {
+  font-size: 2rem;
+}
+.fin-card__nota {
+  font-weight: 400;
+  color: var(--t-500);
+  font-size: 0.72rem;
+}
+/* Legenda que explica o que conta no saldo */
+.fin-legenda {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--t-600, #4a5560);
+  background: rgba(184, 155, 106, 0.09);
+  border: 1px solid rgba(184, 155, 106, 0.25);
+  border-radius: 12px;
+  padding: 0.7rem 0.9rem;
+  margin: 0 0 1.1rem;
+}
 .fin-card--ka {
   border-color: rgba(61, 107, 126, 0.35);
   background: rgba(61, 107, 126, 0.05);

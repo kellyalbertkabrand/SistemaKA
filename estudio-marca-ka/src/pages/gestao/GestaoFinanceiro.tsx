@@ -540,54 +540,68 @@ export function GestaoFinanceiro() {
 
       {!carregando && visao === 'caixa' && (
         <>
-          {/* Resumo em cards */}
-          <div className="fin-cards">
-            <div className="fin-card fin-card--saldo">
-              <div className="fin-card__quem">Saldo em caixa</div>
-              <div className="fin-card__valor">{formatarBRL(saldo)}</div>
-              {(totalAReceber > 0 || totalAPagar > 0) && (
-                <div className="fin-card__mensal">previsto {formatarBRL(saldoPrevisto)}</div>
-              )}
-              <div className="fin-card__qtd">entradas − saídas</div>
-            </div>
-            <div className="fin-card fin-card--receber">
-              <div className="fin-card__quem">A receber (total)</div>
-              <div className="fin-card__valor">{formatarBRL(totalAReceber)}</div>
-              <div className="fin-card__quebra">
-                <span>
-                  <em>KA</em> {formatarBRL(aReceberKA)}
-                </span>
-                <span>
-                  <em>Pessoal</em> {formatarBRL(aReceberPessoal)}
-                </span>
+          {/* Resumo — agrupado: o que JÁ é seu (no caixa) vs o que ainda vai mexer */}
+          <div className="fin-grupo">
+            <div className="fin-grupo__tit">No seu caixa — já confirmado</div>
+            <div className="fin-cards">
+              <div className="fin-card fin-card--saldo fin-card--hero">
+                <div className="fin-card__quem">Saldo em caixa</div>
+                <div className="fin-card__valor">{formatarBRL(saldo)}</div>
+                {(totalAReceber > 0 || totalAPagar > 0) && (
+                  <div className="fin-card__mensal">
+                    previsto {formatarBRL(saldoPrevisto)}{' '}
+                    <span className="fin-card__nota">(com a receber − a pagar)</span>
+                  </div>
+                )}
+                <div className="fin-card__qtd">o que já entrou − o que já saiu</div>
               </div>
-              <div className="fin-card__qtd">
-                {aReceber.length + lancAReceber.length} em aberto
-                {lancAReceber.length > 0 ? ` (${lancAReceber.length} à mão)` : ''}
+              <div className="fin-card fin-card--entrada">
+                <div className="fin-card__quem">Entradas</div>
+                <div className="fin-card__valor">{formatarBRL(totalEntradas)}</div>
+                <div className="fin-card__qtd">já recebidas</div>
               </div>
-            </div>
-            <div className="fin-card fin-card--pagar">
-              <div className="fin-card__quem">A pagar</div>
-              <div className="fin-card__valor">{formatarBRL(totalAPagar)}</div>
-              <div className="fin-card__qtd">
-                {contasPagar.length} {contasPagar.length === 1 ? 'conta' : 'contas'}
+              <div className="fin-card fin-card--saida">
+                <div className="fin-card__quem">Saídas</div>
+                <div className="fin-card__valor">{formatarBRL(totalSaidas)}</div>
+                <div className="fin-card__qtd">já pagas</div>
               </div>
-            </div>
-            <div className="fin-card fin-card--entrada">
-              <div className="fin-card__quem">Entradas</div>
-              <div className="fin-card__valor">{formatarBRL(totalEntradas)}</div>
-              <div className="fin-card__qtd">recebidas</div>
-            </div>
-            <div className="fin-card fin-card--saida">
-              <div className="fin-card__quem">Saídas</div>
-              <div className="fin-card__valor">{formatarBRL(totalSaidas)}</div>
-              <div className="fin-card__qtd">despesas</div>
             </div>
           </div>
 
-          <p className="fin-dica">
-            As <strong>cobranças pagas</strong> (aba Cobranças) entram aqui como entradas
-            automaticamente. Acrescente outras entradas e as saídas abaixo.
+          <div className="fin-grupo">
+            <div className="fin-grupo__tit">Ainda em aberto — vai mexer no caixa</div>
+            <div className="fin-cards">
+              <div className="fin-card fin-card--receber">
+                <div className="fin-card__quem">A receber (total)</div>
+                <div className="fin-card__valor">{formatarBRL(totalAReceber)}</div>
+                <div className="fin-card__quebra">
+                  <span>
+                    <em>KA</em> {formatarBRL(aReceberKA)}
+                  </span>
+                  <span>
+                    <em>Pessoal</em> {formatarBRL(aReceberPessoal)}
+                  </span>
+                </div>
+                <div className="fin-card__qtd">
+                  {aReceber.length + lancAReceber.length} em aberto
+                  {lancAReceber.length > 0 ? ` (${lancAReceber.length} à mão)` : ''}
+                </div>
+              </div>
+              <div className="fin-card fin-card--pagar">
+                <div className="fin-card__quem">A pagar</div>
+                <div className="fin-card__valor">{formatarBRL(totalAPagar)}</div>
+                <div className="fin-card__qtd">
+                  {contasPagar.length} {contasPagar.length === 1 ? 'conta' : 'contas'}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <p className="fin-legenda">
+            💡 O <strong>saldo</strong> conta só o que você confirmou como recebido/pago. O que
+            está <strong>em aberto</strong> fica à parte — toque em <strong>“Recebi”</strong> ou{' '}
+            <strong>“Pago”</strong> quando acontecer, aí entra no saldo. As{' '}
+            <strong>cobranças pagas</strong> (aba Cobranças) entram como entradas sozinhas.
           </p>
 
           {/* Botões / formulário de entrada e saída */}
@@ -698,9 +712,15 @@ export function GestaoFinanceiro() {
           {recebTodos.length > 0 && (
             <section className="fin-secao">
               <h3 className="fin-secao__tit">A receber — por mês</h3>
-              {temMensalidade && (
+              {temMensalidade ? (
                 <p className="fin-dica" style={{ marginTop: 0 }}>
-                  As <strong>mensalidades</strong> se repetem nos próximos meses (marcadas “previsto”).
+                  <strong>Em aberto hoje: {formatarBRL(totalAReceber)}</strong> (é o card “A receber”).
+                  Abaixo, as <strong>mensalidades</strong> aparecem repetidas nos próximos meses como{' '}
+                  <strong>“previsto”</strong> — por isso a soma dos meses fica maior que o card.
+                </p>
+              ) : (
+                <p className="fin-dica" style={{ marginTop: 0 }}>
+                  Total em aberto: <strong>{formatarBRL(totalAReceber)}</strong>.
                 </p>
               )}
               {aReceberPorMes.map((g) => (
