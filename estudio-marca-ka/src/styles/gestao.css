@@ -2201,6 +2201,92 @@
   border-color: rgba(46, 107, 69, 0.4);
   color: #2e6b45;
 }
+
+/* ============================================================
+   Assistente de IA no editor de contrato
+   ============================================================ */
+.ia-chat {
+  border: 1px solid rgba(61, 107, 126, 0.3);
+  background: rgba(61, 107, 126, 0.04);
+}
+.ia-chat__tit {
+  margin-bottom: 0.35rem;
+}
+.ia-chat__dica {
+  font-size: 0.83rem;
+  color: var(--t-600, #4a5560);
+  line-height: 1.5;
+  margin-bottom: 0.7rem;
+}
+.ia-chat__log {
+  list-style: none;
+  margin: 0 0 0.7rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+}
+.ia-chat__log li {
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 10px;
+  padding: 0.4rem 0.6rem;
+}
+.ia-chat__ok {
+  color: #2e6b45;
+  margin-left: 0.3rem;
+}
+.ia-chat__entrada {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.ia-chat__entrada textarea {
+  flex: 1;
+  min-width: 220px;
+  resize: vertical;
+}
+.ia-proposta {
+  margin-top: 0.9rem;
+  border: 1px solid rgba(184, 155, 106, 0.4);
+  border-radius: 12px;
+  background: #fff;
+  padding: 0.8rem;
+}
+.ia-proposta__resumo {
+  font-weight: 700;
+  color: var(--marinho);
+  margin-bottom: 0.5rem;
+}
+.ia-proposta__rot {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--t-500);
+  margin-bottom: 0.3rem;
+}
+.ia-proposta__preview {
+  max-height: 320px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, monospace;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  background: var(--bg-1);
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 8px;
+  padding: 0.7rem;
+  margin: 0 0 0.7rem;
+}
+.ia-proposta__acoes {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
 /* Card sendo editado: destaca e "cola" no formulário inline logo abaixo */
 .cob-card--editando {
   border-color: var(--dourado);

@@ -38,6 +38,59 @@ export function GestaoContratos() {
   const [editTitulo, setEditTitulo] = useState('')
   const [editConteudo, setEditConteudo] = useState('')
   const [salvandoEd, setSalvandoEd] = useState(false)
+  // Assistente de IA (dentro do editor de contrato)
+  const [iaInstrucao, setIaInstrucao] = useState('')
+  const [iaCarregando, setIaCarregando] = useState(false)
+  const [iaProposta, setIaProposta] = useState<string | null>(null)
+  const [iaResumo, setIaResumo] = useState<string | null>(null)
+  const [iaErro, setIaErro] = useState<string | null>(null)
+  const [iaHistorico, setIaHistorico] = useState<{ instrucao: string; resumo: string }[]>([])
+
+  function limparIA() {
+    setIaInstrucao('')
+    setIaProposta(null)
+    setIaResumo(null)
+    setIaErro(null)
+    setIaHistorico([])
+  }
+
+  // Pede um ajuste à IA (função de servidor guarda a chave). A resposta vira
+  // uma PROPOSTA que a KA revisa e aplica (ou descarta).
+  async function pedirIA() {
+    const instrucao = iaInstrucao.trim()
+    if (!instrucao) return
+    setIaCarregando(true)
+    setIaErro(null)
+    setIaProposta(null)
+    setIaResumo(null)
+    try {
+      const r = await fetch('/.netlify/functions/contrato-ia', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ contrato: editConteudo, instrucao }),
+      })
+      const data = await r.json().catch(() => ({ erro: 'Resposta inválida da IA.' }))
+      if (data.erro) {
+        setIaErro(data.erro)
+        return
+      }
+      setIaProposta(String(data.contrato ?? ''))
+      setIaResumo(String(data.resumo ?? 'Ajuste pronto.'))
+    } catch {
+      setIaErro('Não deu para falar com a IA. Confira sua conexão e tente de novo.')
+    } finally {
+      setIaCarregando(false)
+    }
+  }
+
+  function aplicarIA() {
+    if (iaProposta == null) return
+    setEditConteudo(iaProposta)
+    setIaHistorico((h) => [...h, { instrucao: iaInstrucao.trim(), resumo: iaResumo ?? 'Ajuste aplicado.' }])
+    setIaProposta(null)
+    setIaResumo(null)
+    setIaInstrucao('')
+  }
 
   const listaFiltrada = (() => {
     const q = normalizar(busca).trim()
@@ -84,6 +137,7 @@ export function GestaoContratos() {
   function editarContrato(c: Contrato) {
     setEditTitulo(c.titulo)
     setEditConteudo(c.conteudo)
+    limparIA()
     setEditando(true)
     abrirUrl(c.id)
   }
@@ -214,6 +268,67 @@ export function GestaoContratos() {
                 Cancelar
               </button>
             </p>
+          </div>
+
+          {/* Assistente de IA — pede ajustes em português e aplica no texto acima */}
+          <div className="card ia-chat">
+            <h4 className="ia-chat__tit">🤖 Assistente de IA</h4>
+            <p className="ia-chat__dica">
+              Peça um ajuste em português e revise antes de aplicar. Ex.: “deixe o pagamento em 3×”,
+              “adicione uma cláusula de cancelamento com 30 dias de aviso”, “deixe a linguagem mais simples”.
+            </p>
+
+            {iaHistorico.length > 0 && (
+              <ul className="ia-chat__log">
+                {iaHistorico.map((h, i) => (
+                  <li key={i}>
+                    <strong>Você:</strong> {h.instrucao} <span className="ia-chat__ok">✓ {h.resumo}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <div className="ia-chat__entrada">
+              <textarea
+                rows={2}
+                value={iaInstrucao}
+                onChange={(e) => setIaInstrucao(e.target.value)}
+                placeholder="O que você quer ajustar no contrato?"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault()
+                    void pedirIA()
+                  }
+                }}
+              />
+              <button className="btn" disabled={iaCarregando || !iaInstrucao.trim()} onClick={() => void pedirIA()}>
+                {iaCarregando ? 'Pensando…' : 'Pedir à IA'}
+              </button>
+            </div>
+
+            {iaErro && <div className="erro-msg" style={{ marginTop: '0.6rem' }}>{iaErro}</div>}
+
+            {iaProposta != null && (
+              <div className="ia-proposta">
+                <div className="ia-proposta__resumo">✨ {iaResumo}</div>
+                <div className="ia-proposta__rot">Prévia do contrato com o ajuste:</div>
+                <pre className="ia-proposta__preview">{iaProposta}</pre>
+                <div className="ia-proposta__acoes">
+                  <button className="btn" onClick={aplicarIA}>
+                    Aplicar no contrato
+                  </button>
+                  <button
+                    className="btn--voltar"
+                    onClick={() => {
+                      setIaProposta(null)
+                      setIaResumo(null)
+                    }}
+                  >
+                    Descartar
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </>
       )

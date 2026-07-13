@@ -470,6 +470,17 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
     **conteúdo** deste contrato (título + texto), salvo via `atualizarContrato`
     (não altera o modelo padrão; o token/link de assinatura continua o mesmo).
     Contrato **assinado** não é editável (preserva a validade do aceite).
+  - **Assistente de IA no editor (jul/2026):** dentro do "Editar contrato" há um
+    chat 🤖 (`.ia-chat`): a KA escreve um ajuste em português (ex.: "pagamento em
+    3×", "cláusula de cancelamento com 30 dias") e a IA devolve o contrato
+    revisado como **proposta** (prévia + "Aplicar no contrato"/"Descartar"). A
+    chave da IA fica SÓ na **Netlify Function** `netlify/functions/contrato-ia.mjs`
+    (env `ANTHROPIC_API_KEY`, opcional `ANTHROPIC_MODEL`, padrão `claude-sonnet-5`)
+    — NUNCA no front; o front chama `/.netlify/functions/contrato-ia` com
+    `{contrato, instrucao}` e recebe `{contrato, resumo}` (a função pede JSON à
+    Anthropic). `netlify.toml` tem `[functions] directory=netlify/functions`.
+    Sem a env configurada, a função responde um aviso amigável (o resto do app
+    segue normal). Modelo de IA idêntico ao roadmap "Fase 6" (chave só no servidor).
 - **Cobranças:** mensalidade por cliente (RPC `gerar_mensalidades`, idempotente
   por competência; botão no painel ou pg_cron) + avulsas (de orçamento ou
   manuais). Link de pagamento **Mercado Pago Checkout Pro** (cartão parcelado,

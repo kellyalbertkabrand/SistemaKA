@@ -7,6 +7,12 @@
   command = "npm run build"
   publish = "dist"
 
+# Funções de servidor (guardam segredos, ex.: a chave da Anthropic para o
+# assistente de IA de contratos). Ficam em estudio-marca-ka/netlify/functions.
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 [build.environment]
   NODE_VERSION = "20"
   # As chaves que aparecem no front deste app são PÚBLICAS por design:
