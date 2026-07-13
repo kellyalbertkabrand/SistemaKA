@@ -458,6 +458,18 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
 - **Contrato:** modelo editável na aba Contratos; link público
   `/contrato/:token` com **aceite digital** (nome, documento, data/hora,
   user-agent). Impressão → PDF pelo navegador (CSS @media print).
+  - **Puxar dados do cliente (jul/2026):** o "Novo contrato" tem um seletor de
+    **cliente** que preenche nome/documento/e-mail/telefone/razão social da ficha
+    (`escolherCliente` em `NovoContrato`); `criarContratoDoModelo` aceita
+    `cliente_id/cliente_email/razao_social/telefone` e preenche `{{cliente_email}}`
+    /`{{razao_social}}` além dos demais; `criarContrato` grava `telefone`
+    (WhatsApp). Campos continuam editáveis e podem ficar em branco p/ o cliente
+    preencher ao assinar.
+  - **EDITAR o contrato (jul/2026):** botão **"✏️ Editar contrato"** na ficha e
+    **"Editar"** na lista (só quando NÃO assinado/cancelado) abre um editor do
+    **conteúdo** deste contrato (título + texto), salvo via `atualizarContrato`
+    (não altera o modelo padrão; o token/link de assinatura continua o mesmo).
+    Contrato **assinado** não é editável (preserva a validade do aceite).
 - **Cobranças:** mensalidade por cliente (RPC `gerar_mensalidades`, idempotente
   por competência; botão no painel ou pg_cron) + avulsas (de orçamento ou
   manuais). Link de pagamento **Mercado Pago Checkout Pro** (cartão parcelado,

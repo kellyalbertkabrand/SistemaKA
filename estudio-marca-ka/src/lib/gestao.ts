@@ -488,7 +488,7 @@ export async function listarContratos(): Promise<Contrato[]> {
 }
 
 export async function criarContrato(
-  dados: Pick<Contrato, 'titulo' | 'conteudo'> & Partial<Pick<Contrato, 'cliente_id' | 'status'>>,
+  dados: Pick<Contrato, 'titulo' | 'conteudo'> & Partial<Pick<Contrato, 'cliente_id' | 'status' | 'telefone'>>,
 ): Promise<Contrato> {
   const novo = limpar({
     orcamento_id: null,
@@ -496,6 +496,7 @@ export async function criarContrato(
     titulo: dados.titulo,
     conteudo: dados.conteudo,
     status: dados.status ?? 'rascunho',
+    telefone: dados.telefone ?? null,
     token: novoToken(),
     criado_em: agora(),
     enviado_em: null,
@@ -516,6 +517,9 @@ export async function criarContrato(
 export async function criarContratoDoModelo(dados: {
   cliente_nome?: string
   cliente_documento?: string
+  cliente_email?: string
+  razao_social?: string
+  telefone?: string | null
   cliente_id?: string | null
   titulo?: string
 }): Promise<Contrato> {
@@ -524,12 +528,16 @@ export async function criarContratoDoModelo(dados: {
   const quando = agora()
   const nome = dados.cliente_nome?.trim()
   const documento = dados.cliente_documento?.trim()
+  const email = dados.cliente_email?.trim()
+  const razao = dados.razao_social?.trim()
   // Se um campo do cliente não for informado, MANTÉM o {{placeholder}} no texto
   // para o próprio cliente preencher ao assinar pelo link público.
   const corpo = modelo
     ? preencherModelo(modelo.conteudo, {
         cliente_nome: nome || '{{cliente_nome}}',
         cliente_documento: documento || '{{cliente_documento}}',
+        cliente_email: email || '{{cliente_email}}',
+        razao_social: razao || '',
         data: formatarData(quando),
       })
     : `Contrato para ${nome || '{{cliente_nome}}'}.`
@@ -537,6 +545,7 @@ export async function criarContratoDoModelo(dados: {
     titulo: dados.titulo?.trim() || (nome ? `Contrato: ${nome}` : 'Contrato de Prestação de Serviços'),
     conteudo: corpo,
     cliente_id: dados.cliente_id ?? null,
+    telefone: dados.telefone ?? null,
     status: 'enviado',
   })
 }

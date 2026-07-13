@@ -33,6 +33,11 @@ export function GestaoContratos() {
   const [msg, setMsg] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
   const [busca, setBusca] = useState('')
+  // Edição do CONTEÚDO de um contrato (não do modelo).
+  const [editando, setEditando] = useState(false)
+  const [editTitulo, setEditTitulo] = useState('')
+  const [editConteudo, setEditConteudo] = useState('')
+  const [salvandoEd, setSalvandoEd] = useState(false)
 
   const listaFiltrada = (() => {
     const q = normalizar(busca).trim()
@@ -70,6 +75,37 @@ export function GestaoContratos() {
   useEffect(() => {
     void recarregar()
   }, [])
+
+  // Abrir para VER (sai do modo edição) ou para EDITAR (entra no modo edição).
+  function verContrato(c: Contrato) {
+    setEditando(false)
+    abrirUrl(c.id)
+  }
+  function editarContrato(c: Contrato) {
+    setEditTitulo(c.titulo)
+    setEditConteudo(c.conteudo)
+    setEditando(true)
+    abrirUrl(c.id)
+  }
+  function fecharFicha() {
+    setEditando(false)
+    fechar()
+  }
+  async function salvarEdicao(id: string, tituloOriginal: string) {
+    setSalvandoEd(true)
+    setErro(null)
+    try {
+      await atualizarContrato(id, { titulo: editTitulo.trim() || tituloOriginal, conteudo: editConteudo })
+      await recarregar()
+      setEditando(false)
+      setMsg('Contrato atualizado.')
+      setTimeout(() => setMsg(null), 4000)
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : String(e))
+    } finally {
+      setSalvandoEd(false)
+    }
+  }
 
   async function copiarLink(c: Contrato) {
     await navigator.clipboard.writeText(linkPublicoContrato(c.token))
@@ -126,22 +162,73 @@ export function GestaoContratos() {
   if (criando) {
     return (
       <NovoContrato
+        clientes={clientes}
         aoVoltar={fechar}
         aoCriar={(c) => {
           setLista((l) => [c, ...l])
-          abrirUrl(c.id)
+          verContrato(c)
         }}
       />
     )
   }
 
   if (vendo) {
+    // MODO EDIÇÃO do contrato (só quando não está assinado).
+    if (editando) {
+      return (
+        <>
+          <p className="nao-imprimir" style={{ marginBottom: '1rem', display: 'flex', gap: '0.6rem' }}>
+            <button className="btn--voltar" onClick={() => setEditando(false)}>
+              ← Ver contrato
+            </button>
+          </p>
+          <div className="card">
+            <h3>Editar contrato</h3>
+            <p style={{ marginBottom: '0.9rem', fontSize: '0.85rem', color: 'var(--t-600)' }}>
+              Ajuste o texto livremente. As alterações valem para este contrato (não mudam o
+              modelo padrão). {vendo.status === 'enviado' && 'O link de assinatura continua o mesmo.'}
+            </p>
+            {erro && <div className="erro-msg">{erro}</div>}
+            <div className="field">
+              <label>Título</label>
+              <input value={editTitulo} onChange={(e) => setEditTitulo(e.target.value)} />
+            </div>
+            <div className="field">
+              <label>Texto do contrato</label>
+              <textarea
+                rows={22}
+                value={editConteudo}
+                onChange={(e) => setEditConteudo(e.target.value)}
+                style={{ fontFamily: 'ui-monospace, monospace', fontSize: '16px', lineHeight: 1.55 }}
+              />
+            </div>
+            <p style={{ display: 'flex', gap: '0.7rem', marginTop: '0.4rem' }}>
+              <button
+                className="btn"
+                disabled={salvandoEd || !editConteudo.trim()}
+                onClick={() => void salvarEdicao(vendo.id, vendo.titulo)}
+              >
+                {salvandoEd ? 'Salvando…' : 'Salvar alterações'}
+              </button>
+              <button className="btn--voltar" onClick={() => setEditando(false)}>
+                Cancelar
+              </button>
+            </p>
+          </div>
+        </>
+      )
+    }
     return (
       <>
-        <p className="nao-imprimir" style={{ marginBottom: '1rem', display: 'flex', gap: '0.6rem' }}>
-          <button className="btn--voltar" onClick={fechar}>
+        <p className="nao-imprimir" style={{ marginBottom: '1rem', display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+          <button className="btn--voltar" onClick={fecharFicha}>
             ← Contratos
           </button>
+          {vendo.status !== 'assinado' && vendo.status !== 'cancelado' && (
+            <button className="btn--voltar" onClick={() => editarContrato(vendo)}>
+              ✏️ Editar contrato
+            </button>
+          )}
           <button className="btn--voltar" onClick={() => window.print()}>
             Salvar em PDF / Imprimir
           </button>
@@ -219,7 +306,7 @@ export function GestaoContratos() {
               {listaFiltrada.map((c) => (
                 <tr key={c.id}>
                   <td className="cel-nome" data-label="Contrato">
-                    <button className="cel-abrir" onClick={() => abrirUrl(c.id)} title="Ver contrato">
+                    <button className="cel-abrir" onClick={() => verContrato(c)} title="Ver contrato">
                       <strong>{c.titulo}</strong>
                     </button>
                   </td>
@@ -233,9 +320,14 @@ export function GestaoContratos() {
                     <span className={`badge ${BADGE_CONTRATO[c.status]}`}>{rotuloStatus('contrato', c.status)}</span>
                   </td>
                   <td className="acoes">
-                    <button className="btn-mini" onClick={() => abrirUrl(c.id)}>
+                    <button className="btn-mini" onClick={() => verContrato(c)}>
                       Ver
                     </button>
+                    {c.status !== 'cancelado' && c.status !== 'assinado' && (
+                      <button className="btn-mini" onClick={() => editarContrato(c)}>
+                        Editar
+                      </button>
+                    )}
                     {c.status !== 'cancelado' && c.status !== 'assinado' && (
                       <button className="btn-mini btn-mini--whats" onClick={() => enviarWhatsApp(c)}>
                         WhatsApp
@@ -270,17 +362,37 @@ export function GestaoContratos() {
 // nome e o documento do cliente. Depois é só ver e salvar em PDF.
 // ---------------------------------------------------------------------------
 function NovoContrato({
+  clientes,
   aoVoltar,
   aoCriar,
 }: {
+  clientes: Cliente[]
   aoVoltar: () => void
   aoCriar: (c: Contrato) => void
 }) {
+  const [clienteId, setClienteId] = useState('')
   const [nome, setNome] = useState('')
   const [documento, setDocumento] = useState('')
+  const [email, setEmail] = useState('')
+  const [telefone, setTelefone] = useState('')
+  const [razao, setRazao] = useState('')
   const [titulo, setTitulo] = useState('')
   const [gerando, setGerando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
+
+  // Ao escolher um cliente, PUXA os dados da ficha dele para os campos (a KA
+  // ainda pode ajustar antes de gerar).
+  function escolherCliente(id: string) {
+    setClienteId(id)
+    const c = clientes.find((x) => x.id === id)
+    if (!c) return
+    setNome((c.responsavel || c.nome_marca || '').trim())
+    setDocumento((c.contrato_documento || c.documento || '').trim())
+    setEmail((c.email_contato || '').trim())
+    setTelefone((c.telefone || '').trim())
+    setRazao((c.razao_social || '').trim())
+    if (!titulo.trim()) setTitulo(`Contrato: ${c.nome_marca}`)
+  }
 
   async function gerar(e: FormEvent) {
     e.preventDefault()
@@ -288,8 +400,12 @@ function NovoContrato({
     setErro(null)
     try {
       const c = await criarContratoDoModelo({
+        cliente_id: clienteId || undefined,
         cliente_nome: nome.trim() || undefined,
         cliente_documento: documento.trim() || undefined,
+        cliente_email: email.trim() || undefined,
+        razao_social: razao.trim() || undefined,
+        telefone: telefone.trim() || undefined,
         titulo: titulo.trim() || undefined,
       })
       aoCriar(c)
@@ -328,6 +444,22 @@ function NovoContrato({
         {erro && <div className="erro-msg">{erro}</div>}
         <form onSubmit={(e) => void gerar(e)}>
           <div className="form-grade">
+            <div className="field campo-toda">
+              <label>Puxar dados de um cliente</label>
+              <select value={clienteId} onChange={(e) => escolherCliente(e.target.value)}>
+                <option value="">— Escolher cliente (preenche os campos abaixo) —</option>
+                {clientes.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.nome_marca}
+                    {c.responsavel ? ` · ${c.responsavel}` : ''}
+                  </option>
+                ))}
+              </select>
+              <span className="campo-ajuda">
+                Escolha um cliente para preencher nome, documento, e-mail e telefone da ficha dele.
+                Você ainda pode ajustar antes de gerar.
+              </span>
+            </div>
             <div className="field">
               <label>Nome do cliente (opcional)</label>
               <input value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Deixe em branco p/ o cliente preencher" />
@@ -335,6 +467,18 @@ function NovoContrato({
             <div className="field">
               <label>CPF / CNPJ do cliente (opcional)</label>
               <input value={documento} onChange={(e) => setDocumento(e.target.value)} placeholder="Deixe em branco p/ o cliente preencher" />
+            </div>
+            <div className="field">
+              <label>E-mail (opcional)</label>
+              <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ex.: cliente@email.com" />
+            </div>
+            <div className="field">
+              <label>Telefone (opcional)</label>
+              <input type="tel" value={telefone} onChange={(e) => setTelefone(e.target.value)} placeholder="(41) 9…" />
+            </div>
+            <div className="field campo-toda">
+              <label>Razão social (opcional)</label>
+              <input value={razao} onChange={(e) => setRazao(e.target.value)} placeholder="se for empresa" />
             </div>
             <div className="field campo-toda">
               <label>Título do contrato (opcional)</label>
