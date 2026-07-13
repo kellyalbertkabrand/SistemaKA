@@ -12,6 +12,7 @@ import { ContratoPublico } from './pages/publico/ContratoPublico'
 import { CadastroPublico } from './pages/publico/CadastroPublico'
 import { CuidadoraCadastro } from './pages/publico/CuidadoraCadastro'
 import { ProjetoPublico } from './pages/publico/ProjetoPublico'
+import { PortalVM } from './pages/publico/PortalVM'
 import { PropostaDoc } from './pages/publico/PropostaDoc'
 import { modeloPropostaPadrao } from './lib/gestao'
 
@@ -56,6 +57,9 @@ export default function App() {
 
           {/* Acompanhamento de projeto pelo cliente (tempo real, por token) */}
           <Route path="/projeto/:token" element={<ProjetoPublico />} />
+
+          {/* Portal só-leitura da VM Rocks (parceira) — só o que é dela, por token */}
+          <Route path="/vm/:token" element={<PortalVM />} />
 
           {/* Pré-visualização do modelo de proposta (só em desenvolvimento) */}
           {import.meta.env.DEV && <Route path="/proposta-modelo" element={<PropostaModeloDev />} />}

@@ -669,6 +669,16 @@ Na ficha do cliente (`GestaoClientes.tsx` → `PagamentosContrato`), a seção
     envia); quando o **login por papel** (parceiro) entrar, essa é exatamente a
     tela que a VM verá (o caixa `caixa` e o resto ficam fora do escopo dela).
     O `caixa` pessoal (entradas/saídas) é sempre só da KA.
+  - **Portal da VM por LINK (só leitura) — jul/2026 (`src/lib/vm.ts` +
+    `pages/publico/PortalVM.tsx`, rota `/vm/:token`):** enquanto o modo seguro
+    (login por papel) não entra, a VM acessa por um link com token
+    (`TOKEN_PORTAL_VM`, constante — trocar revoga). A página mostra **só** o que
+    é dela: tarefas dela nos projetos (`pendenciasDeProjetos(...,'VM')`) + o que
+    tem a receber (cobranças `vm_participa` em aberto + `pagamentos_contrato`
+    quem=VM). Não mostra clientes/caixa/cuidadoras na tela. Botão **"Copiar link
+    do portal da VM"** na visão VM do Financeiro. ⚠️ Como as regras do Firestore
+    estão abertas (modo teste), a página baixa os dados no navegador e filtra na
+    UI — isolamento REAL só com o modo seguro (regras + login). Estilos `.vm-*`.
   - **Robustez financeira (jul/2026 — auditoria de especialista):**
     - **`parseValorBR` determinístico** (`src/lib/ui.ts`): resolve ponto×vírgula
       pelo ÚLTIMO separador; "1.500"→1500, "1.234.567"→1234567, "1.234,56"→

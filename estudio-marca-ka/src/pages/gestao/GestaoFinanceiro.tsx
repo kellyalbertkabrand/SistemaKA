@@ -19,6 +19,7 @@ import {
 import { useToast } from '../../components/Toast'
 import { confirmar } from '../../lib/confirmar'
 import { arredondar, parseValorBR, somarDinheiro } from '../../lib/ui'
+import { linkPortalVM } from '../../lib/vm'
 
 // ============================================================================
 // FINANCEIRO — gestor de caixa PESSOAL da KA. Junta:
@@ -458,6 +459,23 @@ export function GestaoFinanceiro() {
             Esta é a visão que a <strong>VM Rocks</strong> terá quando entrar com o login dela: só
             o que ela tem a receber, nos clientes que atende com você. Ela <strong>não vê</strong>
             {' '}o seu caixa nem as finanças dos outros clientes.
+          </p>
+
+          <div className="gestao-acoes">
+            <button
+              className="btn"
+              onClick={() => {
+                void navigator.clipboard.writeText(linkPortalVM())
+                mostrar('Link do portal da VM copiado ✓ — mande no WhatsApp dela', 'ok')
+              }}
+            >
+              Copiar link do portal da VM
+            </button>
+          </div>
+          <p className="fin-dica" style={{ marginTop: '0.4rem' }}>
+            O link abre uma página <strong>só de leitura</strong> com as tarefas da VM e o que ela
+            tem a receber — nada do resto do sistema aparece. Para revogar o link no futuro, é só
+            avisar que a gente troca.
           </p>
 
           {vmCobrancas.length === 0 && linhasVM.length === 0 ? (

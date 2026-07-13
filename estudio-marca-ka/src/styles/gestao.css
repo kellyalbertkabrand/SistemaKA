@@ -2201,6 +2201,67 @@
   border-color: rgba(46, 107, 69, 0.4);
   color: #2e6b45;
 }
+
+/* ============================================================
+   Portal da VM Rocks (só leitura, por link)
+   ============================================================ */
+.vm-total {
+  font-family: var(--heading);
+  font-size: 2rem;
+  color: #2e6b45;
+}
+.vm-total__mes {
+  font-family: var(--body);
+  font-size: 0.95rem;
+  color: var(--t-500);
+  font-weight: 600;
+}
+.vm-tarefas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.vm-tarefa {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-left-width: 3px;
+  border-left-color: var(--dourado-c);
+  border-radius: 12px;
+  padding: 0.6rem 0.8rem;
+  background: #fff;
+}
+.vm-tarefa--andamento {
+  border-left-color: var(--essencia);
+  background: rgba(61, 107, 126, 0.04);
+}
+.vm-tarefa__ponto {
+  color: var(--essencia);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+.vm-tarefa__fase {
+  font-weight: 700;
+  color: var(--t-900);
+}
+.vm-tarefa__desc {
+  font-size: 0.82rem;
+  color: var(--t-600, #4a5560);
+  margin-top: 0.1rem;
+}
+.vm-tarefa__meta {
+  font-size: 0.76rem;
+  color: var(--t-500);
+  margin-top: 0.2rem;
+}
+.vm-nota {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--t-500);
+  margin: 1rem auto 0;
+  max-width: 640px;
+}
 /* Ocorrência PROJETADA (mensalidade recorrente nos próximos meses) */
 .mov--previsto {
   border-left-style: dashed;
