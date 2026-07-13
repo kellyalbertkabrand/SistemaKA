@@ -608,8 +608,21 @@ Na ficha do cliente (`GestaoClientes.tsx` → `PagamentosContrato`), a seção
     botão **"Recebi"** (`marcarRecebida` → `recebido:true`) que a move para
     Entradas. Serve p/ contas que a KA lança direto no caixa sem virar cobrança.
     `ehAReceberManual`/`recebTodos`/`RecebItem` em GestaoFinanceiro.
-  - **Resumo em 4 cards:** Saldo em caixa (= entradas − saídas), A receber,
-    Entradas, Saídas. Movimentações listadas por data (verde +, vermelho −).
+  - **Conta "a pagar" à mão (jul/2026):** simétrico ao "a receber", mas p/ SAÍDAS.
+    Ao lançar uma SAÍDA há o toggle **"Já paguei (saiu)" / "A pagar"** (`pago` em
+    `Lancamento`). Se "a pagar", a saída NÃO conta em Saídas/saldo — entra em
+    **"Contas a pagar"** (card + seção por mês, com etiqueta KA/Pessoal e aviso de
+    atrasada quando venc < hoje) e tem botão **"Pago"** (`marcarPaga` →
+    `pago:true`) que a move para Saídas. Motivo: contas futuras lançadas como
+    saída derrubavam o saldo antes da hora ("o saldo está errado"). Botão do form
+    virou **"− Saída / conta a pagar"**. `contasPagar`/`aPagarPorMes` em
+    GestaoFinanceiro. O card Saldo ganhou a linha **"previsto"** (`saldoPrevisto`
+    = saldo + a receber − a pagar) quando há algo em aberto. O **relatório**
+    (`RelatorioFinanceiro`) passou a contar só lançamentos REALIZADOS (entrada
+    recebida, saída paga) — antes contava "a receber"/"a pagar" como realizados.
+  - **Resumo em 5 cards:** Saldo em caixa (= entradas − saídas; + linha
+    "previsto"), A receber, A pagar, Entradas, Saídas. Movimentações listadas por
+    data (verde +, vermelho −).
   - **"Por contrato — quem tem a receber (KA/VM Rocks)"** (o antigo Financeiro,
     somando os `pagamentos_contrato`) virou um bloco `<details>` recolhível no
     fim; cada item leva à ficha do cliente (`?aba=clientes&id=`).

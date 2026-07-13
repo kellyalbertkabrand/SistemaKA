@@ -91,9 +91,12 @@ export function RelatorioFinanceiro({
         })
       }
     }
-    // Lançamentos à mão no período.
+    // Lançamentos à mão no período — só os REALIZADOS (entrada recebida,
+    // saída paga). Entradas "a receber" e contas "a pagar" ainda não mexeram
+    // no caixa, então não entram no relatório de realizado.
     for (const l of lancamentos) {
-      if (noPeriodo(l.data)) {
+      const realizadoL = !(l.tipo === 'entrada' && l.recebido === false) && !(l.tipo === 'saida' && l.pago === false)
+      if (realizadoL && noPeriodo(l.data)) {
         linhas.push({
           data: l.data,
           tipo: l.tipo,

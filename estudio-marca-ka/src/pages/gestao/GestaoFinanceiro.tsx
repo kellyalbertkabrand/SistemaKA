@@ -147,6 +147,7 @@ export function GestaoFinanceiro() {
   const [fData, setFData] = useState(hoje())
   const [fEscopo, setFEscopo] = useState<EscopoLancamento>('ka')
   const [fRecebido, setFRecebido] = useState(true) // entrada: já recebida ou a receber
+  const [fPago, setFPago] = useState(true) // saída: já paga ou "a pagar" (conta)
   const [salvando, setSalvando] = useState(false)
 
   async function recarregar() {
@@ -241,7 +242,11 @@ export function GestaoFinanceiro() {
         cliente: nomeCliente(c.cliente_id),
       }))
     const deMao: Mov[] = lancamentos
-      .filter((l) => !(l.tipo === 'entrada' && l.recebido === false))
+      .filter(
+        (l) =>
+          !(l.tipo === 'entrada' && l.recebido === false) &&
+          !(l.tipo === 'saida' && l.pago === false),
+      )
       .map((l) => ({
         chave: l.id,
         tipo: l.tipo,
@@ -258,6 +263,16 @@ export function GestaoFinanceiro() {
   const totalEntradas = somarDinheiro(movimentos.filter((m) => m.tipo === 'entrada').map((m) => m.valor))
   const totalSaidas = somarDinheiro(movimentos.filter((m) => m.tipo === 'saida').map((m) => m.valor))
   const saldo = arredondar(totalEntradas - totalSaidas)
+
+  // Contas a PAGAR = saídas à mão marcadas como "a pagar" (pago === false).
+  // Ficam fora do saldo até a KA marcar "Pago" (aí viram Saídas). Agrupadas
+  // por mês para o planejamento do que vence.
+  const contasPagar = lancamentos.filter((l) => l.tipo === 'saida' && l.pago === false)
+  const totalAPagar = somarDinheiro(contasPagar.map((l) => Number(l.valor || 0)))
+  const aPagarPorMes = agruparPorMes(contasPagar, (l) => l.data, (l) => Number(l.valor || 0))
+  // Saldo previsto = o que sobra depois de receber o que está em aberto e pagar
+  // as contas a pagar. Ajuda a planejar (dá pra ver antes de o dinheiro mexer).
+  const saldoPrevisto = arredondar(saldo + totalAReceber - totalAPagar)
 
   // "Quem tem a receber" (KA/VM Rocks) — dos pagamentos do contrato.
   const linhas = linhasFinanceiro(clientes)
@@ -288,6 +303,7 @@ export function GestaoFinanceiro() {
     setFData(hoje())
     setFEscopo('ka')
     setFRecebido(true)
+    setFPago(true)
   }
 
   function editar(l: Lancamento) {
@@ -298,6 +314,7 @@ export function GestaoFinanceiro() {
     setFData(l.data)
     setFEscopo(l.escopo ?? 'ka')
     setFRecebido(l.recebido !== false)
+    setFPago(l.pago !== false)
   }
 
   function fecharForm() {
@@ -325,8 +342,10 @@ export function GestaoFinanceiro() {
         valor,
         data: fData || hoje(),
         escopo: fEscopo,
-        // Só entradas têm "recebido"; saídas são sempre realizadas.
+        // Entradas têm "recebido"; saídas têm "pago". O que não se aplica fica
+        // como realizado (true), compatível com os lançamentos antigos.
         recebido: formTipo === 'entrada' ? fRecebido : true,
+        pago: formTipo === 'saida' ? fPago : true,
       }
       if (editId) {
         await atualizarLancamento(editId, dados)
@@ -336,8 +355,10 @@ export function GestaoFinanceiro() {
         const novo = await criarLancamento(dados)
         setLancamentos((l) => [novo, ...l])
         mostrar(
-          formTipo !== 'entrada'
-            ? 'Saída lançada ✓'
+          formTipo === 'saida'
+            ? fPago
+              ? 'Saída lançada ✓'
+              : 'Lançada em “Contas a pagar” ✓ (toque em “Pago” quando pagar)'
             : fRecebido
               ? 'Entrada lançada em Entradas ✓'
               : 'Lançado em “A receber” ✓ (toque em “Recebi” quando o dinheiro entrar)',
@@ -370,6 +391,18 @@ export function GestaoFinanceiro() {
     try {
       await atualizarLancamento(l.id, { recebido: true })
       mostrar('Marcada como recebida ✓', 'ok')
+    } catch (e) {
+      mostrar(e instanceof Error ? e.message : String(e), 'erro')
+      void recarregar()
+    }
+  }
+
+  // Marca uma conta "a pagar" como PAGA (passa a contar em Saídas/saldo).
+  async function marcarPaga(l: Lancamento) {
+    setLancamentos((x) => x.map((y) => (y.id === l.id ? { ...y, pago: true } : y)))
+    try {
+      await atualizarLancamento(l.id, { pago: true })
+      mostrar('Marcada como paga ✓ (foi para Saídas)', 'ok')
     } catch (e) {
       mostrar(e instanceof Error ? e.message : String(e), 'erro')
       void recarregar()
@@ -498,6 +531,9 @@ export function GestaoFinanceiro() {
             <div className="fin-card fin-card--saldo">
               <div className="fin-card__quem">Saldo em caixa</div>
               <div className="fin-card__valor">{formatarBRL(saldo)}</div>
+              {(totalAReceber > 0 || totalAPagar > 0) && (
+                <div className="fin-card__mensal">previsto {formatarBRL(saldoPrevisto)}</div>
+              )}
               <div className="fin-card__qtd">entradas − saídas</div>
             </div>
             <div className="fin-card fin-card--receber">
@@ -506,6 +542,13 @@ export function GestaoFinanceiro() {
               <div className="fin-card__qtd">
                 {aReceber.length + lancAReceber.length} em aberto
                 {lancAReceber.length > 0 ? ` (${lancAReceber.length} à mão)` : ''}
+              </div>
+            </div>
+            <div className="fin-card fin-card--pagar">
+              <div className="fin-card__quem">A pagar</div>
+              <div className="fin-card__valor">{formatarBRL(totalAPagar)}</div>
+              <div className="fin-card__qtd">
+                {contasPagar.length} {contasPagar.length === 1 ? 'conta' : 'contas'}
               </div>
             </div>
             <div className="fin-card fin-card--entrada">
@@ -531,7 +574,7 @@ export function GestaoFinanceiro() {
               + Entrada
             </button>
             <button className="btn btn--saida" onClick={() => abrirForm('saida')}>
-              − Saída
+              − Saída / conta a pagar
             </button>
             <span className="espaco" />
           </div>
@@ -601,6 +644,22 @@ export function GestaoFinanceiro() {
                     </span>
                   </div>
                 )}
+                {formTipo === 'saida' && (
+                  <div className="field campo-toda">
+                    <label>Já pagou essa conta?</label>
+                    <div className="seg seg--escopo">
+                      <button type="button" className={fPago ? 'seg__on' : ''} onClick={() => setFPago(true)}>
+                        Já paguei (saiu)
+                      </button>
+                      <button type="button" className={!fPago ? 'seg__on' : ''} onClick={() => setFPago(false)}>
+                        A pagar
+                      </button>
+                    </div>
+                    <span className="campo-ajuda">
+                      {fPago ? 'Sai do saldo agora.' : 'Fica em “Contas a pagar” até você marcar como paga.'}
+                    </span>
+                  </div>
+                )}
               </div>
               <div className="caixa-form__acoes">
                 <button className="btn" disabled={salvando} onClick={() => void salvar()}>
@@ -663,6 +722,54 @@ export function GestaoFinanceiro() {
                             </button>
                           </div>
                         )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </section>
+          )}
+
+          {/* Contas a pagar (saídas ainda não pagas) — POR MÊS */}
+          {contasPagar.length > 0 && (
+            <section className="fin-secao">
+              <h3 className="fin-secao__tit">Contas a pagar — por mês</h3>
+              <p className="fin-dica" style={{ marginTop: 0 }}>
+                Ficam <strong>fora do saldo</strong> até você marcar <strong>“Pago”</strong> — aí viram Saídas.
+              </p>
+              {aPagarPorMes.map((g) => (
+                <div key={g.chave} className="mes-grupo">
+                  <div className="mes-grupo__cab">
+                    <span className="mes-grupo__nome">{rotuloMes(g.chave)}</span>
+                    <span className="mes-grupo__total">{formatarBRL(g.total)}</span>
+                  </div>
+                  <div className="fin-lista">
+                    {g.itens.map((l) => (
+                      <div key={l.id} className="mov mov--pagar">
+                        <div className="mov__corpo">
+                          <div className="mov__desc">
+                            {l.descricao}
+                            <span className={`mov__escopo mov__escopo--${l.escopo ?? 'ka'}`} style={{ marginLeft: '0.4rem' }}>
+                              {l.escopo === 'pessoal' ? 'Pessoal' : 'KA'}
+                            </span>
+                          </div>
+                          <div className="mov__meta">
+                            vence {formatarData(l.data)}
+                            {l.data < hoje() ? ' · atrasada' : ''}
+                          </div>
+                        </div>
+                        <div className="mov__valor mov__valor--saida">{formatarBRL(l.valor)}</div>
+                        <div className="mov__acoes">
+                          <button className="btn-mini" onClick={() => void marcarPaga(l)} title="Marcar como paga">
+                            Pago
+                          </button>
+                          <button className="btn-mini" onClick={() => editar(l)}>
+                            Editar
+                          </button>
+                          <button className="btn-mini btn-mini--perigo" onClick={() => void excluir(l)} title="Excluir">
+                            ✕
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>

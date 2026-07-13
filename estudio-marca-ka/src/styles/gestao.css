@@ -1924,6 +1924,10 @@
 .fin-card--saldo .fin-card__quem {
   color: var(--marinho);
 }
+.fin-card--saldo .fin-card__mensal {
+  color: var(--marinho);
+  opacity: 0.75;
+}
 .fin-card--receber .fin-card__quem {
   color: #8a4b1f;
 }
@@ -1931,6 +1935,12 @@
   color: #2e6b45;
 }
 .fin-card--saida .fin-card__valor {
+  color: var(--erro);
+}
+.fin-card--pagar .fin-card__quem {
+  color: var(--erro);
+}
+.fin-card--pagar .fin-card__valor {
   color: var(--erro);
 }
 .btn--saida {
@@ -1989,6 +1999,11 @@
 .mov--receber {
   border-left-color: #c47830;
   background: rgba(196, 120, 48, 0.04);
+}
+/* Conta a pagar (saída ainda não realizada) */
+.mov--pagar {
+  border-left-color: var(--erro);
+  background: rgba(192, 57, 43, 0.04);
 }
 /* Ocorrência PROJETADA (mensalidade recorrente nos próximos meses) */
 .mov--previsto {

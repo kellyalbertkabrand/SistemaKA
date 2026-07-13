@@ -24,6 +24,10 @@ export interface Lancamento {
   // "a receber" (entra em A receber). Ausente/true = recebida (compatível com
   // os lançamentos antigos, que eram sempre realizados).
   recebido?: boolean | null
+  // Só p/ SAÍDAS: já foi paga (entra em Saídas/saldo) ou ainda é "a pagar"
+  // (fica em Contas a pagar, fora do saldo). Ausente/true = paga (compatível
+  // com os lançamentos antigos, que eram sempre realizados).
+  pago?: boolean | null
   categoria?: string | null
   criado_em: string
 }
