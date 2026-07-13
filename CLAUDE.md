@@ -464,6 +464,14 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
     partir do 1º vencimento, `somarMeses`) com descrição `(k/N)`. Mensal = 1
     cobrança tipo `mensalidade`. No modo editar, parcelado transforma a atual na
     1ª parcela e cria as demais.
+  - **Cobranças em CARTÕES agrupados (jul/2026):** a tabela virou **cards** com
+    faixa colorida por status (pendente azul, atrasada vermelha, paga verde,
+    cancelada cinza), valor em destaque e ações que quebram linha (desktop e
+    mobile iguais). Um seletor **"Agrupar por Mês / Cliente"** organiza a lista
+    (`grupos`/`rotuloMes`/`totalEmAberto` em `GestaoCobrancas.tsx`); cada
+    cabeçalho mostra a contagem + total em aberto do grupo. Quando agrupa por
+    cliente, o card mostra a **data** no topo (e o nome vira o cabeçalho do
+    grupo) e vice-versa. Estilos `.cob-*` em gestao.css.
 - **EDITAR orçamento:** botão "Editar" em TODOS os orçamentos (não só rascunho)
   + clicar no título abre o editor (`setEditando`).
 - **EDITAR no Financeiro:** cada item do painel Financeiro é um botão que leva

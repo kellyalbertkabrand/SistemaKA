@@ -2062,6 +2062,123 @@
   border-left-color: var(--erro);
   background: rgba(192, 57, 43, 0.04);
 }
+
+/* ============================================================
+   Cobranças — cards agrupados (por mês / por cliente)
+   ============================================================ */
+.cob-topo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.2rem 0 1rem;
+}
+.cob-topo__rot {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--t-500);
+}
+.cob-grupo {
+  margin-bottom: 1.4rem;
+}
+.cob-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.55rem;
+}
+.cob-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.1);
+  border-left-width: 4px;
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+}
+.cob-card--pendente {
+  border-left-color: var(--essencia);
+}
+.cob-card--atrasada {
+  border-left-color: var(--erro);
+  background: rgba(192, 57, 43, 0.035);
+}
+.cob-card--paga {
+  border-left-color: #2e6b45;
+  background: rgba(46, 107, 69, 0.03);
+}
+.cob-card--cancelada {
+  border-left-color: #9aa4ad;
+  opacity: 0.72;
+}
+.cob-card__cab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+.cob-card__cliente {
+  font-weight: 700;
+  color: var(--t-900);
+  font-size: 1rem;
+}
+.cob-card__desc {
+  margin-top: 0.28rem;
+  color: var(--t-700);
+  font-size: 0.86rem;
+  line-height: 1.4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+.cob-card__meta {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.7rem;
+  margin-top: 0.5rem;
+}
+.cob-card__valor {
+  font-family: var(--heading);
+  font-size: 1.35rem;
+  color: var(--t-900);
+}
+.cob-card__venc {
+  font-size: 0.82rem;
+  color: var(--t-500);
+}
+.cob-card__pago {
+  font-size: 0.78rem;
+  color: #2e6b45;
+  font-weight: 600;
+}
+.cob-card__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(15, 25, 35, 0.06);
+}
+.cob-card__excluir {
+  align-self: flex-end;
+  margin-top: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.72rem;
+  color: var(--t-400);
+  text-decoration: underline;
+}
+.cob-card__excluir:hover {
+  color: var(--erro);
+}
+.btn-mini--ok {
+  border-color: rgba(46, 107, 69, 0.4);
+  color: #2e6b45;
+}
 /* Ocorrência PROJETADA (mensalidade recorrente nos próximos meses) */
 .mov--previsto {
   border-left-style: dashed;

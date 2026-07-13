@@ -40,6 +40,15 @@ function somarMeses(iso: string, k: number): string {
   return `${dt.getFullYear()}-${mm}-${dd}`
 }
 
+// "2026-07" → "Julho de 2026" (cabeçalho dos grupos por mês).
+function rotuloMes(chave: string): string {
+  const [y, m] = chave.split('-')
+  if (!y || !m) return 'Sem vencimento'
+  return new Date(Number(y), Number(m) - 1, 1)
+    .toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
+    .replace(/^./, (c) => c.toUpperCase())
+}
+
 // Cobranças: mensalidades (geradas por mês) + avulsas (de orçamento aprovado).
 // O link de pagamento (cartão/boleto/PIX) vem do Mercado Pago via Edge Function.
 export function GestaoCobrancas() {
@@ -51,6 +60,7 @@ export function GestaoCobrancas() {
   const [carregando, setCarregando] = useState(true)
   const [busca, setBusca] = useState('')
   const [filtroStatus, setFiltroStatus] = useState<'todos' | CobrancaStatus>('todos')
+  const [agrupar, setAgrupar] = useState<'mes' | 'cliente'>('mes')
   // Formulário de cobrança avulsa (criar OU editar) — sem window.prompt.
   const [criando, setCriando] = useState(false)
   const [editandoId, setEditandoId] = useState<string | null>(null)
@@ -92,6 +102,43 @@ export function GestaoCobrancas() {
     for (const cb of lista) c[statusEfetivo(cb)]++
     return c
   }, [lista])
+
+  // Agrupa as cobranças (por MÊS do vencimento ou por CLIENTE) para dar
+  // hierarquia visual — antes era uma tabela onde tudo parecia igual.
+  const grupos = useMemo(() => {
+    const map = new Map<string, { chave: string; rotulo: string; ordem: string; itens: Cobranca[] }>()
+    for (const c of listaFiltrada) {
+      let chave: string, rotulo: string, ordem: string
+      if (agrupar === 'cliente') {
+        chave = c.cliente_id ?? 'sem'
+        rotulo = nomeCliente(c.cliente_id)
+        ordem = normalizar(rotulo || 'zzz')
+      } else {
+        chave = (c.vencimento || '').slice(0, 7) || 'sem'
+        rotulo = chave === 'sem' ? 'Sem vencimento' : rotuloMes(chave)
+        ordem = chave === 'sem' ? '9999' : chave
+      }
+      const cur = map.get(chave) ?? { chave, rotulo, ordem, itens: [] }
+      cur.itens.push(c)
+      map.set(chave, cur)
+    }
+    const arr = [...map.values()].sort((a, b) => (a.ordem < b.ordem ? -1 : a.ordem > b.ordem ? 1 : 0))
+    for (const g of arr) {
+      g.itens.sort((a, b) => ((a.vencimento || '') < (b.vencimento || '') ? -1 : 1))
+    }
+    return arr
+  }, [listaFiltrada, agrupar, nomeCliente])
+
+  // Total ainda em aberto (pendente/atrasada) de um grupo.
+  const totalEmAberto = (itens: Cobranca[]) =>
+    somarDinheiro(
+      itens
+        .filter((c) => {
+          const s = statusEfetivo(c)
+          return s === 'pendente' || s === 'atrasada'
+        })
+        .map((c) => Number(c.valor)),
+    )
 
   function cobrarWhatsApp(c: Cobranca) {
     const cliente = c.cliente_id ? clientePorId.get(c.cliente_id) : null
@@ -557,161 +604,143 @@ export function GestaoCobrancas() {
       {lista.length > 0 && (
         <Busca valor={busca} aoMudar={setBusca} placeholder="Buscar por cliente ou descrição…" />
       )}
+      {listaFiltrada.length > 0 && (
+        <div className="cob-topo">
+          <span className="cob-topo__rot">Agrupar por</span>
+          <div className="seg seg--escopo">
+            <button className={agrupar === 'mes' ? 'seg__on' : ''} onClick={() => setAgrupar('mes')}>
+              Mês
+            </button>
+            <button className={agrupar === 'cliente' ? 'seg__on' : ''} onClick={() => setAgrupar('cliente')}>
+              Cliente
+            </button>
+          </div>
+        </div>
+      )}
       {lista.length > 0 && listaFiltrada.length === 0 && (
         <p className="ativ-vazio">Nenhuma cobrança encontrada para “{busca}”.</p>
       )}
 
-      {listaFiltrada.length > 0 && (
-        <div className="tabela-wrap">
-          <table className="tabela">
-            <thead>
-              <tr>
-                <th>Cliente</th>
-                <th>Descrição</th>
-                <th>Valor</th>
-                <th>Vencimento</th>
-                <th>Status</th>
-                <th>Pagamento</th>
-                <th className="acoes"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {listaFiltrada.map((c) => (
-                <tr key={c.id}>
-                  <td className="cel-nome" data-label="Cliente">{nomeCliente(c.cliente_id)}</td>
-                  <td data-label="Descrição">
+      {grupos.map((g) => (
+        <section key={g.chave} className="cob-grupo">
+          <div className="mes-grupo__cab">
+            <span className="mes-grupo__nome">{g.rotulo}</span>
+            <span className="mes-grupo__total">
+              {g.itens.length} {g.itens.length === 1 ? 'cobrança' : 'cobranças'}
+              {totalEmAberto(g.itens) > 0 && <> · {formatarBRL(totalEmAberto(g.itens))} em aberto</>}
+            </span>
+          </div>
+          <div className="cob-lista">
+            {g.itens.map((c) => {
+              const s = statusEfetivo(c)
+              const ativa = c.status !== 'paga' && c.status !== 'cancelada'
+              return (
+                <div key={c.id} className={`cob-card cob-card--${s}`}>
+                  <div className="cob-card__cab">
+                    <span className="cob-card__cliente">
+                      {agrupar === 'cliente' ? formatarData(c.vencimento) : nomeCliente(c.cliente_id)}
+                    </span>
+                    <span className={`badge ${BADGE_COBRANCA[s]}`}>{rotuloStatus('cobranca', s)}</span>
+                  </div>
+                  <div className="cob-card__desc">
                     {c.descricao}
-                    {c.tipo === 'mensalidade' && (
-                      <span className="badge badge--dourado" style={{ marginLeft: 6 }}>
-                        mensal
-                      </span>
-                    )}
+                    {c.tipo === 'mensalidade' && <span className="badge badge--dourado">mensal</span>}
                     {c.vm_participa && (
-                      <span className="badge badge--vm-mini" style={{ marginLeft: 6 }} title={c.valor_vm != null ? `VM Rocks: ${formatarBRL(c.valor_vm)}` : 'VM Rocks'}>
+                      <span
+                        className="badge badge--vm-mini"
+                        title={c.valor_vm != null ? `VM Rocks: ${formatarBRL(c.valor_vm)}` : 'VM Rocks'}
+                      >
                         VM
                       </span>
                     )}
-                  </td>
-                  <td className="num" data-label="Valor">{formatarBRL(c.valor)}</td>
-                  <td data-label="Vencimento">{formatarData(c.vencimento)}</td>
-                  <td data-label="Status">
-                    {(() => {
-                      const s = statusEfetivo(c)
-                      return <span className={`badge ${BADGE_COBRANCA[s]}`}>{rotuloStatus('cobranca', s)}</span>
-                    })()}
-                  </td>
-                  <td data-label="Pagamento">
-                    {c.link_pagamento ? (
+                  </div>
+                  <div className="cob-card__meta">
+                    <span className="cob-card__valor">{formatarBRL(c.valor)}</span>
+                    <span className="cob-card__venc">
+                      {agrupar === 'cliente' ? nomeCliente(c.cliente_id) : `vence ${formatarData(c.vencimento)}`}
+                    </span>
+                    {c.status === 'paga' && c.pago_em && (
+                      <span className="cob-card__pago">paga em {formatarData(c.pago_em)}</span>
+                    )}
+                    {c.link_pagamento && (
                       <button className="btn-mini" onClick={() => void copiarLink(c)}>
                         Copiar link
                       </button>
-                    ) : (
-                      <span style={{ color: 'var(--t-400)', fontSize: '0.75rem' }}>sem link</span>
                     )}
-                  </td>
-                  <td className="acoes">
-                    {c.status !== 'paga' && c.status !== 'cancelada' && (
-                      <>
-                        <button
-                          className="btn-mini"
-                          disabled={ocupado === c.id}
-                          onClick={() => abrirEditar(c)}
-                        >
-                          Editar
+                  </div>
+
+                  {ativa && (
+                    <div className="cob-card__acoes">
+                      <button className="btn-mini" disabled={ocupado === c.id} onClick={() => abrirEditar(c)}>
+                        Editar
+                      </button>
+                      <button
+                        className="btn-mini btn-mini--whats"
+                        disabled={ocupado === c.id}
+                        onClick={() => cobrarWhatsApp(c)}
+                      >
+                        WhatsApp
+                      </button>
+                      {!c.link_pagamento && (
+                        <button className="btn-mini" disabled={ocupado === c.id} onClick={() => void gerarLink(c)}>
+                          Gerar boleto/cartão
                         </button>
-                        <button
-                          className="btn-mini btn-mini--whats"
-                          disabled={ocupado === c.id}
-                          onClick={() => cobrarWhatsApp(c)}
-                        >
-                          WhatsApp
-                        </button>
-                        {!c.link_pagamento && (
-                          <button
-                            className="btn-mini"
-                            disabled={ocupado === c.id}
-                            onClick={() => void gerarLink(c)}
-                          >
-                            Gerar boleto/cartão
-                          </button>
-                        )}
-                        <button
-                          className="btn-mini"
-                          disabled={ocupado === c.id}
-                          onClick={() => abrirColarLink(c)}
-                        >
-                          Colar link
-                        </button>
-                        <button
-                          className="btn-mini"
-                          disabled={ocupado === c.id}
-                          onClick={() => abrirMarcarPaga(c)}
-                        >
-                          Marcar paga
-                        </button>
-                        <button
-                          className="btn-mini btn-mini--perigo"
-                          disabled={ocupado === c.id}
-                          onClick={() => void cancelar(c)}
-                        >
-                          Cancelar
-                        </button>
-                        {pagarPara === c.id && (
-                          <div className="colar-link">
-                            <label style={{ fontSize: '0.78rem', color: 'var(--t-500)' }}>
-                              Data do pagamento
-                            </label>
-                            <input
-                              type="date"
-                              autoFocus
-                              value={pagarData}
-                              onChange={(e) => setPagarData(e.target.value)}
-                            />
-                            <button className="btn-mini" disabled={ocupado === c.id} onClick={() => void confirmarPaga()}>
-                              Confirmar
-                            </button>
-                            <button className="btn-mini" onClick={() => setPagarPara(null)}>
-                              Cancelar
-                            </button>
-                          </div>
-                        )}
-                        {linkPara === c.id && (
-                          <div className="colar-link">
-                            <input
-                              autoFocus
-                              value={linkTemp}
-                              onChange={(e) => setLinkTemp(e.target.value)}
-                              placeholder="Cole aqui o link do Mercado Pago"
-                            />
-                            <button className="btn-mini" disabled={ocupado === c.id} onClick={() => void salvarColarLink()}>
-                              Salvar
-                            </button>
-                            <button className="btn-mini" onClick={() => setLinkPara(null)}>
-                              Cancelar
-                            </button>
-                          </div>
-                        )}
-                      </>
-                    )}
-                    {c.status === 'paga' && c.pago_em && (
-                      <span style={{ color: 'var(--t-400)', fontSize: '0.75rem' }}>
-                        paga em {formatarData(c.pago_em)}
-                      </span>
-                    )}
-                    <button
-                      className="btn-mini btn-mini--perigo"
-                      disabled={ocupado === c.id}
-                      onClick={() => void excluir(c)}
-                    >
-                      Excluir
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+                      )}
+                      <button className="btn-mini" disabled={ocupado === c.id} onClick={() => abrirColarLink(c)}>
+                        Colar link
+                      </button>
+                      <button className="btn-mini btn-mini--ok" disabled={ocupado === c.id} onClick={() => abrirMarcarPaga(c)}>
+                        Marcar paga
+                      </button>
+                      <button className="btn-mini btn-mini--perigo" disabled={ocupado === c.id} onClick={() => void cancelar(c)}>
+                        Cancelar
+                      </button>
+                    </div>
+                  )}
+
+                  {pagarPara === c.id && (
+                    <div className="colar-link">
+                      <label style={{ fontSize: '0.78rem', color: 'var(--t-500)' }}>Data do pagamento</label>
+                      <input type="date" autoFocus value={pagarData} onChange={(e) => setPagarData(e.target.value)} />
+                      <button className="btn-mini" disabled={ocupado === c.id} onClick={() => void confirmarPaga()}>
+                        Confirmar
+                      </button>
+                      <button className="btn-mini" onClick={() => setPagarPara(null)}>
+                        Cancelar
+                      </button>
+                    </div>
+                  )}
+                  {linkPara === c.id && (
+                    <div className="colar-link">
+                      <input
+                        autoFocus
+                        value={linkTemp}
+                        onChange={(e) => setLinkTemp(e.target.value)}
+                        placeholder="Cole aqui o link do Mercado Pago"
+                      />
+                      <button className="btn-mini" disabled={ocupado === c.id} onClick={() => void salvarColarLink()}>
+                        Salvar
+                      </button>
+                      <button className="btn-mini" onClick={() => setLinkPara(null)}>
+                        Cancelar
+                      </button>
+                    </div>
+                  )}
+
+                  <button
+                    className="cob-card__excluir"
+                    disabled={ocupado === c.id}
+                    onClick={() => void excluir(c)}
+                    title="Excluir de vez"
+                  >
+                    Excluir
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        </section>
+      ))}
     </>
   )
 }
