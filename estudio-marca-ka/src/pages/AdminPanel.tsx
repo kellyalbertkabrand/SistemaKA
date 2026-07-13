@@ -1,4 +1,5 @@
-import { useSearchParams } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { SiteHeader, type ItemMenu } from '../components/SiteHeader'
 import { clientesComTemplates } from '../templates/registry'
 import { marcaVisual } from '../templates/marcas'
@@ -201,26 +202,49 @@ const ABAS_VALIDAS: Aba[] = [
 ]
 
 // Painel da KA: estúdio (aberto) + gestão (restrita à admin logada).
-// A aba ativa fica na URL (?aba=projetos): assim o "voltar" do navegador
-// funciona, dá para atualizar a página sem perder o lugar e compartilhar o link.
+// A seção ativa fica no CAMINHO da URL (URLs limpas: /clientes, /financeiro…):
+// assim o "voltar" do navegador funciona, dá para atualizar a página sem perder
+// o lugar e compartilhar o link. A ficha aberta continua em ?id= (query).
 export function AdminPanel() {
-  const [params, setParams] = useSearchParams()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [params] = useSearchParams()
+  // Seção = 1ª parte do caminho (ex.: "/clientes" → "clientes"). "/" = início.
+  const seg = location.pathname.replace(/^\/+/, '').split('/')[0]
+  const abaPath = ABAS_VALIDAS.includes(seg as Aba) ? (seg as Aba) : null
+  // Compatibilidade com links antigos (?aba=): usados como fallback + redirect.
   const paramAba = params.get('aba') as Aba | null
-  const aba: Aba = paramAba && ABAS_VALIDAS.includes(paramAba) ? paramAba : 'inicio'
-  // A marca aberta no Estúdio também vive na URL (?aba=estudio&marca=<slug>):
-  // F5 e "voltar" do navegador não perdem o estúdio do cliente.
+  const aba: Aba = abaPath ?? (paramAba && ABAS_VALIDAS.includes(paramAba) ? paramAba : 'inicio')
+
+  // Link antigo /?aba=clientes → redireciona para a URL limpa /clientes,
+  // preservando marca/id, sem poluir o histórico (replace).
+  useEffect(() => {
+    if (!abaPath && paramAba && ABAS_VALIDAS.includes(paramAba)) {
+      const q = new URLSearchParams()
+      const marca = params.get('marca')
+      const id = params.get('id')
+      if (marca) q.set('marca', marca)
+      if (id) q.set('id', id)
+      const qs = q.toString()
+      navigate(`/${paramAba}${qs ? `?${qs}` : ''}`, { replace: true })
+    }
+  }, [abaPath, paramAba, params, navigate])
+
+  // A marca aberta no Estúdio vive na URL (/estudio?marca=<slug>): F5 e "voltar"
+  // do navegador não perdem o estúdio do cliente.
   const slug = aba === 'estudio' ? params.get('marca') : null
   const clientes = clientesComTemplates()
   const cab = CABECALHOS[aba]
 
   function irPara(id: Aba) {
-    setParams(id === 'inicio' ? {} : { aba: id })
+    if (id !== 'inicio' && !ABAS_VALIDAS.includes(id)) return
+    navigate(id === 'inicio' ? '/' : `/${id}`)
   }
   function abrirMarca(s: string) {
-    setParams({ aba: 'estudio', marca: s })
+    navigate(`/estudio?marca=${encodeURIComponent(s)}`)
   }
   function fecharMarca() {
-    setParams({ aba: 'estudio' })
+    navigate('/estudio')
   }
 
   return (

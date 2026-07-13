@@ -44,6 +44,25 @@ export default function App() {
               (cai na rota dinâmica /:slug lá embaixo), igual ao /shapes. */}
           <Route path="/" element={<AdminPanel />} />
 
+          {/* URLs LIMPAS de cada seção do painel (ex.: /clientes, /financeiro).
+              O AdminPanel lê a seção do caminho. Ficam ANTES da rota dinâmica
+              /:slug (marcas) para não serem confundidas com um slug de marca. */}
+          {[
+            'estudio',
+            'clientes',
+            'projetos',
+            'orcamentos',
+            'contratos',
+            'cobrancas',
+            'financeiro',
+            'relatorios',
+            'atividades',
+            'cuidadoras',
+            'lixeira',
+          ].map((secao) => (
+            <Route key={secao} path={`/${secao}`} element={<AdminPanel />} />
+          ))}
+
           {/* Estúdio público por marca — ex.: /shapes, /ka (e alias /ver/:slug) */}
           <Route path="/ver/:slug" element={<DemoStudio />} />
 
@@ -74,8 +93,10 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          {/* Área do cliente logado (futuro). Movida de /estudio p/ liberar a
+              URL limpa /estudio (aba Estúdio do painel da KA). */}
           <Route
-            path="/estudio"
+            path="/area-cliente"
             element={
               <ProtectedRoute papel="cliente">
                 <Studio />

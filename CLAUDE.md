@@ -192,6 +192,18 @@ que parece velho no ar é cache do navegador/celular — forçar recarregar).
 Admin é reconhecido por e-mail (allowlist `VITE_ADMIN_EMAILS`, padrão
 `kellyalbertka@gmail.com`) **ou** `papel='admin'` no banco — ver `AuthContext.tsx`.
 
+> **URLs LIMPAS (jul/2026):** cada seção do painel tem caminho próprio
+> (`/clientes`, `/projetos`, `/orcamentos`, `/contratos`, `/cobrancas`,
+> `/financeiro`, `/relatorios`, `/atividades`, `/cuidadoras`, `/lixeira`,
+> `/estudio`) em vez de `?aba=`. `App.tsx` registra essas rotas (todas → o mesmo
+> `AdminPanel`, antes da rota dinâmica `/:slug`), e o `AdminPanel` lê a seção do
+> **caminho** (`useLocation`), navegando com `useNavigate`. A **ficha** aberta
+> continua em query (`/clientes?id=<uuid>`, `useFichaUrl`), e o Estúdio usa
+> `/estudio?marca=<slug>`. Links antigos `?aba=` são **redirecionados** (replace)
+> para o caminho limpo. A antiga área do cliente logado saiu de `/estudio` para
+> **`/area-cliente`** (libera `/estudio` para a aba). SPA no Netlify já cobre
+> (`/* → /index.html 200`), então recarregar `/clientes` funciona.
+
 ---
 
 ## 4. A marca Shapes (assets em `public/clientes/shapes/`)

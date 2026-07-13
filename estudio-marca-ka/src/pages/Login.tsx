@@ -13,7 +13,7 @@ export function Login() {
   if (loading) return <Loading texto="Carregando…" />
 
   // Já logado → manda para a área certa conforme o papel.
-  if (session) return <Navigate to={isAdmin ? '/admin' : '/estudio'} replace />
+  if (session) return <Navigate to={isAdmin ? '/admin' : '/area-cliente'} replace />
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()

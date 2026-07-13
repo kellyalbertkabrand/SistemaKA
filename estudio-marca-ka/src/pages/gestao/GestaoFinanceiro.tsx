@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { listarClientes } from '../../lib/api'
 import { formatarBRL, formatarData, listarCobrancas, statusEfetivo } from '../../lib/gestao'
 import type { Cliente, Cobranca } from '../../lib/database.types'
@@ -133,7 +133,7 @@ interface RecebItem {
 
 export function GestaoFinanceiro() {
   const { mostrar } = useToast()
-  const [, setParams] = useSearchParams()
+  const navigate = useNavigate()
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [cobrancas, setCobrancas] = useState<Cobranca[]>([])
   const [lancamentos, setLancamentos] = useState<Lancamento[]>([])
@@ -532,7 +532,7 @@ export function GestaoFinanceiro() {
                         <button
                           key={`${l.cliente_id}-${i}`}
                           className="fin-item fin-item--btn"
-                          onClick={() => setParams({ aba: 'clientes', id: l.cliente_id })}
+                          onClick={() => navigate(`/clientes?id=${l.cliente_id}`)}
                           title="Editar na ficha do cliente"
                         >
                           <div className="fin-item__corpo">
@@ -922,7 +922,7 @@ export function GestaoFinanceiro() {
                     <button
                       key={`${l.cliente_id}-${i}`}
                       className="fin-item fin-item--btn"
-                      onClick={() => setParams({ aba: 'clientes', id: l.cliente_id })}
+                      onClick={() => navigate(`/clientes?id=${l.cliente_id}`)}
                       title="Editar na ficha do cliente"
                     >
                       <div className="fin-item__corpo">
