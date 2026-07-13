@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import type { Cliente, Cobranca, CobrancaStatus } from '../../lib/database.types'
 import { listarClientes } from '../../lib/api'
 import {
@@ -425,6 +425,127 @@ export function GestaoCobrancas() {
   const nParcelas = novaForma === 'parcelado' ? Math.min(24, Math.max(2, Number(novaVezes) || 2)) : 1
   const valorNum = parseValorBR(novoValor)
 
+  // Formulário de criar/editar — renderizado no TOPO ao criar uma nova, e INLINE
+  // (logo abaixo do card) ao editar, para abrir onde a KA clicou.
+  const formCard = (
+    <div className="card cob-form">
+      <h3>{editandoId ? 'Editar cobrança' : 'Nova cobrança avulsa'}</h3>
+      <div className="form-grade">
+        <div className="field">
+          <label>Cliente</label>
+          <select value={novoCli} onChange={(e) => setNovoCli(e.target.value)}>
+            {clientes.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.nome_marca}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="field">
+          <label>Descrição</label>
+          <textarea
+            rows={1}
+            className="campo-cresce"
+            value={novaDesc}
+            ref={autoAltura}
+            onChange={(e) => {
+              setNovaDesc(e.target.value)
+              autoAltura(e.currentTarget)
+            }}
+            placeholder="ex.: Criação de logo + identidade"
+          />
+        </div>
+        <div className="field">
+          <label>Forma de pagamento</label>
+          <select value={novaForma} onChange={(e) => setNovaForma(e.target.value as typeof novaForma)}>
+            <option value="avista">À vista</option>
+            <option value="parcelado">Parcelado</option>
+            <option value="mensal">Cobrança mensal</option>
+          </select>
+        </div>
+        {novaForma === 'parcelado' && (
+          <div className="field">
+            <label>Em quantas vezes</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={2}
+              value={novaVezes}
+              onChange={(e) => setNovaVezes(e.target.value.replace(/\D/g, ''))}
+              placeholder="ex.: 2"
+            />
+          </div>
+        )}
+        <div className="field">
+          <label>
+            {novaForma === 'parcelado'
+              ? 'Valor de cada parcela (R$)'
+              : novaForma === 'mensal'
+                ? 'Valor por mês (R$)'
+                : 'Valor (R$)'}
+          </label>
+          <input
+            type="text"
+            inputMode="decimal"
+            value={novoValor}
+            onChange={(e) => setNovoValor(e.target.value)}
+            placeholder="ex.: 1.500,00"
+          />
+        </div>
+        <div className="field">
+          <label>{novaForma === 'parcelado' ? '1º vencimento' : 'Vencimento'}</label>
+          <input type="date" value={novoVenc} onChange={(e) => setNovoVenc(e.target.value)} />
+        </div>
+
+        <div className="field campo-toda">
+          <label className="check-vm">
+            <input type="checkbox" checked={novaVM} onChange={(e) => setNovaVM(e.target.checked)} />
+            <span>
+              <strong>VM Rocks participa</strong> desta cobrança (aparece no financeiro dela)
+            </span>
+          </label>
+        </div>
+        {novaVM && (
+          <div className="field">
+            <label>Valor da VM Rocks (R$)</label>
+            <input
+              type="text"
+              inputMode="decimal"
+              value={novoValorVM}
+              onChange={(e) => setNovoValorVM(e.target.value)}
+              placeholder={`igual ao total (${novoValor || '0'})`}
+            />
+            <span className="campo-ajuda">Deixe vazio se for o mesmo valor cobrado do cliente.</span>
+          </div>
+        )}
+      </div>
+
+      {novaForma === 'parcelado' && valorNum > 0 && (
+        <p style={{ fontSize: '0.8rem', color: 'var(--t-500)', margin: '0.2rem 0 0.4rem' }}>
+          {nParcelas}× de {formatarBRL(valorNum)} = <strong>{formatarBRL(nParcelas * valorNum)}</strong>. O
+          sistema cria {nParcelas} cobranças, uma por mês a partir do 1º vencimento.
+        </p>
+      )}
+
+      {erro && <div className="erro-msg" style={{ marginTop: '0.4rem' }}>{erro}</div>}
+
+      <p style={{ display: 'flex', gap: '0.6rem', marginTop: '0.2rem' }}>
+        <button className="btn" disabled={ocupado === 'nova'} onClick={() => void salvarForm()}>
+          {ocupado === 'nova'
+            ? 'Salvando…'
+            : editandoId
+              ? 'Salvar alterações'
+              : novaForma === 'parcelado'
+                ? 'Criar parcelas'
+                : 'Criar cobrança'}
+        </button>
+        <button className="btn--voltar" onClick={fecharForm}>
+          Cancelar
+        </button>
+      </p>
+    </div>
+  )
+
   return (
     <>
       <div className="gestao-acoes">
@@ -471,124 +592,8 @@ export function GestaoCobrancas() {
       {erro && !criando && <div className="erro-msg">{erro}</div>}
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
 
-      {criando && (
-        <div className="card">
-          <h3>{editandoId ? 'Editar cobrança' : 'Nova cobrança avulsa'}</h3>
-          <div className="form-grade">
-            <div className="field">
-              <label>Cliente</label>
-              <select value={novoCli} onChange={(e) => setNovoCli(e.target.value)}>
-                {clientes.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.nome_marca}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="field">
-              <label>Descrição</label>
-              <textarea
-                rows={1}
-                className="campo-cresce"
-                value={novaDesc}
-                ref={autoAltura}
-                onChange={(e) => {
-                  setNovaDesc(e.target.value)
-                  autoAltura(e.currentTarget)
-                }}
-                placeholder="ex.: Criação de logo + identidade"
-              />
-            </div>
-            <div className="field">
-              <label>Forma de pagamento</label>
-              <select value={novaForma} onChange={(e) => setNovaForma(e.target.value as typeof novaForma)}>
-                <option value="avista">À vista</option>
-                <option value="parcelado">Parcelado</option>
-                <option value="mensal">Cobrança mensal</option>
-              </select>
-            </div>
-            {novaForma === 'parcelado' && (
-              <div className="field">
-                <label>Em quantas vezes</label>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={2}
-                  value={novaVezes}
-                  onChange={(e) => setNovaVezes(e.target.value.replace(/\D/g, ''))}
-                  placeholder="ex.: 2"
-                />
-              </div>
-            )}
-            <div className="field">
-              <label>
-                {novaForma === 'parcelado'
-                  ? 'Valor de cada parcela (R$)'
-                  : novaForma === 'mensal'
-                    ? 'Valor por mês (R$)'
-                    : 'Valor (R$)'}
-              </label>
-              <input
-                type="text"
-                inputMode="decimal"
-                value={novoValor}
-                onChange={(e) => setNovoValor(e.target.value)}
-                placeholder="ex.: 1.500,00"
-              />
-            </div>
-            <div className="field">
-              <label>{novaForma === 'parcelado' ? '1º vencimento' : 'Vencimento'}</label>
-              <input type="date" value={novoVenc} onChange={(e) => setNovoVenc(e.target.value)} />
-            </div>
-
-            <div className="field campo-toda">
-              <label className="check-vm">
-                <input type="checkbox" checked={novaVM} onChange={(e) => setNovaVM(e.target.checked)} />
-                <span>
-                  <strong>VM Rocks participa</strong> desta cobrança (aparece no financeiro dela)
-                </span>
-              </label>
-            </div>
-            {novaVM && (
-              <div className="field">
-                <label>Valor da VM Rocks (R$)</label>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={novoValorVM}
-                  onChange={(e) => setNovoValorVM(e.target.value)}
-                  placeholder={`igual ao total (${novoValor || '0'})`}
-                />
-                <span className="campo-ajuda">Deixe vazio se for o mesmo valor cobrado do cliente.</span>
-              </div>
-            )}
-          </div>
-
-          {novaForma === 'parcelado' && valorNum > 0 && (
-            <p style={{ fontSize: '0.8rem', color: 'var(--t-500)', margin: '0.2rem 0 0.4rem' }}>
-              {nParcelas}× de {formatarBRL(valorNum)} = <strong>{formatarBRL(nParcelas * valorNum)}</strong>. O
-              sistema cria {nParcelas} cobranças, uma por mês a partir do 1º vencimento.
-            </p>
-          )}
-
-          {erro && <div className="erro-msg" style={{ marginTop: '0.4rem' }}>{erro}</div>}
-
-          <p style={{ display: 'flex', gap: '0.6rem', marginTop: '0.2rem' }}>
-            <button className="btn" disabled={ocupado === 'nova'} onClick={() => void salvarForm()}>
-              {ocupado === 'nova'
-                ? 'Salvando…'
-                : editandoId
-                  ? 'Salvar alterações'
-                  : novaForma === 'parcelado'
-                    ? 'Criar parcelas'
-                    : 'Criar cobrança'}
-            </button>
-            <button className="btn--voltar" onClick={fecharForm}>
-              Cancelar
-            </button>
-          </p>
-        </div>
-      )}
+      {/* Nova cobrança abre aqui no topo; a EDIÇÃO abre inline sob o card. */}
+      {criando && editandoId === null && formCard}
 
       {!carregando && lista.length === 0 && !erro && (
         <div className="card">
@@ -635,7 +640,8 @@ export function GestaoCobrancas() {
               const s = statusEfetivo(c)
               const ativa = c.status !== 'paga' && c.status !== 'cancelada'
               return (
-                <div key={c.id} className={`cob-card cob-card--${s}`}>
+                <Fragment key={c.id}>
+                  <div className={`cob-card cob-card--${s} ${editandoId === c.id ? 'cob-card--editando' : ''}`}>
                   <div className="cob-card__cab">
                     <span className="cob-card__cliente">
                       {agrupar === 'cliente' ? formatarData(c.vencimento) : nomeCliente(c.cliente_id)}
@@ -735,7 +741,9 @@ export function GestaoCobrancas() {
                   >
                     Excluir
                   </button>
-                </div>
+                  </div>
+                  {editandoId === c.id && formCard}
+                </Fragment>
               )
             })}
           </div>

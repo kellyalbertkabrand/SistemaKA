@@ -2201,6 +2201,16 @@
   border-color: rgba(46, 107, 69, 0.4);
   color: #2e6b45;
 }
+/* Card sendo editado: destaca e "cola" no formulário inline logo abaixo */
+.cob-card--editando {
+  border-color: var(--dourado);
+  box-shadow: 0 0 0 2px rgba(184, 155, 106, 0.25);
+}
+.cob-form {
+  border: 1px solid var(--dourado-c);
+  border-left: 4px solid var(--dourado);
+  margin-top: -0.1rem;
+}
 
 /* ============================================================
    Portal da VM Rocks (só leitura, por link)

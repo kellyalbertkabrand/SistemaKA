@@ -471,7 +471,11 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
     (`grupos`/`rotuloMes`/`totalEmAberto` em `GestaoCobrancas.tsx`); cada
     cabeçalho mostra a contagem + total em aberto do grupo. Quando agrupa por
     cliente, o card mostra a **data** no topo (e o nome vira o cabeçalho do
-    grupo) e vice-versa. Estilos `.cob-*` em gestao.css.
+    grupo) e vice-versa. Estilos `.cob-*` em gestao.css. **EDITAR abre INLINE**
+    (jul/2026): o formulário (`formCard`) é o mesmo, renderizado no TOPO ao criar
+    uma nova cobrança e **logo abaixo do card** ao editar (`editandoId === c.id`,
+    card em `<Fragment>` + `.cob-card--editando`). Antes abria só no topo e, no
+    desktop com a lista longa, parecia que "não abria".
 - **EDITAR orçamento:** botão "Editar" em TODOS os orçamentos (não só rascunho)
   + clicar no título abre o editor (`setEditando`).
 - **EDITAR no Financeiro:** cada item do painel Financeiro é um botão que leva
