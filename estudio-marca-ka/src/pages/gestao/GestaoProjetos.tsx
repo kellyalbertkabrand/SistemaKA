@@ -973,24 +973,6 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
                     </div>
                   </button>
                   <div className="fase__acoes">
-                    <span className="mover-btns">
-                      <button
-                        className="btn-mover"
-                        disabled={salvando || i === 0}
-                        title="Mover para cima"
-                        onClick={() => reordenar(i, i - 1)}
-                      >
-                        ↑
-                      </button>
-                      <button
-                        className="btn-mover"
-                        disabled={salvando || i === p.fases.length - 1}
-                        title="Mover para baixo"
-                        onClick={() => reordenar(i, i + 1)}
-                      >
-                        ↓
-                      </button>
-                    </span>
                     <select
                       className={`fase-status-sel status-${f.status}`}
                       value={f.status}

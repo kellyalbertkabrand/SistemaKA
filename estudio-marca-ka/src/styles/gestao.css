@@ -1017,15 +1017,24 @@
 .fase__handle {
   flex: none;
   cursor: grab;
-  color: var(--t-400);
-  font-size: 1.1rem;
+  color: var(--dourado);
+  font-size: 1.3rem;
   line-height: 1;
-  padding: 0 0.1rem;
+  padding: 0.3rem 0.35rem;
+  border-radius: 8px;
+  background: rgba(184, 155, 106, 0.12);
   user-select: none;
   touch-action: none;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+.fase__handle:hover {
+  background: rgba(184, 155, 106, 0.22);
 }
 .fase__handle:active {
   cursor: grabbing;
+  background: rgba(184, 155, 106, 0.3);
 }
 .fase--arrastando {
   opacity: 0.45;
@@ -2548,41 +2557,6 @@
   border-color: var(--dourado);
   background: rgba(184, 155, 106, 0.14);
   box-shadow: 0 0 0 2px var(--dourado);
-}
-/* Botões ↑/↓ de mover (reordenar sem arrastar) */
-.mover-btns {
-  display: inline-flex;
-  gap: 0.15rem;
-}
-/* Variante empilhada (↑ em cima do ↓) — usada nas Atividades p/ ocupar pouco. */
-.mover-btns--col {
-  flex-direction: column;
-  gap: 0.1rem;
-  flex: none;
-}
-.mover-btns--col .btn-mover {
-  width: 26px;
-  height: 22px;
-  font-size: 0.8rem;
-}
-.btn-mover {
-  border: 1px solid rgba(15, 25, 35, 0.14);
-  background: #fff;
-  border-radius: 8px;
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  line-height: 1;
-  color: var(--marinho);
-}
-.btn-mover:disabled {
-  opacity: 0.35;
-  cursor: default;
-}
-.btn-mover:not(:disabled):hover {
-  border-color: var(--dourado);
-  color: var(--dourado);
 }
 
 /* ---- Caixa de confirmação própria (confirmar.ts) ---- */

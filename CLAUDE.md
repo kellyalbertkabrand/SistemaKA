@@ -568,13 +568,15 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
   suprimido no iPhone): clicar no nome ou em "Editar" abre campos inline
   (nome, descrição, responsável, data) com Salvar/Cancelar (Enter/Esc). O
   formulário de **nova fase fica no TOPO** da lista.
-- **Reordenar fases (jul/2026):** botões **↑/↓** (`reordenar(i, i±1)`) além de
-  arrastar pela alça `⠿` (**Pointer Events**, `iniciarArraste`, escuta no
-  `window` — funciona no toque do iPhone). O alvo do arraste agora é a fase de
+- **Reordenar fases (jul/2026):** arrastar pela alça `⠿` (**Pointer Events**,
+  `iniciarArraste`, escuta no `window` — funciona no toque do iPhone; alça agora
+  é um "pill" dourado maior, fácil de pegar). O alvo do arraste é a fase de
   **centro mais próximo** do dedo (sem "zona morta" entre linhas — antes só movia
-  se soltasse exatamente na linha, por isso "alguns não moviam"). A fase que
-  acabou de mudar pisca em dourado (`marcarMovido`/`.fase--movido`, animação
-  `flashMovido`, ~1,3s).
+  se soltasse exatamente na linha, por isso "alguns não moviam"). O destino fica
+  destacado (`.fase--alvo`, borda/anel dourado) e a fase que acabou de mudar
+  **pisca em dourado** (`marcarMovido`/`.fase--movido`, animação `flashMovido`,
+  ~1,3s). Mesmo padrão nas Atividades (`.ativ--movido`). Sem botões ↑/↓ (a KA
+  preferiu só o arraste).
 
 ### Projetos — datas, responsável (KA/VM) e pendências (jul/2026)
 

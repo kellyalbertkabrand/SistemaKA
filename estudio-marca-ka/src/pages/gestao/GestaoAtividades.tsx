@@ -279,15 +279,6 @@ export function GestaoAtividades() {
     }
   }
 
-  // Mover um item uma posição para cima/baixo pelos botões ↑/↓ (sem arrastar).
-  function moverAtividade(cat: CategoriaAtividade, id: string, dir: -1 | 1) {
-    const arr = pessoaisOrdenadas(cat)
-    const i = arr.findIndex((a) => a.id === id)
-    const j = i + dir
-    if (i < 0 || j < 0 || j >= arr.length) return
-    void aplicarReordem(cat, id, arr[j].id)
-  }
-
   function iniciarArraste(e: React.PointerEvent, cat: CategoriaAtividade, id: string) {
     e.preventDefault()
     dragRef.current = { cat, de: id, para: id }
@@ -518,15 +509,14 @@ export function GestaoAtividades() {
 
       {!carregando && ordenar === 'padrao' && atividades.length > 0 && (
         <p className="dica-voz" style={{ marginTop: 0 }}>
-          Use os botões <span aria-hidden>↑ ↓</span> (ou segure a alça <span aria-hidden>⠿</span> e arraste) para
-          reordenar. O item que muda de lugar pisca em dourado.
+          Segure a alça <span aria-hidden>⠿</span> e arraste para reordenar suas tarefas. O item que
+          muda de lugar pisca em dourado.
         </p>
       )}
 
       {!carregando &&
         categoriasVisiveis.map((cat) => {
           const pessoais = atividades.filter((a) => a.categoria === cat)
-          const ordemPessoais = pessoaisOrdenadas(cat)
           const pendencias = cat === 'trabalho' ? pendKA : cat === 'cliente' ? pendCliente : []
           const vazio = pessoais.length === 0 && pendencias.length === 0
 
@@ -658,33 +648,13 @@ export function GestaoAtividades() {
                     } ${movidoId === a.id ? 'ativ--movido' : ''}`}
                   >
                     {ordenar === 'padrao' && (
-                      <>
-                        <span className="mover-btns mover-btns--col">
-                          <button
-                            className="btn-mover"
-                            disabled={salvando || ordemPessoais.findIndex((x) => x.id === a.id) <= 0}
-                            title="Mover para cima"
-                            onClick={() => moverAtividade(cat, a.id, -1)}
-                          >
-                            ↑
-                          </button>
-                          <button
-                            className="btn-mover"
-                            disabled={salvando || ordemPessoais.findIndex((x) => x.id === a.id) >= ordemPessoais.length - 1}
-                            title="Mover para baixo"
-                            onClick={() => moverAtividade(cat, a.id, 1)}
-                          >
-                            ↓
-                          </button>
-                        </span>
-                        <span
-                          className="fase__handle"
-                          title="Segure e arraste para reordenar"
-                          onPointerDown={(e) => iniciarArraste(e, cat, a.id)}
-                        >
-                          ⠿
-                        </span>
-                      </>
+                      <span
+                        className="fase__handle"
+                        title="Segure e arraste para reordenar"
+                        onPointerDown={(e) => iniciarArraste(e, cat, a.id)}
+                      >
+                        ⠿
+                      </span>
                     )}
                     <button
                       className="ativ__check"
