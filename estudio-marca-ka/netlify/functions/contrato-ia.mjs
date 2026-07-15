@@ -27,8 +27,9 @@ export const handler = async (event) => {
     return resposta(405, { erro: 'Método não permitido.' })
   }
 
-  // Aceita os dois nomes (a KA cadastrou como ANTHROPIC_API_KEY_CONTRATO).
-  const chave = process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY_CONTRATO
+  // Aceita os dois nomes (a KA cadastrou como ANTHROPIC_API_KEY_CONTRATO) e
+  // remove espaços/quebras de linha acidentais coladas junto com a chave.
+  const chave = (process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY_CONTRATO || '').trim()
   if (!chave) {
     // Diagnóstico: a função não achou ANTHROPIC_API_KEY. Lista os NOMES de
     // variáveis parecidos (só nomes, nunca valores) para revelar um erro de
