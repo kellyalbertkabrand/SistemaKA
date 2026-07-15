@@ -472,6 +472,18 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
     /`{{razao_social}}` além dos demais; `criarContrato` grava `telefone`
     (WhatsApp). Campos continuam editáveis e podem ficar em branco p/ o cliente
     preencher ao assinar.
+  - **Inteligência de CPF/CNPJ (jul/2026 — `src/lib/documento.ts`):** ao gerar,
+    detecta se o documento é **CPF** (11 díg.) ou **CNPJ** (14), formata a
+    máscara e escreve o rótulo certo. Placeholders novos: `{{cliente_documento}}`
+    (formatado), `{{cliente_documento_tipo}}` (CPF/CNPJ), `{{cliente_documento_
+    rotulado}}` ("CPF nº 123.456.789-00"), `{{contratante_nome}}` e
+    `{{contratante_qualificacao}}`. Regra: **CPF** → contrato no **nome
+    cadastrado**; **CNPJ** → **razão social** como CONTRATANTE + a pessoa como
+    "neste ato representada por". Preenchido em `criarContratoDoModelo`,
+    `responderOrcamento` e no aceite (`assinarContrato`). O modelo padrão foi
+    atualizado (na coleção `modelos_contrato`) p/ usar `{{contratante_
+    qualificacao}}`/`{{contratante_nome}}` — precisa do deploy do código p/
+    preencher.
   - **EDITAR o contrato (jul/2026):** botão **"✏️ Editar contrato"** na ficha e
     **"Editar"** na lista (só quando NÃO assinado/cancelado) abre um editor do
     **conteúdo** deste contrato (título + texto), salvo via `atualizarContrato`

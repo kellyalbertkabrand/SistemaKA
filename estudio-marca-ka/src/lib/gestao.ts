@@ -14,6 +14,13 @@ import {
 } from 'firebase/firestore'
 import { db } from './firebase'
 import { moverParaLixeira } from './lixeira'
+import {
+  contratanteNome,
+  documentoRotulado,
+  formatarDocumento,
+  qualificacaoContratante,
+  rotuloTipoDocumento,
+} from './documento'
 import type {
   Cliente,
   Cobranca,
@@ -431,7 +438,15 @@ export async function responderOrcamento(
   const corpo = modelo
     ? preencherModelo(modelo.conteudo, {
         cliente_nome: nomeFinal,
-        cliente_documento: docFinal,
+        cliente_documento: docFinal ? formatarDocumento(docFinal) : '',
+        cliente_documento_tipo: rotuloTipoDocumento(docFinal),
+        cliente_documento_rotulado: documentoRotulado(docFinal),
+        contratante_nome: contratanteNome(nomeFinal, o.razao_social, docFinal),
+        contratante_qualificacao: qualificacaoContratante({
+          nome: nomeFinal,
+          razaoSocial: o.razao_social,
+          documento: docFinal,
+        }),
         razao_social: o.razao_social ?? '',
         fundador_nome: o.fundador_nome ?? '',
         fundador_cpf: o.fundador_cpf ?? '',
@@ -536,12 +551,23 @@ export async function criarContratoDoModelo(dados: {
   const documento = dados.cliente_documento?.trim()
   const email = dados.cliente_email?.trim()
   const razao = dados.razao_social?.trim()
+  // "Inteligência" do documento: CPF vs CNPJ define rótulo, formatação e QUEM é
+  // o CONTRATANTE (CPF = a pessoa cadastrada; CNPJ = a empresa/razão social,
+  // com a pessoa como representante). Se o documento não vier, mantém os
+  // {{placeholders}} para o cliente preencher ao assinar pelo link.
+  const temDoc = !!documento
   // Se um campo do cliente não for informado, MANTÉM o {{placeholder}} no texto
   // para o próprio cliente preencher ao assinar pelo link público.
   const corpo = modelo
     ? preencherModelo(modelo.conteudo, {
         cliente_nome: nome || '{{cliente_nome}}',
-        cliente_documento: documento || '{{cliente_documento}}',
+        cliente_documento: temDoc ? formatarDocumento(documento) : '{{cliente_documento}}',
+        cliente_documento_tipo: temDoc ? rotuloTipoDocumento(documento) : '{{cliente_documento_tipo}}',
+        cliente_documento_rotulado: temDoc ? documentoRotulado(documento) : '{{cliente_documento_rotulado}}',
+        contratante_nome: temDoc || nome ? contratanteNome(nome, razao, documento) : '{{contratante_nome}}',
+        contratante_qualificacao: temDoc
+          ? qualificacaoContratante({ nome, razaoSocial: razao, documento })
+          : '{{contratante_qualificacao}}',
         cliente_email: email || '{{cliente_email}}',
         razao_social: razao || '',
         data: formatarData(quando),
@@ -612,10 +638,15 @@ export async function assinarContrato(
   if (!c) throw new Error('Contrato não encontrado.')
   if (c.status === 'assinado') throw new Error('Este contrato já foi assinado.')
   // Preenche no texto os dados que o cliente digitou ao assinar (caso a KA
-  // tenha deixado os {{placeholders}} para ele completar).
+  // tenha deixado os {{placeholders}} para ele completar) — inclusive a
+  // "inteligência" de CPF/CNPJ (rótulo, formatação e qualificação).
   const corpoFinal = c.conteudo
+    .replace(/\{\{\s*contratante_qualificacao\s*\}\}/g, qualificacaoContratante({ nome, documento }))
+    .replace(/\{\{\s*contratante_nome\s*\}\}/g, contratanteNome(nome, null, documento) || nome)
+    .replace(/\{\{\s*cliente_documento_rotulado\s*\}\}/g, documentoRotulado(documento))
+    .replace(/\{\{\s*cliente_documento_tipo\s*\}\}/g, rotuloTipoDocumento(documento))
+    .replace(/\{\{\s*cliente_documento\s*\}\}/g, formatarDocumento(documento))
     .replace(/\{\{\s*cliente_nome\s*\}\}/g, nome)
-    .replace(/\{\{\s*cliente_documento\s*\}\}/g, documento)
   await updateDoc(doc(db, 'contratos', c.id), {
     conteudo: corpoFinal,
     status: 'assinado',
