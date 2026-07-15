@@ -4,16 +4,19 @@ import { confirmar } from '../../lib/confirmar'
 import { listarClientes } from '../../lib/api'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import { rotuloStatus } from '../../lib/rotulos'
+import { useToast } from '../../components/Toast'
 import { useFichaUrl } from '../../hooks/useFichaUrl'
 import { Busca, normalizar } from '../../components/Busca'
 import {
   atualizarContrato,
   criarContratoDoModelo,
   excluirContrato,
+  excluirModeloContrato,
   listarContratos,
   linkPublicoContrato,
   listarModelosContrato,
   salvarModeloContrato,
+  tornarModeloPadrao,
   formatarData,
 } from '../../lib/gestao'
 
@@ -377,7 +380,7 @@ export function GestaoContratos() {
       <div className="gestao-acoes">
         <span className="espaco" />
         <button className="btn--voltar" onClick={() => abrirUrl('modelo')}>
-          Editar modelo de contrato
+          Modelos de contrato
         </button>
         <button className="btn" onClick={() => abrirUrl('novo')}>
           + Novo contrato
@@ -485,6 +488,8 @@ function NovoContrato({
   aoVoltar: () => void
   aoCriar: (c: Contrato) => void
 }) {
+  const [modelos, setModelos] = useState<ModeloContrato[]>([])
+  const [modeloId, setModeloId] = useState('')
   const [clienteId, setClienteId] = useState('')
   const [nome, setNome] = useState('')
   const [documento, setDocumento] = useState('')
@@ -494,6 +499,17 @@ function NovoContrato({
   const [titulo, setTitulo] = useState('')
   const [gerando, setGerando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
+
+  // Carrega os modelos disponíveis; já seleciona o padrão (ou o 1º).
+  useEffect(() => {
+    listarModelosContrato()
+      .then((ms) => {
+        setModelos(ms)
+        const padrao = ms.find((m) => m.padrao) ?? ms[0]
+        if (padrao) setModeloId(padrao.id)
+      })
+      .catch(() => setModelos([]))
+  }, [])
 
   // Ao escolher um cliente, PUXA os dados da ficha dele para os campos (a KA
   // ainda pode ajustar antes de gerar).
@@ -515,6 +531,7 @@ function NovoContrato({
     setErro(null)
     try {
       const c = await criarContratoDoModelo({
+        modelo_id: modeloId || undefined,
         cliente_id: clienteId || undefined,
         cliente_nome: nome.trim() || undefined,
         cliente_documento: documento.trim() || undefined,
@@ -559,6 +576,22 @@ function NovoContrato({
         {erro && <div className="erro-msg">{erro}</div>}
         <form onSubmit={(e) => void gerar(e)}>
           <div className="form-grade">
+            <div className="field campo-toda">
+              <label>Modelo de contrato</label>
+              <select value={modeloId} onChange={(e) => setModeloId(e.target.value)}>
+                {modelos.length === 0 && <option value="">Modelo padrão</option>}
+                {modelos.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.nome}
+                    {m.padrao ? ' (padrão)' : ''}
+                  </option>
+                ))}
+              </select>
+              <span className="campo-ajuda">
+                Escolha qual contrato usar como base. Gerencie os modelos no botão “Modelos de
+                contrato” (na lista de contratos).
+              </span>
+            </div>
             <div className="field campo-toda">
               <label>Puxar dados de um cliente</label>
               <select value={clienteId} onChange={(e) => escolherCliente(e.target.value)}>
@@ -618,41 +651,67 @@ function NovoContrato({
 // ---------------------------------------------------------------------------
 // Editor do modelo padrão de contrato ({{placeholders}}).
 // ---------------------------------------------------------------------------
+// Gerenciador de MODELOS de contrato: lista + editor de cada um. A KA pode ter
+// vários (ex.: "Design de marca" e "Gestão de sistema para arquitetura"),
+// marcar qual é o padrão, duplicar e excluir.
 function EditorModelo({ aoVoltar }: { aoVoltar: () => void }) {
-  const [modelo, setModelo] = useState<ModeloContrato | null>(null)
-  const [conteudo, setConteudo] = useState('')
-  const [nome, setNome] = useState('')
+  const { mostrar } = useToast()
+  const [modelos, setModelos] = useState<ModeloContrato[]>([])
+  const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
-  const [msg, setMsg] = useState<string | null>(null)
+  // Editor aberto: null = lista; 'novo' = criar; senão o id do modelo.
+  const [sel, setSel] = useState<string | null | 'novo'>(null)
+  const [nome, setNome] = useState('')
+  const [conteudo, setConteudo] = useState('')
+  const [ehPadrao, setEhPadrao] = useState(false)
   const [salvando, setSalvando] = useState(false)
 
+  async function recarregar() {
+    try {
+      setCarregando(true)
+      setModelos(await listarModelosContrato())
+      setErro(null)
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : String(e))
+    } finally {
+      setCarregando(false)
+    }
+  }
   useEffect(() => {
-    listarModelosContrato()
-      .then((ms) => {
-        const m = ms.find((x) => x.padrao) ?? ms[0] ?? null
-        setModelo(m)
-        setNome(m?.nome ?? 'Contrato padrão de design, KA')
-        setConteudo(m?.conteudo ?? '')
-      })
-      .catch((e) => setErro(e instanceof Error ? e.message : String(e)))
+    void recarregar()
   }, [])
 
+  function abrirNovo(base?: ModeloContrato) {
+    setSel('novo')
+    setNome(base ? `${base.nome} (cópia)` : '')
+    setConteudo(base?.conteudo ?? '')
+    setEhPadrao(modelos.length === 0)
+  }
+  function abrirEditar(m: ModeloContrato) {
+    setSel(m.id)
+    setNome(m.nome)
+    setConteudo(m.conteudo)
+    setEhPadrao(m.padrao)
+  }
+
   async function salvar() {
+    if (!nome.trim() || !conteudo.trim()) {
+      setErro('Dê um nome e escreva o texto do modelo.')
+      return
+    }
     setSalvando(true)
     setErro(null)
-    setMsg(null)
     try {
       const salvo = await salvarModeloContrato({
-        ...(modelo ? { id: modelo.id } : {}),
-        nome,
+        ...(sel && sel !== 'novo' ? { id: sel } : {}),
+        nome: nome.trim(),
         conteudo,
-        padrao: true,
+        padrao: ehPadrao,
       })
-      // Guarda o modelo salvo para os próximos cliques atualizarem em vez de
-      // criar um novo (evita modelos duplicados).
-      setModelo(salvo)
-      setMsg('✓ Modelo salvo, os próximos contratos usam esta versão.')
-      setTimeout(() => setMsg(null), 4000)
+      if (ehPadrao) await tornarModeloPadrao(salvo.id) // só um padrão por vez
+      mostrar('Modelo salvo ✓', 'ok')
+      setSel(null)
+      await recarregar()
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
     } finally {
@@ -660,45 +719,130 @@ function EditorModelo({ aoVoltar }: { aoVoltar: () => void }) {
     }
   }
 
+  async function definirPadrao(m: ModeloContrato) {
+    try {
+      await tornarModeloPadrao(m.id)
+      mostrar(`“${m.nome}” agora é o modelo padrão ✓`, 'ok')
+      await recarregar()
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : String(e))
+    }
+  }
+
+  async function excluir(m: ModeloContrato) {
+    if (!(await confirmar(`Excluir o modelo “${m.nome}”? Os contratos já gerados não mudam.`, { perigo: true, confirmar: 'Excluir' }))) return
+    try {
+      await excluirModeloContrato(m.id)
+      mostrar('Modelo excluído.', 'ok')
+      await recarregar()
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : String(e))
+    }
+  }
+
+  // ----- Editor de um modelo -----
+  if (sel !== null) {
+    return (
+      <>
+        <p style={{ marginBottom: '1rem' }}>
+          <button className="btn--voltar" onClick={() => setSel(null)}>
+            ← Modelos
+          </button>
+        </p>
+        <div className="card">
+          <h3>{sel === 'novo' ? 'Novo modelo de contrato' : 'Editar modelo'}</h3>
+          <p style={{ marginBottom: '0.9rem' }}>
+            Os campos entre chaves são preenchidos sozinhos ao gerar: <code>{'{{cliente_nome}}'}</code>,{' '}
+            <code>{'{{cliente_documento}}'}</code>, <code>{'{{cliente_email}}'}</code>,{' '}
+            <code>{'{{razao_social}}'}</code>, <code>{'{{titulo}}'}</code> e <code>{'{{data}}'}</code>.
+          </p>
+          {erro && <div className="erro-msg">{erro}</div>}
+          <div className="field">
+            <label>Nome do modelo</label>
+            <input
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              placeholder="Ex.: Gestão de sistema para arquitetura"
+            />
+          </div>
+          <div className="field">
+            <label>Texto do contrato</label>
+            <textarea
+              rows={22}
+              value={conteudo}
+              onChange={(e) => setConteudo(e.target.value)}
+              style={{ fontFamily: 'ui-monospace, monospace', fontSize: '16px', lineHeight: 1.55 }}
+            />
+          </div>
+          <label className="check-vm" style={{ marginBottom: '0.6rem' }}>
+            <input type="checkbox" checked={ehPadrao} onChange={(e) => setEhPadrao(e.target.checked)} />
+            <span>Usar este como modelo <strong>padrão</strong> (já vem selecionado ao criar um contrato)</span>
+          </label>
+          <p style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
+            <button className="btn" disabled={salvando || !conteudo.trim() || !nome.trim()} onClick={() => void salvar()}>
+              {salvando ? 'Salvando…' : 'Salvar modelo'}
+            </button>
+            <button className="btn--voltar" onClick={() => setSel(null)}>
+              Cancelar
+            </button>
+          </p>
+        </div>
+      </>
+    )
+  }
+
+  // ----- Lista de modelos -----
   return (
     <>
-      <p style={{ marginBottom: '1rem' }}>
+      <div className="gestao-acoes">
         <button className="btn--voltar" onClick={aoVoltar}>
           ← Contratos
         </button>
-      </p>
-      <div className="card">
-        <h3>Modelo de contrato</h3>
-        <p style={{ marginBottom: '0.9rem' }}>
-          Este texto vira o contrato quando um orçamento é aprovado. Os campos entre chaves são
-          preenchidos sozinhos: <code>{'{{cliente_nome}}'}</code>, <code>{'{{cliente_documento}}'}</code>,{' '}
-          <code>{'{{cliente_email}}'}</code>, <code>{'{{titulo}}'}</code>, <code>{'{{descricao}}'}</code>,{' '}
-          <code>{'{{itens}}'}</code>, <code>{'{{valor_total}}'}</code>, <code>{'{{condicoes}}'}</code> e{' '}
-          <code>{'{{data}}'}</code>.
-        </p>
-        {erro && <div className="erro-msg">{erro}</div>}
-        {msg && <div className="nota">{msg}</div>}
-        <div className="field">
-          <label>Nome do modelo</label>
-          <input value={nome} onChange={(e) => setNome(e.target.value)} />
-        </div>
-        <div className="field">
-          <label>Texto do contrato</label>
-          <textarea
-            rows={22}
-            value={conteudo}
-            onChange={(e) => setConteudo(e.target.value)}
-            style={{ fontFamily: 'ui-monospace, monospace', fontSize: '16px', lineHeight: 1.55 }}
-          />
-        </div>
-        <p style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', flexWrap: 'wrap', marginTop: '0.4rem' }}>
-          <button className="btn" disabled={salvando || !conteudo.trim()} onClick={() => void salvar()}>
-            {salvando ? 'Salvando…' : 'Salvar modelo'}
-          </button>
-          {msg && <span style={{ color: '#2e6b45', fontSize: '0.82rem' }}>{msg}</span>}
-          {erro && <span style={{ color: 'var(--erro)', fontSize: '0.82rem' }}>{erro}</span>}
-        </p>
+        <span className="espaco" />
+        <button className="btn" onClick={() => abrirNovo()}>
+          + Novo modelo
+        </button>
       </div>
+      {erro && <div className="erro-msg">{erro}</div>}
+      {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
+
+      {!carregando && modelos.length === 0 && (
+        <div className="card">
+          <h3>Nenhum modelo ainda.</h3>
+          <p>Crie o primeiro em “+ Novo modelo”. Ele vira a base dos contratos que você gera.</p>
+        </div>
+      )}
+
+      {modelos.map((m) => (
+        <div key={m.id} className="card" style={{ marginBottom: '0.8rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.6rem', flexWrap: 'wrap' }}>
+            <h3 style={{ margin: 0 }}>
+              {m.nome}{' '}
+              {m.padrao && <span className="badge badge--verde" style={{ marginLeft: 6 }}>padrão</span>}
+            </h3>
+            <div className="fase__acoes">
+              <button className="btn-mini" onClick={() => abrirEditar(m)}>
+                Editar
+              </button>
+              <button className="btn-mini" onClick={() => abrirNovo(m)} title="Criar um novo a partir deste">
+                Duplicar
+              </button>
+              {!m.padrao && (
+                <button className="btn-mini" onClick={() => void definirPadrao(m)}>
+                  Tornar padrão
+                </button>
+              )}
+              <button className="btn-mini btn-mini--perigo" onClick={() => void excluir(m)}>
+                Excluir
+              </button>
+            </div>
+          </div>
+          <p style={{ marginTop: '0.5rem', fontSize: '0.82rem', color: 'var(--t-500)', whiteSpace: 'pre-wrap', maxHeight: 66, overflow: 'hidden' }}>
+            {m.conteudo.slice(0, 180)}
+            {m.conteudo.length > 180 ? '…' : ''}
+          </p>
+        </div>
+      ))}
     </>
   )
 }

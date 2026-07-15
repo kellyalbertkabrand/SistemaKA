@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -522,9 +523,14 @@ export async function criarContratoDoModelo(dados: {
   telefone?: string | null
   cliente_id?: string | null
   titulo?: string
+  /** Qual modelo usar. Ausente = o modelo padrão (ou o primeiro). */
+  modelo_id?: string | null
 }): Promise<Contrato> {
   const modelos = await listarModelosContrato()
-  const modelo = modelos.find((m) => m.padrao) ?? modelos[0]
+  const modelo =
+    (dados.modelo_id ? modelos.find((m) => m.id === dados.modelo_id) : undefined) ??
+    modelos.find((m) => m.padrao) ??
+    modelos[0]
   const quando = agora()
   const nome = dados.cliente_nome?.trim()
   const documento = dados.cliente_documento?.trim()
@@ -651,6 +657,19 @@ export async function salvarModeloContrato(
   })
   const ref = await addDoc(collection(db, 'modelos_contrato'), novo)
   return comId<ModeloContrato>(ref.id, novo)
+}
+
+/** Torna UM modelo o padrão (e tira o "padrão" de todos os outros). */
+export async function tornarModeloPadrao(id: string): Promise<void> {
+  const modelos = await listarModelosContrato()
+  await Promise.all(
+    modelos.map((m) => updateDoc(doc(db, 'modelos_contrato', m.id), { padrao: m.id === id })),
+  )
+}
+
+/** Exclui um modelo de contrato de vez (não vai para a lixeira). */
+export async function excluirModeloContrato(id: string): Promise<void> {
+  await deleteDoc(doc(db, 'modelos_contrato', id))
 }
 
 // ---- Cobranças -----------------------------------------------------------------

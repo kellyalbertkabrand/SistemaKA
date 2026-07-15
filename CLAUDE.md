@@ -458,6 +458,13 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
 - **Contrato:** modelo editável na aba Contratos; link público
   `/contrato/:token` com **aceite digital** (nome, documento, data/hora,
   user-agent). Impressão → PDF pelo navegador (CSS @media print).
+  - **VÁRIOS modelos de contrato (jul/2026):** a aba Contratos → **"Modelos de
+    contrato"** virou um gerenciador (lista): **+ Novo modelo**, Editar, Duplicar,
+    **Tornar padrão** (badge "padrão") e Excluir. `criarContratoDoModelo` aceita
+    `modelo_id` (usa o escolhido; senão o padrão); `tornarModeloPadrao(id)` deixa
+    só um padrão; `excluirModeloContrato` apaga de vez. No "Novo contrato" há um
+    seletor **Modelo de contrato** (padrão já selecionado). Ex. de 2º modelo:
+    "Gestão de sistema para arquitetura". Coleção `modelos_contrato`.
   - **Puxar dados do cliente (jul/2026):** o "Novo contrato" tem um seletor de
     **cliente** que preenche nome/documento/e-mail/telefone/razão social da ficha
     (`escolherCliente` em `NovoContrato`); `criarContratoDoModelo` aceita
