@@ -29,9 +29,18 @@ export const handler = async (event) => {
 
   const chave = process.env.ANTHROPIC_API_KEY
   if (!chave) {
+    // Diagnóstico: a função não achou ANTHROPIC_API_KEY. Lista os NOMES de
+    // variáveis parecidos (só nomes, nunca valores) para revelar um erro de
+    // digitação no nome ou um escopo que não inclui "Functions".
+    const parecidas = Object.keys(process.env).filter((k) => /anthro|antro|api.?key|_key$/i.test(k))
+    const dica = parecidas.length
+      ? ` [A função enxerga estas variáveis parecidas: ${parecidas.join(', ')} — confira se o nome é exatamente ANTHROPIC_API_KEY.]`
+      : ' [A função NÃO enxerga nenhuma variável parecida — provavelmente o escopo da variável não inclui "Functions", ou ela foi salva em outro site/contexto.]'
     return resposta(200, {
       erro:
-        'A IA ainda não está configurada. Adicione a variável ANTHROPIC_API_KEY nas configurações do Netlify (Site settings → Environment variables) e publique de novo.',
+        'A IA ainda não está configurada. Confira a variável ANTHROPIC_API_KEY no Netlify ' +
+        '(nome exato + escopo incluindo Functions) e publique de novo.' +
+        dica,
     })
   }
 
