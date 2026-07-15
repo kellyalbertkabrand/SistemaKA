@@ -239,41 +239,7 @@ export function GestaoContratos() {
               ← Ver contrato
             </button>
           </p>
-          <div className="card">
-            <h3>Editar contrato</h3>
-            <p style={{ marginBottom: '0.9rem', fontSize: '0.85rem', color: 'var(--t-600)' }}>
-              Ajuste o texto livremente. As alterações valem para este contrato (não mudam o
-              modelo padrão). {vendo.status === 'enviado' && 'O link de assinatura continua o mesmo.'}
-            </p>
-            {erro && <div className="erro-msg">{erro}</div>}
-            <div className="field">
-              <label>Título</label>
-              <input value={editTitulo} onChange={(e) => setEditTitulo(e.target.value)} />
-            </div>
-            <div className="field">
-              <label>Texto do contrato</label>
-              <textarea
-                rows={22}
-                value={editConteudo}
-                onChange={(e) => setEditConteudo(e.target.value)}
-                style={{ fontFamily: 'ui-monospace, monospace', fontSize: '16px', lineHeight: 1.55 }}
-              />
-            </div>
-            <p style={{ display: 'flex', gap: '0.7rem', marginTop: '0.4rem' }}>
-              <button
-                className="btn"
-                disabled={salvandoEd || !editConteudo.trim()}
-                onClick={() => void salvarEdicao(vendo.id, vendo.titulo)}
-              >
-                {salvandoEd ? 'Salvando…' : 'Salvar alterações'}
-              </button>
-              <button className="btn--voltar" onClick={() => setEditando(false)}>
-                Cancelar
-              </button>
-            </p>
-          </div>
-
-          {/* Assistente de IA — pede ajustes em português e aplica no texto acima */}
+          {/* Assistente de IA no TOPO — pede ajustes em português e aplica no texto abaixo */}
           <div className="card ia-chat">
             <h4 className="ia-chat__tit">🤖 Assistente de IA</h4>
             <p className="ia-chat__dica">
@@ -332,6 +298,41 @@ export function GestaoContratos() {
                 </div>
               </div>
             )}
+          </div>
+
+          <div className="card">
+            <h3>Editar contrato</h3>
+            <p style={{ marginBottom: '0.9rem', fontSize: '0.85rem', color: 'var(--t-600)' }}>
+              Ajuste o texto livremente (ou use o assistente acima). As alterações valem para este
+              contrato (não mudam o modelo padrão).{' '}
+              {vendo.status === 'enviado' && 'O link de assinatura continua o mesmo.'}
+            </p>
+            {erro && <div className="erro-msg">{erro}</div>}
+            <div className="field">
+              <label>Título</label>
+              <input value={editTitulo} onChange={(e) => setEditTitulo(e.target.value)} />
+            </div>
+            <div className="field">
+              <label>Texto do contrato</label>
+              <textarea
+                rows={22}
+                value={editConteudo}
+                onChange={(e) => setEditConteudo(e.target.value)}
+                style={{ fontFamily: 'ui-monospace, monospace', fontSize: '16px', lineHeight: 1.55 }}
+              />
+            </div>
+            <p style={{ display: 'flex', gap: '0.7rem', marginTop: '0.4rem' }}>
+              <button
+                className="btn"
+                disabled={salvandoEd || !editConteudo.trim()}
+                onClick={() => void salvarEdicao(vendo.id, vendo.titulo)}
+              >
+                {salvandoEd ? 'Salvando…' : 'Salvar alterações'}
+              </button>
+              <button className="btn--voltar" onClick={() => setEditando(false)}>
+                Cancelar
+              </button>
+            </p>
           </div>
         </>
       )
@@ -517,9 +518,13 @@ function NovoContrato({
     setClienteId(id)
     const c = clientes.find((x) => x.id === id)
     if (!c) return
-    setNome((c.responsavel || c.nome_marca || '').trim())
+    // Nome da PESSOA para o contrato: sempre do "Quem assina" / "Fundador(a)" /
+    // "Responsável" — NUNCA o nome da marca (a marca não é a pessoa). Só usa a
+    // marca como último recurso, se nenhum nome de pessoa estiver cadastrado.
+    const pessoa = (c.contrato_nome || c.fundador_nome || c.responsavel || '').trim()
+    setNome(pessoa || c.nome_marca.trim())
     setDocumento((c.contrato_documento || c.documento || '').trim())
-    setEmail((c.email_contato || '').trim())
+    setEmail((c.contrato_email || c.email_contato || '').trim())
     setTelefone((c.telefone || '').trim())
     setRazao((c.razao_social || '').trim())
     if (!titulo.trim()) setTitulo(`Contrato: ${c.nome_marca}`)
