@@ -76,9 +76,21 @@ export const handler = async (event) => {
 
     if (!r.ok) {
       const detalhe = await r.text().catch(() => '')
-      return resposta(200, {
-        erro: `A IA respondeu com um erro (${r.status}). ${detalhe.slice(0, 200)}`,
-      })
+      let amigavel
+      if (r.status === 401) {
+        amigavel =
+          'A chave da IA foi RECUSADA (inválida). Isso quase sempre é a chave copiada pela metade. ' +
+          'Gere uma chave NOVA em console.anthropic.com → API Keys → Create Key, copie ela INTEIRA ' +
+          '(começa com sk-ant- e é bem longa) e cole de novo no Netlify na variável ' +
+          'ANTHROPIC_API_KEY_CONTRATO; depois publique.'
+      } else if (r.status === 400 && /credit|balance|insufficient/i.test(detalhe)) {
+        amigavel = 'A conta da IA está sem crédito. Adicione crédito em console.anthropic.com → Billing e tente de novo.'
+      } else if (r.status === 429) {
+        amigavel = 'A IA atingiu o limite de uso por agora. Tente de novo em instantes.'
+      } else {
+        amigavel = `A IA respondeu com um erro (${r.status}). ${detalhe.slice(0, 200)}`
+      }
+      return resposta(200, { erro: amigavel })
     }
 
     const j = await r.json()
