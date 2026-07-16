@@ -8,6 +8,7 @@ import { useToast } from '../../components/Toast'
 import { useFichaUrl } from '../../hooks/useFichaUrl'
 import { Busca, normalizar } from '../../components/Busca'
 import { acharCnpj, acharCpf } from '../../lib/documento'
+import { imprimirComoPdf } from '../../lib/ui'
 import { ContratoView } from '../../components/ContratoView'
 import {
   atualizarContrato,
@@ -350,7 +351,13 @@ export function GestaoContratos() {
               ✏️ Editar contrato
             </button>
           )}
-          <button className="btn--voltar" onClick={() => window.print()}>
+          <button
+            className="btn--voltar"
+            onClick={() => {
+              const cli = vendo.cliente_id ? clientes.find((x) => x.id === vendo.cliente_id) : null
+              imprimirComoPdf(vendo.titulo, cli?.responsavel || cli?.nome_marca)
+            }}
+          >
             Salvar em PDF / Imprimir
           </button>
           <button className="btn--voltar" onClick={() => void copiarLink(vendo)}>

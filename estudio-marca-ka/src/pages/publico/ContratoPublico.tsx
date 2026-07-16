@@ -7,6 +7,7 @@ import {
   type ContratoPublico as Ctr,
 } from '../../lib/gestao'
 import { ContratoView } from '../../components/ContratoView'
+import { imprimirComoPdf } from '../../lib/ui'
 import '../../styles/gestao.css'
 
 // Página pública do contrato: o cliente lê e registra o aceite digital
@@ -128,7 +129,11 @@ export function ContratoPublico() {
               <button className="btn" type="submit" disabled={assinando || !aceite}>
                 {assinando ? 'Registrando…' : 'Assinar contrato'}
               </button>
-              <button type="button" className="btn--voltar" onClick={() => window.print()}>
+              <button
+                type="button"
+                className="btn--voltar"
+                onClick={() => imprimirComoPdf(contrato.titulo, nome || contrato.assinatura_nome)}
+              >
                 Baixar em PDF
               </button>
             </div>

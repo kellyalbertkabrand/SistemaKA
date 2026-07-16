@@ -9,6 +9,26 @@ export function autoAltura(el: HTMLTextAreaElement | null) {
   el.style.height = `${el.scrollHeight}px`
 }
 
+// Salvar em PDF / imprimir usando `nomeArquivo` como nome sugerido do arquivo.
+// O navegador usa o document.title como nome do PDF ao "Salvar como PDF", então
+// trocamos o título antes de imprimir e restauramos logo depois.
+export function imprimirComoPdf(...partes: (string | null | undefined)[]) {
+  const nome = partes
+    .map((p) => (p ?? '').trim())
+    .filter(Boolean)
+    .join(' - ')
+    // Tira caracteres que atrapalham nome de arquivo.
+    .replace(/[\\/:*?"<>|]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  const anterior = document.title
+  if (nome) document.title = nome
+  window.print()
+  window.setTimeout(() => {
+    document.title = anterior
+  }, 800)
+}
+
 // Arredonda para 2 casas (centavos) evitando o erro clássico de ponto flutuante
 // (0.1 + 0.2 = 0.30000000000000004). Usar em TODA soma/agregação de dinheiro.
 export function arredondar(n: number): number {
