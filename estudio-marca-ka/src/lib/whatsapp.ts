@@ -20,15 +20,28 @@ export function primeiroNome(nome: string | null | undefined): string {
   return (nome ?? '').trim().split(/\s+/)[0] || ''
 }
 
+/** Uma variante de mensagem que a KA pode escolher dentro do popup. */
+export interface OpcaoMensagem {
+  /** Texto curto do botão (ex.: "PIX pessoal"). */
+  rotulo: string
+  /** A mensagem completa que esse botão aplica. */
+  mensagem: string
+}
+
 /**
  * Abre um popup próprio com o destinatário e o número da ficha JÁ preenchidos
  * e a mensagem à vista. A KA confere (ou troca o número) e clica em "Abrir
  * WhatsApp" — o wa.me abre a partir desse clique.
+ *
+ * Se `opcoes` for informado, aparece uma fileira de botões acima da mensagem
+ * (ex.: PIX pessoal / PIX empresa); clicar troca o texto na hora. A `mensagem`
+ * inicial deve ser a da 1ª opção (ela já vem selecionada).
  */
 export function abrirWhatsApp(
   telefone: string | null | undefined,
   mensagem: string,
   destinatario?: string | null,
+  opcoes?: OpcaoMensagem[],
 ): void {
   const tel = (telefone ?? '').trim()
   const quem = (destinatario ?? '').trim()
@@ -57,14 +70,41 @@ export function abrirWhatsApp(
   input.value = tel
   input.placeholder = 'ex.: 41 99999-0000'
 
+  const area = document.createElement('textarea')
+  area.className = 'wa-box__area'
+  area.rows = 9
+  area.value = mensagem
+
+  // Botões de variante (ex.: PIX pessoal / PIX empresa). Trocam o texto na hora.
+  let seletor: HTMLDivElement | null = null
+  if (opcoes && opcoes.length > 1) {
+    seletor = document.createElement('div')
+    seletor.className = 'wa-box__pix'
+
+    const rotuloOpc = document.createElement('label')
+    rotuloOpc.className = 'wa-box__rotulo'
+    rotuloOpc.textContent = 'Dados de pagamento na mensagem'
+
+    const chips = document.createElement('div')
+    chips.className = 'wa-box__opcoes'
+    opcoes.forEach((op, i) => {
+      const b = document.createElement('button')
+      b.type = 'button'
+      b.className = 'wa-chip' + (i === 0 ? ' wa-chip--ativo' : '')
+      b.textContent = op.rotulo
+      b.addEventListener('click', () => {
+        area.value = op.mensagem
+        chips.querySelectorAll('.wa-chip').forEach((el) => el.classList.remove('wa-chip--ativo'))
+        b.classList.add('wa-chip--ativo')
+      })
+      chips.append(b)
+    })
+    seletor.append(rotuloOpc, chips)
+  }
+
   const rotuloMsg = document.createElement('label')
   rotuloMsg.className = 'wa-box__rotulo'
   rotuloMsg.textContent = 'Mensagem (pode editar)'
-
-  const area = document.createElement('textarea')
-  area.className = 'wa-box__area'
-  area.rows = 7
-  area.value = mensagem
 
   const aviso = document.createElement('div')
   aviso.className = 'wa-box__aviso'
@@ -114,7 +154,9 @@ export function abrirWhatsApp(
   document.addEventListener('keydown', onKey)
 
   acoes.append(cancelar, enviar)
-  box.append(titulo, rotuloTel, input, rotuloMsg, area, aviso, acoes)
+  box.append(titulo, rotuloTel, input)
+  if (seletor) box.append(seletor)
+  box.append(rotuloMsg, area, aviso, acoes)
   overlay.append(box)
   document.body.append(overlay)
   input.focus()

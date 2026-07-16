@@ -851,7 +851,15 @@ O número da cobrança resolve `cliente?.telefone || c.telefone` (**`||`**, não
 `??` — telefone antigo vazio deixava passar `''`). Sem telefone na ficha, o
 popup mostra um aviso pedindo pra digitar / preencher em Clientes.
 
-- **Cobranças:** mensagem com descrição, valor, vencimento e link de pagamento.
+- **Cobranças:** mensagem com a **descrição em negrito** (`*asteriscos*` do
+  WhatsApp), valor, vencimento, **bloco de PIX** e link de pagamento. O bloco de
+  PIX é ESCOLHÍVEL na hora de enviar: o popup mostra os chips **PIX pessoal /
+  PIX empresa** (`src/lib/pagamento.ts` — `PIX_PESSOAL`/`PIX_EMPRESA`,
+  `blocoPix`), que trocam o texto na hora. Dados: Nubank · Kelly Albert · Pix por
+  e-mail (pessoal) OU Pix (CNPJ) 15.096.943/0001-37 (empresa). ⚠️ A mensagem
+  **nunca** escreve "pessoa física/jurídica" — é rótulo interno só nos chips.
+  `abrirWhatsApp(tel, msg, dest, opcoes?)` renderiza os chips quando recebe
+  `opcoes: OpcaoMensagem[]` (estilos `.wa-box__pix`/`.wa-chip` em gestao.css).
 - **Orçamentos:** link público da proposta + validade.
 - **Contratos:** link de assinatura (some depois de assinado).
 - **Projetos** (detalhe): "Avisar no WhatsApp" — última fase concluída, fase

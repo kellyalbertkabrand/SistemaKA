@@ -937,6 +937,37 @@
   background: #17663f;
 }
 
+/* Seletor de PIX (pessoal/empresa) dentro do popup do WhatsApp. */
+.wa-box__pix {
+  margin-top: 0.6rem;
+}
+.wa-box__opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+.wa-chip {
+  font-family: var(--body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 100px;
+  padding: 0.45rem 0.95rem;
+  cursor: pointer;
+  color: var(--t-600);
+  background: rgba(15, 25, 35, 0.05);
+  border: 1px solid rgba(15, 25, 35, 0.15);
+  transition: 0.15s;
+}
+.wa-chip:hover {
+  background: rgba(15, 25, 35, 0.09);
+}
+.wa-chip--ativo {
+  background: #1d7c4d;
+  color: #fff;
+  border-color: #1d7c4d;
+}
+
 /* ---- Fase: descrição e formulário de nova fase ---- */
 .fase__desc {
   font-size: 0.78rem;

@@ -14,6 +14,7 @@ import {
   formatarData,
 } from '../../lib/gestao'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
+import { PIX_OPCOES, blocoPix, type DadosPix } from '../../lib/pagamento'
 import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
 import { autoAltura, parseValorBR, somarDinheiro, hojeLocal } from '../../lib/ui'
@@ -143,22 +144,31 @@ export function GestaoCobrancas() {
   function cobrarWhatsApp(c: Cobranca) {
     const cliente = c.cliente_id ? clientePorId.get(c.cliente_id) : null
     const nome = primeiroNome(cliente?.responsavel ?? cliente?.nome_marca)
-    const linhas = [
-      `Oi${nome ? `, ${nome}` : ''}! Tudo bem? 😊`,
-      '',
-      `Segue a cobrança: ${c.descricao}`,
-      `Valor: ${formatarBRL(c.valor)} · vencimento: ${formatarData(c.vencimento)}`,
-    ]
-    if (c.link_pagamento) {
-      linhas.push('', `Você pode pagar por aqui (cartão, boleto ou PIX): ${c.link_pagamento}`)
+    // Monta a mensagem com um bloco de PIX escolhível (pessoal/empresa). A
+    // descrição vai em *negrito* (WhatsApp usa asteriscos).
+    const montar = (pix: DadosPix) => {
+      const linhas = [
+        `Oi${nome ? `, ${nome}` : ''}! Tudo bem? 😊`,
+        '',
+        `Segue a cobrança: *${c.descricao}*`,
+        `Valor: ${formatarBRL(c.valor)} · vencimento: ${formatarData(c.vencimento)}`,
+        '',
+        blocoPix(pix),
+      ]
+      if (c.link_pagamento) {
+        linhas.push('', `Ou pague por aqui (cartão, boleto ou PIX): ${c.link_pagamento}`)
+      }
+      linhas.push('', 'Qualquer dúvida, me chama! Kelly')
+      return linhas.join('\n')
     }
-    linhas.push('', 'Qualquer dúvida, me chama! Kelly')
+    const opcoes = PIX_OPCOES.map((p) => ({ rotulo: p.chip, mensagem: montar(p) }))
     abrirWhatsApp(
       // O telefone atual da ficha vem primeiro; `||` garante que vazio/nulo
       // caia para o próximo (o `??` deixava passar string vazia antiga).
       cliente?.telefone || c.telefone,
-      linhas.join('\n'),
+      opcoes[0].mensagem,
       cliente ? (cliente.responsavel ?? cliente.nome_marca) : null,
+      opcoes,
     )
   }
 
