@@ -410,7 +410,8 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--t-500);
-  margin-bottom: 1.6rem;
+  /* Espaço p/ a pessoa assinar acima da linha. */
+  margin-bottom: 3.4rem;
 }
 .assinatura__traco {
   border-top: 1.5px solid var(--t-700);
