@@ -6,6 +6,7 @@ import {
   formatarData,
   type ContratoPublico as Ctr,
 } from '../../lib/gestao'
+import { ContratoView } from '../../components/ContratoView'
 import '../../styles/gestao.css'
 
 // Página pública do contrato: o cliente lê e registra o aceite digital
@@ -81,7 +82,7 @@ export function ContratoPublico() {
           <div className="pub-doc__meta">emitido em {formatarData(contrato.criado_em)}</div>
         </div>
 
-        <pre className="conteudo">{contrato.conteudo}</pre>
+        <ContratoView conteudo={contrato.conteudo} />
 
         {erro && <div className="erro-msg" style={{ marginTop: '1rem' }}>{erro}</div>}
 

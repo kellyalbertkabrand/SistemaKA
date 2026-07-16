@@ -78,6 +78,18 @@ export function formatarData(d: string | null | undefined): string {
   return data.toLocaleDateString('pt-BR')
 }
 
+const MESES_PT = [
+  'janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho',
+  'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro',
+]
+
+/** Data por extenso p/ contratos: "16 de julho de 2026". */
+export function formatarDataExtenso(d: string | null | undefined): string {
+  if (!d) return ''
+  const data = d.length === 10 ? new Date(`${d}T12:00:00`) : new Date(d)
+  return `${data.getDate()} de ${MESES_PT[data.getMonth()]} de ${data.getFullYear()}`
+}
+
 // Data de hoje no fuso LOCAL como "YYYY-MM-DD" (não usar toISOString/UTC).
 function hojeLocalISO(): string {
   const d = new Date()
@@ -447,6 +459,8 @@ export async function responderOrcamento(
           razaoSocial: o.razao_social,
           documento: docFinal,
         }),
+        assinante_nome: nomeFinal,
+        assinante_documento_rotulado: documentoRotulado(docFinal),
         cliente_endereco: '',
         razao_social: o.razao_social ?? '',
         fundador_nome: o.fundador_nome ?? '',
@@ -455,7 +469,7 @@ export async function responderOrcamento(
         descricao: o.descricao ?? '',
         valor: formatarBRL(o.valor_total),
         valor_total: formatarBRL(o.valor_total),
-        data: formatarData(quando),
+        data: formatarDataExtenso(quando),
       })
     : `Contrato referente a: ${o.titulo}\n\nValor: ${formatarBRL(o.valor_total)}\n` +
       `Contratante: ${nomeFinal} (${docFinal}).`
@@ -534,6 +548,8 @@ export async function criarContrato(
 export async function criarContratoDoModelo(dados: {
   cliente_nome?: string
   cliente_documento?: string
+  /** CPF do representante quando o documento principal é o CNPJ da empresa. */
+  cliente_documento_representante?: string
   cliente_email?: string
   razao_social?: string
   cliente_endereco?: string
@@ -551,30 +567,44 @@ export async function criarContratoDoModelo(dados: {
   const quando = agora()
   const nome = dados.cliente_nome?.trim()
   const documento = dados.cliente_documento?.trim()
+  const docRep = dados.cliente_documento_representante?.trim()
   const email = dados.cliente_email?.trim()
   const razao = dados.razao_social?.trim()
   const endereco = dados.cliente_endereco?.trim()
   // "Inteligência" do documento: CPF vs CNPJ define rótulo, formatação e QUEM é
   // o CONTRATANTE (CPF = a pessoa cadastrada; CNPJ = a empresa/razão social,
-  // com a pessoa como representante). Se o documento não vier, mantém os
-  // {{placeholders}} para o cliente preencher ao assinar pelo link.
-  const temDoc = !!documento
+  // com a pessoa como representante — e o CPF do representante aparece). Se o
+  // documento não vier, mantém os {{placeholders}} para o cliente preencher.
+  const temDoc = !!(documento || docRep)
+  // Documento de quem ASSINA (o representante, se empresa; senão o próprio).
+  const docAssinante = docRep || documento
   // Se um campo do cliente não for informado, MANTÉM o {{placeholder}} no texto
   // para o próprio cliente preencher ao assinar pelo link público.
   const corpo = modelo
     ? preencherModelo(modelo.conteudo, {
         cliente_nome: nome || '{{cliente_nome}}',
-        cliente_documento: temDoc ? formatarDocumento(documento) : '{{cliente_documento}}',
-        cliente_documento_tipo: temDoc ? rotuloTipoDocumento(documento) : '{{cliente_documento_tipo}}',
-        cliente_documento_rotulado: temDoc ? documentoRotulado(documento) : '{{cliente_documento_rotulado}}',
+        cliente_documento: documento ? formatarDocumento(documento) : '{{cliente_documento}}',
+        cliente_documento_tipo: documento ? rotuloTipoDocumento(documento) : '{{cliente_documento_tipo}}',
+        cliente_documento_rotulado: documento ? documentoRotulado(documento) : '{{cliente_documento_rotulado}}',
         contratante_nome: temDoc || nome ? contratanteNome(nome, razao, documento) : '{{contratante_nome}}',
         contratante_qualificacao: temDoc
-          ? qualificacaoContratante({ nome, razaoSocial: razao, documento, endereco })
+          ? qualificacaoContratante({
+              nome,
+              razaoSocial: razao,
+              documento,
+              documentoRepresentante: docRep,
+              endereco,
+            })
           : '{{contratante_qualificacao}}',
+        // Bloco de assinatura: a PESSOA que assina (nome + CPF), mesmo em empresa.
+        assinante_nome: nome || '{{assinante_nome}}',
+        assinante_documento_rotulado: docAssinante
+          ? documentoRotulado(docAssinante)
+          : '{{assinante_documento_rotulado}}',
         cliente_email: email || '{{cliente_email}}',
         cliente_endereco: endereco || '{{cliente_endereco}}',
         razao_social: razao || '',
-        data: formatarData(quando),
+        data: formatarDataExtenso(quando),
       })
     : `Contrato para ${nome || '{{cliente_nome}}'}.`
   return criarContrato({
@@ -647,6 +677,8 @@ export async function assinarContrato(
   const corpoFinal = c.conteudo
     .replace(/\{\{\s*contratante_qualificacao\s*\}\}/g, qualificacaoContratante({ nome, documento }))
     .replace(/\{\{\s*contratante_nome\s*\}\}/g, contratanteNome(nome, null, documento) || nome)
+    .replace(/\{\{\s*assinante_nome\s*\}\}/g, nome)
+    .replace(/\{\{\s*assinante_documento_rotulado\s*\}\}/g, documentoRotulado(documento))
     .replace(/\{\{\s*cliente_documento_rotulado\s*\}\}/g, documentoRotulado(documento))
     .replace(/\{\{\s*cliente_documento_tipo\s*\}\}/g, rotuloTipoDocumento(documento))
     .replace(/\{\{\s*cliente_documento\s*\}\}/g, formatarDocumento(documento))

@@ -54,30 +54,49 @@ export function contratanteNome(
   return (nome ?? '').trim()
 }
 
+/** Acha o 1º CNPJ (14 dígitos) numa lista de documentos possíveis. */
+export function acharCnpj(...docs: (string | null | undefined)[]): string {
+  return docs.map(soDigitos).find((d) => d.length === 14) ?? ''
+}
+
+/** Acha o 1º CPF (11 dígitos) numa lista de documentos possíveis. */
+export function acharCpf(...docs: (string | null | undefined)[]): string {
+  return docs.map(soDigitos).find((d) => d.length === 11) ?? ''
+}
+
 /**
  * Qualificação completa do CONTRATANTE para o contrato, com "inteligência":
- *  - CNPJ → "Razão Social, inscrita no CNPJ nº ..., neste ato representada por Fulano";
- *  - CPF  → "Fulano, inscrito(a) no CPF nº ...".
+ *  - CNPJ → "Razão Social, inscrita no CNPJ nº ..., com sede em ..., neste ato
+ *    representada por Fulano, inscrito(a) no CPF nº ..." (o CPF é o do
+ *    representante, quando informado em `documentoRepresentante`);
+ *  - CPF  → "Fulano, inscrito(a) no CPF nº ..., com endereço em ...".
  */
 export function qualificacaoContratante(opts: {
   nome?: string | null
   razaoSocial?: string | null
   documento?: string | null
+  /** CPF do representante (quando o documento principal é o CNPJ da empresa). */
+  documentoRepresentante?: string | null
   endereco?: string | null
 }): string {
   const nome = (opts.nome ?? '').trim()
   const razao = (opts.razaoSocial ?? '').trim()
   const endereco = (opts.endereco ?? '').trim()
-  const docRot = documentoRotulado(opts.documento)
   if (tipoDocumento(opts.documento) === 'cnpj') {
     const empresa = razao || nome
     let s = empresa
-    if (docRot) s += `, inscrita no ${docRot}`
+    const cnpjRot = documentoRotulado(opts.documento)
+    if (cnpjRot) s += `, inscrita no ${cnpjRot}`
     if (endereco) s += `, com sede em ${endereco}`
-    if (nome && nome !== empresa) s += `, neste ato representada por ${nome}`
+    if (nome && nome !== empresa) {
+      s += `, neste ato representada por ${nome}`
+      const cpfRep = documentoRotulado(opts.documentoRepresentante)
+      if (cpfRep) s += `, inscrito(a) no ${cpfRep}`
+    }
     return s
   }
   let s = nome
+  const docRot = documentoRotulado(opts.documento)
   if (docRot) s += `, inscrito(a) no ${docRot}`
   // "com endereço em" (neutro) — NÃO dizer "residente"/"residência", a pedido
   // da KA: o endereço pode ser comercial e não queremos afirmar que é a casa.

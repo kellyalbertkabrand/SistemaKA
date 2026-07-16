@@ -7,6 +7,8 @@ import { rotuloStatus } from '../../lib/rotulos'
 import { useToast } from '../../components/Toast'
 import { useFichaUrl } from '../../hooks/useFichaUrl'
 import { Busca, normalizar } from '../../components/Busca'
+import { acharCnpj, acharCpf } from '../../lib/documento'
+import { ContratoView } from '../../components/ContratoView'
 import {
   atualizarContrato,
   criarContratoDoModelo,
@@ -364,7 +366,7 @@ export function GestaoContratos() {
               <span className={`badge ${BADGE_CONTRATO[vendo.status]}`}>{rotuloStatus('contrato', vendo.status)}</span>
             </div>
           </div>
-          <pre className="conteudo">{vendo.conteudo}</pre>
+          <ContratoView conteudo={vendo.conteudo} />
           {vendo.status === 'assinado' && (
             <div className="pub-assinado">
               Assinado por {vendo.assinatura_nome} ({vendo.assinatura_documento}) em{' '}
@@ -494,6 +496,7 @@ function NovoContrato({
   const [clienteId, setClienteId] = useState('')
   const [nome, setNome] = useState('')
   const [documento, setDocumento] = useState('')
+  const [documentoRep, setDocumentoRep] = useState('')
   const [email, setEmail] = useState('')
   const [telefone, setTelefone] = useState('')
   const [razao, setRazao] = useState('')
@@ -524,7 +527,19 @@ function NovoContrato({
     // marca como último recurso, se nenhum nome de pessoa estiver cadastrado.
     const pessoa = (c.contrato_nome || c.fundador_nome || c.responsavel || '').trim()
     setNome(pessoa || c.nome_marca.trim())
-    setDocumento((c.contrato_documento || c.documento || '').trim())
+    // Inteligência do documento: um cliente pode ter DOIS documentos — o CNPJ da
+    // empresa e o CPF da pessoa. Se houver empresa (razão social e/ou CNPJ), o
+    // documento principal do contrato é o CNPJ e o CPF vira o do representante.
+    const cnpj = acharCnpj(c.documento, c.contrato_documento)
+    const cpf = acharCpf(c.fundador_cpf, c.contrato_documento, c.documento)
+    const temEmpresa = !!(c.razao_social || '').trim() || !!cnpj
+    if (temEmpresa && cnpj) {
+      setDocumento(cnpj)
+      setDocumentoRep(cpf)
+    } else {
+      setDocumento((c.contrato_documento || c.documento || '').trim())
+      setDocumentoRep('')
+    }
     setEmail((c.contrato_email || c.email_contato || '').trim())
     setTelefone((c.telefone || '').trim())
     setRazao((c.razao_social || '').trim())
@@ -544,6 +559,7 @@ function NovoContrato({
         cliente_id: clienteId || undefined,
         cliente_nome: nome.trim() || undefined,
         cliente_documento: documento.trim() || undefined,
+        cliente_documento_representante: documentoRep.trim() || undefined,
         cliente_email: email.trim() || undefined,
         razao_social: razao.trim() || undefined,
         cliente_endereco: endereco.trim() || undefined,
@@ -625,6 +641,21 @@ function NovoContrato({
             <div className="field">
               <label>CPF / CNPJ do cliente (opcional)</label>
               <input value={documento} onChange={(e) => setDocumento(e.target.value)} placeholder="Deixe em branco p/ o cliente preencher" />
+              <span className="campo-ajuda">
+                Se for empresa, coloque aqui o <strong>CNPJ</strong> (o contrato sai no nome da
+                empresa; o CPF vai no campo do representante abaixo).
+              </span>
+            </div>
+            <div className="field">
+              <label>CPF do representante (se empresa)</label>
+              <input
+                value={documentoRep}
+                onChange={(e) => setDocumentoRep(e.target.value)}
+                placeholder="CPF de quem assina pela empresa"
+              />
+              <span className="campo-ajuda">
+                Aparece como “neste ato representada por {nome || '…'}, inscrito(a) no CPF nº…”.
+              </span>
             </div>
             <div className="field">
               <label>E-mail (opcional)</label>

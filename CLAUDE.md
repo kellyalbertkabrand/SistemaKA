@@ -494,6 +494,25 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
     O modelo 02 ("Gestão de sistema para arquitetura") teve o endereço fixo da
     Schramm REMOVIDO da linha CONTRATANTE (agora vem da ficha via
     `{{contratante_qualificacao}}`).
+  - **Empresa com CNPJ + representante com CPF (jul/2026):** um cliente pode ter
+    DOIS documentos (o CNPJ da empresa e o CPF da pessoa). `qualificacaoContratante`
+    aceita `documentoRepresentante` — no ramo CNPJ escreve "...neste ato
+    representada por {nome}, inscrito(a) no CPF nº {rep}". No "Novo contrato",
+    `escolherCliente` usa `acharCnpj`/`acharCpf` (`documento.ts`) p/ separar os
+    dois da ficha (campos `documento`/`contrato_documento`/`fundador_cpf`): se há
+    empresa (razão social e/ou CNPJ), o documento **principal** vira o CNPJ e o
+    CPF vira o do representante (campo novo **"CPF do representante (se empresa)"**,
+    param `cliente_documento_representante`). O **bloco de assinatura** usa
+    `{{assinante_nome}}`/`{{assinante_documento_rotulado}}` = a PESSOA que assina
+    (representante, ou o próprio, com o CPF) — nunca a razão social.
+  - **Data automática + assinaturas bonitas (jul/2026):** `{{data}}` no contrato é
+    preenchido com a data de geração **por extenso** (`formatarDataExtenso`, ex.
+    "16 de julho de 2026"). O bloco de assinaturas usa o marcador **`[ASSINATURAS]`**
+    no fim do modelo, uma linha por assinatura no formato `PAPEL|Nome|Documento`;
+    o componente `src/components/ContratoView.tsx` (usado no público e no detalhe
+    admin, no lugar do `<pre>`) desenha cada uma **centralizada, com traço maior**
+    (estilos `.assinatura*` em gestao.css). Modelos SEM o marcador renderizam
+    igual a antes (compatível).
   - **EDITAR o contrato (jul/2026):** botão **"✏️ Editar contrato"** na ficha e
     **"Editar"** na lista (só quando NÃO assinado/cancelado) abre um editor do
     **conteúdo** deste contrato (título + texto), salvo via `atualizarContrato`
