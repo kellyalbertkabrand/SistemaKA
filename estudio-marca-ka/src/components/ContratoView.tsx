@@ -18,7 +18,12 @@ function lerAssinaturas(bloco: string): Assinatura[] {
     .map((l) => l.trim())
     .filter(Boolean)
     .map((l) => {
-      const [papel = '', nome = '', doc = ''] = l.split('|').map((s) => s.trim())
+      // papel | nome | doc — o "doc" pode conter '|' (ex.: "KA | Inteligência
+      // para Marcas"), então junta o que sobrar depois do 2º separador.
+      const partes = l.split('|')
+      const papel = (partes[0] ?? '').trim()
+      const nome = (partes[1] ?? '').trim()
+      const doc = partes.slice(2).join('|').trim()
       return { papel, nome, doc }
     })
 }
