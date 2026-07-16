@@ -7,8 +7,6 @@
 // NUNCA aparecem no texto que vai para o cliente.
 // ============================================================================
 
-import { formatarDocumento } from './documento'
-
 export interface DadosPix {
   /** Uso interno (rótulo do botão no popup). Não vai na mensagem. */
   chip: string
@@ -26,12 +24,13 @@ export const PIX_PESSOAL: DadosPix = {
   linhaPix: 'Pix: kellyalbertka@gmail.com',
 }
 
-/** Conta da empresa — PIX pela chave CNPJ (formatada). */
+/** Conta da empresa — PIX pela chave CNPJ (só números, sem pontos/traço, para
+ *  o cliente copiar e colar a chave sem erro). */
 export const PIX_EMPRESA: DadosPix = {
   chip: 'PIX empresa',
   banco: 'Nubank',
   favorecido: 'Kelly Albert',
-  linhaPix: `Pix (CNPJ): ${formatarDocumento('15096943000137')}`,
+  linhaPix: 'Pix (CNPJ): 15096943000137',
 }
 
 export const PIX_OPCOES: DadosPix[] = [PIX_PESSOAL, PIX_EMPRESA]

@@ -856,7 +856,8 @@ popup mostra um aviso pedindo pra digitar / preencher em Clientes.
   PIX é ESCOLHÍVEL na hora de enviar: o popup mostra os chips **PIX pessoal /
   PIX empresa** (`src/lib/pagamento.ts` — `PIX_PESSOAL`/`PIX_EMPRESA`,
   `blocoPix`), que trocam o texto na hora. Dados: Nubank · Kelly Albert · Pix por
-  e-mail (pessoal) OU Pix (CNPJ) 15.096.943/0001-37 (empresa). ⚠️ A mensagem
+  e-mail (pessoal) OU Pix (CNPJ) 15096943000137 — sem pontos/traço, p/ copiar e
+  colar sem erro (empresa). ⚠️ A mensagem
   **nunca** escreve "pessoa física/jurídica" — é rótulo interno só nos chips.
   `abrirWhatsApp(tel, msg, dest, opcoes?)` renderiza os chips quando recebe
   `opcoes: OpcaoMensagem[]` (estilos `.wa-box__pix`/`.wa-chip` em gestao.css).
