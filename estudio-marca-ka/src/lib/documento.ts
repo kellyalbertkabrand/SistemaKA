@@ -63,18 +63,22 @@ export function qualificacaoContratante(opts: {
   nome?: string | null
   razaoSocial?: string | null
   documento?: string | null
+  endereco?: string | null
 }): string {
   const nome = (opts.nome ?? '').trim()
   const razao = (opts.razaoSocial ?? '').trim()
+  const endereco = (opts.endereco ?? '').trim()
   const docRot = documentoRotulado(opts.documento)
   if (tipoDocumento(opts.documento) === 'cnpj') {
     const empresa = razao || nome
     let s = empresa
     if (docRot) s += `, inscrita no ${docRot}`
+    if (endereco) s += `, com sede em ${endereco}`
     if (nome && nome !== empresa) s += `, neste ato representada por ${nome}`
     return s
   }
   let s = nome
   if (docRot) s += `, inscrito(a) no ${docRot}`
+  if (endereco) s += `, residente em ${endereco}`
   return s
 }

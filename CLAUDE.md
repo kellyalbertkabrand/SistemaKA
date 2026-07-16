@@ -484,6 +484,15 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
     atualizado (na coleção `modelos_contrato`) p/ usar `{{contratante_
     qualificacao}}`/`{{contratante_nome}}` — precisa do deploy do código p/
     preencher.
+  - **Endereço do cliente na qualificação (jul/2026):** `qualificacaoContratante`
+    aceita `endereco` opcional — CNPJ → ", com sede em {endereco}" (antes do "neste
+    ato representada por"); CPF → ", residente em {endereco}". O "Novo contrato"
+    tem o campo **Endereço do cliente** (puxado de `cliente.endereco` + `cidade`
+    em `escolherCliente`, editável) e passa `cliente_endereco` a
+    `criarContratoDoModelo`. Placeholder `{{cliente_endereco}}` também disponível.
+    O modelo 02 ("Gestão de sistema para arquitetura") teve o endereço fixo da
+    Schramm REMOVIDO da linha CONTRATANTE (agora vem da ficha via
+    `{{contratante_qualificacao}}`).
   - **EDITAR o contrato (jul/2026):** botão **"✏️ Editar contrato"** na ficha e
     **"Editar"** na lista (só quando NÃO assinado/cancelado) abre um editor do
     **conteúdo** deste contrato (título + texto), salvo via `atualizarContrato`

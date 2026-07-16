@@ -447,6 +447,7 @@ export async function responderOrcamento(
           razaoSocial: o.razao_social,
           documento: docFinal,
         }),
+        cliente_endereco: '',
         razao_social: o.razao_social ?? '',
         fundador_nome: o.fundador_nome ?? '',
         fundador_cpf: o.fundador_cpf ?? '',
@@ -535,6 +536,7 @@ export async function criarContratoDoModelo(dados: {
   cliente_documento?: string
   cliente_email?: string
   razao_social?: string
+  cliente_endereco?: string
   telefone?: string | null
   cliente_id?: string | null
   titulo?: string
@@ -551,6 +553,7 @@ export async function criarContratoDoModelo(dados: {
   const documento = dados.cliente_documento?.trim()
   const email = dados.cliente_email?.trim()
   const razao = dados.razao_social?.trim()
+  const endereco = dados.cliente_endereco?.trim()
   // "Inteligência" do documento: CPF vs CNPJ define rótulo, formatação e QUEM é
   // o CONTRATANTE (CPF = a pessoa cadastrada; CNPJ = a empresa/razão social,
   // com a pessoa como representante). Se o documento não vier, mantém os
@@ -566,9 +569,10 @@ export async function criarContratoDoModelo(dados: {
         cliente_documento_rotulado: temDoc ? documentoRotulado(documento) : '{{cliente_documento_rotulado}}',
         contratante_nome: temDoc || nome ? contratanteNome(nome, razao, documento) : '{{contratante_nome}}',
         contratante_qualificacao: temDoc
-          ? qualificacaoContratante({ nome, razaoSocial: razao, documento })
+          ? qualificacaoContratante({ nome, razaoSocial: razao, documento, endereco })
           : '{{contratante_qualificacao}}',
         cliente_email: email || '{{cliente_email}}',
+        cliente_endereco: endereco || '{{cliente_endereco}}',
         razao_social: razao || '',
         data: formatarData(quando),
       })

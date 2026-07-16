@@ -497,6 +497,7 @@ function NovoContrato({
   const [email, setEmail] = useState('')
   const [telefone, setTelefone] = useState('')
   const [razao, setRazao] = useState('')
+  const [endereco, setEndereco] = useState('')
   const [titulo, setTitulo] = useState('')
   const [gerando, setGerando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
@@ -527,6 +528,9 @@ function NovoContrato({
     setEmail((c.contrato_email || c.email_contato || '').trim())
     setTelefone((c.telefone || '').trim())
     setRazao((c.razao_social || '').trim())
+    // Endereço para o contrato: junta endereço + cidade da ficha.
+    const end = [(c.endereco || '').trim(), (c.cidade || '').trim()].filter(Boolean).join(', ')
+    setEndereco(end)
     if (!titulo.trim()) setTitulo(`Contrato: ${c.nome_marca}`)
   }
 
@@ -542,6 +546,7 @@ function NovoContrato({
         cliente_documento: documento.trim() || undefined,
         cliente_email: email.trim() || undefined,
         razao_social: razao.trim() || undefined,
+        cliente_endereco: endereco.trim() || undefined,
         telefone: telefone.trim() || undefined,
         titulo: titulo.trim() || undefined,
       })
@@ -632,6 +637,18 @@ function NovoContrato({
             <div className="field campo-toda">
               <label>Razão social (opcional)</label>
               <input value={razao} onChange={(e) => setRazao(e.target.value)} placeholder="se for empresa" />
+            </div>
+            <div className="field campo-toda">
+              <label>Endereço do cliente (opcional)</label>
+              <input
+                value={endereco}
+                onChange={(e) => setEndereco(e.target.value)}
+                placeholder="Rua, nº, bairro, cidade/UF, CEP"
+              />
+              <span className="campo-ajuda">
+                Entra na qualificação do contratante (“residente em…” / “com sede em…”). Puxado da
+                ficha do cliente; ajuste se precisar.
+              </span>
             </div>
             <div className="field campo-toda">
               <label>Título do contrato (opcional)</label>
