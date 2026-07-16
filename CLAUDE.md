@@ -486,7 +486,8 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
     preencher.
   - **Endereço do cliente na qualificação (jul/2026):** `qualificacaoContratante`
     aceita `endereco` opcional — CNPJ → ", com sede em {endereco}" (antes do "neste
-    ato representada por"); CPF → ", residente em {endereco}". O "Novo contrato"
+    ato representada por"); CPF → ", com endereço em {endereco}" (NÃO diz
+    "residente"/"residência", a pedido da KA — o endereço pode ser comercial). O "Novo contrato"
     tem o campo **Endereço do cliente** (puxado de `cliente.endereco` + `cidade`
     em `escolherCliente`, editável) e passa `cliente_endereco` a
     `criarContratoDoModelo`. Placeholder `{{cliente_endereco}}` também disponível.

@@ -79,6 +79,8 @@ export function qualificacaoContratante(opts: {
   }
   let s = nome
   if (docRot) s += `, inscrito(a) no ${docRot}`
-  if (endereco) s += `, residente em ${endereco}`
+  // "com endereço em" (neutro) — NÃO dizer "residente"/"residência", a pedido
+  // da KA: o endereço pode ser comercial e não queremos afirmar que é a casa.
+  if (endereco) s += `, com endereço em ${endereco}`
   return s
 }
