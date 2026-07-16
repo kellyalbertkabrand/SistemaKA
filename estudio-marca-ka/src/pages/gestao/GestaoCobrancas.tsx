@@ -159,6 +159,7 @@ export function GestaoCobrancas() {
         linhas.push('', `Ou pague por aqui (cartão, boleto ou PIX): ${c.link_pagamento}`)
       }
       linhas.push('', 'Qualquer dúvida, me chama! Kelly')
+      linhas.push('', '_Mensagem automática enviada pelo sistema._')
       return linhas.join('\n')
     }
     const opcoes = PIX_OPCOES.map((p) => ({ rotulo: p.chip, mensagem: montar(p) }))
