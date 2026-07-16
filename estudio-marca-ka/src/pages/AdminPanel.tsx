@@ -266,11 +266,15 @@ export function AdminPanel() {
           </>
         ) : (
           <>
-            <div className={`page__head${aba === 'inicio' ? ' page__head--inicio' : ''}`}>
-              <div className="eyebrow">Painel KA</div>
-              <h1>{cab.titulo}</h1>
-              <p>{cab.sub}</p>
-            </div>
+            {/* Ao abrir um contrato, o próprio documento já tem cabeçalho — some
+                o cabeçalho da aba (PAINEL KA / Contratos) p/ não duplicar. */}
+            {!(aba === 'contratos' && (() => { const i = params.get('id'); return i && i !== 'novo' && i !== 'modelo' })()) && (
+              <div className={`page__head${aba === 'inicio' ? ' page__head--inicio' : ''}`}>
+                <div className="eyebrow">Painel KA</div>
+                <h1>{cab.titulo}</h1>
+                <p>{cab.sub}</p>
+              </div>
+            )}
 
             {aba === 'inicio' && (
               <div className="home-atalhos">

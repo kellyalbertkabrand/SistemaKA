@@ -78,9 +78,9 @@ export function ContratoPublico() {
     <div className="pub-wrap">
       <div className="pub-doc">
         <div className="pub-doc__head">
-          <div className="eyebrow">Contrato · Kelly Albert, KA</div>
+          <div className="eyebrow">Contrato · KA | Inteligência para Marcas · Kelly Albert</div>
           <h1>{contrato.titulo}</h1>
-          <div className="pub-doc__meta">emitido em {formatarData(contrato.criado_em)}</div>
+          <div className="pub-doc__meta nao-imprimir">emitido em {formatarData(contrato.criado_em)}</div>
         </div>
 
         <ContratoView conteudo={contrato.conteudo} />

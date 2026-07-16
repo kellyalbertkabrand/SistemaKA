@@ -366,9 +366,9 @@ export function GestaoContratos() {
         </p>
         <div className="pub-doc">
           <div className="pub-doc__head">
-            <div className="eyebrow">Contrato · Kelly Albert, KA</div>
+            <div className="eyebrow">Contrato · KA | Inteligência para Marcas · Kelly Albert</div>
             <h1>{vendo.titulo}</h1>
-            <div className="pub-doc__meta">
+            <div className="pub-doc__meta nao-imprimir">
               criado em {formatarData(vendo.criado_em)} ·{' '}
               <span className={`badge ${BADGE_CONTRATO[vendo.status]}`}>{rotuloStatus('contrato', vendo.status)}</span>
             </div>
