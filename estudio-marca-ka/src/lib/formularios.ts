@@ -53,14 +53,14 @@ export interface DefinicaoFormulario {
 const IKIGAI: DefinicaoFormulario = {
   tipo: 'ikigai',
   nome: 'IKIGAI Empresarial',
-  etapa: 'Marca com Essência© — Etapa 1',
+  etapa: 'Projeto Marca com Essência© · Etapa 1',
   intro:
-    'Bem-vindo(a) à jornada de descoberta do seu Ikigai — um elemento transformador ' +
+    'Bem-vindo(a) à jornada de descoberta do seu Ikigai, um elemento transformador ' +
     'não só para a sua vida pessoal, mas essencial para o brilho e o sucesso da sua ' +
     'marca ou negócio. Esta ferramenta alinha paixão, missão, vocação e profissão para ' +
     'revelar o coração da sua marca. Reflita com sinceridade sobre cada pergunta: é neste ' +
     'espaço de honestidade e introspecção que o verdadeiro Ikigai é encontrado. ' +
-    'Pode responder com calma — o que você escreve fica salvo automaticamente, e você ' +
+    'Pode responder com calma: o que você escreve fica salvo automaticamente, e você ' +
     'pode parar e voltar depois pelo mesmo link.',
   secoes: [
     {
@@ -75,7 +75,7 @@ const IKIGAI: DefinicaoFormulario = {
     },
     {
       titulo: 'Paixão',
-      descricao: 'Pessoal e profissional — o que você ama fazer?',
+      descricao: 'Pessoal e profissional: o que você ama fazer?',
       campos: [
         {
           id: 'paixao_reflexao',
@@ -104,7 +104,7 @@ const IKIGAI: DefinicaoFormulario = {
     },
     {
       titulo: 'Missão',
-      descricao: 'Pessoal e profissional — o que o mundo precisa de você?',
+      descricao: 'Pessoal e profissional: o que o mundo precisa de você?',
       campos: [
         {
           id: 'missao_contribuicao',
@@ -132,7 +132,7 @@ const IKIGAI: DefinicaoFormulario = {
     },
     {
       titulo: 'Vocação',
-      descricao: 'Pelo que você pode ser pago? (áreas relacionadas ou não à sua profissão)',
+      descricao: 'Pelo que você pode ser pago? (áreas relacionadas ou não à sua profissão).',
       campos: [
         {
           id: 'vocacao_habilidades',
@@ -249,6 +249,8 @@ export async function criarFormulario(dados: {
   tipo: string
   cliente_id?: string | null
   cliente_nome?: string | null
+  /** Respostas iniciais (ex.: pré-preenchidas com os dados do cliente). */
+  respostas?: Record<string, string>
 }): Promise<Formulario> {
   const def = definicaoFormulario(dados.tipo)
   const quando = agora()
@@ -258,7 +260,7 @@ export async function criarFormulario(dados: {
     cliente_id: dados.cliente_id ?? null,
     cliente_nome: dados.cliente_nome ?? null,
     titulo: def?.nome ?? 'Formulário',
-    respostas: {},
+    respostas: dados.respostas ?? {},
     status: 'rascunho' as const,
     criado_em: quando,
     atualizado_em: quando,
@@ -268,12 +270,57 @@ export async function criarFormulario(dados: {
   return { id: ref.id, ...novo }
 }
 
+/** Dados do cadastro do cliente que já dá para pré-preencher no formulário. */
+export function prefillDoCliente(
+  tipo: string,
+  c: {
+    email_contato?: string | null
+    responsavel?: string | null
+    contrato_nome?: string | null
+    fundador_nome?: string | null
+    nome_marca?: string | null
+    cidade?: string | null
+  },
+): Record<string, string> {
+  if (tipo !== 'ikigai') return {}
+  const nome = (c.contrato_nome || c.fundador_nome || c.responsavel || c.nome_marca || '').trim()
+  const out: Record<string, string> = {}
+  if (c.email_contato) out.email = c.email_contato.trim()
+  if (nome) out.nome = nome
+  if (c.cidade) out.cidade = c.cidade.trim()
+  return out
+}
+
 export async function excluirFormulario(id: string): Promise<void> {
   await moverParaLixeira('formularios', id)
 }
 
-export function linkPublicoFormulario(token: string): string {
-  return `${window.location.origin}/formulario/${token}`
+function slugTexto(t: string): string {
+  return t
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+    .slice(0, 40)
+}
+
+/**
+ * Link do formulário com URL LIMPA (ex.: `/formulario/boba-joy-ikigai-<token>`).
+ * O token (32 hex, sem hífen) fica NO FIM e é o que identifica o formulário; o
+ * slug antes dele é só cosmético. Links antigos (só o token) continuam valendo.
+ */
+export function linkPublicoFormulario(token: string, rotulo?: string | null): string {
+  const slug = rotulo ? slugTexto(rotulo) : ''
+  const cauda = slug ? `${slug}-${token}` : token
+  return `${window.location.origin}/formulario/${cauda}`
+}
+
+/** Do parâmetro da URL ("slug-<token>" ou só o token), devolve o token. */
+export function tokenDoParametroFormulario(param: string): string {
+  const i = param.lastIndexOf('-')
+  return i >= 0 ? param.slice(i + 1) : param
 }
 
 async function formularioPorTokenDoc(token: string): Promise<Formulario | null> {

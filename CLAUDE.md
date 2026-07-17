@@ -939,6 +939,15 @@ público** e envia (WhatsApp). O cliente preenche em `/formulario/:token`
   **ver respostas** e pode **reabrir** p/ o cliente editar. Estilos `.form-pub*`
   /`.form-card*`/`.form-resp*` em gestao.css. Regra Firestore: leitura/escrita
   por token (hoje modo teste).
+- **Detalhes (jul/2026):** **URL limpa** (`linkPublicoFormulario(token, rotulo)`
+  → `/formulario/<slug-marca-form>-<token>`; `tokenDoParametroFormulario` pega o
+  token no fim, links antigos valem). **Logo KA** (`ka-preto.png`) no cabeçalho
+  público, centralizado. Cabeçalho: "Projeto Marca com Essência© · Etapa 1"
+  (**sem travessões** — usa "·"/":"; padrão da marca). Ao criar, **2 opções**:
+  **pré-preenchido** com os dados do cadastro (`prefillDoCliente` = nome/e-mail/
+  cidade) ou **em branco**. **Exportar respostas em PDF** (`imprimirComoPdf`,
+  botão no detalhe). Botão **WhatsApp** com o número do cliente + mensagem de
+  acompanhamento do IKIGAI. Mais **espaço** entre a pergunta e o campo.
 
 ### Notícias (aba dentro do SaaS — jul/2026)
 

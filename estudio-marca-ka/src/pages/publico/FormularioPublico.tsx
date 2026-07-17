@@ -6,6 +6,7 @@ import {
   definicaoFormulario,
   enviarFormulario,
   salvarRespostas,
+  tokenDoParametroFormulario,
   type DefinicaoFormulario,
   type Formulario,
 } from '../../lib/formularios'
@@ -28,13 +29,13 @@ export function FormularioPublico() {
 
   const idRef = useRef<string | null>(null)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const rascunhoKey = `form-rascunho-${token}`
+  const rascunhoKey = `form-rascunho-${token ? tokenDoParametroFormulario(token) : ''}`
 
   useEffect(() => {
     ;(async () => {
       if (!token) return
       try {
-        const f = await carregarFormulario(token)
+        const f = await carregarFormulario(tokenDoParametroFormulario(token))
         if (!f) {
           setErro('Formulário não encontrado. Confira se o link foi copiado por inteiro.')
           return
@@ -149,7 +150,7 @@ export function FormularioPublico() {
             <h1>{def.nome}</h1>
           </div>
           <div className="pub-assinado">
-            ✓ Respostas enviadas. Obrigada por compartilhar — a Kelly já recebeu tudo. Você pode
+            ✓ Respostas enviadas. Obrigada por compartilhar! A Kelly já recebeu tudo. Você pode
             fechar esta página.
           </div>
         </div>
@@ -160,7 +161,8 @@ export function FormularioPublico() {
   return (
     <div className="pub-wrap">
       <div className="pub-doc form-pub">
-        <div className="pub-doc__head">
+        <div className="pub-doc__head form-pub__head">
+          <img className="form-pub__logo" src="/clientes/ka/ka-preto.png" alt="KA | Inteligência para Marcas" />
           {def.etapa && <div className="eyebrow">{def.etapa}</div>}
           <h1>{def.nome}</h1>
           {def.intro && <p className="form-pub__intro">{def.intro}</p>}
@@ -178,7 +180,7 @@ export function FormularioPublico() {
             <span className="form-pub__salvo">
               {salvando === 'salvando' && '💾 Salvando…'}
               {salvando === 'salvo' && '✓ Salvo'}
-              {salvando === 'erro' && '⚠️ Sem conexão — tentando de novo'}
+              {salvando === 'erro' && '⚠️ Sem conexão. Tentando de novo'}
               {salvando === null && 'Salva automaticamente'}
             </span>
           </div>
@@ -218,7 +220,7 @@ export function FormularioPublico() {
 
         <div className="form-pub__rodape">
           <p className="form-pub__aviso">
-            Pode parar quando quiser — o que você escreveu fica salvo. É só voltar neste mesmo link
+            Pode parar quando quiser: o que você escreveu fica salvo. É só voltar neste mesmo link
             para continuar.
           </p>
           <button className="btn" onClick={() => void enviar()} disabled={enviando}>

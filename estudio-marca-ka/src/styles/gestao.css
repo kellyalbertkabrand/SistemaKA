@@ -975,6 +975,18 @@
 
 /* ---- Formulários do cliente (etapas do Marca com Essência) ---- */
 /* Página pública (o cliente preenche) */
+.form-pub__head {
+  text-align: center;
+}
+.form-pub__logo {
+  height: 42px;
+  width: auto;
+  margin: 0 auto 0.9rem;
+  display: block;
+}
+.form-pub__head .form-pub__intro {
+  text-align: left;
+}
 .form-pub__intro {
   margin-top: 0.8rem;
   color: var(--t-600);
@@ -1027,7 +1039,22 @@
   margin: 0.2rem 0 0.8rem;
 }
 .form-pub__campo {
-  margin-bottom: 1.1rem;
+  margin-bottom: 1.7rem;
+}
+/* Mais respiro entre a pergunta (label + ajuda) e o campo de escrever. */
+.form-pub__campo label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+.form-pub__campo .campo-ajuda {
+  display: block;
+  margin-bottom: 0.7rem;
+  line-height: 1.4;
+}
+.form-pub__campo input,
+.form-pub__campo textarea {
+  margin-top: 0.5rem;
 }
 .form-pub__req {
   color: var(--erro, #c0392b);
@@ -1042,6 +1069,23 @@
   color: var(--t-500);
   margin-bottom: 0.9rem;
   line-height: 1.5;
+}
+
+/* Admin: opção de envio (pré-preenchido / em branco) */
+.form-radio-linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.2rem;
+  margin: 0.2rem 0 0.3rem;
+}
+.form-radio {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.88rem;
+  color: var(--t-700);
+  cursor: pointer;
+  font-weight: 500;
 }
 
 /* Admin: lista de formulários (cards) */

@@ -9,10 +9,12 @@ import {
   excluirFormulario,
   linkPublicoFormulario,
   listarFormularios,
+  prefillDoCliente,
   reabrirFormulario,
   type Formulario,
 } from '../../lib/formularios'
 import { formatarData } from '../../lib/gestao'
+import { imprimirComoPdf } from '../../lib/ui'
 import { useCopiar } from '../../hooks/useCopiar'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import { confirmar } from '../../lib/confirmar'
@@ -28,6 +30,7 @@ export function GestaoFormularios() {
   const [novo, setNovo] = useState(false)
   const [tipoNovo, setTipoNovo] = useState('ikigai')
   const [clienteNovo, setClienteNovo] = useState('')
+  const [prefill, setPrefill] = useState(true)
   const [vendoId, setVendoId] = useState<string | null>(null)
   const copiar = useCopiar()
   const { mostrar } = useToast()
@@ -58,15 +61,23 @@ export function GestaoFormularios() {
         tipo: tipoNovo,
         cliente_id: clienteNovo || null,
         cliente_nome: c ? c.responsavel || c.nome_marca : null,
+        // Duas opções: pré-preencher com os dados do cadastro ou enviar em branco.
+        respostas: prefill && c ? prefillDoCliente(tipoNovo, c) : undefined,
       })
       setNovo(false)
       setClienteNovo('')
       await recarregar()
-      // Já copia o link pronto para enviar.
-      await copiar(linkPublicoFormulario(f.token), 'Link do formulário copiado!')
+      // Já copia o link (limpo) pronto para enviar.
+      await copiar(linkPublicoFormulario(f.token, rotuloLink(f)), 'Link do formulário copiado!')
     } catch (e) {
       mostrar(e instanceof Error ? e.message : String(e), 'erro')
     }
+  }
+
+  // Rótulo cosmético do link limpo: marca do cliente + nome curto do formulário.
+  function rotuloLink(f: Formulario): string {
+    const def = definicaoFormulario(f.tipo)
+    return [f.cliente_nome || '', def?.nome || ''].filter(Boolean).join(' ')
   }
 
   async function excluir(f: Formulario) {
@@ -90,10 +101,12 @@ export function GestaoFormularios() {
     const msg = [
       `Oi${nome ? `, ${nome}` : ''}! 😊`,
       '',
-      `Pra começarmos, preencha o formulário *${def?.nome || 'do projeto'}* por aqui:`,
-      linkPublicoFormulario(f.token),
+      `Pra começarmos o *Projeto Marca com Essência©*, o primeiro passo é o formulário *${
+        def?.nome || 'do projeto'
+      }*. É por aqui:`,
+      linkPublicoFormulario(f.token, rotuloLink(f)),
       '',
-      'Pode responder com calma — fica salvo automaticamente, dá pra parar e voltar depois no mesmo link.',
+      'Pode responder com calma: fica salvo automaticamente, dá pra parar e voltar depois no mesmo link. Qualquer dúvida, me chama! 💛',
     ].join('\n')
     abrirWhatsApp(c?.telefone, msg, f.cliente_nome || null)
   }
@@ -132,7 +145,7 @@ export function GestaoFormularios() {
             <div className="field">
               <label>Cliente</label>
               <select value={clienteNovo} onChange={(e) => setClienteNovo(e.target.value)}>
-                <option value="">— Escolher cliente —</option>
+                <option value="">Escolher cliente…</option>
                 {clientes.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.nome_marca}
@@ -140,6 +153,31 @@ export function GestaoFormularios() {
                   </option>
                 ))}
               </select>
+            </div>
+            <div className="field campo-toda">
+              <label>Como enviar</label>
+              <div className="form-radio-linha">
+                <label className="form-radio">
+                  <input
+                    type="radio"
+                    checked={prefill}
+                    onChange={() => setPrefill(true)}
+                  />
+                  Pré-preenchido com os dados do cliente
+                </label>
+                <label className="form-radio">
+                  <input
+                    type="radio"
+                    checked={!prefill}
+                    onChange={() => setPrefill(false)}
+                  />
+                  Em branco
+                </label>
+              </div>
+              <span className="campo-ajuda">
+                Pré-preenchido já preenche nome, e-mail e cidade do cadastro (se houver). O cliente
+                ainda pode ajustar.
+              </span>
             </div>
           </div>
           <p>
@@ -196,7 +234,7 @@ export function GestaoFormularios() {
                 </button>
                 <button
                   className="btn--voltar"
-                  onClick={() => void copiar(linkPublicoFormulario(f.token), 'Link copiado!')}
+                  onClick={() => void copiar(linkPublicoFormulario(f.token, rotuloLink(f)), 'Link copiado!')}
                 >
                   Copiar link
                 </button>
@@ -227,15 +265,22 @@ function DetalheFormulario({
   const def = definicaoFormulario(f.tipo)
   const copiar = useCopiar()
   if (!def) return null
+  const rotulo = [f.cliente_nome || '', def.nome].filter(Boolean).join(' ')
   return (
     <div>
-      <p style={{ marginBottom: '1rem', display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+      <p className="nao-imprimir" style={{ marginBottom: '1rem', display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
         <button className="btn--voltar" onClick={aoVoltar}>
           ← Formulários
         </button>
         <button
           className="btn--voltar"
-          onClick={() => void copiar(linkPublicoFormulario(f.token), 'Link copiado!')}
+          onClick={() => imprimirComoPdf(def.nome, f.cliente_nome)}
+        >
+          Salvar em PDF
+        </button>
+        <button
+          className="btn--voltar"
+          onClick={() => void copiar(linkPublicoFormulario(f.token, rotulo), 'Link copiado!')}
         >
           Copiar link
         </button>
@@ -270,7 +315,7 @@ function DetalheFormulario({
                 <div key={c.id} className="form-resp__item">
                   <div className="form-resp__pergunta">{c.label}</div>
                   <div className={`form-resp__resposta ${val ? '' : 'form-resp__resposta--vazia'}`}>
-                    {val || '— não respondido —'}
+                    {val || '(não respondido)'}
                   </div>
                 </div>
               )
