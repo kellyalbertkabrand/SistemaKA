@@ -912,6 +912,34 @@ Aba **Cuidadoras 🔒** no painel (restrita à admin): gestão das cuidadoras
   de cadastro); read/update/delete só a KA. O mesmo padrão foi aplicado a
   `clientes` (o `/cadastro` público precisava de `create`).
 
+### Formulários do cliente (etapas do Marca com Essência© — jul/2026)
+
+Aba **Formulários 🔒** (`/formularios`, grupo "Gestão do negócio" da home + menu
+Gestão; `GestaoFormularios.tsx` + `src/lib/formularios.ts`): formulários longos
+que o cliente preenche no início do projeto (etapas do **Marca com Essência©**).
+A KA cria um formulário p/ um cliente (escolhe o tipo + cliente), copia o **link
+público** e envia (WhatsApp). O cliente preenche em `/formulario/:token`
+(`FormularioPublico.tsx`) **sem login**.
+
+- **A dor resolvida:** formulário grande → **salvamento automático**. Cada
+  resposta grava no Firestore (debounce ~1s) + rascunho em `localStorage`; o
+  cliente **para e volta depois no mesmo link** sem perder nada, inclusive
+  trocando de aparelho. Mostra **barra de progresso** ("7 de 18 respondidas"),
+  status **"✓ Salvo"** e blocos por seção (não assusta). Só ao final clica
+  **Enviar** (valida obrigatórios) → `status:'enviado'`.
+- **Definição no código** (`FORMULARIOS` em `formularios.ts`): 1º formulário =
+  **IKIGAI Empresarial** (5 dados + 13 reflexões em Paixão/Missão/Vocação/
+  Profissão/Finalização, fiel ao Google Forms da KA). Cada campo tem
+  `tipo` (texto/paragrafo/email/data), `label`, `ajuda`, `obrigatorio`. Novos
+  formulários (outras etapas) entram no mesmo registro.
+- **Instância** = doc na coleção `formularios` (token público, `respostas`,
+  `status`, `cliente_id/nome`). CRUD em `formularios.ts` (`criarFormulario`,
+  `carregarFormulario`, `salvarRespostas`, `enviarFormulario`, `reabrir…`,
+  `excluir…` p/ lixeira). Admin lista em cards (progresso + status), abre p/
+  **ver respostas** e pode **reabrir** p/ o cliente editar. Estilos `.form-pub*`
+  /`.form-card*`/`.form-resp*` em gestao.css. Regra Firestore: leitura/escrita
+  por token (hoje modo teste).
+
 ### Notícias (aba dentro do SaaS — jul/2026)
 
 Aba **Notícias** (`/noticias`, no grupo "Criação" da home + menu topo,

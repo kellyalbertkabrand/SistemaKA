@@ -12,6 +12,7 @@ import { ContratoPublico } from './pages/publico/ContratoPublico'
 import { CadastroPublico } from './pages/publico/CadastroPublico'
 import { CuidadoraCadastro } from './pages/publico/CuidadoraCadastro'
 import { ProjetoPublico } from './pages/publico/ProjetoPublico'
+import { FormularioPublico } from './pages/publico/FormularioPublico'
 import { PortalVM } from './pages/publico/PortalVM'
 import { PropostaDoc } from './pages/publico/PropostaDoc'
 import { modeloPropostaPadrao } from './lib/gestao'
@@ -58,6 +59,7 @@ export default function App() {
             'relatorios',
             'atividades',
             'cuidadoras',
+            'formularios',
             'noticias',
             'lixeira',
           ].map((secao) => (
@@ -77,6 +79,9 @@ export default function App() {
 
           {/* Acompanhamento de projeto pelo cliente (tempo real, por token) */}
           <Route path="/projeto/:token" element={<ProjetoPublico />} />
+
+          {/* Formulário do cliente (etapa do Marca com Essência©, por token) */}
+          <Route path="/formulario/:token" element={<FormularioPublico />} />
 
           {/* Portal só-leitura da VM Rocks (parceira) — URL limpa /vm-rocks */}
           <Route path="/vm-rocks" element={<PortalVM />} />
