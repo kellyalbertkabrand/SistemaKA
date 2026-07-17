@@ -1,4 +1,4 @@
-# trigger: testar publicação no Firestore (app da Kelly) v4
+# trigger: coleta fresca do dia 17/07/2026 pra Kelly ver v6
 name: Coletar agora (leve)
 
 # Só COLETA o dia + publica (sem re-resumir todo o histórico). Rápido.
