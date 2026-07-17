@@ -74,10 +74,9 @@ export function GestaoFormularios() {
     }
   }
 
-  // Rótulo cosmético do link limpo: marca do cliente + nome curto do formulário.
+  // Rótulo cosmético do link limpo: só o PRIMEIRO nome (URL mais curta).
   function rotuloLink(f: Formulario): string {
-    const def = definicaoFormulario(f.tipo)
-    return [f.cliente_nome || '', def?.nome || ''].filter(Boolean).join(' ')
+    return primeiroNome(f.cliente_nome) || 'formulario'
   }
 
   async function excluir(f: Formulario) {
@@ -269,7 +268,7 @@ function DetalheFormulario({
   const def = definicaoFormulario(f.tipo)
   const copiar = useCopiar()
   if (!def) return null
-  const rotulo = [f.cliente_nome || '', def.nome].filter(Boolean).join(' ')
+  const rotulo = primeiroNome(f.cliente_nome) || 'formulario'
   return (
     <div>
       <p className="nao-imprimir" style={{ marginBottom: '1rem', display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>

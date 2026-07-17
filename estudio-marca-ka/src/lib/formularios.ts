@@ -235,7 +235,9 @@ function agora() {
   return new Date().toISOString()
 }
 function novoToken() {
-  return crypto.randomUUID().replace(/-/g, '')
+  // Token menor (16 hex ≈ 1,8×10^19 combinações — deixa a URL curta e continua
+  // praticamente impossível de adivinhar). Links antigos (32 hex) seguem valendo.
+  return crypto.randomUUID().replace(/-/g, '').slice(0, 16)
 }
 
 export async function listarFormularios(): Promise<Formulario[]> {
