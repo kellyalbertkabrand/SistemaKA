@@ -212,15 +212,16 @@ export function GestaoFormularios() {
           const resp = def
             ? camposDe(def).filter((c) => (f.respostas?.[c.id] || '').trim()).length
             : 0
-          const enviado = f.status === 'enviado'
+          // "Preenchido" (verde) quando enviado OU quando o cliente respondeu tudo.
+          const completo = f.status === 'enviado' || (total > 0 && resp === total)
           return (
-            <div key={f.id} className={`form-card ${enviado ? 'form-card--ok' : ''}`}>
+            <div key={f.id} className={`form-card ${completo ? 'form-card--ok' : ''}`}>
               <div className="form-card__topo">
                 <button className="cel-abrir" onClick={() => setVendoId(f.id)}>
                   {f.cliente_nome || 'Sem cliente'}
                 </button>
-                <span className={`badge ${enviado ? 'badge--verde' : 'badge--azul'}`}>
-                  {enviado ? 'Enviado' : 'Em preenchimento'}
+                <span className={`badge ${completo ? 'badge--verde' : 'badge--azul'}`}>
+                  {completo ? 'Preenchido' : 'Em preenchimento'}
                 </span>
               </div>
               <div className="form-card__meta">
@@ -303,7 +304,7 @@ function DetalheFormulario({
           <h1>{def.nome}</h1>
           <div className="pub-doc__meta">
             {f.cliente_nome || 'Sem cliente'} ·{' '}
-            {f.status === 'enviado' ? 'Enviado' : 'Em preenchimento'}
+            {f.status === 'enviado' ? 'Preenchido' : 'Em preenchimento'}
           </div>
         </div>
         {def.secoes.map((sec) => (
