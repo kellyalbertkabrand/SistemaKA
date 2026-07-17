@@ -12,6 +12,10 @@ Além disso, o sistema monta um **post pronto do dia** — legenda (e, com a cha
 OpenAI configurada, também a imagem) prontos para revisar e publicar. Veja a seção
 [Post pronto do dia](#post-pronto-do-dia) abaixo.
 
+Cada matéria coletada também é **publicada direto no app da Kelly** (o SaaS em
+estudiodemarca.kellyalbert.com.br, aba **Notícias**) — veja
+[Publicação no app (Firestore)](#publicação-no-app-firestore).
+
 ---
 
 ## Como funciona (visão geral)
@@ -22,6 +26,7 @@ GitHub Actions (todo dia)  ──►  python -m sistemaka run
         │                         ├─ deduplica e ranqueia por relevância
         │                         ├─ resume a essência em PT (Claude, se houver chave)
         │                         ├─ salva o histórico em /data
+        │                         ├─ publica cada matéria no app (Firestore)
         │                         └─ gera o painel em /public
         └──────────────────────►  publica no GitHub Pages (site)
 ```
@@ -62,6 +67,27 @@ GitHub Actions — não o navegador.
 
 Sem a chave o sistema continua funcionando: ele mostra o trecho original da fonte
 em vez do resumo sintetizado.
+
+---
+
+## Publicação no app (Firestore)
+
+Cada matéria coletada é publicada direto no **app da Kelly** (o SaaS "Estúdio de
+Marca", em `estudiodemarca.kellyalbert.com.br/noticias`) — a aba **Notícias** lê
+essa mesma fonte e mostra os cards automaticamente, sem depender do painel
+estático nem do GitHub Pages/Netlify.
+
+- **Onde**: Firestore do projeto `estudio-de-marcas-ka`, coleção `noticias` — 1
+  documento por matéria (`sistemaka/firestore_publish.py`).
+- **Upsert**: o ID do documento é um hash do link (ou do título, se não houver
+  link) — rodar a coleta de novo **não duplica** a matéria, só atualiza os campos.
+- **Chave**: hoje usa a chave pública do Firebase Web (o Firestore está em modo
+  teste — aceita gravação sem outra credencial). Já vem com um valor padrão no
+  código; para trocar (ex.: quando o Firestore passar para o modo seguro), defina
+  `FIRESTORE_API_KEY` como secret. Nesse caso o gravador vai precisar migrar para
+  o Firebase Admin SDK com uma conta de serviço.
+- **Desligar**: se algum dia quiser pausar só essa publicação (sem afetar o resto
+  do sistema), defina a variável `SISTEMAKA_FIRESTORE_PUBLISH=0`.
 
 ---
 
@@ -116,6 +142,9 @@ Variáveis de ambiente úteis:
 | `SISTEMAKA_MODEL`    | Modelo da Claude (padrão: `claude-haiku-4-5-20251001`).        |
 | `OPENAI_API_KEY`     | Liga a geração de imagem do post pronto do dia.                |
 | `SISTEMAKA_IMAGE_MODEL` | Modelo de imagem da OpenAI (padrão: `gpt-image-1`).         |
+| `FIRESTORE_API_KEY`  | Chave do Firebase Web do app (tem padrão embutido).            |
+| `FIRESTORE_PROJECT`  | Projeto do Firebase do app (padrão: `estudio-de-marcas-ka`).   |
+| `SISTEMAKA_FIRESTORE_PUBLISH` | `0` desliga a publicação no app (padrão: ligado).     |
 | `SISTEMAKA_REPO`     | `owner/repo` para o botão “Atualizar agora”.                   |
 | `SISTEMAKA_TITLE`    | Título exibido no topo do painel.                             |
 
@@ -144,6 +173,7 @@ sistemaka/
   relevance.py           # deduplicação + ranqueamento
   summarize.py           # resumo/tradução em PT (IA) + resumo mensal + boletim
   content.py             # post pronto do dia: legenda (IA) + imagem (OpenAI)
+  firestore_publish.py   # publica cada matéria no app da Kelly (Firestore)
   store.py               # histórico em /data/items/AAAA-MM-DD.json
   site.py                # geração do painel (HTML/CSS) + do post pronto
   templates/             # layout do painel
