@@ -6,6 +6,7 @@ import logging
 
 from . import config, store
 from .fetch import fetch_all
+from .firestore_publish import publish_items
 from .relevance import rank_and_filter
 from .site import build_site
 from .summarize import generate_bulletin, summarize_items
@@ -23,6 +24,10 @@ def run_daily(window: int | None = None) -> list[str]:
     selected = rank_and_filter(raw, cfg)
     summarize_items(selected)
     days = store.save_items_by_published(selected, max_per_day)
+
+    # Publica no app da Kelly (estúdio de marca / aba Notícias) — a fonte de
+    # verdade pra ela agora é o SaaS, não mais só o painel estático.
+    publish_items(selected)
 
     # Boletim do dia: resumo editorial dos temas (branding, posicionamento,
     # semiótica, comunicação) para cada dia que recebeu matérias.

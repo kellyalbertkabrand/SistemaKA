@@ -1,22 +1,17 @@
 name: Coleta diária (SistemaKA)
 
-# Todo dia: coleta as notícias, salva no repositório e (se houver credencial)
-# republica o painel no Netlify automaticamente.
+# Todo dia, de madrugada: coleta as notícias, escreve o post pronto do dia
+# (legenda + imagem), publica cada matéria no app da Kelly (Firestore) e salva
+# o histórico no repositório.
 #
 # Quando roda:
-#  - schedule: VÁRIAS vezes ao dia. O agendador do GitHub costuma ATRASAR a
-#    execução (até 2–4h), então rodamos várias vezes e em minutos "quebrados"
-#    (atrasam menos) para garantir que, quando você abrir o painel, o dia já
-#    esteja coletado e publicado.
+#  - schedule: 1x por dia, às 3h de Brasília. O agendador do GitHub pode
+#    atrasar um pouco a execução (minutos a pouco mais de 1h em dias
+#    concorridos) — normal, o conteúdo do dia estará pronto de manhã.
 #  - workflow_dispatch: quando você clica em "Atualizar agora" / "Run workflow"
-# SISTEMA PAUSADO (a pedido da Kelly, 2026). O agendamento automático está
-# comentado abaixo. Para VOLTAR a rodar sozinho: descomente o bloco
-# "schedule:" (as 3 linhas de cron) e envie (push) de novo.
 on:
-  # schedule:
-  #   - cron: "11 8 * * *"    # 08:11 UTC ≈ 05:11 Brasília (cedo; pronto de manhã)
-  #   - cron: "11 13 * * *"   # 13:11 UTC ≈ 10:11 Brasília
-  #   - cron: "11 18 * * *"   # 18:11 UTC ≈ 15:11 Brasília
+  schedule:
+    - cron: "0 6 * * *"   # 06:00 UTC = 03:00 Brasília (sem horário de verão)
   workflow_dispatch: {}
 
 permissions:
@@ -49,9 +44,10 @@ jobs:
       - name: Instalar dependências
         run: pip install -r requirements.txt
 
-      - name: Coletar notícias do dia + gerar painel
+      - name: Coletar notícias do dia + gerar painel + post pronto
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           SISTEMAKA_REPO: ${{ github.repository }}
         run: python -m sistemaka run
 

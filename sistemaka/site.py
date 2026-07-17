@@ -9,7 +9,7 @@ from datetime import date, datetime, timedelta, timezone
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from . import config, store
+from . import config, content, store
 from .models import CATEGORY_LABELS, Item, _slugify
 from .summarize import summarize_month
 
@@ -155,10 +155,17 @@ def build_site() -> None:
         home_day = today_iso
     home_items = store.load_day(home_day)
     has_ai = any(it.angle_pt and "Conteúdo em inglês" not in it.angle_pt for it in home_items)
+
+    # ---- Post pronto do dia (legenda + imagem) — só para o dia mais recente,
+    # não é gerado (nem committado) para o histórico: custa IA/imagem a cada chamada.
+    post = _existing_daily_post(home_day) or _build_daily_post(home_day, home_items)
+    if post:
+        _write_daily_post(env, common, home_day, post)
+
     _render(env, "index.html", config.SITE_DIR / "index.html", rel="", **common,
             day=home_day, is_today=(home_day == today_iso), total=len(home_items),
             groups=_group_by_region(home_items), has_ai=has_ai,
-            bulletin=store.load_bulletin(home_day))
+            bulletin=store.load_bulletin(home_day), post=post)
 
     # ---- Arquivo ----
     archive_ctx = {**common, "months": [(m, len(i)) for m, i in month_items.items()]}
@@ -170,7 +177,7 @@ def build_site() -> None:
         items = store.load_day(day)
         _render(env, "day.html", config.SITE_DIR / "dia" / f"{day}.html", rel="../",
                 **common, day=day, total=len(items), groups=_group_by_region(items),
-                bulletin=store.load_bulletin(day))
+                bulletin=store.load_bulletin(day), post=post if day == home_day else None)
 
     # ---- Página por mês ----
     for month, items in month_items.items():
@@ -191,6 +198,45 @@ def build_site() -> None:
     shutil.copy(config.TEMPLATES_DIR / "styles.css", config.SITE_DIR / "styles.css")
     log.info("Site gerado (%d dias com matérias, %d páginas de dia)",
              len(data_days), len(all_dates))
+
+
+def _existing_daily_post(day: str) -> dict | None:
+    """Reaproveita o post já gerado nesta mesma execução (evita pagar a IA/imagem
+    de novo quando build_site() roda mais de uma vez no mesmo processo, como em
+    'run' seguido de 'refresh')."""
+    legenda_path = config.SITE_DIR / "posts" / day / "legenda.txt"
+    if not legenda_path.exists():
+        return None
+    with open(legenda_path, "r", encoding="utf-8") as fh:
+        legenda = fh.read()
+    image_name = "imagem.png" if (legenda_path.parent / "imagem.png").exists() else None
+    return {"legenda": legenda, "image_name": image_name, "source": None,
+            "refs": [], "caso": None}
+
+
+def _build_daily_post(day: str, items: list[Item]) -> dict | None:
+    try:
+        return content.build_daily_post(day, items)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Post do dia não gerado (%s): %s", day, exc)
+        return None
+
+
+def _write_daily_post(env: Environment, common: dict, day: str, post: dict) -> None:
+    """Grava a legenda e a imagem do post em public/posts/<dia>/ (não versionado
+    no git — regenerado a cada execução, publicado junto do painel)."""
+    post_dir = config.SITE_DIR / "posts" / day
+    post_dir.mkdir(parents=True, exist_ok=True)
+    with open(post_dir / "legenda.txt", "w", encoding="utf-8") as fh:
+        fh.write(post["legenda"])
+    if post.get("image_bytes"):
+        with open(post_dir / "imagem.png", "wb") as fh:
+            fh.write(post["image_bytes"])
+        post["image_name"] = "imagem.png"
+    elif not (post.get("image_name") and (post_dir / post["image_name"]).exists()):
+        post["image_name"] = None
+    _render(env, "post.html", post_dir / "index.html", rel="../../", **common,
+            day=day, post=post)
 
 
 def _category_counts(items: list[Item]) -> list[tuple[str, int]]:

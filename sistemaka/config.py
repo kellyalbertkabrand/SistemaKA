@@ -52,6 +52,38 @@ def anthropic_model() -> str:
     return os.environ.get("SISTEMAKA_MODEL", "claude-haiku-4-5-20251001").strip()
 
 
+# ---- Configuração da geração de imagem (opcional) --------------------------
+
+def openai_api_key() -> str | None:
+    key = os.environ.get("OPENAI_API_KEY", "").strip()
+    return key or None
+
+
+def openai_image_model() -> str:
+    return os.environ.get("SISTEMAKA_IMAGE_MODEL", "gpt-image-1").strip()
+
+
+# ---- Publicação no app da Kelly (Firestore) --------------------------------
+# Chave pública do Firebase Web do projeto (o banco está em modo teste —
+# publicável sem segredo; ver README/briefing). Pode ser trocada via env, ex.:
+# quando o Firestore passar para o modo seguro (conta de serviço).
+
+_FIRESTORE_DEFAULT_KEY = "AIzaSyB0wvONtPSbE8dleIYlzmWxeylVxfkZGm0"
+_FIRESTORE_DEFAULT_PROJECT = "estudio-de-marcas-ka"
+
+
+def firestore_api_key() -> str:
+    return os.environ.get("FIRESTORE_API_KEY", "").strip() or _FIRESTORE_DEFAULT_KEY
+
+
+def firestore_project() -> str:
+    return os.environ.get("FIRESTORE_PROJECT", "").strip() or _FIRESTORE_DEFAULT_PROJECT
+
+
+def firestore_enabled() -> bool:
+    return os.environ.get("SISTEMAKA_FIRESTORE_PUBLISH", "1").strip() != "0"
+
+
 def site_base_title() -> str:
     return os.environ.get("SISTEMAKA_TITLE", "SistemaKA · Radar de Branding & IA")
 

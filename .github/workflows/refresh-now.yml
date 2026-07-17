@@ -43,6 +43,7 @@ jobs:
       - name: Coleta nova (temas novos) + refresh de todo o histórico
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           SISTEMAKA_REPO: ${{ github.repository }}
         run: |
           python -m sistemaka run
