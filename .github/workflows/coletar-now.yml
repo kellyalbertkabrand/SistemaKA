@@ -1,4 +1,4 @@
-# trigger: coleta serializada e salvamento à prova de conflito v3
+# trigger: testar publicação no Firestore (app da Kelly) v4
 name: Coletar agora (leve)
 
 # Só COLETA o dia + publica (sem re-resumir todo o histórico). Rápido.
