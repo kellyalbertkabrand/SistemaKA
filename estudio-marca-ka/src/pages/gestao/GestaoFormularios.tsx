@@ -107,8 +107,10 @@ export function GestaoFormularios() {
       'Segue o link abaixo:',
       linkPublicoFormulario(f.token, rotuloLink(f)),
       '',
-      'Pode responder com calma: *fica salvo automaticamente*, dá pra parar e voltar depois no mesmo link.',
+      'Pode responder com calma: fica salvo automaticamente, dá pra parar e voltar depois no mesmo link.',
       'Qualquer dúvida, me chama!',
+      '',
+      '_Quando finalizar por favor me avise_',
     ].join('\n')
     abrirWhatsApp(c?.telefone, msg, f.cliente_nome || null)
   }
