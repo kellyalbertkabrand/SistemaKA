@@ -912,6 +912,22 @@ Aba **Cuidadoras 🔒** no painel (restrita à admin): gestão das cuidadoras
   de cadastro); read/update/delete só a KA. O mesmo padrão foi aplicado a
   `clientes` (o `/cadastro` público precisava de `create`).
 
+### Notícias (aba dentro do SaaS — jul/2026)
+
+Aba **Notícias** (`/noticias`, no grupo "Criação" da home + menu topo,
+`GestaoNoticias.tsx` + `src/lib/noticias.ts`): a KA quer **centralizar tudo no
+app** (o SaaS). Um **sistema de geração de notícias externo** (outra sessão/
+serviço, NÃO o antigo `sistemaka/` em Python da raiz) **publica direto no
+Firestore do app**, na coleção **`noticias`**; a aba só **LÊ** (`listarNoticias`,
+`orderBy('criado_em','desc')`, ignora `excluido_em`) e mostra **cards agrupados
+por dia** (título, fonte, resumo, imagem, "Ler matéria", categoria) + botão
+"↻ Atualizar". Aba **aberta** (sem `GateAdmin`), como o Estúdio. Doc de
+`noticias`: `titulo`+`criado_em` (obrigatórios), `data` (YYYY-MM-DD, agrupa),
+`resumo`/`fonte`/`url`/`imagem`/`categoria` (opcionais). O contrato p/ o sistema
+externo (gravar via REST com a apiKey pública enquanto o Firestore está em modo
+teste; upsert por ID determinístico) está em `BRIEFING-NOTICIAS-NO-SAAS.md`
+(entregue à KA). Estilos `.noticia*` em gestao.css.
+
 ---
 
 

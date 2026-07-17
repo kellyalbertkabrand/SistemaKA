@@ -973,6 +973,97 @@
   background: #17663f;
 }
 
+/* ---- Aba Notícias (radar de matérias) ---- */
+.noticias__topo {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+.noticias__grupo {
+  margin-bottom: 1.8rem;
+}
+.noticias__dia {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--t-500);
+  margin: 0 0 0.7rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.08);
+  padding-bottom: 0.35rem;
+}
+.noticias__grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+.noticia-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--card, #fff);
+  border: 1px solid rgba(15, 25, 35, 0.09);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: 0.15s;
+}
+.noticia-card:hover {
+  box-shadow: 0 6px 20px rgba(15, 25, 35, 0.08);
+}
+.noticia-card__capa {
+  height: 130px;
+  background-size: cover;
+  background-position: center;
+  background-color: rgba(15, 25, 35, 0.05);
+}
+.noticia-card__corpo {
+  padding: 0.9rem 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.noticia-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+.noticia-card__fonte {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--dourado, #b98a3e);
+}
+.noticia-card__tag {
+  font-size: 0.68rem;
+  color: var(--t-500);
+  background: rgba(15, 25, 35, 0.05);
+  border-radius: 100px;
+  padding: 0.1rem 0.5rem;
+}
+.noticia-card__titulo {
+  font-size: 1rem;
+  line-height: 1.3;
+  margin: 0;
+  color: var(--t-800, #12212f);
+}
+.noticia-card__resumo {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--t-600);
+  margin: 0;
+}
+.noticia-card__link {
+  margin-top: auto;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--dourado, #b98a3e);
+  text-decoration: none;
+  padding-top: 0.3rem;
+}
+.noticia-card__link:hover {
+  text-decoration: underline;
+}
+
 /* Seletor de PIX (pessoal/empresa) dentro do popup do WhatsApp. */
 .wa-box__pix {
   margin-top: 0.6rem;
