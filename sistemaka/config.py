@@ -52,6 +52,17 @@ def anthropic_model() -> str:
     return os.environ.get("SISTEMAKA_MODEL", "claude-haiku-4-5-20251001").strip()
 
 
+# ---- Configuração da geração de imagem (opcional) --------------------------
+
+def openai_api_key() -> str | None:
+    key = os.environ.get("OPENAI_API_KEY", "").strip()
+    return key or None
+
+
+def openai_image_model() -> str:
+    return os.environ.get("SISTEMAKA_IMAGE_MODEL", "gpt-image-1").strip()
+
+
 def site_base_title() -> str:
     return os.environ.get("SISTEMAKA_TITLE", "SistemaKA · Radar de Branding & IA")
 

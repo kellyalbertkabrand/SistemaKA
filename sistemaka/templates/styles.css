@@ -115,6 +115,24 @@ a { color: inherit; }
 .bulletin-body li { margin: 0 0 6px; line-height: 1.5; }
 .bulletin-body p { margin: 0 0 10px; line-height: 1.6; }
 
+/* Post pronto do dia */
+.post-teaser {
+  margin: 8px 0 34px; padding: 18px 22px; border-radius: 16px;
+  background: var(--panel-2); border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+}
+.post-teaser p { margin: 0; color: var(--muted); }
+.post-card {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 22px 24px; margin-bottom: 24px;
+}
+.post-image { max-width: 100%; border-radius: 12px; margin-bottom: 18px; display: block; }
+.post-legenda-text {
+  white-space: pre-wrap; font-family: inherit; font-size: 15px; line-height: 1.6;
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px;
+  padding: 16px; margin: 0 0 12px;
+}
+
 /* Region sections, groups & items */
 .region-section { margin: 40px 0; }
 .section-title {

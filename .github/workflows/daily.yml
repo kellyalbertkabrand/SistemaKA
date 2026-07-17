@@ -49,9 +49,10 @@ jobs:
       - name: Instalar dependências
         run: pip install -r requirements.txt
 
-      - name: Coletar notícias do dia + gerar painel
+      - name: Coletar notícias do dia + gerar painel + post pronto
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           SISTEMAKA_REPO: ${{ github.repository }}
         run: python -m sistemaka run
 

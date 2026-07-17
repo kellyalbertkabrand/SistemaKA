@@ -35,6 +35,7 @@ jobs:
       - name: Coletar últimos dias (com leitura da descrição real)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           SISTEMAKA_REPO: ${{ github.repository }}
         run: python -m sistemaka run --days 3
 
