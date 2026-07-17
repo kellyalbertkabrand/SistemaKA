@@ -1,7 +1,7 @@
 {
   "date": "2026-07-17",
-  "generated_at": "2026-07-17T02:10:30.011938+00:00",
-  "count": 2,
+  "generated_at": "2026-07-17T02:45:03.248860+00:00",
+  "count": 3,
   "items": [
     {
       "title": "Google anuncia rebranding do NotebookLM para Gemini Notebook e traz novos recursos de análise de dados - Diário 24 Horas",
@@ -14,14 +14,14 @@
       "published": "2026-07-17",
       "raw_summary": "Ferramenta ganha integração profunda com o ecossistema da empresa e passa a executar códigos nativamente em nuvem segura",
       "title_pt": "",
-      "summary_pt": "Ferramenta é renomeada e integrada ao ecossistema maior para reposicionar seu valor.",
+      "summary_pt": "Ferramenta ganha integração profunda com o ecossistema da empresa e passa a executar códigos nativamente em nuvem segura",
       "angle_pt": "",
-      "pme_pt": "",
+      "pme_pt": "PME: como se posicionar e se diferenciar no seu mercado.",
       "roteiro_pt": "",
       "link_kelly": "",
       "authors": "",
       "score": 22,
-      "fetched_at": "2026-07-17T02:06:20.433493+00:00",
+      "fetched_at": "2026-07-17T02:41:32.933181+00:00",
       "id": "449188946d73d78b"
     },
     {
@@ -35,15 +35,36 @@
       "published": "2026-07-17",
       "raw_summary": "A Lyncas, uma empresa focada em soluções digitais e inteligência artificial, acaba de anunciar a contratação de Cleiton Coradelli como seu novo gerente de Marketing. Essa mudança é significativa, pois visa reforçar a presença da marca no mercado e aprimorar suas estratégias de posicionamento e crescimento. Com mais de 20 anos de experiência no setor […]",
       "title_pt": "",
-      "summary_pt": "Empresa de IA investe em gestão de marketing para reforçar presença e posicionamento no mercado.",
+      "summary_pt": "A Lyncas, uma empresa focada em soluções digitais e inteligência artificial, acaba de anunciar a contratação de Cleiton Coradelli como seu novo gerente de Marketing.",
       "angle_pt": "",
-      "pme_pt": "Sinaliza que mesmo em empresas de IA/tech, a direção estratégica contínua em branding e marketing é essencial para não perder rumo.",
+      "pme_pt": "PME: como usar IA para fortalecer a marca sem precisar de grande orçamento.",
       "roteiro_pt": "",
-      "link_kelly": "Direção",
+      "link_kelly": "",
       "authors": "",
       "score": 18,
-      "fetched_at": "2026-07-17T02:06:37.121596+00:00",
+      "fetched_at": "2026-07-17T02:41:52.251916+00:00",
       "id": "09eba5a678727be9"
+    },
+    {
+      "title": "The New Wave ~ Hook Creative Studio - Campaign Brief",
+      "link": "https://campaignbrief.com/the-new-wave-hook-creative-studio/",
+      "source": "Campaign Brief",
+      "lang": "en",
+      "region": "world",
+      "category": "campanha",
+      "kind": "noticia",
+      "published": "2026-07-17",
+      "raw_summary": "The New Wave is Campaign Brief’s Q&A series spotlighting the next generation of independent creative companies and exploring how the indie model is evolving. From structure and speed to culture and capability, we unpack where these businesses are finding their edge and what's driving client deci",
+      "title_pt": "The New Wave ~ Hook Creative Studio - Resumo da campanha",
+      "summary_pt": "The New Wave é a série de perguntas e respostas do Campaign Brief que destaca a próxima geração de empresas criativas independentes e explora como o modelo independente está evoluindo.",
+      "angle_pt": "",
+      "pme_pt": "PME: ideias de campanha que dá para adaptar com poucos recursos.",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 5,
+      "fetched_at": "2026-07-17T02:43:31.954512+00:00",
+      "id": "a0df48ebe9f5f8ba"
     }
   ]
 }
