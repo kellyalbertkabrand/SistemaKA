@@ -917,6 +917,23 @@ Aba **Cuidadoras 🔒** no painel (restrita à admin): gestão das cuidadoras
 Aba **Formulários 🔒** (`/formularios`, grupo "Gestão do negócio" da home + menu
 Gestão; `GestaoFormularios.tsx` + `src/lib/formularios.ts`): formulários longos
 que o cliente preenche no início do projeto (etapas do **Marca com Essência©**).
+
+- **Página organizada por ETAPAS (jul/2026):** a página mostra o **Projeto Marca
+  com Essência©** como uma jornada em etapas numeradas (`ETAPAS_MARCA_ESSENCIA`
+  em `formularios.ts`; `rotuloEtapa` = "Etapa 01/02/03…") — qualquer pessoa da
+  equipe entende e **dispara cada etapa** pro cliente. Cada etapa é um bloco
+  (`.me-etapa`): **formulário** (`EtapaFormulario` — criar link + lista de envios
+  com status) ou **mensagem** (`EtapaMensagem` — só manda o texto padrão no
+  WhatsApp, sem formulário). Etapas hoje: **01 IKIGAI Empresarial** (form), **02
+  Sua História** (áudio no WhatsApp — `mensagemHistoria(nome?)`, com opção de
+  incluir ou não o nome; assinada "Felipe – Equipe KA"), **03 Identidade Verbal**
+  (form). Estilos `.me-*` em gestao.css.
+- **Formulário Identidade Verbal (Etapa 03):** `IDENTIDADE_VERBAL` em
+  `formularios.ts` — 10 seções (negócio, história, público, valores,
+  posicionamento, tom de voz, slogan, pilares, estilo visual, concorrentes).
+  Adaptado p/ servir **marca nova OU reposicionamento** (perguntas "hoje/atual"
+  reescritas p/ valer nos dois casos). Intro orienta escrever "Já foi respondido"
+  se já veio no IKIGAI/História.
 A KA cria um formulário p/ um cliente (escolhe o tipo + cliente), copia o **link
 público** e envia (WhatsApp). O cliente preenche em `/formulario/:token`
 (`FormularioPublico.tsx`) **sem login**.
