@@ -99,14 +99,17 @@ export function GestaoFormularios() {
     const nome = primeiroNome(f.cliente_nome || c?.responsavel || c?.nome_marca)
     const def = definicaoFormulario(f.tipo)
     const msg = [
-      `Oi${nome ? `, ${nome}` : ''}! 😊`,
+      `Olá${nome ? `, ${nome}` : ''}! Como vai?`,
       '',
-      `Pra começarmos o *Projeto Marca com Essência©*, o primeiro passo é o formulário *${
+      `Pra começarmos o Projeto Marca com Essência©, o primeiro passo é preencher o formulário ${
         def?.nome || 'do projeto'
-      }*. É por aqui:`,
+      }.`,
+      '',
+      'Segue o link abaixo:',
       linkPublicoFormulario(f.token, rotuloLink(f)),
       '',
-      'Pode responder com calma: fica salvo automaticamente, dá pra parar e voltar depois no mesmo link. Qualquer dúvida, me chama! 💛',
+      'Pode responder com calma: fica salvo automaticamente, dá pra parar e voltar depois no mesmo link.',
+      'Qualquer dúvida, me chama!',
     ].join('\n')
     abrirWhatsApp(c?.telefone, msg, f.cliente_nome || null)
   }
