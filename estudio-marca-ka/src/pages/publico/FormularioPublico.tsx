@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react'
 import { useParams } from 'react-router-dom'
 import {
   camposDe,
@@ -12,6 +12,9 @@ import {
 } from '../../lib/formularios'
 import { autoAltura } from '../../lib/ui'
 import '../../styles/gestao.css'
+
+// Cor de destaque por seção (paleta KA) — deixa cada bloco com "cara" própria.
+const ACENTOS = ['#C47830', '#3D6B7E', '#8B5A2B', '#152535', '#C2AA8A', '#9c6b3f']
 
 // Página pública do formulário (etapa do Marca com Essência©). O cliente
 // preenche sem login, com SALVAMENTO AUTOMÁTICO — pode parar e continuar depois
@@ -29,6 +32,8 @@ export function FormularioPublico() {
 
   const idRef = useRef<string | null>(null)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const flashRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [flashSalvo, setFlashSalvo] = useState(false)
   const rascunhoKey = `form-rascunho-${token ? tokenDoParametroFormulario(token) : ''}`
 
   useEffect(() => {
@@ -84,6 +89,10 @@ export function FormularioPublico() {
       try {
         await salvarRespostas(idRef.current!, novo)
         setSalvando('salvo')
+        // Aviso verde "Resposta salva" que aparece e some sozinho.
+        setFlashSalvo(true)
+        if (flashRef.current) clearTimeout(flashRef.current)
+        flashRef.current = setTimeout(() => setFlashSalvo(false), 2200)
       } catch {
         setSalvando('erro')
       }
@@ -161,10 +170,17 @@ export function FormularioPublico() {
   return (
     <div className="pub-wrap">
       <div className="pub-doc form-pub">
+        {/* Cabeçalho: logo COMPLETO da KA num tom levemente diferente do papel. */}
+        <div className="form-pub__cabecalho">
+          <img
+            className="form-pub__logo"
+            src="/logo-ka.png"
+            alt="KA | Inteligência para Marcas"
+          />
+        </div>
         <div className="pub-doc__head form-pub__head">
-          <img className="form-pub__logo" src="/clientes/ka/ka-preto.png" alt="KA | Inteligência para Marcas" />
-          {def.etapa && <div className="eyebrow">{def.etapa}</div>}
-          <h1>{def.nome}</h1>
+          <h1 className="form-pub__titulo">{def.nome}</h1>
+          {def.etapa && <div className="form-pub__etapa">{def.etapa}</div>}
           {def.intro && <p className="form-pub__intro">{def.intro}</p>}
         </div>
 
@@ -177,9 +193,15 @@ export function FormularioPublico() {
             <span>
               {respondidas} de {total} respondidas
             </span>
-            <span className="form-pub__salvo">
+            <span
+              className={
+                'form-pub__salvo' +
+                (salvando === 'salvo' ? ' form-pub__salvo--ok' : '') +
+                (salvando === 'erro' ? ' form-pub__salvo--erro' : '')
+              }
+            >
               {salvando === 'salvando' && '💾 Salvando…'}
-              {salvando === 'salvo' && '✓ Salvo'}
+              {salvando === 'salvo' && '✓ Resposta salva'}
               {salvando === 'erro' && '⚠️ Sem conexão. Tentando de novo'}
               {salvando === null && 'Salva automaticamente'}
             </span>
@@ -188,10 +210,16 @@ export function FormularioPublico() {
 
         {erro && <div className="erro-msg" style={{ marginTop: '1rem' }}>{erro}</div>}
 
-        {def.secoes.map((sec) => (
-          <section key={sec.titulo} className="form-pub__secao">
-            <h2 className="form-pub__secao-tit">{sec.titulo}</h2>
-            {sec.descricao && <p className="form-pub__secao-desc">{sec.descricao}</p>}
+        {def.secoes.map((sec, si) => (
+          <section
+            key={sec.titulo}
+            className="form-pub__secao"
+            style={{ '--acento': ACENTOS[si % ACENTOS.length] } as CSSProperties}
+          >
+            <div className="form-pub__secao-cab">
+              <h2 className="form-pub__secao-tit">{sec.titulo}</h2>
+              {sec.descricao && <p className="form-pub__secao-desc">{sec.descricao}</p>}
+            </div>
             {sec.campos.map((campo) => (
               <div key={campo.id} id={`campo-${campo.id}`} className="field form-pub__campo">
                 <label>
@@ -228,6 +256,7 @@ export function FormularioPublico() {
           </button>
         </div>
       </div>
+      {flashSalvo && <div className="form-pub__flash">✓ Resposta salva</div>}
     </div>
   )
 }

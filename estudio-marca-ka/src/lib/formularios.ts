@@ -53,7 +53,7 @@ export interface DefinicaoFormulario {
 const IKIGAI: DefinicaoFormulario = {
   tipo: 'ikigai',
   nome: 'IKIGAI Empresarial',
-  etapa: 'Projeto Marca com Essência© · Etapa 1',
+  etapa: 'Projeto Marca com Essência© · Etapa 01',
   intro:
     'Bem-vindo(a) à jornada de descoberta do seu Ikigai, um elemento transformador ' +
     'não só para a sua vida pessoal, mas essencial para o brilho e o sucesso da sua ' +

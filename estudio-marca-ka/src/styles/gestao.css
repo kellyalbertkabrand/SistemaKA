@@ -993,17 +993,36 @@
 
 /* ---- Formulários do cliente (etapas do Marca com Essência) ---- */
 /* Página pública (o cliente preenche) */
-.form-pub__head {
+/* Cabeçalho: logo COMPLETO num tom levemente diferente do papel. */
+.form-pub__cabecalho {
+  background: #f1ead9;
+  border: 1px solid rgba(15, 25, 35, 0.06);
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  margin-bottom: 1.4rem;
   text-align: center;
 }
 .form-pub__logo {
-  height: 42px;
+  height: 46px;
+  max-width: 100%;
   width: auto;
-  margin: 0 auto 0.9rem;
-  display: block;
+  object-fit: contain;
+  display: inline-block;
 }
-.form-pub__head .form-pub__intro {
+/* Nome (IKIGAI) + etapa alinhados à ESQUERDA. */
+.form-pub__head {
   text-align: left;
+}
+.form-pub__titulo {
+  margin: 0;
+}
+.form-pub__etapa {
+  margin-top: 0.35rem;
+  color: var(--dourado, #b98a3e);
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
 }
 .form-pub__intro {
   margin-top: 0.8rem;
@@ -1043,18 +1062,51 @@
   font-weight: 600;
   color: var(--t-600);
 }
+.form-pub__salvo--ok {
+  color: #1d7c4d;
+}
+.form-pub__salvo--erro {
+  color: var(--erro, #c0392b);
+}
+/* Cada seção é um BLOCO distinto, com destaque próprio (cor por seção). */
 .form-pub__secao {
-  margin-top: 1.8rem;
+  margin-top: 1.6rem;
+  padding: 1.5rem 1.3rem 0.9rem;
+  border-radius: 16px;
+  background: #faf8f2;
+  border: 1px solid rgba(15, 25, 35, 0.07);
+  border-top: 4px solid var(--acento, #c47830);
+}
+/* Título da seção CENTRALIZADO, com bastante espaço até os campos. */
+.form-pub__secao-cab {
+  text-align: center;
+  margin-bottom: 1.7rem;
 }
 .form-pub__secao-tit {
-  font-size: 1.1rem;
-  color: var(--t-800, #12212f);
+  font-size: 1.2rem;
+  color: var(--acento, #12212f);
   margin: 0;
 }
 .form-pub__secao-desc {
   color: var(--t-500);
   font-size: 0.85rem;
-  margin: 0.2rem 0 0.8rem;
+  margin: 0.35rem 0 0;
+  line-height: 1.4;
+}
+/* Aviso verde flutuante "Resposta salva". */
+.form-pub__flash {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  background: #1d7c4d;
+  color: #fff;
+  padding: 0.55rem 1.15rem;
+  border-radius: 100px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(15, 25, 35, 0.25);
+  z-index: 50;
 }
 .form-pub__campo {
   margin-bottom: 1.7rem;

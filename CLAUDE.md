@@ -948,6 +948,19 @@ público** e envia (WhatsApp). O cliente preenche em `/formulario/:token`
   cidade) ou **em branco**. **Exportar respostas em PDF** (`imprimirComoPdf`,
   botão no detalhe). Botão **WhatsApp** com o número do cliente + mensagem de
   acompanhamento do IKIGAI. Mais **espaço** entre a pergunta e o campo.
+- **Visual (jul/2026):** cabeçalho público com o **logo COMPLETO** (`/logo-ka.png`,
+  "KA | Inteligência para Marcas") numa faixa creme (`.form-pub__cabecalho`);
+  título **IKIGAI Empresarial** + etapa alinhados à **esquerda**. Cada seção é um
+  **bloco distinto** (`.form-pub__secao`, card com cor de destaque própria por
+  seção via `--acento`/`ACENTOS`, título centralizado, mais espaço até os campos).
+  **Aviso verde "✓ Resposta salva"**: no topo (`.form-pub__salvo--ok`) e um
+  **flutuante** que aparece e some (`.form-pub__flash`, `flashSalvo`).
+- **Prévia no WhatsApp (Open Graph):** como é SPA, o link `/formulario/*` teria a
+  prévia genérica. `scripts/gen-og.mjs` (roda no `build`) gera `dist/formulario.html`
+  (cópia do index com `<title>`/OG próprios: "IKIGAI Empresarial | Projeto Marca
+  com Essência© · Etapa 01"); `public/_redirects` manda `/formulario/*` p/ esse
+  HTML (antes do catch-all do SPA). Novas rotas com prévia própria entram no
+  array `paginas` do script.
 
 ### Notícias (aba dentro do SaaS — jul/2026)
 
