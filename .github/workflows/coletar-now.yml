@@ -1,4 +1,4 @@
-# trigger: testar publicação no Firestore (app da Kelly) v4
+# trigger: testar geração de imagem (OpenAI) v5
 name: Coletar agora (leve)
 
 # Só COLETA o dia + publica (sem re-resumir todo o histórico). Rápido.
