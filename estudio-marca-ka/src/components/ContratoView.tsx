@@ -28,6 +28,24 @@ function lerAssinaturas(bloco: string): Assinatura[] {
     })
 }
 
+/**
+ * Separa o "fecho" do contrato (o encerramento "E, por estarem…", o foro e a
+ * data) do restante do corpo, para o fecho ficar SEMPRE junto das assinaturas na
+ * impressão — nunca uma assinatura órfã no topo de uma página. Se não achar o
+ * encerramento, usa o último parágrafo como fecho.
+ */
+function separarFecho(corpo: string): { principal: string; fecho: string } {
+  const p = corpo.toLowerCase().indexOf('por estarem')
+  if (p >= 0) {
+    const ini = corpo.lastIndexOf('\n', p)
+    const corte = ini >= 0 ? ini : 0
+    return { principal: corpo.slice(0, corte).replace(/\s+$/, ''), fecho: corpo.slice(corte).trim() }
+  }
+  const idx = corpo.lastIndexOf('\n\n')
+  if (idx >= 0) return { principal: corpo.slice(0, idx).replace(/\s+$/, ''), fecho: corpo.slice(idx).trim() }
+  return { principal: '', fecho: corpo }
+}
+
 export function ContratoView({ conteudo }: { conteudo: string }) {
   const marca = '[ASSINATURAS]'
   const i = conteudo.indexOf(marca)
@@ -36,18 +54,24 @@ export function ContratoView({ conteudo }: { conteudo: string }) {
   }
   const corpo = conteudo.slice(0, i).replace(/\s+$/, '')
   const assinaturas = lerAssinaturas(conteudo.slice(i + marca.length))
+  const { principal, fecho } = separarFecho(corpo)
   return (
     <div className="contrato-doc">
-      <pre className="conteudo">{corpo}</pre>
-      <div className="assinaturas">
-        {assinaturas.map((a, k) => (
-          <div className="assinatura" key={k}>
-            {a.papel && <div className="assinatura__papel">{a.papel}</div>}
-            <div className="assinatura__traco" />
-            {a.nome && <div className="assinatura__nome">{a.nome}</div>}
-            {a.doc && <div className="assinatura__doc">{a.doc}</div>}
-          </div>
-        ))}
+      {principal && <pre className="conteudo">{principal}</pre>}
+      {/* Fecho (encerramento + foro + data) + assinaturas ficam JUNTOS na
+          impressão — não quebram no meio (ver .contrato-fecho em gestao.css). */}
+      <div className="contrato-fecho">
+        {fecho && <pre className="conteudo contrato-fecho__texto">{fecho}</pre>}
+        <div className="assinaturas">
+          {assinaturas.map((a, k) => (
+            <div className="assinatura" key={k}>
+              {a.papel && <div className="assinatura__papel">{a.papel}</div>}
+              <div className="assinatura__traco" />
+              {a.nome && <div className="assinatura__nome">{a.nome}</div>}
+              {a.doc && <div className="assinatura__doc">{a.doc}</div>}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
