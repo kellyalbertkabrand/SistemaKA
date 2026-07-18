@@ -29,11 +29,19 @@ export interface Cuidadora {
   nome: string
   cpf: string | null
   rg: string | null
+  /** Número do PIS/PASEP/NIT (dado de RH). */
+  pis: string | null
   telefone: string | null
   email: string | null
   data_nascimento: string | null // AAAA-MM-DD
   endereco: string | null
   cidade: string | null
+  /** Chave PIX (o número/valor). */
+  pix_chave: string | null
+  /** Banco do PIX (ex.: Nubank, Caixa…). */
+  pix_banco: string | null
+  /** Tipo da chave PIX: 'telefone' | 'cpf' | 'email' | 'aleatoria'. */
+  pix_tipo: string | null
   /** Data de início do trabalho. */
   inicio: string | null // AAAA-MM-DD
   status: CuidadoraStatus
@@ -82,11 +90,15 @@ export async function criarCuidadora(dados: FichaCuidadora): Promise<Cuidadora> 
     nome: dados.nome,
     cpf: dados.cpf ?? null,
     rg: dados.rg ?? null,
+    pis: dados.pis ?? null,
     telefone: dados.telefone ?? null,
     email: dados.email ?? null,
     data_nascimento: dados.data_nascimento ?? null,
     endereco: dados.endereco ?? null,
     cidade: dados.cidade ?? null,
+    pix_chave: dados.pix_chave ?? null,
+    pix_banco: dados.pix_banco ?? null,
+    pix_tipo: dados.pix_tipo ?? null,
     inicio: dados.inicio ?? null,
     status: dados.status ?? 'ativa',
     observacoes: dados.observacoes ?? null,
@@ -128,11 +140,15 @@ export async function cadastrarCuidadoraPublico(
     nome: dados.nome,
     cpf: dados.cpf ?? null,
     rg: dados.rg ?? null,
+    pis: dados.pis ?? null,
     telefone: dados.telefone ?? null,
     email: dados.email ?? null,
     data_nascimento: dados.data_nascimento ?? null,
     endereco: dados.endereco ?? null,
     cidade: dados.cidade ?? null,
+    pix_chave: dados.pix_chave ?? null,
+    pix_banco: dados.pix_banco ?? null,
+    pix_tipo: dados.pix_tipo ?? null,
     inicio: null,
     status: 'pendente' as CuidadoraStatus,
     observacoes: dados.observacoes ?? null,
@@ -184,6 +200,51 @@ export function baixarDocumento(d: DocumentoCuidadora): void {
   a.href = d.dataUrl
   a.download = d.nome
   a.click()
+}
+
+/** Rótulo legível do tipo da chave PIX. */
+export function rotuloPixTipo(t?: string | null): string {
+  switch (t) {
+    case 'telefone':
+      return 'Telefone'
+    case 'cpf':
+      return 'CPF'
+    case 'email':
+      return 'E-mail'
+    case 'aleatoria':
+      return 'Chave aleatória'
+    default:
+      return ''
+  }
+}
+
+/**
+ * Monta a mensagem de WhatsApp com TODOS os dados da cuidadora (o texto que a KA
+ * envia para o RH/contador). Os documentos não vão no texto (WhatsApp por link
+ * não anexa arquivo) — a KA baixa e anexa à parte.
+ */
+export function mensagemDadosCuidadora(c: Cuidadora): string {
+  const linhas: string[] = [`*Dados — ${c.nome}*`, '']
+  const add = (rot: string, val?: string | null) => {
+    if (val && String(val).trim()) linhas.push(`${rot}: ${String(val).trim()}`)
+  }
+  const dataBR = (d?: string | null) =>
+    d && d.length === 10 ? `${d.slice(8, 10)}/${d.slice(5, 7)}/${d.slice(0, 4)}` : d || ''
+  add('CPF', c.cpf)
+  add('RG', c.rg)
+  add('PIS/NIT', c.pis)
+  add('Telefone', c.telefone)
+  add('E-mail', c.email)
+  add('Nascimento', dataBR(c.data_nascimento))
+  add('Endereço', [c.endereco, c.cidade].filter(Boolean).join(', ') || null)
+  if (c.pix_chave || c.pix_banco) {
+    linhas.push('', '*PIX*')
+    add('Chave', c.pix_chave)
+    add('Tipo', rotuloPixTipo(c.pix_tipo))
+    add('Banco', c.pix_banco)
+  }
+  add('Observações', c.observacoes)
+  return linhas.join('\n')
 }
 
 // ---- Preparação de arquivo (compressão para caber no Firestore) ----------------

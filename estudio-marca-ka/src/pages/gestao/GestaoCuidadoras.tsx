@@ -8,6 +8,7 @@ import {
   listarCuidadoras,
   listarDocumentos,
   marcarCuidadoraRevisada,
+  mensagemDadosCuidadora,
   prepararArquivo,
   removerDocumento,
   salvarCuidadora,
@@ -17,6 +18,7 @@ import {
   type FichaCuidadora,
 } from '../../lib/cuidadoras'
 import { formatarData } from '../../lib/gestao'
+import { abrirWhatsApp } from '../../lib/whatsapp'
 import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
 import { useCopiar } from '../../hooks/useCopiar'
@@ -278,6 +280,10 @@ function FichaCuidadoraView({ cuidadora, aoVoltar }: { cuidadora: Cuidadora; aoV
               <input value={f.rg ?? ''} onChange={(e) => campo('rg', e.target.value || null)} />
             </div>
             <div className="field">
+              <label>PIS / NIT</label>
+              <input value={f.pis ?? ''} inputMode="numeric" onChange={(e) => campo('pis', e.target.value || null)} />
+            </div>
+            <div className="field">
               <label>Data de nascimento</label>
               <input
                 type="date"
@@ -320,9 +326,44 @@ function FichaCuidadoraView({ cuidadora, aoVoltar }: { cuidadora: Cuidadora; aoV
             </div>
           </div>
 
+          <h3 style={{ fontSize: '1rem', margin: '0.4rem 0 0.5rem' }}>Dados para pagamento (PIX)</h3>
+          <div className="form-grade">
+            <div className="field">
+              <label>Chave PIX</label>
+              <input value={f.pix_chave ?? ''} onChange={(e) => campo('pix_chave', e.target.value || null)} />
+            </div>
+            <div className="field">
+              <label>Tipo da chave</label>
+              <select value={f.pix_tipo ?? ''} onChange={(e) => campo('pix_tipo', e.target.value || null)}>
+                <option value="">Escolher…</option>
+                <option value="telefone">Telefone</option>
+                <option value="cpf">CPF</option>
+                <option value="email">E-mail</option>
+                <option value="aleatoria">Chave aleatória</option>
+              </select>
+            </div>
+            <div className="field">
+              <label>Banco</label>
+              <input value={f.pix_banco ?? ''} onChange={(e) => campo('pix_banco', e.target.value || null)} placeholder="ex.: Nubank" />
+            </div>
+          </div>
+
           <p style={{ display: 'flex', gap: '0.7rem', alignItems: 'center', flexWrap: 'wrap' }}>
             <button className="btn" type="submit" disabled={salvando}>
               {salvando ? 'Salvando…' : 'Salvar ficha'}
+            </button>
+            <button
+              type="button"
+              className="btn--voltar btn--voltar-whats"
+              onClick={() =>
+                abrirWhatsApp(
+                  null,
+                  mensagemDadosCuidadora({ ...cuidadora, ...f } as Cuidadora),
+                  cuidadora.nome,
+                )
+              }
+            >
+              Enviar dados no WhatsApp
             </button>
             {msg && <span style={{ color: '#2e6b45', fontSize: '0.8rem' }}>{msg}</span>}
             <span className="espaco" style={{ flex: 1 }} />
@@ -411,6 +452,16 @@ function Documentos({ cuidadora }: { cuidadora: Cuidadora }) {
         <button className="btn" disabled={enviando} onClick={() => inputRef.current?.click()}>
           {enviando ? 'Enviando…' : '+ Anexar documento'}
         </button>
+        {docs.length > 0 && (
+          <button
+            type="button"
+            className="btn--voltar"
+            style={{ marginLeft: '0.6rem' }}
+            onClick={() => docs.forEach((d, i) => setTimeout(() => baixarDocumento(d), i * 400))}
+          >
+            Baixar todos ({docs.length})
+          </button>
+        )}
       </p>
 
       {docs.length === 0 ? (

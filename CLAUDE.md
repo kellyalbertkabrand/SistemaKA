@@ -900,6 +900,15 @@ Aba **Cuidadoras 🔒** no painel (restrita à admin): gestão das cuidadoras
 - **Ficha** (`GestaoCuidadoras.tsx`): dados completos, status
   (pendente/ativa/inativa), início do trabalho, observações + seção
   **Documentos** (anexar/baixar/excluir).
+- **Dados de RH + PIX (jul/2026):** campos novos na `Cuidadora` — `pis`
+  (PIS/NIT), `pix_chave`, `pix_banco`, `pix_tipo` (telefone/cpf/email/aleatoria).
+  Vão no cadastro público E na ficha admin. **Enviar dados no WhatsApp**
+  (`mensagemDadosCuidadora` + `abrirWhatsApp`): monta a mensagem com TODOS os
+  dados (nome, CPF, RG, PIS, endereço, PIX…) para a KA mandar ao RH/contador; a
+  KA digita o número de destino no popup. ⚠️ **wa.me não anexa arquivo** — os
+  documentos vão à parte: botão **"Baixar todos"** na seção Documentos (baixa
+  cada um) p/ a KA anexar na conversa à mão. A KA também pode **anexar os
+  documentos ela mesma** na ficha (o "+ Anexar documento" já existente).
 - **Documentos SEM Firebase Storage** (plano Spark não tem): cada arquivo vira
   data URL num doc da subcoleção `cuidadoras/{id}/documentos` (limite 1 MB por
   doc do Firestore). Imagens são comprimidas no navegador (canvas, máx 1600px,

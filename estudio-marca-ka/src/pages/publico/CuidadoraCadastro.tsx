@@ -109,6 +109,14 @@ export function CuidadoraCadastro() {
               <input value={f.rg ?? ''} onChange={(e) => campo('rg', e.target.value || null)} />
             </div>
             <div className="field">
+              <label>PIS / NIT</label>
+              <input
+                value={f.pis ?? ''}
+                onChange={(e) => campo('pis', e.target.value || null)}
+                inputMode="numeric"
+              />
+            </div>
+            <div className="field">
               <label>Data de nascimento</label>
               <input
                 type="date"
@@ -135,6 +143,36 @@ export function CuidadoraCadastro() {
                 value={f.observacoes ?? ''}
                 onChange={(e) => campo('observacoes', e.target.value || null)}
                 placeholder="Experiência, disponibilidade de horários, referências…"
+              />
+            </div>
+          </div>
+
+          <h3 style={{ fontSize: '1rem', margin: '0.6rem 0 0.5rem' }}>Dados para pagamento (PIX)</h3>
+          <div className="form-grade">
+            <div className="field">
+              <label>Chave PIX</label>
+              <input
+                value={f.pix_chave ?? ''}
+                onChange={(e) => campo('pix_chave', e.target.value || null)}
+                placeholder="telefone, CPF, e-mail ou chave aleatória"
+              />
+            </div>
+            <div className="field">
+              <label>Tipo da chave</label>
+              <select value={f.pix_tipo ?? ''} onChange={(e) => campo('pix_tipo', e.target.value || null)}>
+                <option value="">Escolher…</option>
+                <option value="telefone">Telefone</option>
+                <option value="cpf">CPF</option>
+                <option value="email">E-mail</option>
+                <option value="aleatoria">Chave aleatória</option>
+              </select>
+            </div>
+            <div className="field campo-toda">
+              <label>Banco</label>
+              <input
+                value={f.pix_banco ?? ''}
+                onChange={(e) => campo('pix_banco', e.target.value || null)}
+                placeholder="ex.: Nubank, Caixa, Itaú…"
               />
             </div>
           </div>
