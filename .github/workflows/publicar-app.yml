@@ -1,6 +1,6 @@
 name: Publicar app no Netlify
 
-# Republicação manual: afc5f38 (templates novos + gestão) para produção.
+# Republicação manual: remoção da aba Notícias (a pedido da Kelly).
 # Publica o "Sistema Visual de Publicações da Marca" (estudio-marca-ka/) no
 # Netlify usando o segredo NETLIFY_AUTH_TOKEN do repositório — o mesmo usado
 # pelo deploy do sistema de notícias. Dispara:
