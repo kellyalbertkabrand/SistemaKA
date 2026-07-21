@@ -53,7 +53,8 @@ const docsComId = (snap) => snap.docs.map((d) => ({ id: d.id, ...d.data() }));
 // Obras (docId = slug)
 // ---------------------------------------------------------------------------
 export async function listarObras() {
-  const snap = await getDocs(query(collection(db, 'obras'), where('ownerId', '==', uid())));
+  // Escritório único: lista todas as obras (a regra já exige estar logado).
+  const snap = await getDocs(collection(db, 'obras'));
   const obras = docsComId(snap);
   obras.sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
   return obras;
@@ -143,7 +144,7 @@ export async function listarLancamentos(obraId) {
 
 // Todos os lançamentos do escritório (para totais da home e exportação geral).
 export async function listarLancamentosDoEscritorio() {
-  const snap = await getDocs(query(collection(db, 'lancamentos'), where('ownerId', '==', uid())));
+  const snap = await getDocs(collection(db, 'lancamentos'));
   return docsComId(snap);
 }
 
@@ -199,7 +200,7 @@ export async function obterConvite(token) {
 }
 
 export async function listarClientes() {
-  const snap = await getDocs(query(collection(db, 'clientes'), where('ownerId', '==', uid())));
+  const snap = await getDocs(collection(db, 'clientes'));
   const clientes = docsComId(snap);
   clientes.sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
   return clientes;
@@ -223,7 +224,7 @@ export async function excluirCliente(id) {
 // Fornecedores
 // ---------------------------------------------------------------------------
 export async function listarFornecedores() {
-  const snap = await getDocs(query(collection(db, 'fornecedores'), where('ownerId', '==', uid())));
+  const snap = await getDocs(collection(db, 'fornecedores'));
   const fs = docsComId(snap);
   fs.sort((a, b) => String(a.nome || '').localeCompare(String(b.nome || '')));
   return fs;
