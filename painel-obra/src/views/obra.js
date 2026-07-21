@@ -1,6 +1,7 @@
 import {
   obterObra, listarEtapas, listarLancamentos, atualizarObra, definirPublicado,
   criarEtapa, excluirEtapa, criarLancamento, excluirLancamento, sair,
+  anexarRecibo, enviarFoto, listarFotos, excluirFoto,
 } from '../dados.js';
 import { navegar } from '../main.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
@@ -14,12 +15,13 @@ import { navBar } from '../lib/nav.js';
 export async function renderObra(container, obraId) {
   container.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
 
-  let obra, etapas, lancamentos;
+  let obra, etapas, lancamentos, fotos;
   try {
-    [obra, etapas, lancamentos] = await Promise.all([
+    [obra, etapas, lancamentos, fotos] = await Promise.all([
       obterObra(obraId),
       listarEtapas(obraId),
       listarLancamentos(obraId),
+      listarFotos(obraId),
     ]);
   } catch {
     obra = null;
@@ -36,6 +38,7 @@ export async function renderObra(container, obraId) {
 
   etapas = etapas || [];
   lancamentos = lancamentos || [];
+  fotos = fotos || [];
 
   const executado = soma(lancamentos);
   const pago = soma(lancamentos.filter((l) => l.status === 'pago'));
@@ -138,6 +141,17 @@ export async function renderObra(container, obraId) {
           ${lancamentos.length ? seletorOrdem('ord-lanc', 'data') : ''}
         </div>
         <div id="tabela-lancamentos">${tabelaLancamentos(ordenarLancamentos(lancamentos, 'data'))}</div>
+      </section>
+
+      <section class="card">
+        <div class="row-between">
+          <h2>Fotos das visitas</h2>
+          <label class="btn btn-mini btn-primary" style="cursor:pointer;margin:0">
+            + Fotos<input type="file" id="input-fotos" accept="image/*" multiple hidden />
+          </label>
+        </div>
+        <p class="status-voz" id="status-fotos" hidden></p>
+        <div id="grid-fotos">${gridFotos(fotos)}</div>
       </section>
     </div>`;
 
@@ -257,9 +271,55 @@ export async function renderObra(container, obraId) {
   }
   // Delegação: sobrevive à re-renderização da tabela ao reordenar.
   tabelaLancEl.addEventListener('click', async (e) => {
-    const b = e.target.closest('[data-del-lanc]');
+    const del = e.target.closest('[data-del-lanc]');
+    if (del) { await excluirLancamento(del.getAttribute('data-del-lanc')); recarregar(); return; }
+    const anexar = e.target.closest('[data-anexar-recibo]');
+    if (anexar) abrirAnexoRecibo(anexar.getAttribute('data-anexar-recibo'));
+  });
+
+  // Anexar recibo/NF (imagem ou PDF) a um lançamento.
+  function abrirAnexoRecibo(lancId) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*,application/pdf';
+    input.addEventListener('change', async () => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      try {
+        await anexarRecibo(lancId, obra.id, file);
+        recarregar();
+      } catch (err) {
+        alert('Não foi possível anexar o recibo: ' + (err?.message || err));
+      }
+    });
+    input.click();
+  }
+
+  // ---- Fotos das visitas ----
+  const inputFotos = container.querySelector('#input-fotos');
+  const statusFotos = container.querySelector('#status-fotos');
+  if (inputFotos) {
+    inputFotos.addEventListener('change', async () => {
+      const files = [...(inputFotos.files || [])];
+      if (!files.length) return;
+      statusFotos.hidden = false;
+      statusFotos.className = 'status-voz';
+      statusFotos.textContent = `Enviando ${files.length} foto(s)…`;
+      try {
+        for (const f of files) await enviarFoto(obra.id, f);
+        recarregar();
+      } catch (err) {
+        statusFotos.className = 'status-voz erro';
+        statusFotos.textContent = 'Falha ao enviar: ' + (err?.message || err);
+      }
+    });
+  }
+  const gridFotosEl = container.querySelector('#grid-fotos');
+  gridFotosEl.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-del-foto]');
     if (!b) return;
-    await excluirLancamento(b.getAttribute('data-del-lanc'));
+    if (!confirm('Excluir esta foto?')) return;
+    await excluirFoto(b.getAttribute('data-del-foto'), b.getAttribute('data-foto-path'));
     recarregar();
   });
 }
@@ -466,12 +526,30 @@ function tabelaEtapas(etapas, lancamentos) {
     </table>`;
 }
 
+// Galeria de fotos das visitas.
+function gridFotos(fotos) {
+  if (!fotos.length) return `<p class="muted">Nenhuma foto ainda. Envie as fotos das visitas à obra.</p>`;
+  return `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.6rem">
+    ${fotos.map((f) => `
+      <figure style="margin:0">
+        <a href="${esc(f.url)}" target="_blank" rel="noopener">
+          <img src="${esc(f.url)}" alt="${esc(f.nome || 'foto')}" loading="lazy"
+               style="width:100%;height:130px;object-fit:cover;border-radius:8px;display:block" />
+        </a>
+        <figcaption class="muted" style="display:flex;justify-content:space-between;align-items:center;font-size:.75rem;margin-top:.2rem">
+          <span>${dataBR(f.criadoEm ? new Date(f.criadoEm).toISOString() : '')}</span>
+          <button class="btn btn-x" data-del-foto="${esc(f.id)}" data-foto-path="${esc(f.path || '')}" title="Excluir">×</button>
+        </figcaption>
+      </figure>`).join('')}
+  </div>`;
+}
+
 function tabelaLancamentos(lancamentos) {
   if (lancamentos.length === 0) return `<p class="muted">Nenhum lançamento ainda.</p>`;
   return `
     <table class="tabela">
       <thead>
-        <tr><th>Data</th><th>Etapa</th><th>Descrição</th><th class="num">Valor</th><th>Status</th><th></th></tr>
+        <tr><th>Data</th><th>Etapa</th><th>Descrição</th><th class="num">Valor</th><th>Status</th><th>Recibo</th><th></th></tr>
       </thead>
       <tbody>
         ${lancamentos.map((l) => `
@@ -481,6 +559,9 @@ function tabelaLancamentos(lancamentos) {
             <td>${esc(l.descricao || '')}</td>
             <td class="num">${moeda(l.valor)}</td>
             <td>${pillStatus(l.status)}</td>
+            <td>${l.reciboUrl
+              ? `<a class="btn btn-mini" href="${esc(l.reciboUrl)}" target="_blank" rel="noopener" title="${esc(l.reciboNome || 'recibo')}">📎 ver</a>`
+              : `<button class="btn btn-mini" data-anexar-recibo="${esc(l.id)}">anexar</button>`}</td>
             <td class="acoes"><button class="btn btn-x" data-del-lanc="${esc(l.id)}" title="Excluir">×</button></td>
           </tr>`).join('')}
       </tbody>

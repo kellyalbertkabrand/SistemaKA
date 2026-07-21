@@ -11,7 +11,7 @@
 //   clientes/{id}        -> token, ownerId, nome, email, telefone, documento, cidade, endereco, observacoes, criadoEm
 //   fornecedores/{id}    -> nome, categoria, telefone, email, cnpj, observacoes, ownerId, criadoEm
 
-import { auth, db } from './firebase.js';
+import { auth, db, storage } from './firebase.js';
 import {
   signInWithEmailAndPassword,
   signOut,
@@ -29,6 +29,7 @@ import {
   query,
   where,
 } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 // ---------------------------------------------------------------------------
 // Autenticação (escritório)
@@ -249,4 +250,53 @@ export async function criarFornecedor(campos) {
 
 export async function excluirFornecedor(id) {
   await deleteDoc(doc(db, 'fornecedores', id));
+}
+
+// ---------------------------------------------------------------------------
+// Recibo / Nota fiscal de um lançamento (Storage)
+// ---------------------------------------------------------------------------
+const nomeSeguro = (n) => String(n || 'arquivo').replace(/[^a-zA-Z0-9._-]/g, '_');
+
+export async function anexarRecibo(lancamentoId, obraId, file) {
+  const caminho = `recibos/${obraId}/${lancamentoId}-${nomeSeguro(file.name)}`;
+  const r = ref(storage, caminho);
+  await uploadBytes(r, file);
+  const url = await getDownloadURL(r);
+  await updateDoc(doc(db, 'lancamentos', lancamentoId), {
+    reciboUrl: url,
+    reciboNome: file.name,
+    reciboPath: caminho,
+  });
+  return url;
+}
+
+// ---------------------------------------------------------------------------
+// Fotos das visitas à obra (Storage + coleção "fotos")
+// ---------------------------------------------------------------------------
+export async function enviarFoto(obraId, file) {
+  const caminho = `fotos/${obraId}/${Date.now()}-${nomeSeguro(file.name)}`;
+  const r = ref(storage, caminho);
+  await uploadBytes(r, file);
+  const url = await getDownloadURL(r);
+  await addDoc(collection(db, 'fotos'), {
+    obraId,
+    url,
+    nome: file.name,
+    path: caminho,
+    ownerId: uid(),
+    criadoEm: Date.now(),
+  });
+  return url;
+}
+
+export async function listarFotos(obraId) {
+  const snap = await getDocs(query(collection(db, 'fotos'), where('obraId', '==', obraId)));
+  const fotos = docsComId(snap);
+  fotos.sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+  return fotos;
+}
+
+export async function excluirFoto(id, path) {
+  try { if (path) await deleteObject(ref(storage, path)); } catch { /* arquivo já removido */ }
+  await deleteDoc(doc(db, 'fotos', id));
 }

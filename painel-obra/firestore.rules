@@ -1,71 +1,49 @@
 rules_version = '2';
 
-// Regras de Segurança do Firestore — o equivalente ao RLS do Supabase.
-// Cole isto no Console do Firebase -> Firestore Database -> Regras -> Publicar.
+// Regras de Segurança do Firestore. Cole no Console do Firebase ->
+// Firestore Database -> Regras -> Publicar.
 //
-// Princípios:
-//  - O escritório logado só lê/escreve o que tem `ownerId == uid` (dono).
-//  - O público (sem login) só lê obras publicadas e suas etapas/lançamentos.
-//  - O cliente final (sem login) pode ENVIAR um cadastro apenas com um token de
-//    convite válido, e o registro fica preso ao dono daquele convite.
+// Escritório único (piloto): exige apenas estar logado para o interno.
+// Público (sem login): lê obra publicada + etapas/lançamentos/fotos dela, e
+// envia cadastro com token de convite válido.
 
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    function autenticado() {
-      return request.auth != null;
-    }
-    function dono(rec) {
-      return autenticado() && rec.data.ownerId == request.auth.uid;
-    }
-    function seraDono() {
-      return autenticado() && request.resource.data.ownerId == request.auth.uid;
-    }
+    function logado() { return request.auth != null; }
     function obraPublicada(obraId) {
       return exists(/databases/$(database)/documents/obras/$(obraId))
         && get(/databases/$(database)/documents/obras/$(obraId)).data.publicado == true;
     }
-    function donoDoConvite(token) {
-      return exists(/databases/$(database)/documents/convites/$(token))
-        && request.resource.data.ownerId
-           == get(/databases/$(database)/documents/convites/$(token)).data.ownerId;
-    }
 
     match /obras/{id} {
-      allow read: if resource.data.publicado == true || dono(resource);
-      allow create: if seraDono();
-      allow update, delete: if dono(resource);
+      allow read: if resource.data.publicado == true || logado();
+      allow write: if logado();
     }
-
     match /etapas/{id} {
-      allow read: if dono(resource) || obraPublicada(resource.data.obraId);
-      allow create: if seraDono();
-      allow update, delete: if dono(resource);
+      allow read: if logado() || obraPublicada(resource.data.obraId);
+      allow write: if logado();
     }
-
     match /lancamentos/{id} {
-      allow read: if dono(resource) || obraPublicada(resource.data.obraId);
-      allow create: if seraDono();
-      allow update, delete: if dono(resource);
+      allow read: if logado() || obraPublicada(resource.data.obraId);
+      allow write: if logado();
     }
-
-    // Convite do cadastro: leitura pública (para validar o link); criação/edição só do dono.
+    match /fotos/{id} {
+      allow read: if logado() || obraPublicada(resource.data.obraId);
+      allow write: if logado();
+    }
     match /convites/{token} {
       allow read: if true;
-      allow create: if seraDono();
-      allow update, delete: if dono(resource);
+      allow write: if logado();
     }
-
-    // Cadastro do cliente: o cliente final (sem login) só cria com um token de
-    // convite válido e o registro fica preso ao dono daquele convite.
     match /clientes/{id} {
-      allow read, update, delete: if dono(resource);
-      allow create: if request.resource.data.token != null && donoDoConvite(request.resource.data.token);
+      allow read, update, delete: if logado();
+      allow create: if logado()
+        || (request.resource.data.token != null
+            && exists(/databases/$(database)/documents/convites/$(request.resource.data.token)));
     }
-
     match /fornecedores/{id} {
-      allow read, update, delete: if dono(resource);
-      allow create: if seraDono();
+      allow read, write: if logado();
     }
   }
 }

@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 // Config do Firebase — chaves PÚBLICAS (vêm do .env / painel do Netlify).
 // O que protege os dados são as Regras de Segurança do Firestore (firestore.rules),
@@ -19,10 +20,12 @@ export const configurado = Boolean(cfg.apiKey && cfg.projectId);
 
 let auth = null;
 let db = null;
+let storage = null;
 if (configurado) {
   const app = initializeApp(cfg);
   auth = getAuth(app);
   db = getFirestore(app);
+  storage = getStorage(app);
 }
 
-export { auth, db };
+export { auth, db, storage };
