@@ -17,7 +17,7 @@ export function navBar(ativo = '') {
     <input type="checkbox" id="nav-toggle" class="nav-toggle" />
     <label for="nav-toggle" class="nav-burger" aria-label="Menu">☰</label>
     <div class="nav-links">
-      ${item('/', 'Painel', 'painel')}
+      ${item('/obras', 'Painel', 'painel')}
       ${item('/clientes', 'Clientes', 'clientes')}
       ${item('/fornecedores', 'Fornecedores', 'fornecedores')}
       <button class="nav-sair" id="sair">Sair</button>

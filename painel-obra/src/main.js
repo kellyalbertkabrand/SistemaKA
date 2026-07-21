@@ -2,6 +2,7 @@ import './styles.css';
 import { configurado } from './firebase.js';
 import { aoMudarAuth, usuarioAtual } from './dados.js';
 import { renderLogin } from './views/login.js';
+import { renderHome } from './views/home.js';
 import { renderObras } from './views/obras.js';
 import { renderObra } from './views/obra.js';
 import { renderPublica } from './views/publica.js';
@@ -67,6 +68,10 @@ function rotear() {
     return renderObra(app, mObra[1]);
   }
 
+  if (path === '/obras' || path === '/obras/') {
+    return renderObras(app);
+  }
+
   if (path === '/clientes' || path === '/clientes/') {
     return renderClientes(app);
   }
@@ -75,8 +80,8 @@ function rotear() {
     return renderFornecedores(app);
   }
 
-  // Padrão: lista de obras.
-  return renderObras(app);
+  // Padrão (home): menu-lançador com os botões.
+  return renderHome(app);
 }
 
 function renderConfigFaltando(container) {
