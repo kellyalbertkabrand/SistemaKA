@@ -15,14 +15,11 @@ import { navBar } from '../lib/nav.js';
 export async function renderObra(container, obraId) {
   container.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
 
-  let obra, etapas, lancamentos, fotos;
+  // A obra é o dado crítico. Carregamos ela primeiro e sozinha: só ela decide
+  // se a tela existe ou não.
+  let obra;
   try {
-    [obra, etapas, lancamentos, fotos] = await Promise.all([
-      obterObra(obraId),
-      listarEtapas(obraId),
-      listarLancamentos(obraId),
-      listarFotos(obraId),
-    ]);
+    obra = await obterObra(obraId);
   } catch {
     obra = null;
   }
@@ -30,15 +27,19 @@ export async function renderObra(container, obraId) {
   if (!obra) {
     container.innerHTML = `
       <div class="app">
-        <a class="btn btn-ghost" data-link href="/">← Voltar</a>
+        <a class="btn btn-ghost" data-link href="/obras">← Voltar</a>
         <p class="erro" style="display:block">Obra não encontrada.</p>
       </div>`;
     return;
   }
 
-  etapas = etapas || [];
-  lancamentos = lancamentos || [];
-  fotos = fotos || [];
+  // Etapas, lançamentos e fotos são complementares: se um falhar (ex.: regra do
+  // Firestore ainda não publicada), degrada para vazio sem esconder a obra.
+  const [etapas, lancamentos, fotos] = await Promise.all([
+    listarEtapas(obraId).catch(() => []),
+    listarLancamentos(obraId).catch(() => []),
+    listarFotos(obraId).catch(() => []),
+  ]);
 
   const executado = soma(lancamentos);
   const pago = soma(lancamentos.filter((l) => l.status === 'pago'));
@@ -52,7 +53,7 @@ export async function renderObra(container, obraId) {
     <div class="app">
       <div class="pagina-topo">
         <div>
-          <a class="voltar" data-link href="/">← Obras</a>
+          <a class="voltar" data-link href="/obras">← Obras</a>
           <h1>${esc(obra.nome)}</h1>
           <p class="muted">${esc(obra.cliente || 'Sem cliente definido')}
             <button class="btn btn-mini" id="abrir-editar">✎ Editar obra</button>
