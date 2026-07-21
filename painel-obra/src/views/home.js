@@ -13,25 +13,27 @@ export function renderHome(container) {
 
   container.innerHTML = `
     <div class="home-wrap">
-      <header class="home-topo">
+      <header class="home-cabecalho">
         ${logoImg('home-logo')}
-        <h1 class="home-titulo">Controle de Obras</h1>
-        <p class="muted">O que você quer acessar?</p>
       </header>
 
-      <nav class="home-botoes">
-        ${botoes.map((b) => `
-          <a class="home-botao" data-link href="${b.href}">
-            <span class="home-botao-icone">${b.icone}</span>
-            <span class="home-botao-txt">
-              <strong>${b.titulo}</strong>
-              <small>${b.desc}</small>
-            </span>
-            <span class="home-botao-seta">→</span>
-          </a>`).join('')}
-      </nav>
+      <main class="home-conteudo">
+        <h1 class="home-titulo">Controle de Obras</h1>
 
-      <button class="home-sair" id="sair">Sair</button>
+        <nav class="home-botoes">
+          ${botoes.map((b) => `
+            <a class="home-botao" data-link href="${b.href}">
+              <span class="home-botao-icone">${b.icone}</span>
+              <span class="home-botao-txt">
+                <strong>${b.titulo}</strong>
+                <small>${b.desc}</small>
+              </span>
+              <span class="home-botao-seta">→</span>
+            </a>`).join('')}
+        </nav>
+
+        <button class="home-sair" id="sair">Sair</button>
+      </main>
     </div>`;
 
   container.querySelector('#sair').addEventListener('click', async () => {
