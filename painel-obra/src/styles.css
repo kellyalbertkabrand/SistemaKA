@@ -171,9 +171,10 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: -1
 .nav { position: sticky; top: 0; z-index: 30; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem; padding: .8rem 1.3rem; background: #fff; border-bottom: 1px solid var(--linha); box-shadow: 0 1px 4px rgba(42, 38, 34, .05); }
 .nav-brand { grid-column: 2; justify-self: center; display: flex; align-items: center; gap: .7rem; text-decoration: none; }
 .nav-links { grid-column: 3; justify-self: end; }
-.nav-titulo { font-family: var(--fonte-ui); font-weight: 700; letter-spacing: .07em; font-size: 1rem; text-transform: uppercase; color: var(--tinta); }
+.nav-titulo { grid-column: 1; justify-self: start; font-family: var(--fonte-ui); font-weight: 700; letter-spacing: .07em; font-size: 1rem; text-transform: uppercase; color: var(--tinta); text-decoration: none; }
+.nav-titulo:hover { color: var(--acento); }
 .nav-toggle { display: none; }
-.nav-burger { display: none; font-size: 1.8rem; line-height: 1; cursor: pointer; padding: .1rem .5rem; color: var(--tinta); user-select: none; }
+.nav-burger { display: none; grid-column: 3; justify-self: end; font-size: 1.8rem; line-height: 1; cursor: pointer; padding: .1rem .5rem; color: var(--tinta); user-select: none; }
 .nav-links { display: flex; align-items: center; gap: .5rem; }
 /* Itens do menu com cara de botão: borda, fundo e estado ativo bem marcados. */
 .nav-item {
@@ -196,11 +197,13 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: -1
 .pagina-topo h1 { font-size: 1.5rem; }
 
 @media (max-width: 720px) {
-  /* No celular volta a flex: marca à esquerda, hambúrguer à direita, menu abre abaixo. */
-  .nav { display: flex; flex-wrap: wrap; justify-content: space-between; }
-  .nav-brand { grid-column: auto; justify-self: auto; }
+  /* Mesmo layout de site: título à esquerda, logo no centro, hambúrguer à
+     direita. O menu (botões) abre em largura total logo abaixo. */
+  .nav { row-gap: .4rem; gap: .5rem; padding: .7rem 1rem; }
+  .nav-titulo { font-size: .74rem; letter-spacing: .03em; line-height: 1.15; }
+  .logo-schramm-nav { height: 40px; }
   .nav-burger { display: block; }
-  .nav-links { grid-column: auto; justify-self: auto; display: none; flex-direction: column; align-items: stretch; width: 100%; gap: .15rem; margin-top: .5rem; }
+  .nav-links { grid-column: 1 / -1; justify-self: stretch; display: none; flex-direction: column; align-items: stretch; width: 100%; gap: .3rem; margin-top: .3rem; }
   .nav-toggle:checked ~ .nav-links { display: flex; }
   .nav-item, .nav-sair { width: 100%; text-align: left; margin-left: 0; }
 }

@@ -10,9 +10,9 @@ export function navBar(ativo = '') {
     `<a data-link href="${href}" class="nav-item${ativo === chave ? ' ativo' : ''}">${rotulo}</a>`;
   return `
   <nav class="nav">
-    <a class="nav-brand" data-link href="/">
+    <a class="nav-titulo" data-link href="/">Controle de Obras</a>
+    <a class="nav-brand" data-link href="/" aria-label="Início">
       ${logoImg('logo-schramm-nav')}
-      <span class="nav-titulo">Controle de Obras</span>
     </a>
     <input type="checkbox" id="nav-toggle" class="nav-toggle" />
     <label for="nav-toggle" class="nav-burger" aria-label="Menu">☰</label>
