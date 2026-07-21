@@ -70,24 +70,29 @@ em vez do resumo sintetizado.
 
 ---
 
-## Publicação no app (Firestore)
+## Publicação no app (Firestore) — DESLIGADA
 
-Cada matéria coletada é publicada direto no **app da Kelly** (o SaaS "Estúdio de
-Marca", em `estudiodemarca.kellyalbert.com.br/noticias`) — a aba **Notícias** lê
-essa mesma fonte e mostra os cards automaticamente, sem depender do painel
-estático nem do GitHub Pages/Netlify.
+> **Status (2026-07-17, a pedido da Kelly): desligada.** A aba Notícias saiu do
+> site. O SistemaKA não publica mais nada no Firestore por padrão. Os
+> documentos já gravados na coleção `noticias` continuam lá (esta publicação
+> não os apaga) — a remoção dos dados e/ou da aba no app é feita por fora do
+> SistemaKA (banco/app ficam em outro lugar).
+
+Quando ligada, cada matéria coletada é publicada direto no **app da Kelly** (o
+SaaS "Estúdio de Marca", em `estudiodemarca.kellyalbert.com.br/noticias`) — a
+aba **Notícias** lê essa mesma fonte e mostra os cards automaticamente, sem
+depender do painel estático nem do GitHub Pages/Netlify.
 
 - **Onde**: Firestore do projeto `estudio-de-marcas-ka`, coleção `noticias` — 1
   documento por matéria (`sistemaka/firestore_publish.py`).
 - **Upsert**: o ID do documento é um hash do link (ou do título, se não houver
   link) — rodar a coleta de novo **não duplica** a matéria, só atualiza os campos.
-- **Chave**: hoje usa a chave pública do Firebase Web (o Firestore está em modo
+- **Chave**: usa a chave pública do Firebase Web (o Firestore está em modo
   teste — aceita gravação sem outra credencial). Já vem com um valor padrão no
   código; para trocar (ex.: quando o Firestore passar para o modo seguro), defina
   `FIRESTORE_API_KEY` como secret. Nesse caso o gravador vai precisar migrar para
   o Firebase Admin SDK com uma conta de serviço.
-- **Desligar**: se algum dia quiser pausar só essa publicação (sem afetar o resto
-  do sistema), defina a variável `SISTEMAKA_FIRESTORE_PUBLISH=0`.
+- **Religar**: defina a variável `SISTEMAKA_FIRESTORE_PUBLISH=1`.
 
 ---
 
@@ -144,7 +149,7 @@ Variáveis de ambiente úteis:
 | `SISTEMAKA_IMAGE_MODEL` | Modelo de imagem da OpenAI (padrão: `gpt-image-1`).         |
 | `FIRESTORE_API_KEY`  | Chave do Firebase Web do app (tem padrão embutido).            |
 | `FIRESTORE_PROJECT`  | Projeto do Firebase do app (padrão: `estudio-de-marcas-ka`).   |
-| `SISTEMAKA_FIRESTORE_PUBLISH` | `0` desliga a publicação no app (padrão: ligado).     |
+| `SISTEMAKA_FIRESTORE_PUBLISH` | `1` religa a publicação no app (padrão: desligado).   |
 | `SISTEMAKA_REPO`     | `owner/repo` para o botão “Atualizar agora”.                   |
 | `SISTEMAKA_TITLE`    | Título exibido no topo do painel.                             |
 

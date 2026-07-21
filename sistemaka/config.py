@@ -81,7 +81,9 @@ def firestore_project() -> str:
 
 
 def firestore_enabled() -> bool:
-    return os.environ.get("SISTEMAKA_FIRESTORE_PUBLISH", "1").strip() != "0"
+    # DESLIGADO por padrão (a pedido da Kelly, 2026-07-17): a aba Notícias saiu
+    # do site. Para religar, defina SISTEMAKA_FIRESTORE_PUBLISH=1.
+    return os.environ.get("SISTEMAKA_FIRESTORE_PUBLISH", "0").strip() == "1"
 
 
 def site_base_title() -> str:
