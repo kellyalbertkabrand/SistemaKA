@@ -344,6 +344,11 @@
 .home-atalhos .grade-atalhos > .atalho-card:last-child:nth-child(odd) {
   grid-column: 1 / -1;
 }
+/* Grupo "Criação" (Estúdio + Atividades): 1 coluna, Atividades fica embaixo
+   do Estúdio em vez de do lado. */
+.home-atalhos .atalho-grupo:first-child .grade-atalhos {
+  grid-template-columns: 1fr;
+}
 /* Ícone num disco suave dourado — dá coesão e elegância aos cartões. */
 .home-atalhos .atalho-card__ico {
   width: 32px;

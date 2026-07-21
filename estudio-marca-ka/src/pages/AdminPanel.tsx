@@ -41,6 +41,7 @@ const GRUPOS: { titulo: string; itens: { id: Aba; rotulo: string; icone: string 
     titulo: 'Criação',
     itens: [
       { id: 'estudio', rotulo: 'Estúdio', icone: 'estudio' },
+      { id: 'atividades', rotulo: 'Atividades', icone: 'atividades' },
     ],
   },
   {
@@ -59,7 +60,6 @@ const GRUPOS: { titulo: string; itens: { id: Aba; rotulo: string; icone: string 
   {
     titulo: 'Pessoal',
     itens: [
-      { id: 'atividades', rotulo: 'Atividades', icone: 'atividades' },
       { id: 'cuidadoras', rotulo: 'Cuidadoras', icone: 'cuidadoras' },
     ],
   },
