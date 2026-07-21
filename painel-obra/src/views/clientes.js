@@ -30,6 +30,20 @@ export async function renderClientes(container) {
       <div class="pagina-topo"><h1>Clientes</h1></div>
 
       <section class="card">
+        <h2>Gerar link de cadastro</h2>
+        <p class="muted">Crie um link, envie ao cliente, e ele preenche os dados — que caem direto aqui.</p>
+        <div class="form-inline">
+          <input id="c-rotulo" placeholder="Identificação (ex.: Família Silva)" />
+          <select id="c-obra">
+            <option value="">Sem obra vinculada</option>
+            ${obras.map((o) => `<option value="${esc(o.id)}">${esc(o.nome)}</option>`).join('')}
+          </select>
+          <button class="btn btn-primary btn-mini" id="gerar-link">Gerar link</button>
+        </div>
+        <div id="link-gerado"></div>
+      </section>
+
+      <section class="card">
         <div class="row-between">
           <h2>Cadastrar cliente</h2>
           <button class="btn btn-primary btn-mini" id="abrir-cad">+ Novo cliente</button>
@@ -64,20 +78,6 @@ export async function renderClientes(container) {
           </div>
           <p class="erro full" id="erro-cli" hidden></p>
         </form>
-      </section>
-
-      <section class="card">
-        <h2>Gerar link de cadastro</h2>
-        <p class="muted">Crie um link, envie ao cliente, e ele preenche os dados — que caem direto aqui.</p>
-        <div class="form-inline">
-          <input id="c-rotulo" placeholder="Identificação (ex.: Família Silva)" />
-          <select id="c-obra">
-            <option value="">Sem obra vinculada</option>
-            ${obras.map((o) => `<option value="${esc(o.id)}">${esc(o.nome)}</option>`).join('')}
-          </select>
-          <button class="btn btn-primary btn-mini" id="gerar-link">Gerar link</button>
-        </div>
-        <div id="link-gerado"></div>
       </section>
 
       <section class="card">
