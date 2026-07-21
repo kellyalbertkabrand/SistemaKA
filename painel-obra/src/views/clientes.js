@@ -1,8 +1,9 @@
-import { listarClientes, listarObras, criarConvite, excluirCliente, sair } from '../dados.js';
+import { listarClientes, listarObras, criarConvite, criarClienteEscritorio, excluirCliente, sair } from '../dados.js';
 import { esc, dataBR } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
 
-// Tela interna: lista de clientes + gerar link de autopreenchimento.
+// Tela interna: cadastrar cliente pelo escritório, gerar link de autopreenchimento
+// e listar os cadastrados.
 export async function renderClientes(container) {
   container.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
 
@@ -29,6 +30,43 @@ export async function renderClientes(container) {
       <div class="pagina-topo"><h1>Clientes</h1></div>
 
       <section class="card">
+        <div class="row-between">
+          <h2>Cadastrar cliente</h2>
+          <button class="btn btn-primary btn-mini" id="abrir-cad">+ Novo cliente</button>
+        </div>
+        <form id="form-cli" class="form-grid" hidden>
+          <div class="full"><strong>Dados de contato</strong></div>
+          <label class="full">Nome / identificação *
+            <input id="e-nome" required />
+          </label>
+          <label>E-mail<input id="e-email" type="email" /></label>
+          <label>Telefone / WhatsApp<input id="e-telefone" /></label>
+          <label>CPF / CNPJ<input id="e-documento" /></label>
+          <label>Cidade<input id="e-cidade" /></label>
+          <label class="full">Endereço<input id="e-endereco" /></label>
+          <label class="full">Observações<input id="e-observacoes" /></label>
+
+          <div class="full row-between" style="margin-top:.4rem">
+            <strong>Dados para contrato</strong>
+            <button type="button" class="btn btn-mini" id="copiar-contato">↑ Copiar dados de contato</button>
+          </div>
+          <label class="full">Nome completo / Razão social<input id="c-nome" /></label>
+          <label>CPF / CNPJ<input id="c-doc" /></label>
+          <label>RG / Inscrição Estadual<input id="c-rg" /></label>
+          <label>Nacionalidade<input id="c-nacionalidade" /></label>
+          <label>Estado civil<input id="c-estadocivil" /></label>
+          <label>Profissão<input id="c-profissao" /></label>
+          <label class="full">Endereço (contrato)<input id="c-endereco" /></label>
+
+          <div class="full row-end">
+            <button type="button" class="btn btn-ghost" id="cancelar-cli">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Salvar cliente</button>
+          </div>
+          <p class="erro full" id="erro-cli" hidden></p>
+        </form>
+      </section>
+
+      <section class="card">
         <h2>Gerar link de cadastro</h2>
         <p class="muted">Crie um link, envie ao cliente, e ele preenche os dados — que caem direto aqui.</p>
         <div class="form-inline">
@@ -52,7 +90,63 @@ export async function renderClientes(container) {
     await sair();
   });
 
-  // Gerar convite → link
+  // ---- Cadastrar cliente pelo escritório ----
+  const abrirCad = container.querySelector('#abrir-cad');
+  const formCli = container.querySelector('#form-cli');
+  const erroCli = container.querySelector('#erro-cli');
+  abrirCad.addEventListener('click', () => {
+    formCli.hidden = false; abrirCad.hidden = true;
+    container.querySelector('#e-nome').focus();
+  });
+  container.querySelector('#cancelar-cli').addEventListener('click', () => {
+    formCli.hidden = true; abrirCad.hidden = false;
+  });
+
+  // Copiar os dados de contato para o bloco de contrato (mesma pessoa).
+  container.querySelector('#copiar-contato').addEventListener('click', () => {
+    const v = (id) => container.querySelector(id).value;
+    container.querySelector('#c-nome').value = v('#e-nome');
+    container.querySelector('#c-doc').value = v('#e-documento');
+    container.querySelector('#c-endereco').value = v('#e-endereco');
+  });
+
+  formCli.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    erroCli.hidden = true;
+    const val = (id) => container.querySelector(id).value.trim() || null;
+    const nome = val('#e-nome');
+    if (!nome) { erroCli.textContent = 'Informe o nome do cliente.'; erroCli.hidden = false; return; }
+
+    const registro = {
+      nome,
+      email: val('#e-email'),
+      telefone: val('#e-telefone'),
+      documento: val('#e-documento'),
+      cidade: val('#e-cidade'),
+      endereco: val('#e-endereco'),
+      observacoes: val('#e-observacoes'),
+      contrato_nome: val('#c-nome'),
+      contrato_documento: val('#c-doc'),
+      contrato_rg: val('#c-rg'),
+      contrato_nacionalidade: val('#c-nacionalidade'),
+      contrato_estadocivil: val('#c-estadocivil'),
+      contrato_profissao: val('#c-profissao'),
+      contrato_endereco: val('#c-endereco'),
+    };
+
+    const btn = formCli.querySelector('button[type="submit"]');
+    btn.disabled = true; btn.textContent = 'Salvando…';
+    try {
+      await criarClienteEscritorio(registro);
+    } catch (err) {
+      btn.disabled = false; btn.textContent = 'Salvar cliente';
+      erroCli.textContent = err?.message || 'Não foi possível salvar.'; erroCli.hidden = false;
+      return;
+    }
+    renderClientes(container);
+  });
+
+  // ---- Gerar convite → link ----
   container.querySelector('#gerar-link').addEventListener('click', async () => {
     const rotulo = container.querySelector('#c-rotulo').value.trim() || null;
     const obraId = container.querySelector('#c-obra').value || null;
@@ -81,7 +175,7 @@ export async function renderClientes(container) {
     });
   });
 
-  // Excluir cliente
+  // ---- Excluir cliente ----
   container.querySelectorAll('[data-del-cli]').forEach((b) => {
     b.addEventListener('click', async () => {
       await excluirCliente(b.getAttribute('data-del-cli'));
@@ -105,7 +199,23 @@ function listaClientes(clientes) {
         ${c.cidade ? `· ${esc(c.cidade)}` : ''}
       </div>
       ${c.endereco ? `<div class="muted cliente-dados">${esc(c.endereco)}</div>` : ''}
+      ${dadosContrato(c)}
       ${c.observacoes ? `<div class="muted cliente-dados">${esc(c.observacoes)}</div>` : ''}
       <div class="cliente-data muted">Cadastrado em ${dataBR(c.criadoEm ? new Date(c.criadoEm).toISOString() : '')}</div>
     </div>`).join('');
+}
+
+// Mostra os dados de contrato, se houver algum preenchido.
+function dadosContrato(c) {
+  const linhas = [
+    c.contrato_nome && `Nome: ${esc(c.contrato_nome)}`,
+    c.contrato_documento && `CPF/CNPJ: ${esc(c.contrato_documento)}`,
+    c.contrato_rg && `RG/IE: ${esc(c.contrato_rg)}`,
+    c.contrato_nacionalidade && esc(c.contrato_nacionalidade),
+    c.contrato_estadocivil && esc(c.contrato_estadocivil),
+    c.contrato_profissao && esc(c.contrato_profissao),
+    c.contrato_endereco && `End.: ${esc(c.contrato_endereco)}`,
+  ].filter(Boolean);
+  if (!linhas.length) return '';
+  return `<div class="cliente-dados muted"><strong>Contrato:</strong> ${linhas.join(' · ')}</div>`;
 }

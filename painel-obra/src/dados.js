@@ -216,6 +216,15 @@ export async function criarClientePublico({ token, ownerId, ...campos }) {
   });
 }
 
+// Cadastro feito direto pelo escritório (sem link/convite).
+export async function criarClienteEscritorio(campos) {
+  await addDoc(collection(db, 'clientes'), {
+    ...campos,
+    ownerId: uid(),
+    criadoEm: Date.now(),
+  });
+}
+
 export async function excluirCliente(id) {
   await deleteDoc(doc(db, 'clientes', id));
 }
