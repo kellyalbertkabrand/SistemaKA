@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import type { CSSProperties } from 'react'
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
+import { Midia } from './Midia'
 import './shapes.css'
 
 const GRAF_ESQ = '/clientes/shapes/elementos/grafismo-esq.png'
@@ -84,7 +85,7 @@ export function ShapesGrafismoCard({ valores, formato }: RenderProps) {
         style={{ width: fw, height: fh, left: Math.round(cx - fw / 2), top: Math.round(cy - fh / 2) }}
       >
         {foto ? (
-          <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+          <Midia src={foto} style={estiloImagem(valores, 'foto')} />
         ) : (
           <div className="ph">
             <div className="ph-t1">espaço da imagem</div>

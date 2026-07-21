@@ -155,6 +155,32 @@ margens. Enquadramento (posição/zoom) fica em `foto_x`, `foto_y`, `foto_zoom`
 > `foto_area` é semeado por `valoresPadrao` (companheiro `${id}_area`); um campo
 > `imagem` pode definir `areaPadrao` para o tamanho inicial da foto.
 
+### Vídeo liberado no estúdio da Shapes (jul/2026)
+
+**✅ Todos os 7 templates da Shapes aceitam foto OU vídeo** (mesmo esquema do
+`ka-midia`). O campo `foto` de cada template tem `aceitaVideo: true`; um
+componente compartilhado **`src/templates/shapes/Midia.tsx`** renderiza
+`<video autoPlay muted loop playsInline>` quando o arquivo é `data:video…`,
+senão `<img>` — mesmo `estiloImagem` (posição/zoom) e mesma classe da foto.
+Com vídeo, o `EditorPeca` mostra os 3 botões (imagem PNG · moldura PNG ·
+vídeo pronto com áudio), igual à KA.
+
+O **`src/lib/exportarVideo.ts`** foi generalizado para achar a "janela" da
+mídia = **pai do `<video>`** e perfurar/recortar a forma certa com `Path2D`:
+
+- **Molduras retangulares** (Capa/Frase/Grafismo): retângulo com o
+  `border-radius` do frame.
+- **Formas orgânicas** (Produto/Cores/Forma): perfura/recorta o **traçado do
+  blob** (`FORMAS[].d`, coords 0–1) via `Path2D.addPath` + `DOMMatrix` que
+  mapeia o quadrado unitário para a janela — o vídeo fica dentro da forma.
+- **Fundo de tela cheia** (CTA, `Janela.full` = a mídia é o 1º filho do card):
+  **não perfura** — as sobreposições (grafismo semi-transparente 0.82 + botão +
+  concha) já estão sobre fundo transparente e são compostas por cima do vídeo.
+
+Regras `.moldura-video` da Shapes ficam no fim de `shapes.css` (escondem a
+mídia para a janela sair transparente). Áudio original preservado como na KA
+(grafo `AudioContext`, WeakMap). ⚠️ Sandbox sem H.264: testar com WebM/VP9.
+
 ---
 
 ## 4b. A marca KA (assets em `public/clientes/ka/`, código em `src/templates/ka/`)
@@ -501,7 +527,8 @@ estudio-marca-ka/
         ├── imagem.ts               # estiloImagem (posição/zoom)
         ├── shapes/
         │   ├── cores.ts            # paleta + corContraste
-        │   ├── FeedbackCard.tsx, ProdutoCard.tsx, slides.tsx
+        │   ├── FeedbackCard.tsx, ProdutoCard.tsx, FraseCard.tsx, GrafismoCard.tsx, slides.tsx
+        │   ├── Midia.tsx           # <img>|<video> compartilhado (foto ou vídeo)
         │   ├── ShapesClips.tsx     # defs do clip-path
         │   └── shapes.css
         └── ka/

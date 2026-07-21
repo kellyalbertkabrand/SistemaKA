@@ -1,5 +1,6 @@
 import { toPng } from 'html-to-image'
 import { assinarPngDataUrl, metaPadrao, type MetaAssinatura } from './assinatura'
+import { FORMAS } from '../templates/formas'
 
 // ============================================================================
 // Exportação de VÍDEO. O card da KA vira um vídeo: desenhamos o vídeo do
@@ -59,34 +60,79 @@ function esperar(ms: number): Promise<void> {
   return new Promise((r) => setTimeout(r, ms))
 }
 
-function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
-  const raio = Math.min(r, w / 2, h / 2)
-  ctx.beginPath()
-  ctx.moveTo(x + raio, y)
-  ctx.arcTo(x + w, y, x + w, y + h, raio)
-  ctx.arcTo(x + w, y + h, x, y + h, raio)
-  ctx.arcTo(x, y + h, x, y, raio)
-  ctx.arcTo(x, y, x + w, y, raio)
-  ctx.closePath()
+// Janela da mídia: retângulo (px reais) + forma do recorte. `blobD` é o traçado
+// de uma forma orgânica da Shapes (coords 0–1); quando ausente, é um retângulo
+// de cantos `radius`.
+interface Janela {
+  x: number
+  y: number
+  w: number
+  h: number
+  radius: number
+  blobD?: string
+  /** A mídia é o fundo de tela cheia do card (ex.: CTA): as sobreposições já
+   *  ficam sobre fundo transparente, então NÃO se perfura a janela. */
+  full: boolean
+}
+
+// Constrói o caminho da janela (Path2D) já escalado — usado tanto para perfurar
+// a moldura quanto para recortar o vídeo. Retângulo arredondado OU forma orgânica.
+function caminhoJanela(j: Janela, escala = 1): Path2D {
+  const x = j.x * escala
+  const y = j.y * escala
+  const w = j.w * escala
+  const h = j.h * escala
+  const p = new Path2D()
+  if (j.blobD) {
+    // A forma é traçada em coords 0–1 (objectBoundingBox); mapeia para a janela.
+    p.addPath(new Path2D(j.blobD), new DOMMatrix([w, 0, 0, h, x, y]))
+    return p
+  }
+  const r = Math.min(j.radius * escala, w / 2, h / 2)
+  p.moveTo(x + r, y)
+  p.arcTo(x + w, y, x + w, y + h, r)
+  p.arcTo(x + w, y + h, x, y + h, r)
+  p.arcTo(x, y + h, x, y, r)
+  p.arcTo(x, y, x + w, y, r)
+  p.closePath()
+  return p
 }
 
 /**
- * Gera e baixa um vídeo (.webm) do card: vídeo do cliente na área de mídia +
- * moldura da KA por cima. `node` é a arte em tamanho real (1080px).
+ * Gera e baixa um vídeo do card: vídeo do cliente na área de mídia +
+ * moldura por cima. `node` é a arte em tamanho real (1080px).
  */
-// Retângulo da área de mídia dentro do card, em coordenadas reais (1080px).
-function medirJanela(node: HTMLElement) {
+// Área da mídia dentro do card, em coordenadas reais (1080px), com a forma do
+// recorte (retângulo arredondado da KA / frames da Shapes, ou forma orgânica).
+function medirJanela(node: HTMLElement): Janela {
   const W = node.offsetWidth
   const H = node.offsetHeight
   const cardRect = node.getBoundingClientRect()
+  const video = node.querySelector('video') as HTMLElement | null
+  // A "janela" é o container da mídia: o pai do <video> (`.midia-frame` na KA,
+  // `.frame`/`.foto-frame`/`.foto-blob` na Shapes, ou o próprio card no CTA).
   const frameEl =
-    (node.querySelector('.midia-frame') as HTMLElement) ?? (node.querySelector('video') as HTMLElement)
+    video?.parentElement ??
+    (node.querySelector('.midia-frame') as HTMLElement) ??
+    (video as HTMLElement)
   const fr = frameEl.getBoundingClientRect()
+
+  const cs = getComputedStyle(frameEl)
+  const clip = cs.clipPath || (cs as unknown as { webkitClipPath?: string }).webkitClipPath || ''
+  const idBlob = clip.match(/#(shape-blob\d)/)?.[1]
+  const blobD = idBlob ? FORMAS.find((f) => f.id === idBlob)?.d : undefined
+  const radius = parseFloat(cs.borderTopLeftRadius) || 0
+  // Fundo de tela cheia: o container da mídia é o próprio card (1º filho do nó).
+  const full = frameEl === node.firstElementChild
+
   return {
     x: ((fr.left - cardRect.left) / cardRect.width) * W,
     y: ((fr.top - cardRect.top) / cardRect.height) * H,
     w: (fr.width / cardRect.width) * W,
     h: (fr.height / cardRect.height) * H,
+    radius,
+    blobD,
+    full,
   }
 }
 
@@ -100,10 +146,10 @@ function medirJanela(node: HTMLElement) {
 async function molduraComJanela(
   node: HTMLElement,
   pixelRatio: number,
-): Promise<{ canvas: HTMLCanvasElement; rect: { x: number; y: number; w: number; h: number } }> {
+): Promise<{ canvas: HTMLCanvasElement; janela: Janela }> {
   const W = node.offsetWidth
   const H = node.offsetHeight
-  const rect = medirJanela(node)
+  const janela = medirJanela(node)
 
   node.classList.add('moldura-video')
   let molduraUrl: string
@@ -125,11 +171,14 @@ async function molduraComJanela(
   canvas.height = H * pixelRatio
   const ctx = canvas.getContext('2d')!
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-  ctx.globalCompositeOperation = 'destination-out'
-  roundRect(ctx, rect.x * pixelRatio, rect.y * pixelRatio, rect.w * pixelRatio, rect.h * pixelRatio, 18 * pixelRatio)
-  ctx.fill()
-  ctx.globalCompositeOperation = 'source-over'
-  return { canvas, rect }
+  // Fundo de tela cheia (CTA): as sobreposições já estão sobre transparente —
+  // perfurar apagaria o grafismo/botão/logo. Só perfura molduras com janela.
+  if (!janela.full) {
+    ctx.globalCompositeOperation = 'destination-out'
+    ctx.fill(caminhoJanela(janela, pixelRatio))
+    ctx.globalCompositeOperation = 'source-over'
+  }
+  return { canvas, janela }
 }
 
 /**
@@ -172,7 +221,7 @@ export async function baixarVideoDoCard(
 
   aoProgresso?.('Preparando a moldura…')
   // Moldura com a janela perfurada — o vídeo aparece por baixo dela.
-  const { canvas: moldura, rect } = await molduraComJanela(node, 1)
+  const { canvas: moldura, janela: rect } = await molduraComJanela(node, 1)
 
   const canvas = document.createElement('canvas')
   canvas.width = W
@@ -226,8 +275,7 @@ export async function baixarVideoDoCard(
       const dx = rect.x + (rect.w - dw) / 2
       const dy = rect.y + (rect.h - dh) / 2
       ctx.save()
-      roundRect(ctx, rect.x, rect.y, rect.w, rect.h, 18)
-      ctx.clip()
+      ctx.clip(caminhoJanela(rect, 1))
       ctx.drawImage(video!, dx, dy, dw, dh)
       ctx.restore()
     }

@@ -179,10 +179,11 @@ export const TEMPLATES: Template[] = [
     campos: [
       {
         id: 'foto',
-        label: 'Foto do produto',
+        label: 'Foto ou vídeo do produto',
         tipo: 'imagem',
         obrigatorio: true,
-        ajuda: 'Envie uma foto do produto (JPG ou PNG). Fica dentro da forma orgânica.',
+        aceitaVideo: true,
+        ajuda: 'Envie uma foto ou vídeo do produto. Fica dentro da forma orgânica.',
       },
       { id: 'forma', label: 'Forma da foto', tipo: 'forma', padrao: 'shape-blob1' },
       {
@@ -216,10 +217,11 @@ export const TEMPLATES: Template[] = [
     campos: [
       {
         id: 'foto',
-        label: 'Foto',
+        label: 'Foto ou vídeo',
         tipo: 'imagem',
         obrigatorio: true,
-        ajuda: 'Use "Tamanho da foto" para a foto ocupar o card todo (100%) ou aparecer menor, mostrando a cor de fundo em volta.',
+        aceitaVideo: true,
+        ajuda: 'Foto ou vídeo. Use "Tamanho da foto" para ocupar o card todo (100%) ou aparecer menor, mostrando a cor de fundo em volta.',
       },
       {
         id: 'cor_fundo',
@@ -267,11 +269,12 @@ export const TEMPLATES: Template[] = [
       },
       {
         id: 'foto',
-        label: 'Foto',
+        label: 'Foto ou vídeo',
         tipo: 'imagem',
         obrigatorio: true,
         areaPadrao: 100,
-        ajuda: 'Use "Tamanho da foto" para aumentar ou diminuir o espaço da imagem.',
+        aceitaVideo: true,
+        ajuda: 'Foto ou vídeo. Use "Tamanho da foto" para aumentar ou diminuir o espaço da mídia.',
       },
       {
         id: 'texto_baixo',
@@ -305,11 +308,12 @@ export const TEMPLATES: Template[] = [
       },
       {
         id: 'foto',
-        label: 'Foto',
+        label: 'Foto ou vídeo',
         tipo: 'imagem',
         obrigatorio: true,
         areaPadrao: 100,
-        ajuda: 'Use "Tamanho da foto" para aumentar ou diminuir o espaço da imagem.',
+        aceitaVideo: true,
+        ajuda: 'Foto ou vídeo. Use "Tamanho da foto" para aumentar ou diminuir o espaço da mídia.',
       },
       {
         id: 'texto_baixo',
@@ -340,7 +344,7 @@ export const TEMPLATES: Template[] = [
         opcoes: SWATCHES,
       },
       { id: 'cor_fonte', label: 'Cor do texto', tipo: 'cor', padrao: '#131313', opcoes: SWATCHES },
-      { id: 'foto', label: 'Foto do produto', tipo: 'imagem', obrigatorio: true },
+      { id: 'foto', label: 'Foto ou vídeo do produto', tipo: 'imagem', obrigatorio: true, aceitaVideo: true },
       { id: 'forma', label: 'Forma da foto', tipo: 'forma', padrao: 'shape-blob2' },
       {
         id: 'texto',
@@ -370,7 +374,7 @@ export const TEMPLATES: Template[] = [
         opcoes: SWATCHES,
       },
       { id: 'cor_fonte', label: 'Cor do texto', tipo: 'cor', padrao: '#FFFFFF', opcoes: SWATCHES },
-      { id: 'foto', label: 'Foto do produto', tipo: 'imagem', obrigatorio: true },
+      { id: 'foto', label: 'Foto ou vídeo do produto', tipo: 'imagem', obrigatorio: true, aceitaVideo: true },
       { id: 'forma', label: 'Forma da foto', tipo: 'forma', padrao: 'shape-blob3' },
       {
         id: 'texto',
@@ -394,10 +398,11 @@ export const TEMPLATES: Template[] = [
     campos: [
       {
         id: 'foto',
-        label: 'Foto de fundo',
+        label: 'Foto ou vídeo de fundo',
         tipo: 'imagem',
         areaPadrao: 100,
-        ajuda: 'Aqui "Tamanho da foto" controla o tamanho da forma orgânica.',
+        aceitaVideo: true,
+        ajuda: 'Foto ou vídeo de fundo. Aqui "Tamanho da foto" controla o tamanho da forma orgânica.',
       },
       { id: 'forma', label: 'Forma (o texto fica dentro)', tipo: 'forma', padrao: 'shape-blob1' },
       {

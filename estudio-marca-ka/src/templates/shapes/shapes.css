@@ -243,7 +243,8 @@
   background: rgba(255, 255, 255, 0.12);
   display: flex;
 }
-.shapes-prod .foto-blob img {
+.shapes-prod .foto-blob img,
+.shapes-prod .foto-blob video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -369,7 +370,8 @@
   overflow: hidden;
   z-index: 1;
 }
-.shapes-frase .frame img {
+.shapes-frase .frame img,
+.shapes-frase .frame video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -430,7 +432,8 @@
   overflow: hidden;
   z-index: 2;
 }
-.shapes-graf .frame img {
+.shapes-graf .frame img,
+.shapes-graf .frame video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -481,7 +484,8 @@
   background: rgba(0, 0, 0, 0.06);
   display: flex;
 }
-.shapes-cores .foto-blob img {
+.shapes-cores .foto-blob img,
+.shapes-cores .foto-blob video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -515,7 +519,8 @@
   background: rgba(255, 255, 255, 0.12);
   display: flex;
 }
-.shapes-forma .foto-blob img {
+.shapes-forma .foto-blob img,
+.shapes-forma .foto-blob video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -641,4 +646,32 @@
   line-height: 1.2;
   margin-top: 4px;
   white-space: pre-line;
+}
+
+/* ---- Exportação de vídeo: "moldura" com a janela da mídia transparente ----
+   Ao gerar a moldura (para o CapCut) ou o vídeo pronto (canvas), a área da
+   foto/vídeo some para o buraco ser perfurado no canvas com a forma certa
+   (retângulo ou forma orgânica), e o vídeo aparece por baixo. */
+.moldura-video .shapes-capa .foto-frame,
+.moldura-video .shapes-frase .frame,
+.moldura-video .shapes-graf .frame,
+.moldura-video .shapes-prod .foto-blob,
+.moldura-video .shapes-cores .foto-blob,
+.moldura-video .shapes-forma .foto-blob {
+  background: transparent !important;
+}
+.moldura-video .shapes-capa .foto-frame > img,
+.moldura-video .shapes-capa .foto-frame > video,
+.moldura-video .shapes-frase .frame > img,
+.moldura-video .shapes-frase .frame > video,
+.moldura-video .shapes-graf .frame > img,
+.moldura-video .shapes-graf .frame > video,
+.moldura-video .shapes-prod .foto-blob > img,
+.moldura-video .shapes-prod .foto-blob > video,
+.moldura-video .shapes-cores .foto-blob > img,
+.moldura-video .shapes-cores .foto-blob > video,
+.moldura-video .shapes-forma .foto-blob > img,
+.moldura-video .shapes-forma .foto-blob > video,
+.moldura-video .shapes-cta > .bg {
+  visibility: hidden !important;
 }

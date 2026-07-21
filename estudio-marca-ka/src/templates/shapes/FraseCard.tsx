@@ -1,5 +1,6 @@
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
+import { Midia } from './Midia'
 import './shapes.css'
 
 // Converte *itálico* em <em> sem usar innerHTML (texto do próprio usuário).
@@ -46,7 +47,7 @@ export function ShapesFraseCard({ valores, formato }: RenderProps) {
         }}
       >
         {foto ? (
-          <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+          <Midia src={foto} style={estiloImagem(valores, 'foto')} />
         ) : (
           <div className="ph">
             <div className="ph-t1">espaço da imagem</div>

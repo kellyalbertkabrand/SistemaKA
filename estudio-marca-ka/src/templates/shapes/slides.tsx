@@ -3,6 +3,7 @@ import { estiloImagem } from '../imagem'
 import { ratioForma, caixaFoto, FORMAS } from '../formas'
 import { logoShapes } from './cores'
 import { ShapesClips } from './ShapesClips'
+import { Midia } from './Midia'
 import './shapes.css'
 
 // 1 · Capa — foto (tamanho ajustável) + título grande + logo.
@@ -26,7 +27,7 @@ export function ShapesCapaCard({ valores, formato }: RenderProps) {
     >
       <div className="foto-frame" style={{ width: frameW, height: frameH }}>
         {foto ? (
-          <img className="bg" src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+          <Midia className="bg" src={foto} style={estiloImagem(valores, 'foto')} />
         ) : (
           <div className="bg-ph">Sua foto aqui</div>
         )}
@@ -67,7 +68,7 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
           }}
         >
           {foto ? (
-            <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+            <Midia src={foto} style={estiloImagem(valores, 'foto')} />
           ) : (
             <div className="foto-ph">Sua foto aqui</div>
           )}
@@ -104,7 +105,7 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
       }}
     >
       {foto ? (
-        <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+        <Midia src={foto} style={estiloImagem(valores, 'foto')} />
       ) : (
         <div className="foto-ph">Sua foto aqui</div>
       )}
@@ -159,7 +160,7 @@ export function ShapesCtaCard({ valores, formato }: RenderProps) {
   return (
     <div className="shapes-cta" style={{ width: formato.largura, height: formato.altura, color: corFonte }}>
       {foto ? (
-        <img className="bg" src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+        <Midia className="bg" src={foto} style={estiloImagem(valores, 'foto')} />
       ) : (
         <div className="bg-ph">Sua foto aqui</div>
       )}

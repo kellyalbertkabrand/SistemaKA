@@ -3,6 +3,7 @@ import { estiloImagem } from '../imagem'
 import { ratioForma, caixaFoto } from '../formas'
 import { logoShapes } from './cores'
 import { ShapesClips } from './ShapesClips'
+import { Midia } from './Midia'
 import './shapes.css'
 
 // Post de produto da Shapes — fundo colorido (configurável), foto do produto
@@ -50,7 +51,7 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
           }}
         >
           {foto ? (
-            <img src={foto} alt="" style={estiloImagem(valores, 'foto')} />
+            <Midia src={foto} style={estiloImagem(valores, 'foto')} />
           ) : (
             <div className="foto-ph">Sua foto aqui</div>
           )}
