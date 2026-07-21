@@ -15,7 +15,6 @@ import { GestaoAtividades } from './gestao/GestaoAtividades'
 import { GestaoFinanceiro } from './gestao/GestaoFinanceiro'
 import { GestaoRelatorios } from './gestao/GestaoRelatorios'
 import { GestaoFormularios } from './gestao/GestaoFormularios'
-import { GestaoNoticias } from './gestao/GestaoNoticias'
 import { GestaoLixeira } from './gestao/GestaoLixeira'
 import '../styles/painel.css'
 import '../styles/gestao.css'
@@ -33,7 +32,6 @@ type Aba =
   | 'atividades'
   | 'cuidadoras'
   | 'formularios'
-  | 'noticias'
   | 'lixeira'
 
 // Atalhos da HOME, agrupados por categoria. Ícones de linha (elegantes, no
@@ -43,7 +41,6 @@ const GRUPOS: { titulo: string; itens: { id: Aba; rotulo: string; icone: string 
     titulo: 'Criação',
     itens: [
       { id: 'estudio', rotulo: 'Estúdio', icone: 'estudio' },
-      { id: 'noticias', rotulo: 'Notícias', icone: 'noticias' },
     ],
   },
   {
@@ -152,14 +149,6 @@ function IconeAtalho({ nome }: { nome: string }) {
           <path d="M12 19s-6-3.8-6-8.5A3.5 3.5 0 0 1 12 8a3.5 3.5 0 0 1 6 2.5C18 15.2 12 19 12 19z" />
         </svg>
       )
-    case 'noticias':
-      return (
-        <svg {...p}>
-          <path d="M4 5h12v14H5.5A1.5 1.5 0 0 1 4 17.5z" />
-          <path d="M16 8h3a1 1 0 0 1 1 1v8.5a1.5 1.5 0 0 1-3 0V5" />
-          <path d="M7 8.5h6M7 12h6M7 15.5h4" />
-        </svg>
-      )
     case 'formularios':
       return (
         <svg {...p}>
@@ -178,7 +167,6 @@ function IconeAtalho({ nome }: { nome: string }) {
 // subitens aparecem listados na gaveta.
 const MENU: ItemMenu[] = [
   { id: 'estudio', rotulo: 'Estúdio' },
-  { id: 'noticias', rotulo: 'Notícias' },
   {
     id: 'gestao',
     rotulo: 'Gestão',
@@ -211,7 +199,6 @@ const CABECALHOS: Record<Aba, { titulo: string; sub: string }> = {
   atividades: { titulo: 'Atividades 🔒', sub: 'Seu painel pessoal — pendências dos clientes (KA) junto com Trabalho, BIA e Pessoal.' },
   cuidadoras: { titulo: 'Cuidadoras 🔒', sub: 'Seu controle pessoal — cadastro pelo link, ficha e documentos de cada cuidadora.' },
   formularios: { titulo: 'Formulários 🔒', sub: 'Etapas do Marca com Essência© — envie o link, o cliente preenche e salva sozinho.' },
-  noticias: { titulo: 'Notícias', sub: 'Radar de matérias publicadas automaticamente pelo sistema de notícias.' },
   lixeira: { titulo: 'Lixeira 🗑️', sub: 'Itens excluídos. Restaure o que apagou por engano ou esvazie de vez.' },
 }
 
@@ -227,7 +214,6 @@ const ABAS_VALIDAS: Aba[] = [
   'atividades',
   'cuidadoras',
   'formularios',
-  'noticias',
   'lixeira',
 ]
 
@@ -422,7 +408,6 @@ export function AdminPanel() {
                 <GestaoFormularios />
               </GateAdmin>
             )}
-            {aba === 'noticias' && <GestaoNoticias />}
             {aba === 'lixeira' && (
               <GateAdmin>
                 <GestaoLixeira />
