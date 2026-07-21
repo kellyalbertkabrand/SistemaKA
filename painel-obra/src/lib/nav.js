@@ -1,4 +1,4 @@
-import { logoPlaceholder } from './marca.js';
+import { logoImg } from './marca.js';
 
 // Barra de navegação padrão do sistema (estilo site), com menu hambúrguer no
 // celular. Usada em todas as telas internas. Recebe qual item está ativo:
@@ -11,7 +11,7 @@ export function navBar(ativo = '') {
   return `
   <nav class="nav">
     <a class="nav-brand" data-link href="/">
-      ${logoPlaceholder('logo-ph-nav', 'Logo')}
+      ${logoImg('logo-schramm-nav')}
       <span class="nav-titulo">Controle de Obras</span>
     </a>
     <input type="checkbox" id="nav-toggle" class="nav-toggle" />

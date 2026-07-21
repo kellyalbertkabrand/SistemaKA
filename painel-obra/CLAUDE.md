@@ -147,9 +147,10 @@ Build local (`npm run build`) antes de commitar, para validar.
 - **Netlify base directory = `painel-obra`** (o produto está em subpasta).
 - **Voz:** `voice.js` grava de forma **contínua e acumulativa** (não apaga nas
   pausas). O botão alterna Falar/Parar; só ao Parar envia para a IA.
-- **Logo:** ainda é placeholder (`caixaLogo()` mostra "LOGOTIPO" + nome do
-  escritório em caixa cinza). Quando chegar o arquivo oficial, trocar por `<img>`
-  em `marca.js` (afeta login e painel do cliente de uma vez).
+- **Logo:** o arquivo oficial já está no sistema (`src/assets/logo-schramm.png`,
+  lockup completo: monograma + SCHRAMM + tagline). `marca.js` expõe `logoImg()` /
+  `caixaLogo()` que renderizam esse `<img>` (afeta login, nav interna e painel do
+  cliente de uma vez). Para trocar o logo, basta substituir o PNG em `assets/`.
 
 ---
 

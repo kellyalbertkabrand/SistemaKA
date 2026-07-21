@@ -89,27 +89,20 @@ code { background: #efe9df; padding: 1px 5px; border-radius: 6px; font-size: .85
 .row-end { display: flex; justify-content: flex-end; align-items: center; gap: .6rem; }
 
 /* ---- Marca Schramm ---- */
-/* Placeholder do logo (até chegar o arquivo oficial do escritório) */
-.logo-ph {
-  display: inline-flex; align-items: center; justify-content: center; text-align: center;
-  border: 1.5px dashed var(--acento); border-radius: 8px; color: var(--acento);
-  font-family: var(--fonte-ui); font-weight: 600; letter-spacing: .06em;
-  text-transform: uppercase; line-height: 1.15; padding: .35rem .45rem; flex: none;
-}
-.logo-ph-lg { width: 104px; height: 104px; font-size: .62rem; background: #fff; box-shadow: var(--sombra); }
-.logo-ph-sm { width: 54px; height: 54px; font-size: .46rem; padding: .25rem; }
-.logo-ph-login { width: 100%; max-width: 240px; height: 72px; font-size: .62rem; margin: 0 auto .3rem; }
+/* Logo oficial do escritório (lockup: monograma + SCHRAMM + tagline). */
+.logo-schramm { display: block; width: auto; height: auto; max-width: 100%; object-fit: contain; }
+.logo-schramm-lg { max-width: 240px; }
+.logo-schramm-nav { height: 40px; width: auto; }
 
-/* Caixa cinza claro com "LOGOTIPO" + nome do escritório (login e cliente) */
+/* Bloco do logo (login e cabeçalho do cliente) — sem moldura, só centraliza. */
 .caixa-logo {
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .4rem;
-  background: #f3f2f0; border: 1px solid #e3e1dd; border-radius: 10px;
-  padding: 1.1rem 1.4rem; text-align: center;
+  display: flex; align-items: center; justify-content: center;
+  padding: .4rem; text-align: center;
 }
-.caixa-logo-marca,
-.caixa-logo-nome { font-family: var(--fonte-ui); font-weight: 500; letter-spacing: .14em; font-size: .64rem; color: #c7c4bf; }
-.caixa-logo-login { width: 100%; max-width: 270px; margin: 0 auto; }
-.caixa-logo-cliente { min-width: 260px; }
+.caixa-logo .logo-schramm { max-width: 240px; }
+.caixa-logo-login { width: 100%; margin: 0 auto; }
+.caixa-logo-cliente { min-width: 0; }
+.caixa-logo-cliente .logo-schramm { max-width: 200px; }
 
 .marca { display: inline-flex; align-items: center; gap: .7rem; }
 .marca-txt { display: flex; flex-direction: column; text-align: left; }
@@ -142,7 +135,6 @@ input:focus, select:focus { outline: 2px solid var(--acento); outline-offset: -1
 /* ---- Navegação (menu de site) ---- */
 .nav { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .95rem 1.3rem; background: #fff; border-bottom: 1px solid var(--linha); box-shadow: 0 1px 4px rgba(42, 38, 34, .05); }
 .nav-brand { display: flex; align-items: center; gap: .7rem; text-decoration: none; }
-.logo-ph-nav { width: 58px; height: 44px; font-size: .52rem; padding: .2rem; }
 .nav-titulo { font-family: var(--fonte-ui); font-weight: 700; letter-spacing: .07em; font-size: 1rem; text-transform: uppercase; color: var(--tinta); }
 .nav-toggle { display: none; }
 .nav-burger { display: none; font-size: 1.8rem; line-height: 1; cursor: pointer; padding: .1rem .5rem; color: var(--tinta); user-select: none; }

@@ -1,28 +1,29 @@
 // Identidade visual do escritório (Schramm Arquitetura e Engenharia).
-// Ainda NÃO temos o arquivo final do logo, então usamos um placeholder
-// claro ("LOGO DO ESCRITÓRIO"). Quando o logo oficial chegar (PNG/SVG),
-// basta trocar logoPlaceholder por uma <img> aqui.
+// O arquivo oficial do logo já chegou: é o lockup completo (monograma +
+// "SCHRAMM" + "ARQUITETURA E ENGENHARIA"). O Vite resolve o import para a URL
+// final (com hash) no build.
+import logoSchramm from '../assets/logo-schramm.png';
 
-export function logoPlaceholder(classe = '', texto = 'LOGO DO ESCRITÓRIO') {
-  return `<div class="logo-ph ${classe}">${texto}</div>`;
+// URL do logo, caso alguma tela precise usar direto.
+export { logoSchramm };
+
+// Logo do escritório como <img>. `classe` ajusta o tamanho por contexto.
+export function logoImg(classe = '') {
+  return `<img class="logo-schramm ${classe}" src="${logoSchramm}" alt="Schramm Arquitetura e Engenharia" />`;
 }
 
-// Retângulo cinza claro com o espaço do logotipo + nome do escritório.
-// Usado no login e no cabeçalho do painel do cliente.
+// Compatibilidade: antes existia um placeholder cinza. Agora devolve o logo.
+export function logoPlaceholder(classe = '') {
+  return logoImg(classe);
+}
+
+// Bloco do logo usado no login e no cabeçalho do painel do cliente.
+// O lockup já traz o nome do escritório, então não repetimos o texto.
 export function caixaLogo(classe = '') {
-  return `<div class="caixa-logo ${classe}">
-    <span class="caixa-logo-marca">LOGOTIPO</span>
-    <span class="caixa-logo-nome">SCHRAMM ARQUITETURA E ENGENHARIA</span>
-  </div>`;
+  return `<div class="caixa-logo ${classe}">${logoImg()}</div>`;
 }
 
-// Lockup do cabeçalho do cliente: placeholder do logo + nome + assinatura.
+// Lockup do cabeçalho do cliente.
 export function marcaSchramm() {
-  return `<div class="marca">
-    ${logoPlaceholder('logo-ph-lg')}
-    <div class="marca-txt">
-      <span class="marca-nome">SCHRAMM</span>
-      <span class="marca-sub">Arquitetura e Engenharia</span>
-    </div>
-  </div>`;
+  return `<div class="marca">${logoImg('logo-schramm-lg')}</div>`;
 }
