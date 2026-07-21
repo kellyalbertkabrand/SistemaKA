@@ -11,7 +11,7 @@
     "netlify": "netlify dev"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.45.4"
+    "firebase": "^11.3.0"
   },
   "devDependencies": {
     "vite": "^5.4.8"

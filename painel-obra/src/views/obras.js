@@ -1,4 +1,4 @@
-import { supabase } from '../supabaseClient.js';
+import { listarObras, totaisPorObra, listarLancamentosDoEscritorio, criarObra, criarEtapas, slugExiste, sair } from '../dados.js';
 import { navegar } from '../main.js';
 import { moeda, pct, slugify, esc, dataBR } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
@@ -11,12 +11,10 @@ export async function renderObras(container) {
 
   let obras;
   try {
-    const res = await Promise.race([
-      supabase.from('obras').select('*').order('created_at', { ascending: false }),
+    obras = await Promise.race([
+      listarObras(),
       new Promise((_, reject) => setTimeout(() => reject(new Error('tempo esgotado ao falar com o banco')), 12000)),
     ]);
-    if (res.error) throw res.error;
-    obras = res.data || [];
   } catch (e) {
     container.innerHTML = `<div class="app">
       <p class="erro" style="display:block">Não foi possível carregar as obras. ${esc(e?.message || e)}</p>
@@ -25,27 +23,13 @@ export async function renderObras(container) {
     return;
   }
 
-  // Totais por obra + totais gerais (uma consulta só).
-  const ids = (obras || []).map((o) => o.id);
+  // Totais executados por obra (uma consulta só, somada no cliente).
   let porObra = {};
-  let totalExec = 0, totalPago = 0, totalPend = 0;
-  if (ids.length) {
-    const { data: lancs } = await supabase
-      .from('lancamentos')
-      .select('obra_id, valor, status')
-      .in('obra_id', ids);
-    for (const l of lancs || []) {
-      const v = Number(l.valor || 0);
-      porObra[l.obra_id] = (porObra[l.obra_id] || 0) + v;
-      totalExec += v;
-      if (l.status === 'pago') totalPago += v; else totalPend += v;
-    }
+  try {
+    porObra = await totaisPorObra();
+  } catch {
+    porObra = {};
   }
-  const totalOrc = (obras || []).reduce((t, o) => t + Number(o.orcamento || 0), 0);
-  const totalSaldo = totalOrc - totalExec;
-  const obrasEstouradas = (obras || []).filter(
-    (o) => Number(o.orcamento || 0) - (porObra[o.id] || 0) < 0
-  ).length;
 
   container.innerHTML = `
     ${navBar('painel')}
@@ -101,7 +85,7 @@ export async function renderObras(container) {
 
   // Logout
   container.querySelector('#sair').addEventListener('click', async () => {
-    await supabase.auth.signOut();
+    await sair();
   });
 
   // Exportar tudo (todos os lançamentos de todas as obras) em CSV/Excel
@@ -112,14 +96,11 @@ export async function renderObras(container) {
       const original = btnExp.textContent;
       btnExp.textContent = 'Gerando…';
       const nomePorId = Object.fromEntries((obras || []).map((o) => [o.id, o.nome]));
-      const { data: todos } = await supabase
-        .from('lancamentos')
-        .select('obra_id, data, etapa, descricao, valor, status')
-        .in('obra_id', ids)
-        .order('data', { ascending: false });
+      const todos = await listarLancamentosDoEscritorio();
+      todos.sort((a, b) => String(b.data).localeCompare(String(a.data)));
       const linhas = [['Obra', 'Data', 'Etapa', 'Descrição', 'Valor', 'Status']];
-      for (const l of todos || []) {
-        linhas.push([nomePorId[l.obra_id] || '', dataBR(l.data), l.etapa, l.descricao || '', numBR(l.valor), l.status]);
+      for (const l of todos) {
+        linhas.push([nomePorId[l.obraId] || '', dataBR(l.data), l.etapa, l.descricao || '', numBR(l.valor), l.status]);
       }
       baixarCSV('obras-todos-os-lancamentos.csv', linhas);
       btnExp.disabled = false;
@@ -212,44 +193,40 @@ function configurarFormNovaObra(container) {
     const btn = form.querySelector('button[type="submit"]');
     btn.disabled = true; btn.textContent = 'Salvando…';
 
-    const { data: obra, error: errObra } = await supabase
-      .from('obras')
-      .insert(payload)
-      .select()
-      .single();
+    try {
+      if (await slugExiste(payload.slug)) {
+        btn.disabled = false; btn.textContent = 'Salvar obra';
+        mostrarErro(erro, 'Esse slug já existe. Escolha outro.');
+        return;
+      }
+      await criarObra(payload); // o ID da obra é o próprio slug
 
-    if (errObra) {
-      btn.disabled = false; btn.textContent = 'Salvar obra';
-      mostrarErro(erro, /duplicate|unique/i.test(errObra.message)
-        ? 'Esse slug já existe. Escolha outro.'
-        : errObra.message);
-      return;
-    }
+      // Etapas preenchidas manualmente
+      const etapas = [...linhas.querySelectorAll('.etapa-linha')]
+        .map((l) => ({
+          obraId: payload.slug,
+          nome: l.querySelector('.et-nome').value.trim(),
+          orcado: Number(l.querySelector('.et-orcado').value || 0),
+        }))
+        .filter((et) => et.nome);
 
-    // Etapas preenchidas manualmente
-    const etapas = [...linhas.querySelectorAll('.etapa-linha')]
-      .map((l) => ({
-        obra_id: obra.id,
-        nome: l.querySelector('.et-nome').value.trim(),
-        orcado: Number(l.querySelector('.et-orcado').value || 0),
-      }))
-      .filter((et) => et.nome);
-
-    // Etapas padrão (CAIXA), se marcado — sem duplicar as já digitadas
-    if (container.querySelector('#o-padrao')?.checked) {
-      const jaTem = new Set(etapas.map((e) => e.nome.toLowerCase()));
-      for (const nome of ETAPAS_PADRAO) {
-        if (!jaTem.has(nome.toLowerCase())) {
-          etapas.push({ obra_id: obra.id, nome, orcado: 0 });
+      // Etapas padrão (CAIXA), se marcado — sem duplicar as já digitadas
+      if (container.querySelector('#o-padrao')?.checked) {
+        const jaTem = new Set(etapas.map((e) => e.nome.toLowerCase()));
+        for (const nomeEt of ETAPAS_PADRAO) {
+          if (!jaTem.has(nomeEt.toLowerCase())) {
+            etapas.push({ obraId: payload.slug, nome: nomeEt, orcado: 0 });
+          }
         }
       }
-    }
 
-    if (etapas.length) {
-      await supabase.from('etapas').insert(etapas);
-    }
+      if (etapas.length) await criarEtapas(etapas);
 
-    navegar(`/painel/${obra.id}`);
+      navegar(`/painel/${payload.slug}`);
+    } catch (err) {
+      btn.disabled = false; btn.textContent = 'Salvar obra';
+      mostrarErro(erro, err?.message || 'Não foi possível salvar a obra.');
+    }
   });
 }
 

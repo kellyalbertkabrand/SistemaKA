@@ -1,4 +1,7 @@
-import { supabase } from '../supabaseClient.js';
+import {
+  obterObra, listarEtapas, listarLancamentos, atualizarObra, definirPublicado,
+  criarEtapa, excluirEtapa, criarLancamento, excluirLancamento, sair,
+} from '../dados.js';
 import { navegar } from '../main.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
 import { reconhecimentoDisponivel, ouvir, parar } from '../lib/voice.js';
@@ -11,13 +14,18 @@ import { navBar } from '../lib/nav.js';
 export async function renderObra(container, obraId) {
   container.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
 
-  const [obraRes, etapasRes, lancRes] = await Promise.all([
-    supabase.from('obras').select('*').eq('id', obraId).single(),
-    supabase.from('etapas').select('*').eq('obra_id', obraId).order('created_at'),
-    supabase.from('lancamentos').select('*').eq('obra_id', obraId).order('data', { ascending: false }),
-  ]);
+  let obra, etapas, lancamentos;
+  try {
+    [obra, etapas, lancamentos] = await Promise.all([
+      obterObra(obraId),
+      listarEtapas(obraId),
+      listarLancamentos(obraId),
+    ]);
+  } catch {
+    obra = null;
+  }
 
-  if (obraRes.error || !obraRes.data) {
+  if (!obra) {
     container.innerHTML = `
       <div class="app">
         <a class="btn btn-ghost" data-link href="/">← Voltar</a>
@@ -26,9 +34,8 @@ export async function renderObra(container, obraId) {
     return;
   }
 
-  const obra = obraRes.data;
-  const etapas = etapasRes.data || [];
-  const lancamentos = lancRes.data || [];
+  etapas = etapas || [];
+  lancamentos = lancamentos || [];
 
   const executado = soma(lancamentos);
   const pago = soma(lancamentos.filter((l) => l.status === 'pago'));
@@ -138,7 +145,7 @@ export async function renderObra(container, obraId) {
   const recarregar = () => renderObra(container, obraId);
 
   container.querySelector('#sair').addEventListener('click', async () => {
-    await supabase.auth.signOut();
+    await sair();
   });
 
   // ---- Exportar a obra (Excel/CSV) ----
@@ -184,13 +191,11 @@ export async function renderObra(container, obraId) {
     if (!nome) { edErro.textContent = 'Dê um nome à obra.'; edErro.hidden = false; return; }
     const btn = formEditar.querySelector('button[type="submit"]');
     btn.disabled = true; btn.textContent = 'Salvando…';
-    const { error } = await supabase
-      .from('obras')
-      .update({ nome, cliente, orcamento })
-      .eq('id', obra.id);
-    if (error) {
+    try {
+      await atualizarObra(obra.id, { nome, cliente, orcamento });
+    } catch (error) {
       btn.disabled = false; btn.textContent = 'Salvar alterações';
-      edErro.textContent = error.message; edErro.hidden = false;
+      edErro.textContent = error?.message || 'Erro ao salvar.'; edErro.hidden = false;
       return;
     }
     recarregar();
@@ -206,7 +211,7 @@ export async function renderObra(container, obraId) {
     }
   });
   container.querySelector('#toggle-pub').addEventListener('change', async (e) => {
-    await supabase.from('obras').update({ publicado: e.target.checked }).eq('id', obra.id);
+    await definirPublicado(obra.id, e.target.checked);
   });
 
   // ---- Lançamento por voz / texto / IA ----
@@ -224,12 +229,12 @@ export async function renderObra(container, obraId) {
     const nome = container.querySelector('#e-nome').value.trim();
     const orcado = Number(container.querySelector('#e-orcado').value || 0);
     if (!nome) return;
-    await supabase.from('etapas').insert({ obra_id: obra.id, nome, orcado });
+    await criarEtapa({ obraId: obra.id, nome, orcado });
     recarregar();
   });
   container.querySelectorAll('[data-del-etapa]').forEach((b) => {
     b.addEventListener('click', async () => {
-      await supabase.from('etapas').delete().eq('id', b.getAttribute('data-del-etapa'));
+      await excluirEtapa(b.getAttribute('data-del-etapa'));
       recarregar();
     });
   });
@@ -237,7 +242,7 @@ export async function renderObra(container, obraId) {
   container.querySelectorAll('[data-chip-etapa]').forEach((c) => {
     c.addEventListener('click', async () => {
       c.disabled = true;
-      await supabase.from('etapas').insert({ obra_id: obra.id, nome: c.getAttribute('data-chip-etapa'), orcado: 0 });
+      await criarEtapa({ obraId: obra.id, nome: c.getAttribute('data-chip-etapa'), orcado: 0 });
       recarregar();
     });
   });
@@ -254,7 +259,7 @@ export async function renderObra(container, obraId) {
   tabelaLancEl.addEventListener('click', async (e) => {
     const b = e.target.closest('[data-del-lanc]');
     if (!b) return;
-    await supabase.from('lancamentos').delete().eq('id', b.getAttribute('data-del-lanc'));
+    await excluirLancamento(b.getAttribute('data-del-lanc'));
     recarregar();
   });
 }
@@ -335,7 +340,7 @@ function configurarLancamento(container, obra, etapas, recarregar) {
     });
     preview.querySelector('#p-salvar').addEventListener('click', async () => {
       const novo = {
-        obra_id: obra.id,
+        obraId: obra.id,
         etapa: preview.querySelector('#p-etapa').value.trim() || 'Geral',
         descricao: preview.querySelector('#p-descricao').value.trim() || null,
         valor: Number(preview.querySelector('#p-valor').value || 0),
@@ -343,10 +348,11 @@ function configurarLancamento(container, obra, etapas, recarregar) {
       };
       const btn = preview.querySelector('#p-salvar');
       btn.disabled = true; btn.textContent = 'Salvando…';
-      const { error } = await supabase.from('lancamentos').insert(novo);
-      if (error) {
+      try {
+        await criarLancamento(novo);
+      } catch (error) {
         btn.disabled = false; btn.textContent = 'Salvar lançamento';
-        setStatus(error.message, 'erro');
+        setStatus(error?.message || 'Erro ao salvar.', 'erro');
         return;
       }
       recarregar();

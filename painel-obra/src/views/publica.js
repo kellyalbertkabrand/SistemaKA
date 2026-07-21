@@ -1,4 +1,5 @@
-import { supabase } from '../supabaseClient.js';
+import { configurado } from '../firebase.js';
+import { obterObraPublicaPorSlug, listarEtapas, listarLancamentos } from '../dados.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { caixaLogo } from '../lib/marca.js';
@@ -8,24 +9,14 @@ import { caixaLogo } from '../lib/marca.js';
 export async function renderPublica(container, slug) {
   container.innerHTML = `<div class="publica"><p class="muted center">Carregando…</p></div>`;
 
-  if (!supabase) {
+  if (!configurado) {
     container.innerHTML = telaSimples('Indisponível', 'Configuração do sistema incompleta.');
     return;
   }
 
   let obra, etapas, lancamentos;
   try {
-    const obraRes = await comTimeout(
-      supabase
-        .from('obras')
-        .select('id, nome, cliente, orcamento, slug, publicado')
-        .eq('slug', slug)
-        .eq('publicado', true)
-        .maybeSingle(),
-    );
-
-    if (obraRes.error) throw obraRes.error;
-    obra = obraRes.data;
+    obra = await comTimeout(obterObraPublicaPorSlug(slug));
 
     if (!obra) {
       container.innerHTML = telaSimples(
@@ -35,12 +26,12 @@ export async function renderPublica(container, slug) {
       return;
     }
 
-    const [etapasRes, lancRes] = await Promise.all([
-      comTimeout(supabase.from('etapas').select('*').eq('obra_id', obra.id).order('created_at')),
-      comTimeout(supabase.from('lancamentos').select('*').eq('obra_id', obra.id).order('data', { ascending: false })),
+    [etapas, lancamentos] = await Promise.all([
+      comTimeout(listarEtapas(obra.id)),
+      comTimeout(listarLancamentos(obra.id)),
     ]);
-    etapas = etapasRes.data || [];
-    lancamentos = lancRes.data || [];
+    etapas = etapas || [];
+    lancamentos = lancamentos || [];
   } catch (e) {
     container.innerHTML = telaSimples(
       'Não foi possível carregar',
@@ -164,7 +155,7 @@ function num(rotulo, valor, cls = '') {
   return `<div class="pub-num"><small>${rotulo}</small><strong class="${cls}">${valor}</strong></div>`;
 }
 
-// Corre a consulta do Supabase contra um tempo-limite, para a página nunca
+// Corre a consulta do Firebase contra um tempo-limite, para a página nunca
 // ficar presa em "Carregando…". Se estourar, cai no catch e mostra a mensagem.
 function comTimeout(promise, ms = 12000) {
   return Promise.race([

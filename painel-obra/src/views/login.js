@@ -1,7 +1,7 @@
-import { supabase } from '../supabaseClient.js';
+import { entrar } from '../dados.js';
 import { caixaLogo } from '../lib/marca.js';
 
-// Tela de acesso da arquiteta. O usuário é criado no Supabase
+// Tela de acesso da arquiteta. O usuário é criado no Firebase
 // (Authentication -> Users) — este piloto não tem cadastro aberto.
 export function renderLogin(container) {
   container.innerHTML = `
@@ -37,21 +37,21 @@ export function renderLogin(container) {
     btn.disabled = true;
     btn.textContent = 'Entrando…';
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-    btn.disabled = false;
-    btn.textContent = 'Entrar';
-
-    if (error) {
-      erro.textContent = traduzErro(error.message);
+    try {
+      await entrar(email, password);
+      // Em caso de sucesso, o aoMudarAuth (em main.js) redireciona sozinho.
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = 'Entrar';
+      erro.textContent = traduzErro(err?.code || '');
       erro.hidden = false;
     }
-    // Em caso de sucesso, o onAuthStateChange (em main.js) redireciona sozinho.
   });
 }
 
-function traduzErro(msg = '') {
-  if (/invalid login credentials/i.test(msg)) return 'E-mail ou senha incorretos.';
-  if (/email not confirmed/i.test(msg)) return 'E-mail ainda não confirmado.';
+function traduzErro(code = '') {
+  if (/invalid-credential|wrong-password|user-not-found/.test(code)) return 'E-mail ou senha incorretos.';
+  if (/invalid-email/.test(code)) return 'E-mail inválido.';
+  if (/too-many-requests/.test(code)) return 'Muitas tentativas. Tente de novo em instantes.';
   return 'Não foi possível entrar. Tente novamente.';
 }

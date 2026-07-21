@@ -1,4 +1,4 @@
-import { supabase } from '../supabaseClient.js';
+import { listarClientes, listarObras, criarConvite, excluirCliente, sair } from '../dados.js';
 import { esc, dataBR } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
 
@@ -6,28 +6,22 @@ import { navBar } from '../lib/nav.js';
 export async function renderClientes(container) {
   container.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
 
-  const [cliRes, obrasRes] = await Promise.all([
-    supabase.from('clientes').select('*').order('created_at', { ascending: false }),
-    supabase.from('obras').select('id, nome').order('created_at', { ascending: false }),
-  ]);
-
-  // Fase 2 ainda não ativada no banco → orienta a rodar o SQL.
-  if (cliRes.error) {
+  let clientes, obras;
+  try {
+    [clientes, obras] = await Promise.all([listarClientes(), listarObras()]);
+  } catch (e) {
     container.innerHTML = `
       <div class="app">
         <a class="voltar" data-link href="/">← Painel</a>
         <div class="card">
-          <h2>Ative o Cadastro de Clientes</h2>
-          <p class="muted">Para usar esta função, rode o script
-            <code>supabase/fase2-clientes.sql</code> no SQL Editor do Supabase e recarregue esta página.</p>
-          <p class="erro" style="display:block">${esc(cliRes.error.message)}</p>
+          <h2>Não foi possível carregar</h2>
+          <p class="erro" style="display:block">${esc(e?.message || e)}</p>
         </div>
       </div>`;
     return;
   }
-
-  const clientes = cliRes.data || [];
-  const obras = obrasRes.data || [];
+  clientes = clientes || [];
+  obras = obras || [];
 
   container.innerHTML = `
     ${navBar('clientes')}
@@ -55,32 +49,30 @@ export async function renderClientes(container) {
     </div>`;
 
   container.querySelector('#sair').addEventListener('click', async () => {
-    await supabase.auth.signOut();
+    await sair();
   });
 
   // Gerar convite → link
   container.querySelector('#gerar-link').addEventListener('click', async () => {
     const rotulo = container.querySelector('#c-rotulo').value.trim() || null;
-    const obra_id = container.querySelector('#c-obra').value || null;
+    const obraId = container.querySelector('#c-obra').value || null;
     const alvo = container.querySelector('#link-gerado');
     alvo.innerHTML = `<p class="muted">Gerando…</p>`;
-    const { data, error } = await supabase
-      .from('convites')
-      .insert({ rotulo, obra_id })
-      .select()
-      .single();
-    if (error) {
-      alvo.innerHTML = `<p class="erro" style="display:block">${esc(error.message)}</p>`;
+    let token;
+    try {
+      token = await criarConvite({ rotulo, obraId });
+    } catch (error) {
+      alvo.innerHTML = `<p class="erro" style="display:block">${esc(error?.message || error)}</p>`;
       return;
     }
-    const link = `${window.location.origin}/cadastro/${data.token}`;
+    const link = `${window.location.origin}/cadastro/${token}`;
     alvo.innerHTML = `
       <div class="preview-card">
         <p class="muted">Link do cadastro${rotulo ? ' — ' + esc(rotulo) : ''}:</p>
         <p class="mono">${esc(link)}</p>
         <div class="row-end">
           <button class="btn btn-mini" id="copiar-cad">Copiar link</button>
-          <a class="btn btn-mini" href="/cadastro/${esc(data.token)}" target="_blank" rel="noopener">Abrir</a>
+          <a class="btn btn-mini" href="/cadastro/${esc(token)}" target="_blank" rel="noopener">Abrir</a>
         </div>
       </div>`;
     alvo.querySelector('#copiar-cad').addEventListener('click', async (e) => {
@@ -92,7 +84,7 @@ export async function renderClientes(container) {
   // Excluir cliente
   container.querySelectorAll('[data-del-cli]').forEach((b) => {
     b.addEventListener('click', async () => {
-      await supabase.from('clientes').delete().eq('id', b.getAttribute('data-del-cli'));
+      await excluirCliente(b.getAttribute('data-del-cli'));
       renderClientes(container);
     });
   });
@@ -114,6 +106,6 @@ function listaClientes(clientes) {
       </div>
       ${c.endereco ? `<div class="muted cliente-dados">${esc(c.endereco)}</div>` : ''}
       ${c.observacoes ? `<div class="muted cliente-dados">${esc(c.observacoes)}</div>` : ''}
-      <div class="cliente-data muted">Cadastrado em ${dataBR(c.created_at)}</div>
+      <div class="cliente-data muted">Cadastrado em ${dataBR(c.criadoEm ? new Date(c.criadoEm).toISOString() : '')}</div>
     </div>`).join('');
 }

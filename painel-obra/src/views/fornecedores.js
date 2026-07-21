@@ -1,4 +1,4 @@
-import { supabase } from '../supabaseClient.js';
+import { listarFornecedores, criarFornecedor, excluirFornecedor, sair } from '../dados.js';
 import { esc } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
 
@@ -6,25 +6,21 @@ import { navBar } from '../lib/nav.js';
 export async function renderFornecedores(container) {
   container.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
 
-  const { data, error } = await supabase
-    .from('fornecedores')
-    .select('*')
-    .order('nome', { ascending: true });
-
-  if (error) {
+  let fornecedores;
+  try {
+    fornecedores = await listarFornecedores();
+  } catch (e) {
     container.innerHTML = `
       <div class="app">
         <a class="voltar" data-link href="/">← Painel</a>
         <div class="card">
-          <h2>Ative o Cadastro de Fornecedores</h2>
-          <p class="muted">Rode o script <code>supabase/fase2-fornecedores.sql</code> no SQL Editor do Supabase e recarregue.</p>
-          <p class="erro" style="display:block">${esc(error.message)}</p>
+          <h2>Não foi possível carregar</h2>
+          <p class="erro" style="display:block">${esc(e?.message || e)}</p>
         </div>
       </div>`;
     return;
   }
-
-  const fornecedores = data || [];
+  fornecedores = fornecedores || [];
 
   container.innerHTML = `
     ${navBar('fornecedores')}
@@ -67,7 +63,7 @@ export async function renderFornecedores(container) {
     </div>`;
 
   container.querySelector('#sair').addEventListener('click', async () => {
-    await supabase.auth.signOut();
+    await sair();
   });
 
   const abrir = container.querySelector('#abrir-novo');
@@ -96,10 +92,11 @@ export async function renderFornecedores(container) {
     };
     const btn = form.querySelector('button[type="submit"]');
     btn.disabled = true; btn.textContent = 'Salvando…';
-    const { error: err } = await supabase.from('fornecedores').insert(registro);
-    if (err) {
+    try {
+      await criarFornecedor(registro);
+    } catch (err) {
       btn.disabled = false; btn.textContent = 'Salvar fornecedor';
-      erro.textContent = err.message; erro.hidden = false;
+      erro.textContent = err?.message || 'Erro ao salvar.'; erro.hidden = false;
       return;
     }
     renderFornecedores(container);
@@ -107,7 +104,7 @@ export async function renderFornecedores(container) {
 
   container.querySelectorAll('[data-del-forn]').forEach((b) => {
     b.addEventListener('click', async () => {
-      await supabase.from('fornecedores').delete().eq('id', b.getAttribute('data-del-forn'));
+      await excluirFornecedor(b.getAttribute('data-del-forn'));
       renderFornecedores(container);
     });
   });

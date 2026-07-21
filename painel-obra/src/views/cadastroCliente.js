@@ -1,13 +1,26 @@
-import { supabase } from '../supabaseClient.js';
+import { configurado } from '../firebase.js';
+import { obterConvite, criarClientePublico } from '../dados.js';
 import { esc } from '../lib/format.js';
 import { caixaLogo } from '../lib/marca.js';
 
 // Formulário público de autopreenchimento do cliente, acessado por
-// /cadastro/{token}. O cliente preenche e os dados vão direto ao banco.
-export function renderCadastroCliente(container, token) {
-  if (!supabase) {
+// /cadastro/{token}. Valida o token do convite; se válido, o cliente preenche
+// e os dados vão direto ao banco (presos ao dono do convite pelas Regras).
+export async function renderCadastroCliente(container, token) {
+  if (!configurado) {
     container.innerHTML = `<div class="publica"><div class="pub-vazio">
       <h1>Indisponível</h1><p class="muted">Configuração do sistema incompleta.</p></div></div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="publica"><p class="muted center">Carregando…</p></div>`;
+
+  const convite = await obterConvite(token);
+  if (!convite) {
+    container.innerHTML = `<div class="publica"><div class="pub-vazio">
+      <h1>Link inválido</h1>
+      <p class="muted">Este link de cadastro não é válido ou expirou. Peça um novo ao escritório.</p>
+    </div></div>`;
     return;
   }
 
@@ -64,6 +77,7 @@ export function renderCadastroCliente(container, token) {
 
     const registro = {
       token,
+      ownerId: convite.ownerId,
       nome,
       email: container.querySelector('#f-email').value.trim() || null,
       telefone: container.querySelector('#f-telefone').value.trim() || null,
@@ -76,13 +90,11 @@ export function renderCadastroCliente(container, token) {
     const btn = container.querySelector('#cad-enviar');
     btn.disabled = true; btn.textContent = 'Enviando…';
 
-    const { error } = await supabase.from('clientes').insert(registro);
-
-    if (error) {
+    try {
+      await criarClientePublico(registro);
+    } catch {
       btn.disabled = false; btn.textContent = 'Enviar cadastro';
-      erro.textContent = /convite/i.test(error.message)
-        ? 'Este link de cadastro não é válido. Peça um novo ao escritório.'
-        : 'Não foi possível enviar agora. Tente novamente.';
+      erro.textContent = 'Não foi possível enviar agora. Tente novamente.';
       erro.hidden = false;
       return;
     }

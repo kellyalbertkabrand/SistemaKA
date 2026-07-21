@@ -1,5 +1,6 @@
 import './styles.css';
-import { supabase, configurado } from './supabaseClient.js';
+import { configurado } from './firebase.js';
+import { aoMudarAuth, usuarioAtual } from './dados.js';
 import { renderLogin } from './views/login.js';
 import { renderObras } from './views/obras.js';
 import { renderObra } from './views/obra.js';
@@ -9,6 +10,10 @@ import { renderCadastroCliente } from './views/cadastroCliente.js';
 import { renderFornecedores } from './views/fornecedores.js';
 
 const app = document.getElementById('app');
+
+// Firebase resolve a sessão salva de forma assíncrona. Até resolver, seguramos
+// as rotas internas numa telinha de "Carregando" para não piscar o login.
+let authResolvido = !configurado;
 
 // Navegação interna sem recarregar a página.
 export function navegar(caminho) {
@@ -26,7 +31,7 @@ document.addEventListener('click', (e) => {
   navegar(a.getAttribute('href'));
 });
 
-async function rotear() {
+function rotear() {
   const path = window.location.pathname;
 
   // 1) Rotas públicas (sem login):
@@ -41,26 +46,19 @@ async function rotear() {
     return renderCadastroCliente(app, decodeURIComponent(mCadastro[1]));
   }
 
-  // Sem as chaves do Supabase nada funciona — avisa em vez de quebrar.
+  // Sem a config do Firebase nada interno funciona — avisa em vez de quebrar.
   if (!configurado) {
     return renderConfigFaltando(app);
   }
 
-  // 2) Rotas internas — exigem login da arquiteta.
-  // Protege contra travamento (ex.: banco gratuito "acordando"): se a
-  // verificação de sessão demorar demais ou falhar, cai no login em vez de
-  // deixar a tela em branco.
-  let session = null;
-  try {
-    const res = await Promise.race([
-      supabase.auth.getSession(),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 8000)),
-    ]);
-    session = res?.data?.session ?? null;
-  } catch {
-    session = null;
+  // Espera o Firebase confirmar se há sessão salva antes de decidir a rota.
+  if (!authResolvido) {
+    app.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
+    return;
   }
-  if (!session) {
+
+  // 2) Rotas internas — exigem login da arquiteta.
+  if (!usuarioAtual()) {
     return renderLogin(app);
   }
 
@@ -88,17 +86,19 @@ function renderConfigFaltando(container) {
         <h1 class="logo">Painel de Obra</h1>
         <p class="erro" style="display:block">Configuração incompleta.</p>
         <p class="muted">
-          Defina <code>VITE_SUPABASE_URL</code> e
-          <code>VITE_SUPABASE_ANON_KEY</code> no arquivo <code>.env</code>
-          (ou nas variáveis de ambiente do Netlify) e recarregue.
+          Defina as variáveis <code>VITE_FIREBASE_*</code> no arquivo
+          <code>.env</code> (ou nas variáveis de ambiente do Netlify) e recarregue.
         </p>
       </div>
     </div>`;
 }
 
-// Quando a arquiteta faz login/logout, re-roteia automaticamente.
+// Quando a arquiteta faz login/logout — e na 1ª resolução da sessão — re-roteia.
 if (configurado) {
-  supabase.auth.onAuthStateChange(() => rotear());
+  aoMudarAuth(() => {
+    authResolvido = true;
+    rotear();
+  });
 }
 
 rotear();
