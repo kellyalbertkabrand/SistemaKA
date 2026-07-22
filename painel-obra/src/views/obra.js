@@ -10,6 +10,23 @@ import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
 import { baixarExcel, numBR } from '../lib/exportar.js';
 import { comprimirImagem } from '../lib/imagem.js';
+import { abrirLightbox, baixarImagem } from '../lib/lightbox.js';
+import { storagePronto } from '../firebase.js';
+
+// Data 'YYYY-MM-DD' -> 'dd/mm/aaaa' (sem depender de fuso).
+function fmtDataVisita(v) {
+  if (!v) return '';
+  const [a, m, d] = String(v).slice(0, 10).split('-');
+  return d ? `${d}/${m}/${a}` : '';
+}
+
+// Corre uma promessa contra um tempo limite (para o upload não travar sem fim).
+function comTempoLimite(promessa, ms, msg) {
+  return Promise.race([
+    promessa,
+    new Promise((_, rej) => setTimeout(() => rej(new Error(msg)), ms)),
+  ]);
+}
 import { navBar } from '../lib/nav.js';
 
 // Detalhe interno de uma obra: KPIs, lançamento por voz/IA, etapas e lançamentos.
@@ -150,6 +167,7 @@ export async function renderObra(container, obraId) {
           <h2>Fotos das visitas</h2>
           <button class="btn btn-mini btn-primary" id="abrir-fotos" style="margin:0">+ Fotos</button>
         </div>
+        ${storagePronto ? '' : `<p class="alerta">⚠️ O armazenamento de fotos não está configurado: defina a variável <strong>VITE_FIREBASE_STORAGE_BUCKET</strong> no Netlify e ative o Storage no Firebase. Enquanto isso, o envio de fotos/recibos não vai funcionar.</p>`}
         <form id="form-fotos" class="foto-form" hidden>
           <div class="foto-form-grid">
             <label>Data da visita
@@ -400,7 +418,11 @@ export async function renderObra(container, obraId) {
           i++;
           statusFotos.textContent = `Otimizando e enviando ${i} de ${files.length}…`;
           const comprimida = await comprimirImagem(f);
-          await enviarFoto(obra.id, comprimida, meta);
+          await comTempoLimite(
+            enviarFoto(obra.id, comprimida, meta),
+            45000,
+            'O envio travou. Verifique no Firebase se o Storage está ativo e com as Regras publicadas (e a variável VITE_FIREBASE_STORAGE_BUCKET no Netlify).',
+          );
         }
         recarregar();
       } catch (err) {
@@ -412,11 +434,29 @@ export async function renderObra(container, obraId) {
   }
   const gridFotosEl = container.querySelector('#grid-fotos');
   gridFotosEl.addEventListener('click', async (e) => {
-    const b = e.target.closest('[data-del-foto]');
-    if (!b) return;
-    if (!confirm('Excluir esta foto?')) return;
-    await excluirFoto(b.getAttribute('data-del-foto'), b.getAttribute('data-foto-path'));
-    recarregar();
+    const abrir = e.target.closest('[data-abrir-foto]');
+    const baixarBtn = e.target.closest('[data-baixar-foto]');
+    const del = e.target.closest('[data-del-foto]');
+
+    if (abrir) {
+      const itens = fotos.map((f) => ({
+        url: f.url,
+        nome: f.nome,
+        data: fmtDataVisita(f.dataVisita) || dataBR(f.criadoEm ? new Date(f.criadoEm).toISOString() : ''),
+        texto: f.texto,
+      }));
+      abrirLightbox(itens, Number(abrir.getAttribute('data-abrir-foto')) || 0);
+      return;
+    }
+    if (baixarBtn) {
+      baixarImagem(baixarBtn.getAttribute('data-url'), baixarBtn.getAttribute('data-nome'));
+      return;
+    }
+    if (del) {
+      if (!confirm('Excluir esta foto?')) return;
+      await excluirFoto(del.getAttribute('data-del-foto'), del.getAttribute('data-foto-path'));
+      recarregar();
+    }
   });
 }
 
@@ -624,26 +664,26 @@ function tabelaEtapas(etapas, lancamentos) {
     </table>`;
 }
 
-// Galeria de fotos das visitas (com data da visita e descrição).
+// Galeria de fotos das visitas: miniaturas (abrem o carrossel), data, descrição,
+// baixar e excluir.
 function gridFotos(fotos) {
   if (!fotos.length) return `<p class="muted">Nenhuma foto ainda. Envie as fotos das visitas à obra.</p>`;
-  const fmtData = (v) => {
-    if (!v) return '';
-    const [a, m, d] = String(v).slice(0, 10).split('-');
-    return d ? `${d}/${m}/${a}` : '';
-  };
   return `<div class="fotos-grid">
-    ${fotos.map((f) => {
-      const data = fmtData(f.dataVisita) || dataBR(f.criadoEm ? new Date(f.criadoEm).toISOString() : '');
+    ${fotos.map((f, idx) => {
+      const data = fmtDataVisita(f.dataVisita) || dataBR(f.criadoEm ? new Date(f.criadoEm).toISOString() : '');
       return `
       <figure class="foto-item">
-        <a href="${esc(f.url)}" target="_blank" rel="noopener">
+        <button class="foto-thumb" data-abrir-foto="${idx}" title="Ampliar">
           <img src="${esc(f.url)}" alt="${esc(f.nome || 'foto')}" loading="lazy" />
-        </a>
+          <span class="foto-zoom">⤢</span>
+        </button>
         <figcaption>
           <div class="foto-meta">
             <span class="foto-data">${data}</span>
-            <button class="btn btn-x" data-del-foto="${esc(f.id)}" data-foto-path="${esc(f.path || '')}" title="Excluir">×</button>
+            <span class="foto-acoes">
+              <button class="btn btn-x" data-baixar-foto data-url="${esc(f.url)}" data-nome="${esc(f.nome || 'foto.jpg')}" title="Baixar">⬇</button>
+              <button class="btn btn-x" data-del-foto="${esc(f.id)}" data-foto-path="${esc(f.path || '')}" title="Excluir">×</button>
+            </span>
           </div>
           ${f.texto ? `<p class="foto-texto">${esc(f.texto)}</p>` : ''}
         </figcaption>

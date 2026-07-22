@@ -17,6 +17,8 @@ const cfg = {
 
 // Se faltar a config, o app mostra um aviso amigável em vez de quebrar.
 export const configurado = Boolean(cfg.apiKey && cfg.projectId);
+// Storage (fotos/recibos) só funciona com o bucket definido.
+export const storagePronto = Boolean(cfg.storageBucket);
 
 let auth = null;
 let db = null;

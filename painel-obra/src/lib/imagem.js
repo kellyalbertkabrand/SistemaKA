@@ -22,8 +22,12 @@ export async function comprimirImagem(file, maxLado = 1600, qualidade = 0.8) {
     canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
     bitmap.close?.();
 
-    const blob = await new Promise((res) => canvas.toBlob(res, 'image/jpeg', qualidade));
-    if (!blob || blob.size >= file.size) return file; // não piorou? mantém original
+    // toBlob pode travar em imagens gigantes/formatos exóticos: limite de 8s.
+    const blob = await Promise.race([
+      new Promise((res) => canvas.toBlob(res, 'image/jpeg', qualidade)),
+      new Promise((res) => setTimeout(() => res(null), 8000)),
+    ]);
+    if (!blob || blob.size >= file.size) return file; // travou/não melhorou? original
     const nome = file.name.replace(/\.(png|webp|heic|heif|bmp|gif|jpeg)$/i, '.jpg');
     return new File([blob], nome.endsWith('.jpg') ? nome : nome + '.jpg', {
       type: 'image/jpeg',
