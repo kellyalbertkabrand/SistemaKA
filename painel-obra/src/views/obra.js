@@ -27,6 +27,22 @@ function comTempoLimite(promessa, ms, msg) {
     new Promise((_, rej) => setTimeout(() => rej(new Error(msg)), ms)),
   ]);
 }
+
+// Traduz o erro do Firebase (Storage/Firestore) numa instrução clara do que
+// corrigir — a causa quase sempre é uma Regra não publicada ou o bucket.
+function msgErroAnexo(err) {
+  const code = String(err?.code || '');
+  const m = String(err?.message || err || '');
+  if (code.includes('storage/unauthorized'))
+    return 'As Regras do Storage não permitem o envio. No Firebase → Storage → aba Rules, cole o conteúdo de storage.rules e publique.';
+  if (code.includes('permission-denied') || m.includes('insufficient permissions'))
+    return 'As Regras do Firestore não permitem salvar. No Firebase → Firestore Database → Regras, publique firestore.rules (com a coleção "fotos").';
+  if (code.includes('storage/retry-limit') || code.includes('storage/unknown') || m.includes('travou') || m.includes('demorou'))
+    return 'O Storage não respondeu. Verifique se o Storage está ATIVO (plano Blaze) e se a variável VITE_FIREBASE_STORAGE_BUCKET no Netlify tem o valor EXATO do seu firebaseConfig (depois disso, refaça o deploy).';
+  if (code.includes('storage/'))
+    return 'Não foi possível enviar ao Storage (' + code + '). Confirme o bucket (VITE_FIREBASE_STORAGE_BUCKET) e se o Storage está ativo no Firebase.';
+  return 'Falha ao enviar: ' + m;
+}
 import { navBar } from '../lib/nav.js';
 
 // Detalhe interno de uma obra: KPIs, lançamento por voz/IA, etapas e lançamentos.
@@ -374,10 +390,14 @@ export async function renderObra(container, obraId) {
       try {
         // Comprime se for imagem (PDF/NF passam intactos) — envio mais rápido.
         const arquivo = await comprimirImagem(file);
-        await anexarRecibo(lancId, obra.id, arquivo);
+        await comTempoLimite(
+          anexarRecibo(lancId, obra.id, arquivo),
+          45000,
+          'O envio travou (Storage não respondeu).',
+        );
         recarregar();
       } catch (err) {
-        alert('Não foi possível anexar o recibo: ' + (err?.message || err));
+        alert(msgErroAnexo(err));
       }
     });
     input.click();
@@ -428,7 +448,7 @@ export async function renderObra(container, obraId) {
       } catch (err) {
         btn.disabled = false;
         statusFotos.className = 'status-voz erro';
-        statusFotos.textContent = 'Falha ao enviar: ' + (err?.message || err);
+        statusFotos.textContent = msgErroAnexo(err);
       }
     });
   }
