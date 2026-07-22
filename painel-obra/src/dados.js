@@ -11,7 +11,7 @@
 //   clientes/{id}        -> token, ownerId, nome, email, telefone, documento, cidade, endereco, observacoes, criadoEm
 //   fornecedores/{id}    -> nome, categoria, telefone, email, cnpj, observacoes, ownerId, criadoEm
 
-import { auth, db, storage } from './firebase.js';
+import { auth, db } from './firebase.js';
 import {
   signInWithEmailAndPassword,
   signOut,
@@ -29,7 +29,6 @@ import {
   query,
   where,
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 // ---------------------------------------------------------------------------
 // Autenticação (escritório)
@@ -261,42 +260,39 @@ export async function excluirFornecedor(id) {
 }
 
 // ---------------------------------------------------------------------------
-// Recibo / Nota fiscal de um lançamento (Storage)
+// Recibo / Nota fiscal de um lançamento
+// A imagem/PDF já vem otimizado como data URL e é guardado no próprio
+// documento do lançamento (sem depender do Storage).
 // ---------------------------------------------------------------------------
-const nomeSeguro = (n) => String(n || 'arquivo').replace(/[^a-zA-Z0-9._-]/g, '_');
-
-export async function anexarRecibo(lancamentoId, obraId, file) {
-  const caminho = `recibos/${obraId}/${lancamentoId}-${nomeSeguro(file.name)}`;
-  const r = ref(storage, caminho);
-  await uploadBytes(r, file);
-  const url = await getDownloadURL(r);
+export async function anexarRecibo(lancamentoId, dataUrl, nome) {
   await updateDoc(doc(db, 'lancamentos', lancamentoId), {
-    reciboUrl: url,
-    reciboNome: file.name,
-    reciboPath: caminho,
+    reciboDataUrl: dataUrl,
+    reciboNome: nome || 'nota-fiscal',
+    reciboEm: Date.now(),
   });
-  return url;
+}
+
+export async function removerRecibo(lancamentoId) {
+  await updateDoc(doc(db, 'lancamentos', lancamentoId), {
+    reciboDataUrl: null,
+    reciboNome: null,
+    reciboEm: null,
+  });
 }
 
 // ---------------------------------------------------------------------------
-// Fotos das visitas à obra (Storage + coleção "fotos")
+// Fotos das visitas à obra (coleção "fotos") — imagem otimizada como data URL.
 // ---------------------------------------------------------------------------
-export async function enviarFoto(obraId, file, meta = {}) {
-  const caminho = `fotos/${obraId}/${Date.now()}-${nomeSeguro(file.name)}`;
-  const r = ref(storage, caminho);
-  await uploadBytes(r, file);
-  const url = await getDownloadURL(r);
+export async function enviarFoto(obraId, dataUrl, meta = {}) {
   await addDoc(collection(db, 'fotos'), {
     obraId,
-    url,
-    nome: file.name,
-    path: caminho,
+    dataUrl,
+    nome: meta.nome ?? null,
     texto: meta.texto ?? null,
     dataVisita: meta.dataVisita ?? null,
     ownerId: uid(),
     criadoEm: Date.now(),
   });
-  return url;
 }
 
 export async function listarFotos(obraId) {
@@ -306,7 +302,6 @@ export async function listarFotos(obraId) {
   return fotos;
 }
 
-export async function excluirFoto(id, path) {
-  try { if (path) await deleteObject(ref(storage, path)); } catch { /* arquivo já removido */ }
+export async function excluirFoto(id) {
   await deleteDoc(doc(db, 'fotos', id));
 }

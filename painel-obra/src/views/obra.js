@@ -1,7 +1,7 @@
 import {
   obterObra, listarEtapas, listarLancamentos, atualizarObra, definirPublicado,
   criarEtapa, atualizarEtapa, excluirEtapa, criarLancamento, atualizarLancamento, excluirLancamento, sair,
-  anexarRecibo, enviarFoto, listarFotos, excluirFoto,
+  anexarRecibo, removerRecibo, enviarFoto, listarFotos, excluirFoto,
 } from '../dados.js';
 import { navegar } from '../main.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
@@ -9,9 +9,8 @@ import { reconhecimentoDisponivel, ouvir, parar } from '../lib/voice.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
 import { baixarExcel, numBR } from '../lib/exportar.js';
-import { comprimirImagem } from '../lib/imagem.js';
+import { comprimirParaDataURL, arquivoParaDataURL, dataURLBytes, dataURLParaBlob } from '../lib/imagem.js';
 import { abrirLightbox, baixarImagem } from '../lib/lightbox.js';
-import { storagePronto } from '../firebase.js';
 
 // Data 'YYYY-MM-DD' -> 'dd/mm/aaaa' (sem depender de fuso).
 function fmtDataVisita(v) {
@@ -20,28 +19,15 @@ function fmtDataVisita(v) {
   return d ? `${d}/${m}/${a}` : '';
 }
 
-// Corre uma promessa contra um tempo limite (para o upload não travar sem fim).
-function comTempoLimite(promessa, ms, msg) {
-  return Promise.race([
-    promessa,
-    new Promise((_, rej) => setTimeout(() => rej(new Error(msg)), ms)),
-  ]);
-}
-
-// Traduz o erro do Firebase (Storage/Firestore) numa instrução clara do que
-// corrigir — a causa quase sempre é uma Regra não publicada ou o bucket.
+// Traduz o erro numa instrução clara do que corrigir.
 function msgErroAnexo(err) {
   const code = String(err?.code || '');
   const m = String(err?.message || err || '');
-  if (code.includes('storage/unauthorized'))
-    return 'As Regras do Storage não permitem o envio. No Firebase → Storage → aba Rules, cole o conteúdo de storage.rules e publique.';
   if (code.includes('permission-denied') || m.includes('insufficient permissions'))
     return 'As Regras do Firestore não permitem salvar. No Firebase → Firestore Database → Regras, publique firestore.rules (com a coleção "fotos").';
-  if (code.includes('storage/retry-limit') || code.includes('storage/unknown') || m.includes('travou') || m.includes('demorou'))
-    return 'O Storage não respondeu. Verifique se o Storage está ATIVO (plano Blaze) e se a variável VITE_FIREBASE_STORAGE_BUCKET no Netlify tem o valor EXATO do seu firebaseConfig (depois disso, refaça o deploy).';
-  if (code.includes('storage/'))
-    return 'Não foi possível enviar ao Storage (' + code + '). Confirme o bucket (VITE_FIREBASE_STORAGE_BUCKET) e se o Storage está ativo no Firebase.';
-  return 'Falha ao enviar: ' + m;
+  if (m.includes('longer than') || m.includes('maximum') || m.includes('exceeds') || code.includes('invalid-argument'))
+    return 'A imagem ficou grande demais para o banco. Tente uma imagem um pouco menor.';
+  return 'Não foi possível anexar: ' + m;
 }
 import { navBar } from '../lib/nav.js';
 
@@ -183,7 +169,6 @@ export async function renderObra(container, obraId) {
           <h2>Fotos das visitas</h2>
           <button class="btn btn-mini btn-primary" id="abrir-fotos" style="margin:0">+ Fotos</button>
         </div>
-        ${storagePronto ? '' : `<p class="alerta">⚠️ O armazenamento de fotos não está configurado: defina a variável <strong>VITE_FIREBASE_STORAGE_BUCKET</strong> no Netlify e ative o Storage no Firebase. Enquanto isso, o envio de fotos/recibos não vai funcionar.</p>`}
         <form id="form-fotos" class="foto-form" hidden>
           <div class="foto-form-grid">
             <label>Data da visita
@@ -231,16 +216,15 @@ export async function renderObra(container, obraId) {
       ] },
       { titulo: 'Etapas', cabecalho: ['Etapa', 'Orçado (R$)', 'Realizado (R$)'],
         linhas: etapas.map((et) => [et.nome, numBR(et.orcado), numBR(realizado[et.nome] || 0)]) },
-      { titulo: 'Lançamentos', cabecalho: ['Data', 'Etapa', 'Descrição', 'Valor (R$)', 'Status', 'Recibo/NF'],
+      { titulo: 'Lançamentos', cabecalho: ['Data', 'Etapa', 'Descrição', 'Valor (R$)', 'Status', 'Nota fiscal'],
         linhas: ordenarLancamentos(lancamentos, 'data').map((l) => [
           dataBR(l.data), l.etapa, l.descricao || '', numBR(l.valor), l.status,
-          l.reciboUrl ? { link: l.reciboUrl, texto: l.reciboNome || 'Ver recibo' } : '—',
+          (l.reciboDataUrl || l.reciboUrl) ? 'Anexada' : '—',
         ]) },
-      { titulo: 'Fotos das visitas', cabecalho: ['Data da visita', 'Descrição', 'Foto'],
+      { titulo: 'Fotos das visitas', cabecalho: ['Data da visita', 'Descrição'],
         linhas: (fotos || []).map((f) => [
           fmtData(f.dataVisita || (f.criadoEm ? new Date(f.criadoEm).toISOString() : '')),
           f.texto || '',
-          { link: f.url, texto: 'Abrir foto' },
         ]) },
     ];
     baixarExcel(`obra-${obra.slug}.xls`, secoes);
@@ -375,28 +359,59 @@ export async function renderObra(container, obraId) {
   tabelaLancEl.addEventListener('click', async (e) => {
     const del = e.target.closest('[data-del-lanc]');
     if (del) { await excluirLancamento(del.getAttribute('data-del-lanc')); recarregar(); return; }
+    const ver = e.target.closest('[data-ver-recibo]');
+    if (ver) { abrirAnexoEmAba(lancamentos.find((l) => l.id === ver.getAttribute('data-ver-recibo'))); return; }
+    const remover = e.target.closest('[data-remover-recibo]');
+    if (remover) {
+      if (confirm('Remover a nota fiscal deste lançamento?')) {
+        await removerRecibo(remover.getAttribute('data-remover-recibo'));
+        recarregar();
+      }
+      return;
+    }
     const anexar = e.target.closest('[data-anexar-recibo]');
-    if (anexar) abrirAnexoRecibo(anexar.getAttribute('data-anexar-recibo'));
+    if (anexar) abrirAnexoRecibo(anexar, anexar.getAttribute('data-anexar-recibo'));
   });
 
-  // Anexar recibo/NF (imagem ou PDF) a um lançamento.
-  function abrirAnexoRecibo(lancId) {
+  // Abre a NF (imagem ou PDF) numa nova aba, a partir do data URL guardado.
+  function abrirAnexoEmAba(lanc) {
+    const dado = lanc?.reciboDataUrl || lanc?.reciboUrl;
+    if (!dado) return;
+    try {
+      const url = URL.createObjectURL(dataURLParaBlob(dado));
+      window.open(url, '_blank', 'noopener');
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch {
+      window.open(dado, '_blank', 'noopener'); // URL antiga (legado)
+    }
+  }
+
+  // Anexar recibo/NF (imagem ou PDF) a um lançamento — otimiza e salva no banco.
+  function abrirAnexoRecibo(botao, lancId) {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*,application/pdf';
     input.addEventListener('change', async () => {
       const file = input.files && input.files[0];
       if (!file) return;
+      const rotulo = botao.textContent;
+      botao.disabled = true;
+      botao.textContent = '⏳ enviando…';
       try {
-        // Comprime se for imagem (PDF/NF passam intactos) — envio mais rápido.
-        const arquivo = await comprimirImagem(file);
-        await comTempoLimite(
-          anexarRecibo(lancId, obra.id, arquivo),
-          45000,
-          'O envio travou (Storage não respondeu).',
-        );
+        let dataUrl;
+        if (String(file.type).startsWith('image/')) {
+          dataUrl = await comprimirParaDataURL(file);           // foto da NF: otimiza
+        } else {
+          dataUrl = await arquivoParaDataURL(file);             // PDF: mantém
+          if (dataURLBytes(dataUrl) > 850_000) {
+            throw new Error('PDF muito grande. Envie um PDF menor ou uma foto da nota.');
+          }
+        }
+        await anexarRecibo(lancId, dataUrl, file.name);
         recarregar();
       } catch (err) {
+        botao.disabled = false;
+        botao.textContent = rotulo;
         alert(msgErroAnexo(err));
       }
     });
@@ -428,25 +443,24 @@ export async function renderObra(container, obraId) {
         statusFotos.textContent = 'Escolha ao menos uma foto.';
         return;
       }
-      const meta = { texto: fotoTexto.value.trim() || null, dataVisita: fotoData.value || null };
+      const base = { texto: fotoTexto.value.trim() || null, dataVisita: fotoData.value || null };
       const btn = container.querySelector('#enviar-fotos');
       btn.disabled = true;
-      statusFotos.className = 'status-voz';
+      const btnRotulo = btn.textContent;
+      statusFotos.className = 'status-voz status-enviando';
       try {
         let i = 0;
         for (const f of files) {
           i++;
-          statusFotos.textContent = `Otimizando e enviando ${i} de ${files.length}…`;
-          const comprimida = await comprimirImagem(f);
-          await comTempoLimite(
-            enviarFoto(obra.id, comprimida, meta),
-            45000,
-            'O envio travou. Verifique no Firebase se o Storage está ativo e com as Regras publicadas (e a variável VITE_FIREBASE_STORAGE_BUCKET no Netlify).',
-          );
+          btn.textContent = `Enviando ${i}/${files.length}…`;
+          statusFotos.innerHTML = `<span class="spinner"></span> Otimizando e enviando ${i} de ${files.length}…`;
+          const dataUrl = await comprimirParaDataURL(f);
+          await enviarFoto(obra.id, dataUrl, { ...base, nome: f.name });
         }
         recarregar();
       } catch (err) {
         btn.disabled = false;
+        btn.textContent = btnRotulo;
         statusFotos.className = 'status-voz erro';
         statusFotos.textContent = msgErroAnexo(err);
       }
@@ -460,7 +474,7 @@ export async function renderObra(container, obraId) {
 
     if (abrir) {
       const itens = fotos.map((f) => ({
-        url: f.url,
+        url: f.dataUrl || f.url,
         nome: f.nome,
         data: fmtDataVisita(f.dataVisita) || dataBR(f.criadoEm ? new Date(f.criadoEm).toISOString() : ''),
         texto: f.texto,
@@ -469,12 +483,13 @@ export async function renderObra(container, obraId) {
       return;
     }
     if (baixarBtn) {
-      baixarImagem(baixarBtn.getAttribute('data-url'), baixarBtn.getAttribute('data-nome'));
+      const f = fotos[Number(baixarBtn.getAttribute('data-baixar-foto'))];
+      if (f) baixarImagem(f.dataUrl || f.url, f.nome || 'foto.jpg');
       return;
     }
     if (del) {
       if (!confirm('Excluir esta foto?')) return;
-      await excluirFoto(del.getAttribute('data-del-foto'), del.getAttribute('data-foto-path'));
+      await excluirFoto(del.getAttribute('data-del-foto'));
       recarregar();
     }
   });
@@ -694,15 +709,15 @@ function gridFotos(fotos) {
       return `
       <figure class="foto-item">
         <button class="foto-thumb" data-abrir-foto="${idx}" title="Ampliar">
-          <img src="${esc(f.url)}" alt="${esc(f.nome || 'foto')}" loading="lazy" />
+          <img src="${esc(f.dataUrl || f.url)}" alt="${esc(f.nome || 'foto')}" loading="lazy" />
           <span class="foto-zoom">⤢</span>
         </button>
         <figcaption>
           <div class="foto-meta">
             <span class="foto-data">${data}</span>
             <span class="foto-acoes">
-              <button class="btn btn-x" data-baixar-foto data-url="${esc(f.url)}" data-nome="${esc(f.nome || 'foto.jpg')}" title="Baixar">⬇</button>
-              <button class="btn btn-x" data-del-foto="${esc(f.id)}" data-foto-path="${esc(f.path || '')}" title="Excluir">×</button>
+              <button class="btn btn-x" data-baixar-foto="${idx}" title="Baixar">⬇</button>
+              <button class="btn btn-x" data-del-foto="${esc(f.id)}" title="Excluir">×</button>
             </span>
           </div>
           ${f.texto ? `<p class="foto-texto">${esc(f.texto)}</p>` : ''}
@@ -717,21 +732,27 @@ function tabelaLancamentos(lancamentos) {
   return `
     <table class="tabela">
       <thead>
-        <tr><th>Data</th><th>Etapa</th><th>Descrição</th><th class="num">Valor</th><th>Status</th><th>Recibo</th><th></th></tr>
+        <tr><th>Data</th><th>Etapa</th><th>Descrição</th><th class="num">Valor</th><th>Status</th><th>Nota fiscal</th><th></th></tr>
       </thead>
       <tbody>
-        ${lancamentos.map((l) => `
+        ${lancamentos.map((l) => {
+          const temNF = Boolean(l.reciboDataUrl || l.reciboUrl);
+          return `
           <tr>
             <td>${dataBR(l.data)}</td>
             <td>${esc(l.etapa)}</td>
             <td>${esc(l.descricao || '')}</td>
             <td class="num">${moeda(l.valor)}</td>
             <td>${pillStatus(l.status)}</td>
-            <td>${l.reciboUrl
-              ? `<a class="btn btn-mini" href="${esc(l.reciboUrl)}" target="_blank" rel="noopener" title="${esc(l.reciboNome || 'recibo')}">📎 ver</a>`
-              : `<button class="btn btn-mini" data-anexar-recibo="${esc(l.id)}">anexar</button>`}</td>
+            <td>${temNF
+              ? `<span class="nf-cel">
+                   <button class="nf-ok" data-ver-recibo="${esc(l.id)}" title="${esc(l.reciboNome || 'nota fiscal')}">📎 NF anexada</button>
+                   <button class="btn btn-x" data-remover-recibo="${esc(l.id)}" title="Remover nota">×</button>
+                 </span>`
+              : `<button class="btn btn-mini nf-add" data-anexar-recibo="${esc(l.id)}">+ anexar NF</button>`}</td>
             <td class="acoes"><button class="btn btn-x" data-del-lanc="${esc(l.id)}" title="Excluir">×</button></td>
-          </tr>`).join('')}
+          </tr>`;
+        }).join('')}
       </tbody>
     </table>`;
 }

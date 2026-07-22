@@ -1,41 +1,70 @@
-// Comprime/redimensiona a imagem NO NAVEGADOR antes de enviar ao Storage.
-// Fotos de celular têm vários MB; reduzir o lado maior para ~1600px e salvar
-// como JPEG deixa o upload muito mais rápido (e mais barato de armazenar).
-// Qualquer falha (ex.: formato exótico) devolve o arquivo original.
-export async function comprimirImagem(file, maxLado = 1600, qualidade = 0.8) {
-  if (!file || !String(file.type).startsWith('image/')) return file;
-  try {
-    const bitmap = await carregarImagem(file);
-    const lw = bitmap.width || bitmap.naturalWidth;
-    const lh = bitmap.height || bitmap.naturalHeight;
-    if (!lw || !lh) { bitmap.close?.(); return file; }
+// Otimização de imagem NO NAVEGADOR. As fotos e notas fiscais são guardadas
+// já comprimidas dentro do próprio banco (Firestore) como "data URL" — assim o
+// sistema não depende do Storage e o arquivo nunca fica pesado.
 
-    const escala = Math.min(1, maxLado / Math.max(lw, lh));
-    // Já é pequena e leve: não vale reprocessar.
-    if (escala >= 1 && file.size < 1_200_000) { bitmap.close?.(); return file; }
+// Reduz QUALQUER imagem (de qualquer tamanho) a um JPEG leve de internet,
+// buscando ficar abaixo de `alvoBytes`. Devolve um data URL (string).
+export async function comprimirParaDataURL(file, alvoBytes = 360_000, maxLado = 1280) {
+  const bitmap = await carregarImagem(file); // pode lançar (formato não suportado)
+  const lw = bitmap.width || bitmap.naturalWidth;
+  const lh = bitmap.height || bitmap.naturalHeight;
+  if (!lw || !lh) { bitmap.close?.(); throw new Error('Imagem inválida.'); }
 
-    const w = Math.round(lw * escala);
-    const h = Math.round(lh * escala);
+  const desenhar = (lado) => {
+    const escala = Math.min(1, lado / Math.max(lw, lh));
+    const w = Math.max(1, Math.round(lw * escala));
+    const h = Math.max(1, Math.round(lh * escala));
     const canvas = document.createElement('canvas');
     canvas.width = w;
     canvas.height = h;
-    canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
-    bitmap.close?.();
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, w, h); // fundo branco (PNG transparente vira branco no JPEG)
+    ctx.drawImage(bitmap, 0, 0, w, h);
+    return canvas;
+  };
 
-    // toBlob pode travar em imagens gigantes/formatos exóticos: limite de 8s.
-    const blob = await Promise.race([
-      new Promise((res) => canvas.toBlob(res, 'image/jpeg', qualidade)),
-      new Promise((res) => setTimeout(() => res(null), 8000)),
-    ]);
-    if (!blob || blob.size >= file.size) return file; // travou/não melhorou? original
-    const nome = file.name.replace(/\.(png|webp|heic|heif|bmp|gif|jpeg)$/i, '.jpg');
-    return new File([blob], nome.endsWith('.jpg') ? nome : nome + '.jpg', {
-      type: 'image/jpeg',
-      lastModified: file.lastModified || Date.now(),
-    });
-  } catch {
-    return file;
+  // Tenta combinações de tamanho x qualidade até caber no alvo; guarda a menor.
+  let menor = null;
+  for (const lado of [maxLado, 1024, 800]) {
+    const canvas = desenhar(lado);
+    for (const q of [0.72, 0.62, 0.52, 0.44]) {
+      const url = canvas.toDataURL('image/jpeg', q);
+      if (!menor || url.length < menor.length) menor = url;
+      if (dataURLBytes(url) <= alvoBytes) { bitmap.close?.(); return url; }
+    }
   }
+  bitmap.close?.();
+  return menor;
+}
+
+// Tamanho em bytes do conteúdo de um data URL base64.
+export function dataURLBytes(dataUrl) {
+  const i = String(dataUrl).indexOf(',');
+  const b64 = i >= 0 ? dataUrl.slice(i + 1) : dataUrl;
+  const pad = b64.endsWith('==') ? 2 : b64.endsWith('=') ? 1 : 0;
+  return Math.floor((b64.length * 3) / 4) - pad;
+}
+
+// Lê um arquivo qualquer (ex.: PDF) como data URL.
+export function arquivoParaDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onload = () => resolve(fr.result);
+    fr.onerror = () => reject(new Error('Não foi possível ler o arquivo.'));
+    fr.readAsDataURL(file);
+  });
+}
+
+// Converte um data URL em Blob (para abrir em nova aba / baixar sem estourar
+// o limite de tamanho de URL do navegador).
+export function dataURLParaBlob(dataUrl) {
+  const [cab, b64] = String(dataUrl).split(',');
+  const tipo = (cab.match(/data:([^;]+)/) || [])[1] || 'application/octet-stream';
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new Blob([bytes], { type: tipo });
 }
 
 function carregarImagem(file) {

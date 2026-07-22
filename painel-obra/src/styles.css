@@ -320,6 +320,18 @@ input:focus, select:focus, textarea:focus {
 .foto-texto { font-size: .78rem; color: var(--muted); margin: .15rem 0 0; line-height: 1.35; }
 @media (max-width: 560px) { .foto-form-grid { grid-template-columns: 1fr; } }
 
+/* Indicador de envio (spinner) */
+.spinner { display: inline-block; width: 14px; height: 14px; vertical-align: -2px; margin-right: .3rem; border: 2px solid var(--linha-forte); border-top-color: var(--acento); border-radius: 50%; animation: girar .7s linear infinite; }
+@keyframes girar { to { transform: rotate(360deg); } }
+.status-enviando { color: var(--acento-escuro); }
+
+/* Nota fiscal (NF) na tabela de lançamentos */
+.nf-cel { display: inline-flex; align-items: center; gap: .15rem; }
+.nf-ok { display: inline-flex; align-items: center; gap: .35rem; font-family: var(--fonte-ui); font-size: .78rem; font-weight: 600; color: var(--ok); background: #e7f0e9; border: 1px solid #cfe3d5; border-radius: 999px; padding: .28rem .6rem; cursor: pointer; white-space: nowrap; }
+.nf-ok:hover { background: #dcebe0; }
+.nf-add { color: var(--muted); border-style: dashed; }
+.nf-add:hover { color: var(--acento); border-color: var(--acento); background: var(--acento-tint); }
+
 /* ---- Lightbox / carrossel de fotos ---- */
 .lightbox { position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; background: rgba(24, 20, 17, .92); padding: 3.5rem 1rem 4.5rem; }
 .lb-fig { margin: 0; max-width: 100%; max-height: 100%; display: flex; flex-direction: column; align-items: center; gap: .8rem; }
