@@ -129,6 +129,10 @@ export async function criarEtapas(lista) {
   await Promise.all(lista.map((e) => criarEtapa(e)));
 }
 
+export async function atualizarEtapa(id, dados) {
+  await updateDoc(doc(db, 'etapas', id), dados);
+}
+
 export async function excluirEtapa(id) {
   await deleteDoc(doc(db, 'etapas', id));
 }
@@ -169,6 +173,10 @@ export async function criarLancamento({ obraId, etapa, descricao, valor, status 
     ownerId: uid(),
     criadoEm: Date.now(),
   });
+}
+
+export async function atualizarLancamento(id, dados) {
+  await updateDoc(doc(db, 'lancamentos', id), dados);
 }
 
 export async function excluirLancamento(id) {
@@ -273,7 +281,7 @@ export async function anexarRecibo(lancamentoId, obraId, file) {
 // ---------------------------------------------------------------------------
 // Fotos das visitas à obra (Storage + coleção "fotos")
 // ---------------------------------------------------------------------------
-export async function enviarFoto(obraId, file) {
+export async function enviarFoto(obraId, file, meta = {}) {
   const caminho = `fotos/${obraId}/${Date.now()}-${nomeSeguro(file.name)}`;
   const r = ref(storage, caminho);
   await uploadBytes(r, file);
@@ -283,6 +291,8 @@ export async function enviarFoto(obraId, file) {
     url,
     nome: file.name,
     path: caminho,
+    texto: meta.texto ?? null,
+    dataVisita: meta.dataVisita ?? null,
     ownerId: uid(),
     criadoEm: Date.now(),
   });

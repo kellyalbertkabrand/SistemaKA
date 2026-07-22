@@ -17,8 +17,7 @@ export function paraCSV(matriz) {
   return '﻿' + matriz.map((linha) => linha.map(campo).join(';')).join('\r\n');
 }
 
-export function baixarCSV(nomeArquivo, matriz) {
-  const blob = new Blob([paraCSV(matriz)], { type: 'text/csv;charset=utf-8;' });
+function baixar(nomeArquivo, blob) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -27,4 +26,42 @@ export function baixarCSV(nomeArquivo, matriz) {
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+}
+
+export function baixarCSV(nomeArquivo, matriz) {
+  baixar(nomeArquivo, new Blob([paraCSV(matriz)], { type: 'text/csv;charset=utf-8;' }));
+}
+
+// Exporta um arquivo .xls (HTML que o Excel abre) com uma ou mais seções e
+// suporte a LINKS CLICÁVEIS — usado para levar os anexos (recibos/NF e fotos)
+// dentro da planilha. Cada célula pode ser texto/número OU { link, texto }.
+function escHtml(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function celula(c, tag = 'td') {
+  const estilo = tag === 'th'
+    ? ' style="background:#2a2622;color:#fff;text-align:left;font-family:Arial;font-size:11px"'
+    : ' style="font-family:Arial;font-size:11px"';
+  if (c && typeof c === 'object' && c.link) {
+    return `<${tag}${estilo}><a href="${escHtml(c.link)}">${escHtml(c.texto || 'abrir')}</a></${tag}>`;
+  }
+  return `<${tag}${estilo}>${escHtml(c)}</${tag}>`;
+}
+
+// secoes: [{ titulo?, cabecalho?: [str], linhas: [[celula]] }]
+export function baixarExcel(nomeArquivo, secoes) {
+  const blocos = secoes.map((s) => {
+    const titulo = s.titulo
+      ? `<tr><td colspan="9" style="font-family:Arial;font-size:12px;font-weight:bold;background:#f0ece3">${escHtml(s.titulo)}</td></tr>`
+      : '';
+    const head = s.cabecalho ? `<tr>${s.cabecalho.map((h) => celula(h, 'th')).join('')}</tr>` : '';
+    const body = (s.linhas || []).map((l) => `<tr>${l.map((c) => celula(c)).join('')}</tr>`).join('');
+    return `<table border="1" cellspacing="0" cellpadding="5">${titulo}${head}${body}</table><br/>`;
+  }).join('');
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel">
+<head><meta charset="utf-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Obra</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>
+<body>${blocos}</body></html>`;
+  baixar(nomeArquivo, new Blob(['﻿' + html], { type: 'application/vnd.ms-excel;charset=utf-8;' }));
 }

@@ -1,6 +1,6 @@
 import {
   obterObra, listarEtapas, listarLancamentos, atualizarObra, definirPublicado,
-  criarEtapa, excluirEtapa, criarLancamento, excluirLancamento, sair,
+  criarEtapa, atualizarEtapa, excluirEtapa, criarLancamento, atualizarLancamento, excluirLancamento, sair,
   anexarRecibo, enviarFoto, listarFotos, excluirFoto,
 } from '../dados.js';
 import { navegar } from '../main.js';
@@ -8,7 +8,8 @@ import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
 import { reconhecimentoDisponivel, ouvir, parar } from '../lib/voice.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
-import { baixarCSV, numBR } from '../lib/exportar.js';
+import { baixarExcel, numBR } from '../lib/exportar.js';
+import { comprimirImagem } from '../lib/imagem.js';
 import { navBar } from '../lib/nav.js';
 
 // Detalhe interno de uma obra: KPIs, lançamento por voz/IA, etapas e lançamentos.
@@ -147,11 +148,26 @@ export async function renderObra(container, obraId) {
       <section class="card">
         <div class="row-between">
           <h2>Fotos das visitas</h2>
-          <label class="btn btn-mini btn-primary" style="cursor:pointer;margin:0">
-            + Fotos<input type="file" id="input-fotos" accept="image/*" multiple hidden />
-          </label>
+          <button class="btn btn-mini btn-primary" id="abrir-fotos" style="margin:0">+ Fotos</button>
         </div>
-        <p class="status-voz" id="status-fotos" hidden></p>
+        <form id="form-fotos" class="foto-form" hidden>
+          <div class="foto-form-grid">
+            <label>Data da visita
+              <input type="date" id="foto-data" />
+            </label>
+            <label>Descrição da visita (opcional)
+              <input type="text" id="foto-texto" placeholder="Ex.: Concretagem da laje, medições…" />
+            </label>
+          </div>
+          <label>Fotos
+            <input type="file" id="input-fotos" accept="image/*" multiple />
+          </label>
+          <div class="row-end">
+            <button type="button" class="btn btn-ghost" id="cancelar-fotos">Cancelar</button>
+            <button type="submit" class="btn btn-primary" id="enviar-fotos">Enviar fotos</button>
+          </div>
+          <p class="status-voz" id="status-fotos" hidden></p>
+        </form>
         <div id="grid-fotos">${gridFotos(fotos)}</div>
       </section>
     </div>`;
@@ -163,27 +179,37 @@ export async function renderObra(container, obraId) {
     await sair();
   });
 
-  // ---- Exportar a obra (Excel/CSV) ----
+  // ---- Exportar a obra (Excel, com links dos anexos) ----
   container.querySelector('#exportar').addEventListener('click', () => {
     const realizado = {};
     for (const l of lancamentos) realizado[l.etapa] = (realizado[l.etapa] || 0) + Number(l.valor || 0);
-    const linhas = [];
-    linhas.push(['Obra', obra.nome]);
-    linhas.push(['Cliente', obra.cliente || '']);
-    linhas.push(['Orçamento', numBR(obra.orcamento)]);
-    linhas.push(['Executado', numBR(executado)]);
-    linhas.push(['Saldo', numBR(saldo)]);
-    linhas.push([]);
-    linhas.push(['ETAPAS']);
-    linhas.push(['Etapa', 'Orçado', 'Realizado']);
-    for (const et of etapas) linhas.push([et.nome, numBR(et.orcado), numBR(realizado[et.nome] || 0)]);
-    linhas.push([]);
-    linhas.push(['LANÇAMENTOS']);
-    linhas.push(['Data', 'Etapa', 'Descrição', 'Valor', 'Status']);
-    for (const l of lancamentos) {
-      linhas.push([dataBR(l.data), l.etapa, l.descricao || '', numBR(l.valor), l.status]);
-    }
-    baixarCSV(`obra-${obra.slug}.csv`, linhas);
+    const fmtData = (v) => {
+      if (!v) return '';
+      const [a, m, d] = String(v).slice(0, 10).split('-');
+      return d ? `${d}/${m}/${a}` : String(v);
+    };
+    const secoes = [
+      { titulo: `Obra: ${obra.nome}`, linhas: [
+        ['Cliente', obra.cliente || ''],
+        ['Orçamento', 'R$ ' + numBR(obra.orcamento)],
+        ['Executado', 'R$ ' + numBR(executado)],
+        ['Saldo', 'R$ ' + numBR(saldo)],
+      ] },
+      { titulo: 'Etapas', cabecalho: ['Etapa', 'Orçado (R$)', 'Realizado (R$)'],
+        linhas: etapas.map((et) => [et.nome, numBR(et.orcado), numBR(realizado[et.nome] || 0)]) },
+      { titulo: 'Lançamentos', cabecalho: ['Data', 'Etapa', 'Descrição', 'Valor (R$)', 'Status', 'Recibo/NF'],
+        linhas: ordenarLancamentos(lancamentos, 'data').map((l) => [
+          dataBR(l.data), l.etapa, l.descricao || '', numBR(l.valor), l.status,
+          l.reciboUrl ? { link: l.reciboUrl, texto: l.reciboNome || 'Ver recibo' } : '—',
+        ]) },
+      { titulo: 'Fotos das visitas', cabecalho: ['Data da visita', 'Descrição', 'Foto'],
+        linhas: (fotos || []).map((f) => [
+          fmtData(f.dataVisita || (f.criadoEm ? new Date(f.criadoEm).toISOString() : '')),
+          f.texto || '',
+          { link: f.url, texto: 'Abrir foto' },
+        ]) },
+    ];
+    baixarExcel(`obra-${obra.slug}.xls`, secoes);
   });
 
   // ---- Editar obra (nome, cliente, orçamento total) ----
@@ -253,6 +279,47 @@ export async function renderObra(container, obraId) {
       recarregar();
     });
   });
+  // Editar etapa (nome + orçado) inline na própria linha da tabela.
+  container.querySelectorAll('[data-edit-etapa]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const tr = b.closest('tr');
+      const id = b.getAttribute('data-edit-etapa');
+      const nomeAtual = b.getAttribute('data-nome');
+      const orcadoAtual = b.getAttribute('data-orcado');
+      tr.innerHTML = `
+        <td><input class="ed-et-nome" value="${esc(nomeAtual)}" /></td>
+        <td class="num"><input class="ed-et-orcado" type="number" min="0" step="0.01" value="${esc(orcadoAtual)}" /></td>
+        <td class="num muted">—</td>
+        <td></td>
+        <td class="acoes" style="white-space:nowrap">
+          <button class="btn btn-mini btn-primary ed-et-salvar">Salvar</button>
+          <button class="btn btn-mini ed-et-cancelar">Cancelar</button>
+        </td>`;
+      const inNome = tr.querySelector('.ed-et-nome');
+      inNome.focus();
+      tr.querySelector('.ed-et-cancelar').addEventListener('click', recarregar);
+      tr.querySelector('.ed-et-salvar').addEventListener('click', async () => {
+        const novoNome = inNome.value.trim();
+        const novoOrcado = Number(tr.querySelector('.ed-et-orcado').value || 0);
+        if (!novoNome) { inNome.focus(); return; }
+        const salvar = tr.querySelector('.ed-et-salvar');
+        salvar.disabled = true; salvar.textContent = 'Salvando…';
+        try {
+          await atualizarEtapa(id, { nome: novoNome, orcado: novoOrcado });
+          // Se renomeou, repassa o novo nome aos lançamentos (o "realizado"
+          // casa pelo nome da etapa).
+          if (novoNome !== nomeAtual) {
+            const afetados = lancamentos.filter((l) => l.etapa === nomeAtual);
+            for (const l of afetados) await atualizarLancamento(l.id, { etapa: novoNome });
+          }
+          recarregar();
+        } catch (err) {
+          salvar.disabled = false; salvar.textContent = 'Salvar';
+          alert('Erro ao salvar: ' + (err?.message || err));
+        }
+      });
+    });
+  });
   // Quick-add: adicionar uma etapa padrão (CAIXA) com um clique.
   container.querySelectorAll('[data-chip-etapa]').forEach((c) => {
     c.addEventListener('click', async () => {
@@ -287,7 +354,9 @@ export async function renderObra(container, obraId) {
       const file = input.files && input.files[0];
       if (!file) return;
       try {
-        await anexarRecibo(lancId, obra.id, file);
+        // Comprime se for imagem (PDF/NF passam intactos) — envio mais rápido.
+        const arquivo = await comprimirImagem(file);
+        await anexarRecibo(lancId, obra.id, arquivo);
         recarregar();
       } catch (err) {
         alert('Não foi possível anexar o recibo: ' + (err?.message || err));
@@ -297,19 +366,45 @@ export async function renderObra(container, obraId) {
   }
 
   // ---- Fotos das visitas ----
+  const abrirFotos = container.querySelector('#abrir-fotos');
+  const formFotos = container.querySelector('#form-fotos');
   const inputFotos = container.querySelector('#input-fotos');
+  const fotoData = container.querySelector('#foto-data');
+  const fotoTexto = container.querySelector('#foto-texto');
   const statusFotos = container.querySelector('#status-fotos');
-  if (inputFotos) {
-    inputFotos.addEventListener('change', async () => {
+  if (fotoData) fotoData.value = new Date().toISOString().slice(0, 10); // hoje
+  if (abrirFotos) {
+    abrirFotos.addEventListener('click', () => {
+      formFotos.hidden = !formFotos.hidden;
+      if (!formFotos.hidden) inputFotos.focus();
+    });
+    container.querySelector('#cancelar-fotos').addEventListener('click', () => {
+      formFotos.hidden = true;
+    });
+    formFotos.addEventListener('submit', async (e) => {
+      e.preventDefault();
       const files = [...(inputFotos.files || [])];
-      if (!files.length) return;
       statusFotos.hidden = false;
+      if (!files.length) {
+        statusFotos.className = 'status-voz erro';
+        statusFotos.textContent = 'Escolha ao menos uma foto.';
+        return;
+      }
+      const meta = { texto: fotoTexto.value.trim() || null, dataVisita: fotoData.value || null };
+      const btn = container.querySelector('#enviar-fotos');
+      btn.disabled = true;
       statusFotos.className = 'status-voz';
-      statusFotos.textContent = `Enviando ${files.length} foto(s)…`;
       try {
-        for (const f of files) await enviarFoto(obra.id, f);
+        let i = 0;
+        for (const f of files) {
+          i++;
+          statusFotos.textContent = `Otimizando e enviando ${i} de ${files.length}…`;
+          const comprimida = await comprimirImagem(f);
+          await enviarFoto(obra.id, comprimida, meta);
+        }
         recarregar();
       } catch (err) {
+        btn.disabled = false;
         statusFotos.className = 'status-voz erro';
         statusFotos.textContent = 'Falha ao enviar: ' + (err?.message || err);
       }
@@ -509,8 +604,10 @@ function tabelaEtapas(etapas, lancamentos) {
           </div>
           <small class="${estouro ? 'neg' : 'muted'}">${orcado > 0 ? p + '%' : '—'}</small>
         </td>
-        <td class="acoes">
-          ${idEtapa ? `<button class="btn btn-x" data-del-etapa="${esc(idEtapa)}" title="Remover etapa">×</button>` : ''}
+        <td class="acoes" style="white-space:nowrap">
+          ${idEtapa ? `
+            <button class="btn btn-x" data-edit-etapa="${esc(idEtapa)}" data-nome="${esc(nome)}" data-orcado="${orcado}" title="Editar etapa">✎</button>
+            <button class="btn btn-x" data-del-etapa="${esc(idEtapa)}" title="Remover etapa">×</button>` : ''}
         </td>
       </tr>`;
   };
@@ -527,21 +624,31 @@ function tabelaEtapas(etapas, lancamentos) {
     </table>`;
 }
 
-// Galeria de fotos das visitas.
+// Galeria de fotos das visitas (com data da visita e descrição).
 function gridFotos(fotos) {
   if (!fotos.length) return `<p class="muted">Nenhuma foto ainda. Envie as fotos das visitas à obra.</p>`;
-  return `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.6rem">
-    ${fotos.map((f) => `
-      <figure style="margin:0">
+  const fmtData = (v) => {
+    if (!v) return '';
+    const [a, m, d] = String(v).slice(0, 10).split('-');
+    return d ? `${d}/${m}/${a}` : '';
+  };
+  return `<div class="fotos-grid">
+    ${fotos.map((f) => {
+      const data = fmtData(f.dataVisita) || dataBR(f.criadoEm ? new Date(f.criadoEm).toISOString() : '');
+      return `
+      <figure class="foto-item">
         <a href="${esc(f.url)}" target="_blank" rel="noopener">
-          <img src="${esc(f.url)}" alt="${esc(f.nome || 'foto')}" loading="lazy"
-               style="width:100%;height:130px;object-fit:cover;border-radius:8px;display:block" />
+          <img src="${esc(f.url)}" alt="${esc(f.nome || 'foto')}" loading="lazy" />
         </a>
-        <figcaption class="muted" style="display:flex;justify-content:space-between;align-items:center;font-size:.75rem;margin-top:.2rem">
-          <span>${dataBR(f.criadoEm ? new Date(f.criadoEm).toISOString() : '')}</span>
-          <button class="btn btn-x" data-del-foto="${esc(f.id)}" data-foto-path="${esc(f.path || '')}" title="Excluir">×</button>
+        <figcaption>
+          <div class="foto-meta">
+            <span class="foto-data">${data}</span>
+            <button class="btn btn-x" data-del-foto="${esc(f.id)}" data-foto-path="${esc(f.path || '')}" title="Excluir">×</button>
+          </div>
+          ${f.texto ? `<p class="foto-texto">${esc(f.texto)}</p>` : ''}
         </figcaption>
-      </figure>`).join('')}
+      </figure>`;
+    }).join('')}
   </div>`;
 }
 
