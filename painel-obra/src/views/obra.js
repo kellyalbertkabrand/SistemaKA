@@ -211,11 +211,12 @@ export async function renderObra(container, obraId) {
           <label>Nome / identificação
             <input id="proj-nome" placeholder="Ex.: Planta baixa, Projeto estrutural" />
           </label>
-          <label>Link do projeto (Google Drive, PDF, etc.)
+          <label>Link do projeto (Google Drive, Dropbox, etc.)
             <input id="proj-link" placeholder="https://…" />
           </label>
-          <label>… ou envie um arquivo (PDF/imagem, até ~700 KB)
-            <input type="file" id="proj-file" accept="image/*,application/pdf" />
+          <label>… ou envie um arquivo (imagem, PDF, DWG, DXF, SKP, RVT…). Para plantas pesadas, prefira o link.
+            <input type="file" id="proj-file"
+              accept="image/*,application/pdf,.pdf,.dwg,.dxf,.dwf,.skp,.rvt,.rfa,.ifc,.pln,.3ds,.max,.doc,.docx,.xlsx,.zip" />
           </label>
           <div class="row-end">
             <button type="button" class="btn btn-ghost" id="cancelar-projeto">Cancelar</button>
@@ -733,19 +734,29 @@ export async function renderObra(container, obraId) {
       try {
         const novo = { id: crypto.randomUUID(), nome, criadoEm: Date.now() };
         if (file) {
+          // Imagens são otimizadas (mesma compressão das fotos da obra); PDF e
+          // demais arquivos vão como estão, respeitando o limite do banco.
           const dataUrl = String(file.type).startsWith('image/')
             ? await comprimirParaDataURL(file)
             : await arquivoParaDataURL(file);
           if (dataURLBytes(dataUrl) > 700_000) {
-            throw new Error('Arquivo grande demais para anexar direto. Cole um link (ex.: Google Drive).');
+            throw new Error('Arquivo grande demais para anexar direto (limite ~700 KB). Para plantas e projetos pesados (DWG, RVT, SKP…), cole o link do Google Drive no campo acima.');
           }
           novo.dataUrl = dataUrl;
           novo.arquivo = file.name;
         } else {
           novo.link = /^https?:\/\//i.test(link) ? link : 'https://' + link;
         }
-        await atualizarObra(obra.id, { projetos: [...(obra.projetos || []), novo] });
-        recarregar();
+        // Guarda no banco e atualiza SÓ a lista de projetos — sem recarregar a
+        // página inteira (que rebaixaria todas as fotos/NF e ficava lento).
+        const novos = [...(obra.projetos || []), novo];
+        await atualizarObra(obra.id, { projetos: novos });
+        obra.projetos = novos;
+        container.querySelector('#lista-projetos').innerHTML = listaProjetos(obra.projetos);
+        formProjeto.reset();
+        formProjeto.hidden = true;
+        status.hidden = true;
+        btn.disabled = false;
       } catch (err) {
         btn.disabled = false;
         status.className = 'status-voz erro';
@@ -765,10 +776,10 @@ export async function renderObra(container, obraId) {
     const del = e.target.closest('[data-del-projeto]');
     if (del) {
       if (!confirm('Remover este projeto?')) return;
-      await atualizarObra(obra.id, {
-        projetos: (obra.projetos || []).filter((x) => x.id !== del.getAttribute('data-del-projeto')),
-      });
-      recarregar();
+      const novos = (obra.projetos || []).filter((x) => x.id !== del.getAttribute('data-del-projeto'));
+      await atualizarObra(obra.id, { projetos: novos });
+      obra.projetos = novos;
+      listaProjEl.innerHTML = listaProjetos(obra.projetos);
     }
   });
 }
@@ -982,18 +993,29 @@ function tabelaEtapas(etapas, lancamentos) {
 }
 
 // Lista dos projetos anexados à obra (link ou arquivo).
+// Projetos com LINK abrem direto num <a> (novo aba); com ARQUIVO abrem no visor.
 function listaProjetos(projetos) {
   const arr = projetos || [];
   if (!arr.length) return `<p class="muted">Nenhum projeto anexado. Adicione o link ou o arquivo do projeto.</p>`;
   return `<ul class="proj-lista">
-    ${arr.map((p) => `
+    ${arr.map((p) => {
+      const ehLink = Boolean(p.link);
+      const href = ehLink ? (/^https?:\/\//i.test(p.link) ? p.link : 'https://' + p.link) : '';
+      const ext = (p.arquivo && p.arquivo.includes('.')) ? p.arquivo.split('.').pop().toLowerCase() : '';
+      const icone = ehLink ? '🔗' : '📐';
+      const rotulo = ehLink ? '(link)' : (ext ? `(${ext})` : '');
+      const abrir = ehLink
+        ? `<a class="btn btn-mini" href="${esc(href)}" target="_blank" rel="noopener">Abrir</a>`
+        : `<button class="btn btn-mini" data-ver-projeto="${esc(p.id)}">Abrir</button>`;
+      return `
       <li class="proj-item">
-        <span class="proj-nome">📐 ${esc(p.nome || 'Projeto')}${p.link ? ' <small class="muted">(link)</small>' : ''}</span>
+        <span class="proj-nome">${icone} ${esc(p.nome || 'Projeto')}${rotulo ? ` <small class="muted">${rotulo}</small>` : ''}</span>
         <span class="proj-acoes">
-          <button class="btn btn-mini" data-ver-projeto="${esc(p.id)}">Abrir</button>
+          ${abrir}
           <button class="btn btn-x" data-del-projeto="${esc(p.id)}" title="Remover">×</button>
         </span>
-      </li>`).join('')}
+      </li>`;
+    }).join('')}
   </ul>`;
 }
 

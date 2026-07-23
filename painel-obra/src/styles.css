@@ -36,8 +36,10 @@
    próprio (grid/flex) — senão o toggle de "Ver etapas" e formulários não somem. */
 [hidden] { display: none !important; }
 
-/* Impede rolagem horizontal (o layout "andando" de lado no celular) */
-html, body { max-width: 100%; overflow-x: hidden; }
+/* Impede rolagem horizontal (o layout "andando" de lado no celular).
+   overscroll-behavior-x: none corta o "efeito elástico" horizontal do iOS,
+   que fazia a tela deslizar de um lado para o outro ao arrastar o dedo. */
+html, body { max-width: 100%; overflow-x: hidden; overscroll-behavior-x: none; }
 
 body {
   margin: 0;
@@ -399,7 +401,7 @@ input:focus, select:focus, textarea:focus {
 /* ---- Projeto da obra ---- */
 .proj-lista { list-style: none; margin: .4rem 0 0; padding: 0; display: grid; gap: .4rem; }
 .proj-item { display: flex; justify-content: space-between; align-items: center; gap: .6rem; padding: .55rem .7rem; border: 1px solid var(--linha); border-radius: var(--raio-sm); background: #fff; }
-.proj-nome { font-size: .92rem; font-weight: 500; }
+.proj-nome { font-size: .92rem; font-weight: 500; min-width: 0; flex: 1; overflow-wrap: anywhere; word-break: break-word; }
 .proj-acoes { display: inline-flex; align-items: center; gap: .3rem; flex: none; }
 
 /* ---- Clientes / cadastro ---- */
@@ -505,8 +507,10 @@ input:focus, select:focus, textarea:focus {
   .caixa-logo { max-width: 100%; }
   .caixa-logo-cliente { min-width: 0; }
 
-  /* Tabelas largas rolam DENTRO do próprio bloco, sem mexer a página */
-  #tabela-lancamentos, #tabela-etapas { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  /* Tabelas largas rolam DENTRO do próprio bloco, sem mexer a página.
+     overscroll-behavior: contain impede que a rolagem da tabela "vaze" e
+     empurre a página inteira para o lado. */
+  #tabela-lancamentos, #tabela-etapas { overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; }
   #tabela-lancamentos .tabela, #tabela-etapas .tabela { min-width: 480px; }
 
   /* Campos e controles quebram linha em vez de estourar */
