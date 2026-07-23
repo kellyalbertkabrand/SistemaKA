@@ -1,5 +1,5 @@
 import {
-  obterObra, listarEtapas, listarLancamentos, atualizarObra, definirPublicado,
+  obterObra, listarEtapas, listarLancamentos, atualizarObra, excluirObra, definirPublicado,
   criarEtapa, atualizarEtapa, excluirEtapa, criarLancamento, atualizarLancamento, excluirLancamento, sair,
   anexarRecibo, removerRecibo, enviarFoto, listarFotos, excluirFoto,
 } from '../dados.js';
@@ -97,9 +97,12 @@ export async function renderObra(container, obraId) {
         <p class="muted" style="font-size:.8rem;margin:.2rem 0 0">
           Ao mudar o orçamento total, o saldo é recalculado automaticamente.
         </p>
-        <div class="row-end">
-          <button type="button" class="btn btn-ghost" id="ed-cancelar">Cancelar</button>
-          <button type="submit" class="btn btn-primary">Salvar alterações</button>
+        <div class="row-between" style="margin-top:.4rem">
+          <button type="button" class="btn btn-perigo" id="excluir-obra">🗑 Excluir obra</button>
+          <div class="row-end">
+            <button type="button" class="btn btn-ghost" id="ed-cancelar">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Salvar alterações</button>
+          </div>
         </div>
         <p class="erro" id="ed-erro" hidden></p>
       </form>
@@ -244,6 +247,20 @@ export async function renderObra(container, obraId) {
   });
   container.querySelector('#ed-cancelar').addEventListener('click', () => {
     formEditar.hidden = true;
+  });
+  // Excluir a obra inteira (com confirmação forte).
+  container.querySelector('#excluir-obra').addEventListener('click', async () => {
+    if (!confirm(`Excluir a obra "${obra.nome}" e TODOS os seus dados (etapas, lançamentos e fotos)?\n\nEsta ação NÃO pode ser desfeita.`)) return;
+    const btn = container.querySelector('#excluir-obra');
+    btn.disabled = true; btn.textContent = 'Excluindo…';
+    try {
+      await excluirObra(obra.id);
+      navegar('/obras');
+    } catch (err) {
+      btn.disabled = false; btn.textContent = '🗑 Excluir obra';
+      edErro.textContent = 'Não foi possível excluir: ' + (err?.message || err);
+      edErro.hidden = false;
+    }
   });
   formEditar.addEventListener('submit', async (e) => {
     e.preventDefault();

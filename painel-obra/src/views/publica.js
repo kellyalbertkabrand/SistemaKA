@@ -89,10 +89,13 @@ export async function renderPublica(container, slug) {
       </section>
 
       <section class="pub-bloco">
-        <h2>Por etapa</h2>
         ${etapas.length === 0 && extras.length === 0
-          ? `<p class="muted">As etapas aparecerão aqui conforme a obra avança.</p>`
-          : `<div class="pub-etapas">
+          ? `<h2>Por etapa</h2><p class="muted">As etapas aparecerão aqui conforme a obra avança.</p>`
+          : `<div class="row-between">
+              <h2>Por etapa</h2>
+              <button class="btn btn-mini" id="pub-toggle-etapas">Ver etapas (${etapas.length + extras.length}) ▾</button>
+            </div>
+            <div class="pub-etapas" id="pub-etapas" hidden>
               ${etapas.map((e) => barraEtapa(e.nome, Number(e.orcado || 0), realizado[e.nome] || 0)).join('')}
               ${extras.map((n) => barraEtapa(n, 0, realizado[n] || 0)).join('')}
             </div>`}
@@ -134,6 +137,18 @@ export async function renderPublica(container, slug) {
         <p class="muted pub-rodape-nota">Atualizado em tempo real pelo escritório.</p>
       </footer>
     </div>`;
+
+  // Expandir/recolher a lista "Por etapa".
+  const pubToggleEtapas = container.querySelector('#pub-toggle-etapas');
+  const pubEtapas = container.querySelector('#pub-etapas');
+  if (pubToggleEtapas && pubEtapas) {
+    pubToggleEtapas.addEventListener('click', () => {
+      pubEtapas.hidden = !pubEtapas.hidden;
+      pubToggleEtapas.textContent = pubEtapas.hidden
+        ? `Ver etapas (${etapas.length + extras.length}) ▾`
+        : 'Ocultar etapas ▴';
+    });
+  }
 
   // Fotos da obra: abrir o carrossel ao clicar numa miniatura.
   const pubFotos = container.querySelector('#pub-fotos');

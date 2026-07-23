@@ -91,6 +91,20 @@ export async function definirPublicado(id, valor) {
   await updateDoc(doc(db, 'obras', id), { publicado: Boolean(valor) });
 }
 
+// Exclui a obra e TUDO ligado a ela (etapas, lançamentos e fotos).
+export async function excluirObra(id) {
+  const apagarPorObra = async (col) => {
+    const snap = await getDocs(query(collection(db, col), where('obraId', '==', id)));
+    await Promise.all(snap.docs.map((d) => deleteDoc(d.ref)));
+  };
+  await Promise.all([
+    apagarPorObra('etapas'),
+    apagarPorObra('lancamentos'),
+    apagarPorObra('fotos'),
+  ]);
+  await deleteDoc(doc(db, 'obras', id));
+}
+
 // Painel do cliente (sem login): getDoc direto. As Regras só liberam se publicada;
 // leitura negada cai no catch e devolvemos null (tratado como "não encontrada").
 export async function obterObraPublicaPorSlug(slug) {

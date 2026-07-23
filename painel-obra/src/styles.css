@@ -87,6 +87,8 @@ code { background: #efe9df; padding: 1px 5px; border-radius: 6px; font-size: .85
 .btn-ghost { background: transparent; border-color: transparent; box-shadow: none; }
 .btn-ghost:hover { background: var(--bg-2); border-color: transparent; }
 .btn-mini { padding: .38rem .7rem; font-size: .82rem; border-radius: 8px; box-shadow: none; }
+.btn-perigo { color: var(--neg); border-color: #eecfca; background: #fdf3f1; box-shadow: none; }
+.btn-perigo:hover { background: var(--neg); border-color: var(--neg); color: #fff; }
 .btn-mic { background: #fff; }
 .btn-mic.gravando { background: var(--neg); color: #fff; border-color: var(--neg); animation: pulso 1.2s infinite; }
 .btn-x {
