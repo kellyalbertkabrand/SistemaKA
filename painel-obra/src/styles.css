@@ -375,6 +375,12 @@ input:focus, select:focus, textarea:focus {
   .lb-img { max-height: 70vh; }
 }
 
+/* ---- Projeto da obra ---- */
+.proj-lista { list-style: none; margin: .4rem 0 0; padding: 0; display: grid; gap: .4rem; }
+.proj-item { display: flex; justify-content: space-between; align-items: center; gap: .6rem; padding: .55rem .7rem; border: 1px solid var(--linha); border-radius: var(--raio-sm); background: #fff; }
+.proj-nome { font-size: .92rem; font-weight: 500; }
+.proj-acoes { display: inline-flex; align-items: center; gap: .3rem; flex: none; }
+
 /* ---- Clientes / cadastro ---- */
 .cliente-item { padding: .7rem 0; border-bottom: 1px solid #f1ece2; }
 .cliente-item:last-child { border-bottom: none; }

@@ -111,6 +111,20 @@ export async function renderPublica(container, slug) {
         <div id="pub-lista">${listaTimeline(ordenarLancamentos(lancamentos, 'data'))}</div>
       </section>
 
+      ${(obra.projetos && obra.projetos.length) ? `
+      <section class="pub-bloco">
+        <h2>Projeto da obra</h2>
+        <ul class="proj-lista" id="pub-projetos">
+          ${obra.projetos.map((p) => `
+            <li class="proj-item">
+              <span class="proj-nome">📐 ${esc(p.nome || 'Projeto')}</span>
+              ${p.link
+                ? `<a class="btn btn-mini" href="${esc(/^https?:\/\//i.test(p.link) ? p.link : 'https://' + p.link)}" target="_blank" rel="noopener">Abrir</a>`
+                : `<button class="btn btn-mini" data-ver-projeto="${esc(p.id)}">Abrir</button>`}
+            </li>`).join('')}
+        </ul>
+      </section>` : ''}
+
       ${fotos.length ? `
       <section class="pub-bloco">
         <h2>Fotos da obra</h2>
@@ -139,6 +153,17 @@ export async function renderPublica(container, slug) {
         <p class="muted pub-rodape-nota">Atualizado em tempo real pelo escritório.</p>
       </footer>
     </div>`;
+
+  // Abrir projeto anexado como arquivo (link abre direto pelo <a>).
+  const pubProjetos = container.querySelector('#pub-projetos');
+  if (pubProjetos) {
+    pubProjetos.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-ver-projeto]');
+      if (!b) return;
+      const p = (obra.projetos || []).find((x) => x.id === b.getAttribute('data-ver-projeto'));
+      if (p?.dataUrl) abrirAnexo(p.dataUrl, p.arquivo || p.nome);
+    });
+  }
 
   // Expandir/recolher a lista "Por etapa".
   const pubToggleEtapas = container.querySelector('#pub-toggle-etapas');

@@ -199,6 +199,30 @@ export async function renderObra(container, obraId) {
         </form>
         <div id="grid-fotos">${gridFotos(fotos)}</div>
       </section>
+
+      <section class="card">
+        <div class="row-between">
+          <h2>Projeto da obra</h2>
+          <button class="btn btn-mini btn-primary" id="abrir-projeto" style="margin:0">+ Projeto</button>
+        </div>
+        <form id="form-projeto" class="foto-form" hidden>
+          <label>Nome / identificação
+            <input id="proj-nome" placeholder="Ex.: Planta baixa, Projeto estrutural" />
+          </label>
+          <label>Link do projeto (Google Drive, PDF, etc.)
+            <input id="proj-link" placeholder="https://…" />
+          </label>
+          <label>… ou envie um arquivo (PDF/imagem, até ~700 KB)
+            <input type="file" id="proj-file" accept="image/*,application/pdf" />
+          </label>
+          <div class="row-end">
+            <button type="button" class="btn btn-ghost" id="cancelar-projeto">Cancelar</button>
+            <button type="submit" class="btn btn-primary" id="salvar-projeto">Adicionar</button>
+          </div>
+          <p class="status-voz" id="status-projeto" hidden></p>
+        </form>
+        <div id="lista-projetos">${listaProjetos(obra.projetos)}</div>
+      </section>
     </div>`;
 
   // Recarrega a tela inteira (após salvar/excluir algo).
@@ -625,6 +649,72 @@ export async function renderObra(container, obraId) {
       recarregar();
     }
   });
+
+  // ---- Projeto da obra (link ou arquivo, guardado no doc da obra) ----
+  const abrirProjeto = container.querySelector('#abrir-projeto');
+  const formProjeto = container.querySelector('#form-projeto');
+  if (abrirProjeto) {
+    abrirProjeto.addEventListener('click', () => {
+      formProjeto.hidden = !formProjeto.hidden;
+      if (!formProjeto.hidden) container.querySelector('#proj-nome').focus();
+    });
+    container.querySelector('#cancelar-projeto').addEventListener('click', () => {
+      formProjeto.hidden = true;
+    });
+    formProjeto.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nome = container.querySelector('#proj-nome').value.trim();
+      const link = container.querySelector('#proj-link').value.trim();
+      const file = container.querySelector('#proj-file').files[0];
+      const status = container.querySelector('#status-projeto');
+      status.hidden = false;
+      if (!nome) { status.className = 'status-voz erro'; status.textContent = 'Dê um nome ao projeto.'; return; }
+      if (!link && !file) { status.className = 'status-voz erro'; status.textContent = 'Cole um link ou escolha um arquivo.'; return; }
+      const btn = container.querySelector('#salvar-projeto');
+      btn.disabled = true;
+      status.className = 'status-voz';
+      status.innerHTML = '<span class="spinner"></span> Adicionando…';
+      try {
+        const novo = { id: crypto.randomUUID(), nome, criadoEm: Date.now() };
+        if (file) {
+          const dataUrl = String(file.type).startsWith('image/')
+            ? await comprimirParaDataURL(file)
+            : await arquivoParaDataURL(file);
+          if (dataURLBytes(dataUrl) > 700_000) {
+            throw new Error('Arquivo grande demais para anexar direto. Cole um link (ex.: Google Drive).');
+          }
+          novo.dataUrl = dataUrl;
+          novo.arquivo = file.name;
+        } else {
+          novo.link = /^https?:\/\//i.test(link) ? link : 'https://' + link;
+        }
+        await atualizarObra(obra.id, { projetos: [...(obra.projetos || []), novo] });
+        recarregar();
+      } catch (err) {
+        btn.disabled = false;
+        status.className = 'status-voz erro';
+        status.textContent = err?.message || 'Não foi possível adicionar.';
+      }
+    });
+  }
+  const listaProjEl = container.querySelector('#lista-projetos');
+  listaProjEl.addEventListener('click', async (e) => {
+    const ver = e.target.closest('[data-ver-projeto]');
+    if (ver) {
+      const p = (obra.projetos || []).find((x) => x.id === ver.getAttribute('data-ver-projeto'));
+      if (p?.dataUrl) abrirAnexo(p.dataUrl, p.arquivo || p.nome);
+      else if (p?.link) window.open(p.link, '_blank', 'noopener');
+      return;
+    }
+    const del = e.target.closest('[data-del-projeto]');
+    if (del) {
+      if (!confirm('Remover este projeto?')) return;
+      await atualizarObra(obra.id, {
+        projetos: (obra.projetos || []).filter((x) => x.id !== del.getAttribute('data-del-projeto')),
+      });
+      recarregar();
+    }
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -829,6 +919,22 @@ function tabelaEtapas(etapas, lancamentos) {
         ${extras.map((n) => linhaEtapa(n, 0, null)).join('')}
       </tbody>
     </table>`;
+}
+
+// Lista dos projetos anexados à obra (link ou arquivo).
+function listaProjetos(projetos) {
+  const arr = projetos || [];
+  if (!arr.length) return `<p class="muted">Nenhum projeto anexado. Adicione o link ou o arquivo do projeto.</p>`;
+  return `<ul class="proj-lista">
+    ${arr.map((p) => `
+      <li class="proj-item">
+        <span class="proj-nome">📐 ${esc(p.nome || 'Projeto')}${p.link ? ' <small class="muted">(link)</small>' : ''}</span>
+        <span class="proj-acoes">
+          <button class="btn btn-mini" data-ver-projeto="${esc(p.id)}">Abrir</button>
+          <button class="btn btn-x" data-del-projeto="${esc(p.id)}" title="Remover">×</button>
+        </span>
+      </li>`).join('')}
+  </ul>`;
 }
 
 // Galeria de fotos das visitas: miniaturas (abrem o carrossel), data, descrição,
