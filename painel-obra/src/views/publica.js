@@ -114,13 +114,23 @@ export async function renderPublica(container, slug) {
       <section class="pub-bloco pub-bloco-projeto">
         ${tituloSecao('📐', 'Projeto da obra')}
         <ul class="proj-lista" id="pub-projetos">
-          ${obra.projetos.map((p) => `
+          ${obra.projetos.map((p) => {
+            const ext = (p.arquivo && p.arquivo.includes('.')) ? p.arquivo.split('.').pop().toLowerCase() : '';
+            const thumbSrc = p.thumbUrl || (p.dataUrl && /^data:image\//i.test(p.dataUrl) ? p.dataUrl : '');
+            const visual = thumbSrc
+              ? `<button class="proj-thumb" data-ver-projeto="${esc(p.id)}" title="Ver imagem"><img src="${esc(thumbSrc)}" alt="${esc(p.nome || 'projeto')}" loading="lazy" /></button>`
+              : `<span class="proj-ico">${p.link ? '🔗' : (ext === 'pdf' ? '📄' : '📐')}</span>`;
+            return `
             <li class="proj-item">
-              <span class="proj-nome">${p.link ? '🔗' : '📐'} ${esc(p.nome || 'Projeto')}</span>
+              <span class="proj-info">
+                ${visual}
+                <span class="proj-nome">${esc(p.nome || 'Projeto')}</span>
+              </span>
               ${p.link
-                ? `<a class="btn btn-mini" href="${esc(/^https?:\/\//i.test(p.link) ? p.link : 'https://' + p.link)}" target="_blank" rel="noopener">Abrir</a>`
+                ? `<a class="btn btn-mini" href="${esc(/^https?:\/\//i.test(p.link) ? p.link : 'https://' + p.link)}" target="_blank" rel="noopener">Abrir ↗</a>`
                 : `<button class="btn btn-mini" data-ver-projeto="${esc(p.id)}">Abrir</button>`}
-            </li>`).join('')}
+            </li>`;
+          }).join('')}
         </ul>
       </section>` : ''}
 

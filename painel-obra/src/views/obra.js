@@ -9,7 +9,7 @@ import { reconhecimentoDisponivel, ouvir, parar } from '../lib/voice.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
 import { baixarBlob, montarExcelHTML, numBR } from '../lib/exportar.js';
-import { comprimirParaDataURL, arquivoParaDataURL, dataURLBytes, dataURLParaBytes } from '../lib/imagem.js';
+import { comprimirParaDataURL, arquivoParaDataURL, dataURLBytes, dataURLParaBytes, dataURLParaBlob } from '../lib/imagem.js';
 import { criarZip } from '../lib/zip.js';
 import { abrirLightbox, baixarImagem, abrirAnexo } from '../lib/lightbox.js';
 
@@ -212,13 +212,17 @@ export async function renderObra(container, obraId) {
           <label>Nome / identificação
             <input id="proj-nome" placeholder="Ex.: Planta baixa, Projeto estrutural" />
           </label>
-          <label>Link do projeto (Google Drive, Dropbox, etc.)
-            <input id="proj-link" placeholder="https://…" />
-          </label>
-          <label>… ou envie um arquivo (imagem, PDF, DWG, DXF, SKP, RVT…). Para plantas pesadas, prefira o link.
+          <label>Enviar imagem ou arquivo (mostra miniatura quando é imagem)
             <input type="file" id="proj-file"
               accept="image/*,application/pdf,.pdf,.dwg,.dxf,.dwf,.skp,.rvt,.rfa,.ifc,.pln,.3ds,.max,.doc,.docx,.xlsx,.zip" />
           </label>
+          <label>… ou colar um link (Google Drive, Dropbox, etc.)
+            <input id="proj-link" placeholder="https://…" />
+          </label>
+          <p class="muted" style="font-size:.78rem;margin:-.3rem 0 0">
+            Dica: para o link abrir sem pedir login, no Google Drive use
+            <strong>Compartilhar → Qualquer pessoa com o link</strong>.
+          </p>
           <div class="row-end">
             <button type="button" class="btn btn-ghost" id="cancelar-projeto">Cancelar</button>
             <button type="submit" class="btn btn-primary" id="salvar-projeto">Adicionar</button>
@@ -752,6 +756,10 @@ export async function renderObra(container, obraId) {
     for (const p of (obra.projetos || [])) {
       if (p.dataUrl) {
         await salvarFotoBin(p.id, obra.id, p.dataUrl);
+        // Se for imagem, gera a miniatura para aparecer na lista.
+        if (/^data:image\//i.test(p.dataUrl) && !p.thumbUrl) {
+          try { p.thumbUrl = await comprimirParaDataURL(dataURLParaBlob(p.dataUrl), 30_000, 400); p.ehImagem = true; } catch { /* segue sem thumb */ }
+        }
         p.temArquivo = true;
         delete p.dataUrl;
       }
@@ -788,7 +796,7 @@ export async function renderObra(container, obraId) {
       status.hidden = false;
       if (!link && !file && !projEditando) {
         status.className = 'status-voz erro';
-        status.textContent = 'Cole um link ou escolha um arquivo.';
+        status.textContent = 'Envie uma imagem/arquivo ou cole um link.';
         return;
       }
       if (!nome) nome = file ? file.name.replace(/\.[^.]+$/, '') : (link ? 'Link do projeto' : 'Projeto');
@@ -806,23 +814,31 @@ export async function renderObra(container, obraId) {
           : { id: crypto.randomUUID(), criadoEm: Date.now() };
         base.nome = nome;
 
-        if (link) {
-          // Link tem prioridade e é sempre leve. Limpa arquivo anterior, se houver.
-          base.link = /^https?:\/\//i.test(link) ? link : 'https://' + link;
-          if (base.temArquivo) { await excluirBin(base.id); base.temArquivo = false; base.arquivo = null; }
-        } else if (file) {
-          const dataUrl = String(file.type).startsWith('image/')
-            ? await comprimirParaDataURL(file, 300_000, 1400)
+        // O ARQUIVO tem prioridade (é o que mostra miniatura/abre no visor).
+        // Só usa o link quando não há arquivo escolhido.
+        if (file) {
+          const ehImagem = String(file.type).startsWith('image/');
+          const dataUrl = ehImagem
+            ? await comprimirParaDataURL(file, 300_000, 1600)
             : await arquivoParaDataURL(file);
-          // Cada arquivo vira um documento próprio (limite ~1 MB). Base64 infla
-          // ~33%, então guardamos com folga; acima disso, oriente o link.
+          // Cada arquivo vira um documento próprio (limite ~1 MB do Firestore).
           if (String(dataUrl).length > 1_000_000) {
-            throw new Error('Esse arquivo é grande demais para anexar direto. Envie por LINK (Google Drive/Dropbox) — cole o link no campo acima. (Ideal para PDF/DWG/RVT pesados.)');
+            throw new Error('Esse arquivo é grande demais para anexar direto. Cole um LINK (Google Drive/Dropbox) no campo abaixo — ideal para PDF/DWG/RVT pesados.');
           }
-          await salvarFotoBin(base.id, obra.id, dataUrl); // grava o binário à parte
+          await salvarFotoBin(base.id, obra.id, dataUrl); // binário à parte
           base.temArquivo = true;
           base.arquivo = file.name;
+          base.ehImagem = ehImagem;
+          base.thumbUrl = ehImagem ? await comprimirParaDataURL(file, 30_000, 400) : null;
           base.link = null;
+        } else if (link) {
+          base.link = /^https?:\/\//i.test(link) ? link : 'https://' + link;
+          // Se antes era arquivo, limpa o binário e a miniatura.
+          if (base.temArquivo) { await excluirBin(base.id); }
+          base.temArquivo = false;
+          base.arquivo = null;
+          base.thumbUrl = null;
+          base.ehImagem = false;
         }
 
         const novos = projEditando
@@ -1095,14 +1111,22 @@ function listaProjetos(projetos) {
       const ehLink = Boolean(p.link);
       const href = ehLink ? (/^https?:\/\//i.test(p.link) ? p.link : 'https://' + p.link) : '';
       const ext = (p.arquivo && p.arquivo.includes('.')) ? p.arquivo.split('.').pop().toLowerCase() : '';
-      const icone = ehLink ? '🔗' : '📐';
       const rotulo = ehLink ? '(link)' : (ext ? `(${ext})` : '');
+      // Imagem: miniatura clicável (miniatura própria, ou a imagem inline antiga).
+      // Link: 🔗. Outro arquivo: 📄/📐.
+      const thumbSrc = p.thumbUrl || (p.dataUrl && /^data:image\//i.test(p.dataUrl) ? p.dataUrl : '');
+      const visual = thumbSrc
+        ? `<button class="proj-thumb" data-ver-projeto="${esc(p.id)}" title="Ver imagem"><img src="${esc(thumbSrc)}" alt="${esc(p.nome || 'projeto')}" loading="lazy" /></button>`
+        : `<span class="proj-ico">${ehLink ? '🔗' : (ext === 'pdf' ? '📄' : '📐')}</span>`;
       const abrir = ehLink
-        ? `<a class="btn btn-mini" href="${esc(href)}" target="_blank" rel="noopener">Abrir</a>`
+        ? `<a class="btn btn-mini" href="${esc(href)}" target="_blank" rel="noopener">Abrir ↗</a>`
         : `<button class="btn btn-mini" data-ver-projeto="${esc(p.id)}">Abrir</button>`;
       return `
       <li class="proj-item">
-        <span class="proj-nome">${icone} ${esc(p.nome || 'Projeto')}${rotulo ? ` <small class="muted">${rotulo}</small>` : ''}</span>
+        <span class="proj-info">
+          ${visual}
+          <span class="proj-nome">${esc(p.nome || 'Projeto')}${rotulo ? ` <small class="muted">${rotulo}</small>` : ''}</span>
+        </span>
         <span class="proj-acoes">
           ${abrir}
           <button class="btn btn-x" data-edit-projeto="${esc(p.id)}" title="Editar">✎</button>

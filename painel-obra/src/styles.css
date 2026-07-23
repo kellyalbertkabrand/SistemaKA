@@ -419,9 +419,15 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* ---- Projeto da obra ---- */
-.proj-lista { list-style: none; margin: .4rem 0 0; padding: 0; display: grid; gap: .4rem; }
+.proj-lista { list-style: none; margin: .4rem 0 0; padding: 0; display: grid; gap: .5rem; }
 .proj-item { display: flex; justify-content: space-between; align-items: center; gap: .6rem; padding: .55rem .7rem; border: 1px solid var(--linha); border-radius: var(--raio-sm); background: #fff; }
-.proj-nome { font-size: .92rem; font-weight: 500; min-width: 0; flex: 1; overflow-wrap: anywhere; word-break: break-word; }
+.proj-info { display: flex; align-items: center; gap: .6rem; min-width: 0; flex: 1; }
+.proj-nome { font-size: .92rem; font-weight: 500; min-width: 0; overflow-wrap: anywhere; word-break: break-word; }
+/* Miniatura da imagem do projeto (clicável para ver em tamanho grande) */
+.proj-thumb { flex: none; width: 46px; height: 46px; padding: 0; border: 1px solid var(--linha); border-radius: 8px; overflow: hidden; background: #faf7f2; cursor: pointer; }
+.proj-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.proj-thumb:hover { border-color: var(--acento); }
+.proj-ico { flex: none; font-size: 1.15rem; width: 1.6rem; text-align: center; }
 .proj-acoes { display: inline-flex; align-items: center; gap: .3rem; flex: none; }
 
 /* ---- Clientes / cadastro ---- */
