@@ -1,4 +1,4 @@
-import { entrar } from '../dados.js';
+import { entrar, redefinirSenha } from '../dados.js';
 import { caixaLogo } from '../lib/marca.js';
 
 // Tela de acesso da arquiteta. O usuário é criado no Firebase
@@ -18,13 +18,48 @@ export function renderLogin(container) {
             <input type="password" id="senha" required autocomplete="current-password" />
           </label>
           <button class="btn btn-primary" type="submit">Entrar</button>
+          <button class="link-inline" type="button" id="esqueci-senha">Esqueci minha senha</button>
           <p class="erro" id="erro-login" hidden></p>
+          <p class="aviso-ok" id="ok-login" hidden></p>
         </form>
       </div>
     </div>`;
 
   const form = container.querySelector('#form-login');
   const erro = container.querySelector('#erro-login');
+  const okMsg = container.querySelector('#ok-login');
+
+  // Redefinir senha: envia o e-mail de redefinição do Firebase.
+  container.querySelector('#esqueci-senha').addEventListener('click', async () => {
+    erro.hidden = true;
+    okMsg.hidden = true;
+    const email = container.querySelector('#email').value.trim();
+    if (!email) {
+      erro.textContent = 'Digite seu e-mail no campo acima e clique de novo em "Esqueci minha senha".';
+      erro.hidden = false;
+      container.querySelector('#email').focus();
+      return;
+    }
+    const link = container.querySelector('#esqueci-senha');
+    link.disabled = true;
+    const rotulo = link.textContent;
+    link.textContent = 'Enviando…';
+    try {
+      await redefinirSenha(email);
+      okMsg.innerHTML = `Enviamos um link para <strong>${email}</strong>. Abra o e-mail (confira o spam) e crie uma nova senha.`;
+      okMsg.hidden = false;
+    } catch (err) {
+      const code = err?.code || '';
+      erro.textContent = /invalid-email/.test(code) ? 'E-mail inválido.'
+        : /user-not-found/.test(code) ? 'Não encontramos esse e-mail no sistema.'
+        : /too-many-requests/.test(code) ? 'Muitas tentativas. Tente de novo em instantes.'
+        : 'Não foi possível enviar o e-mail agora. Tente novamente.';
+      erro.hidden = false;
+    } finally {
+      link.disabled = false;
+      link.textContent = rotulo;
+    }
+  });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();

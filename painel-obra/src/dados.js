@@ -16,6 +16,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import {
   collection,
@@ -45,6 +46,10 @@ export function aoMudarAuth(cb) {
 }
 export function usuarioAtual() {
   return auth?.currentUser ?? null;
+}
+// Envia o e-mail de redefinição de senha (funciona mesmo se esqueceu a atual).
+export function redefinirSenha(email) {
+  return sendPasswordResetEmail(auth, email);
 }
 const uid = () => auth?.currentUser?.uid;
 

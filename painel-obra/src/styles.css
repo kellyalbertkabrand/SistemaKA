@@ -179,6 +179,17 @@ input:focus, select:focus, textarea:focus {
 }
 .erro { color: var(--neg); font-size: .88rem; margin: .2rem 0 0; }
 .erro[hidden] { display: none; }
+/* Mensagem de sucesso (ex.: e-mail de redefinição enviado) */
+.aviso-ok { color: var(--ok); font-size: .88rem; margin: .5rem 0 0; line-height: 1.4; }
+.aviso-ok[hidden] { display: none; }
+/* Link-botão discreto (ex.: "Esqueci minha senha") */
+.link-inline {
+  display: block; width: fit-content; background: none; border: none; padding: .2rem 0;
+  margin: .7rem auto 0; color: var(--acento); font-family: var(--fonte-ui);
+  font-size: .86rem; font-weight: 600; cursor: pointer; text-decoration: underline;
+}
+.link-inline:hover { color: var(--acento-escuro); }
+.link-inline:disabled { opacity: .6; cursor: default; }
 
 /* ---- Home (menu-lançador com botões) ---- */
 .home-wrap { min-height: 100vh; display: flex; flex-direction: column; }
