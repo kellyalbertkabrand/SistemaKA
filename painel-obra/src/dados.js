@@ -319,3 +319,8 @@ export async function listarFotos(obraId) {
 export async function excluirFoto(id) {
   await deleteDoc(doc(db, 'fotos', id));
 }
+
+// Todas as fotos do escritório (para a exportação geral em ZIP).
+export async function listarFotosDoEscritorio() {
+  return docsComId(await getDocs(collection(db, 'fotos')));
+}
