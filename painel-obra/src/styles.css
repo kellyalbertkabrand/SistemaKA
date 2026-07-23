@@ -32,6 +32,10 @@
 
 * { box-sizing: border-box; }
 
+/* O atributo `hidden` deve sempre esconder, mesmo em elementos com display
+   próprio (grid/flex) — senão o toggle de "Ver etapas" e formulários não somem. */
+[hidden] { display: none !important; }
+
 /* Impede rolagem horizontal (o layout "andando" de lado no celular) */
 html, body { max-width: 100%; overflow-x: hidden; }
 
