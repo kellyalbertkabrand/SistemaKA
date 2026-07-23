@@ -129,7 +129,7 @@ export async function renderObra(container, obraId) {
               <span>Publicado</span>
             </label>
             <button class="btn btn-mini" id="copiar-link">Copiar</button>
-            <a class="btn btn-mini" href="/obra/${esc(obra.slug)}" target="_blank" rel="noopener">Abrir</a>
+            <a class="btn btn-mini" href="/obra/${esc(obra.slug)}" target="_blank" rel="noopener" title="Abre o painel do cliente numa nova aba">Abrir ↗</a>
           </div>
         </div>
       </section>

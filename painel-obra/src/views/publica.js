@@ -1,5 +1,5 @@
 import { configurado } from '../firebase.js';
-import { obterObraPublicaPorSlug, listarEtapas, listarLancamentos, listarFotos, obterRecibo, obterFotoBin } from '../dados.js';
+import { obterObraPublicaPorSlug, listarEtapas, listarLancamentos, listarFotos, obterRecibo, obterFotoBin, aoMudarAuth } from '../dados.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { caixaLogo } from '../lib/marca.js';
@@ -129,12 +129,21 @@ export async function renderPublica(container, slug) {
         <div id="pub-fotos"><p class="muted"><span class="spinner"></span> Carregando fotos…</p></div>
       </section>
 
+      <a class="btn btn-ghost pub-voltar-arq" id="voltar-arq" data-link href="/painel/${esc(obra.slug)}" hidden>← Voltar ao painel do arquiteto</a>
+
       <footer class="pub-rodape">
         <p class="pub-rodape-nome">SCHRAMM ARQUITETURA E ENGENHARIA</p>
         <p class="muted">Rua Dr. Luiz Bastos do Prado, 2093 - 504 - Centro, Gravataí - RS, 94010-021</p>
         <p class="muted pub-rodape-nota">Atualizado em tempo real pelo escritório.</p>
       </footer>
     </div>`;
+
+  // Só a arquiteta (logada) vê o atalho de voltar — o cliente nunca vê. A auth
+  // resolve de forma assíncrona, então revelamos quando ela confirmar.
+  aoMudarAuth((usuario) => {
+    const v = container.querySelector('#voltar-arq');
+    if (v) v.hidden = !usuario;
+  });
 
   // Fotos entram em segundo plano (são o dado mais pesado) — a página já abriu.
   comTimeout(listarFotos(obra.id)).then((fs) => {

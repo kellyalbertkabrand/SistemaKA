@@ -494,6 +494,8 @@ input:focus, select:focus, textarea:focus {
 .nf-link { display: inline-flex; align-items: center; gap: .25rem; font-family: var(--fonte-ui); font-size: .76rem; font-weight: 600; color: var(--acento); background: var(--acento-tint); border: 1px solid #eddccb; border-radius: 999px; padding: .12rem .5rem; margin-left: .4rem; cursor: pointer; white-space: nowrap; }
 .nf-link:hover { background: #f6e6d8; }
 
+/* Atalho de voltar (só a arquiteta logada vê) no fim do painel do cliente */
+.pub-voltar-arq { display: flex; width: 100%; justify-content: center; margin-top: 2rem; }
 .pub-rodape { text-align: center; margin-top: 2.5rem; padding-top: 1.4rem; border-top: 1px solid var(--linha); }
 .pub-rodape-nome { font-size: .74rem; font-weight: 700; letter-spacing: .14em; color: var(--tinta); margin: 0 0 .3rem; }
 .pub-rodape .muted { font-size: .76rem; margin: .15rem 0 0; }
