@@ -15,7 +15,8 @@ export async function renderPublica(container, slug) {
     return;
   }
 
-  let obra, etapas, lancamentos, fotos;
+  let obra, etapas, lancamentos;
+  let fotos = []; // as fotos (pesadas) carregam em segundo plano após o render
   try {
     obra = await comTimeout(obterObraPublicaPorSlug(slug));
 
@@ -27,14 +28,12 @@ export async function renderPublica(container, slug) {
       return;
     }
 
-    [etapas, lancamentos, fotos] = await Promise.all([
+    [etapas, lancamentos] = await Promise.all([
       comTimeout(listarEtapas(obra.id)),
       comTimeout(listarLancamentos(obra.id)),
-      comTimeout(listarFotos(obra.id)).catch(() => []), // fotos são extra: nunca derrubam a página
     ]);
     etapas = etapas || [];
     lancamentos = lancamentos || [];
-    fotos = fotos || [];
   } catch (e) {
     container.innerHTML = telaSimples(
       'Não foi possível carregar',
@@ -125,11 +124,10 @@ export async function renderPublica(container, slug) {
         </ul>
       </section>` : ''}
 
-      ${fotos.length ? `
-      <section class="pub-bloco">
+      <section class="pub-bloco" id="pub-fotos-sec" hidden>
         <h2>Fotos da obra</h2>
-        <div id="pub-fotos">${blocosFotosPub(fotos)}</div>
-      </section>` : ''}
+        <div id="pub-fotos"><p class="muted"><span class="spinner"></span> Carregando fotos…</p></div>
+      </section>
 
       <footer class="pub-rodape">
         <p class="pub-rodape-nome">SCHRAMM ARQUITETURA E ENGENHARIA</p>
@@ -137,6 +135,17 @@ export async function renderPublica(container, slug) {
         <p class="muted pub-rodape-nota">Atualizado em tempo real pelo escritório.</p>
       </footer>
     </div>`;
+
+  // Fotos entram em segundo plano (são o dado mais pesado) — a página já abriu.
+  comTimeout(listarFotos(obra.id)).then((fs) => {
+    fotos = fs || [];
+    const sec = container.querySelector('#pub-fotos-sec');
+    const wrap = container.querySelector('#pub-fotos');
+    if (sec && wrap && fotos.length) {
+      wrap.innerHTML = blocosFotosPub(fotos);
+      sec.hidden = false;
+    }
+  }).catch(() => {});
 
   // Abrir projeto anexado como arquivo (link abre direto pelo <a>).
   const pubProjetos = container.querySelector('#pub-projetos');

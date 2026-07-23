@@ -54,13 +54,14 @@ export async function renderObra(container, obraId) {
     return;
   }
 
-  // Etapas, lançamentos e fotos são complementares: se um falhar (ex.: regra do
-  // Firestore ainda não publicada), degrada para vazio sem esconder a obra.
-  const [etapas, lancamentos, fotos] = await Promise.all([
+  // Etapas e lançamentos entram no caminho crítico (os KPIs e as tabelas
+  // dependem deles). As FOTOS são as mais pesadas (imagens em base64), então
+  // NÃO seguram a abertura da tela: carregam em segundo plano logo abaixo.
+  const [etapas, lancamentos] = await Promise.all([
     listarEtapas(obraId).catch(() => []),
     listarLancamentos(obraId).catch(() => []),
-    listarFotos(obraId).catch(() => []),
   ]);
+  let fotos = []; // preenchido em segundo plano após o primeiro render
 
   const executado = soma(lancamentos);
   const pago = soma(lancamentos.filter((l) => l.status === 'pago'));
@@ -199,7 +200,7 @@ export async function renderObra(container, obraId) {
           </div>
           <p class="status-voz" id="status-fotos" hidden></p>
         </form>
-        <div id="grid-fotos">${gridFotos(fotos)}</div>
+        <div id="grid-fotos"><p class="muted"><span class="spinner"></span> Carregando fotos…</p></div>
       </section>
 
       <section class="card">
@@ -241,6 +242,8 @@ export async function renderObra(container, obraId) {
     const rotulo = btnExp.textContent;
     btnExp.disabled = true; btnExp.textContent = 'Gerando…';
     try {
+      // As fotos carregam em segundo plano; se ainda não chegaram, busca agora.
+      const fotosExp = fotos.length ? fotos : await listarFotos(obra.id).catch(() => []);
       const realizado = {};
       for (const l of lancamentos) realizado[l.etapa] = (realizado[l.etapa] || 0) + Number(l.valor || 0);
       const fmtData = (v) => {
@@ -277,7 +280,7 @@ export async function renderObra(container, obraId) {
       // Fotos -> pasta fotos/
       const fotoNome = new Map();
       let fN = 0;
-      for (const f of (fotos || [])) {
+      for (const f of (fotosExp || [])) {
         const dado = f.dataUrl || f.url;
         if (dado && String(dado).startsWith('data:')) {
           fN++;
@@ -303,7 +306,7 @@ export async function renderObra(container, obraId) {
             nfNome.get(l.id) || ((l.reciboDataUrl || l.reciboUrl) ? 'anexada' : '—'),
           ]) },
         { titulo: 'Fotos das visitas', cabecalho: ['Data da visita', 'Descrição', 'Arquivo'],
-          linhas: (fotos || []).map((f) => [
+          linhas: (fotosExp || []).map((f) => [
             fmtData(f.dataVisita || (f.criadoEm ? new Date(f.criadoEm).toISOString() : '')),
             f.texto || '', fotoNome.get(f) || '',
           ]) },
@@ -613,7 +616,9 @@ export async function renderObra(container, obraId) {
           i++;
           btn.textContent = `Enviando ${i}/${files.length}…`;
           statusFotos.innerHTML = `<span class="spinner"></span> Otimizando e enviando ${i} de ${files.length}…`;
-          const dataUrl = await comprimirParaDataURL(f);
+          // Fotos mais leves (~160 KB) para a obra abrir rápido — resolução
+          // mais que suficiente para visualizar no celular e ampliar.
+          const dataUrl = await comprimirParaDataURL(f, 160_000, 1100);
           await enviarFoto(obra.id, dataUrl, { ...base, nome: f.name });
         }
         recarregar();
@@ -677,6 +682,15 @@ export async function renderObra(container, obraId) {
       await excluirFoto(del.getAttribute('data-del-foto'));
       recarregar();
     }
+  });
+
+  // Carrega as fotos em segundo plano (são o dado mais pesado) e preenche a
+  // grade quando chegam — a tela já abriu com o resto.
+  listarFotos(obraId).then((fs) => {
+    fotos = fs || [];
+    if (gridFotosEl) gridFotosEl.innerHTML = gridFotos(fotos);
+  }).catch(() => {
+    if (gridFotosEl) gridFotosEl.innerHTML = `<p class="muted">Não foi possível carregar as fotos agora.</p>`;
   });
 
   // Editor inline de observação (foto ou visita): troca o texto por um campo
