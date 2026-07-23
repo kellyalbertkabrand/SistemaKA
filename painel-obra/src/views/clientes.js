@@ -13,7 +13,7 @@ export async function renderClientes(container) {
   } catch (e) {
     container.innerHTML = `
       <div class="app">
-        <a class="voltar" data-link href="/">← Painel</a>
+        <a class="voltar" data-link href="/obras">← Painel</a>
         <div class="card">
           <h2>Não foi possível carregar</h2>
           <p class="erro" style="display:block">${esc(e?.message || e)}</p>

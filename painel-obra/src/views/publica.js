@@ -1,8 +1,9 @@
 import { configurado } from '../firebase.js';
-import { obterObraPublicaPorSlug, listarEtapas, listarLancamentos } from '../dados.js';
+import { obterObraPublicaPorSlug, listarEtapas, listarLancamentos, listarFotos } from '../dados.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { caixaLogo } from '../lib/marca.js';
+import { abrirLightbox } from '../lib/lightbox.js';
 
 // Página pública do cliente (só leitura), acessada por /obra/{slug}.
 // Mostra o andamento da obra com visual limpo — e NADA interno.
@@ -14,7 +15,7 @@ export async function renderPublica(container, slug) {
     return;
   }
 
-  let obra, etapas, lancamentos;
+  let obra, etapas, lancamentos, fotos;
   try {
     obra = await comTimeout(obterObraPublicaPorSlug(slug));
 
@@ -26,12 +27,14 @@ export async function renderPublica(container, slug) {
       return;
     }
 
-    [etapas, lancamentos] = await Promise.all([
+    [etapas, lancamentos, fotos] = await Promise.all([
       comTimeout(listarEtapas(obra.id)),
       comTimeout(listarLancamentos(obra.id)),
+      comTimeout(listarFotos(obra.id)).catch(() => []), // fotos são extra: nunca derrubam a página
     ]);
     etapas = etapas || [];
     lancamentos = lancamentos || [];
+    fotos = fotos || [];
   } catch (e) {
     container.innerHTML = telaSimples(
       'Não foi possível carregar',
@@ -103,12 +106,51 @@ export async function renderPublica(container, slug) {
         <div id="pub-lista">${listaTimeline(ordenarLancamentos(lancamentos, 'data'))}</div>
       </section>
 
+      ${fotos.length ? `
+      <section class="pub-bloco">
+        <h2>Fotos da obra</h2>
+        <div class="fotos-grid" id="pub-fotos">
+          ${fotos.map((f, i) => {
+            const data = f.dataVisita ? dataBR(f.dataVisita)
+              : (f.criadoEm ? dataBR(new Date(f.criadoEm).toISOString()) : '');
+            return `
+            <figure class="foto-item">
+              <button class="foto-thumb" data-abrir-foto="${i}" title="Ampliar">
+                <img src="${esc(f.dataUrl || f.url)}" alt="Foto da obra" loading="lazy" />
+                <span class="foto-zoom">⤢</span>
+              </button>
+              <figcaption>
+                <span class="foto-data">${data}</span>
+                ${f.texto ? `<p class="foto-texto">${esc(f.texto)}</p>` : ''}
+              </figcaption>
+            </figure>`;
+          }).join('')}
+        </div>
+      </section>` : ''}
+
       <footer class="pub-rodape">
         <p class="pub-rodape-nome">SCHRAMM ARQUITETURA E ENGENHARIA</p>
         <p class="muted">Rua Dr. Luiz Bastos do Prado, 2093 - 504 - Centro, Gravataí - RS, 94010-021</p>
         <p class="muted pub-rodape-nota">Atualizado em tempo real pelo escritório.</p>
       </footer>
     </div>`;
+
+  // Fotos da obra: abrir o carrossel ao clicar numa miniatura.
+  const pubFotos = container.querySelector('#pub-fotos');
+  if (pubFotos) {
+    pubFotos.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-abrir-foto]');
+      if (!b) return;
+      const itens = fotos.map((f) => ({
+        url: f.dataUrl || f.url,
+        nome: f.nome,
+        data: f.dataVisita ? dataBR(f.dataVisita)
+          : (f.criadoEm ? dataBR(new Date(f.criadoEm).toISOString()) : ''),
+        texto: f.texto,
+      }));
+      abrirLightbox(itens, Number(b.getAttribute('data-abrir-foto')) || 0);
+    });
+  }
 
   // Reordenar a lista de atualizações também no painel do cliente.
   const selPub = container.querySelector('#pub-ord');
