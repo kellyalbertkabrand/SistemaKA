@@ -93,7 +93,9 @@ export async function renderPublica(container, slug) {
           ? `<h2>Por etapa</h2><p class="muted">As etapas aparecerão aqui conforme a obra avança.</p>`
           : `<div class="row-between">
               <h2>Por etapa</h2>
-              <button class="btn btn-mini" id="pub-toggle-etapas">Ver etapas (${etapas.length + extras.length}) ▾</button>
+              <button class="btn-toggle" id="pub-toggle-etapas" aria-expanded="false">
+                <span class="chev">▾</span><span class="tog-lbl">Ver etapas (${etapas.length + extras.length})</span>
+              </button>
             </div>
             <div class="pub-etapas" id="pub-etapas" hidden>
               ${etapas.map((e) => barraEtapa(e.nome, Number(e.orcado || 0), realizado[e.nome] || 0)).join('')}
@@ -144,9 +146,12 @@ export async function renderPublica(container, slug) {
   if (pubToggleEtapas && pubEtapas) {
     pubToggleEtapas.addEventListener('click', () => {
       pubEtapas.hidden = !pubEtapas.hidden;
-      pubToggleEtapas.textContent = pubEtapas.hidden
-        ? `Ver etapas (${etapas.length + extras.length}) ▾`
-        : 'Ocultar etapas ▴';
+      const aberto = !pubEtapas.hidden;
+      pubToggleEtapas.classList.toggle('aberto', aberto);
+      pubToggleEtapas.setAttribute('aria-expanded', String(aberto));
+      pubToggleEtapas.querySelector('.tog-lbl').textContent = aberto
+        ? 'Ocultar etapas'
+        : `Ver etapas (${etapas.length + extras.length})`;
     });
   }
 

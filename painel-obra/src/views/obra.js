@@ -149,7 +149,9 @@ export async function renderObra(container, obraId) {
         <div class="row-between">
           <h2>Etapas</h2>
           <div class="row-end">
-            <button class="btn btn-mini" id="toggle-etapas">Ver etapas (${etapas.length}) ▾</button>
+            <button class="btn-toggle" id="toggle-etapas" aria-expanded="false">
+              <span class="chev">▾</span><span class="tog-lbl">Ver etapas (${etapas.length})</span>
+            </button>
             <button class="btn btn-mini" id="add-etapa">+ etapa</button>
           </div>
         </div>
@@ -305,9 +307,12 @@ export async function renderObra(container, obraId) {
   const tabelaEtapasEl = container.querySelector('#tabela-etapas');
   toggleEtapas.addEventListener('click', () => {
     tabelaEtapasEl.hidden = !tabelaEtapasEl.hidden;
-    toggleEtapas.textContent = tabelaEtapasEl.hidden
-      ? `Ver etapas (${etapas.length}) ▾`
-      : 'Ocultar etapas ▴';
+    const aberto = !tabelaEtapasEl.hidden;
+    toggleEtapas.classList.toggle('aberto', aberto);
+    toggleEtapas.setAttribute('aria-expanded', String(aberto));
+    toggleEtapas.querySelector('.tog-lbl').textContent = aberto
+      ? 'Ocultar etapas'
+      : `Ver etapas (${etapas.length})`;
   });
   addEtapaBtn.addEventListener('click', () => {
     formEtapa.hidden = !formEtapa.hidden;
