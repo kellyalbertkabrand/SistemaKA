@@ -150,11 +150,14 @@ export async function renderPublica(container, slug) {
   // Abrir projeto anexado como arquivo (link abre direto pelo <a>).
   const pubProjetos = container.querySelector('#pub-projetos');
   if (pubProjetos) {
-    pubProjetos.addEventListener('click', (e) => {
+    pubProjetos.addEventListener('click', async (e) => {
       const b = e.target.closest('[data-ver-projeto]');
       if (!b) return;
       const p = (obra.projetos || []).find((x) => x.id === b.getAttribute('data-ver-projeto'));
-      if (p?.dataUrl) abrirAnexo(p.dataUrl, p.arquivo || p.nome);
+      if (!p) return;
+      let dado = p.dataUrl;                              // antigos: inline
+      if (!dado && p.temArquivo) dado = await obterFotoBin(p.id); // novos: cofre
+      if (dado) abrirAnexo(dado, p.arquivo || p.nome);
     });
   }
 
@@ -179,10 +182,12 @@ export async function renderPublica(container, slug) {
     pubFotos.addEventListener('click', (e) => {
       const b = e.target.closest('[data-abrir-foto]');
       if (!b) return;
+      const numero = numerarFotosPub(fotos);
       const itens = fotos.map((f) => ({
         thumb: f.thumbUrl || f.dataUrl || f.url,
         url: f.dataUrl || f.url || null,
         obterUrl: () => obterFotoBin(f.id),
+        numero: numero.get(f.id),
         nome: f.nome,
         data: f.dataVisita ? dataBR(f.dataVisita)
           : (f.criadoEm ? dataBR(new Date(f.criadoEm).toISOString()) : ''),
@@ -264,7 +269,25 @@ function fmtDataVisita(v) {
 // Fotos agrupadas em blocos por visita técnica (mesma leitura do painel interno,
 // só que somente-leitura para o cliente). Mantém o índice original para o
 // carrossel (data-abrir-foto).
+// Numera as fotos na mesma ordem de exibição — o número bate com o do painel
+// interno, então a cliente pode citar "a foto 5".
+function numerarFotosPub(fotos) {
+  const grupos = new Map();
+  fotos.forEach((f) => {
+    const chave = String(f.dataVisita || '').slice(0, 10)
+      || (f.criadoEm ? new Date(f.criadoEm).toISOString().slice(0, 10) : 'sem-data');
+    if (!grupos.has(chave)) grupos.set(chave, []);
+    grupos.get(chave).push(f);
+  });
+  const chaves = [...grupos.keys()].sort((a, b) => String(b).localeCompare(String(a)));
+  const mapa = new Map();
+  let n = 0;
+  for (const c of chaves) for (const f of grupos.get(c)) mapa.set(f.id, ++n);
+  return mapa;
+}
+
 function blocosFotosPub(fotos) {
+  const numero = numerarFotosPub(fotos);
   const grupos = new Map();
   fotos.forEach((f, idx) => {
     const chave = String(f.dataVisita || '').slice(0, 10)
@@ -288,6 +311,7 @@ function blocosFotosPub(fotos) {
         ${itens.map(({ f, idx }) => `
         <figure class="foto-item">
           <button class="foto-thumb" data-abrir-foto="${idx}" title="Ampliar">
+            <span class="foto-num">${numero.get(f.id)}</span>
             <img src="${esc(f.thumbUrl || f.dataUrl || f.url)}" alt="Foto da obra" loading="lazy" />
             <span class="foto-zoom">⤢</span>
           </button>

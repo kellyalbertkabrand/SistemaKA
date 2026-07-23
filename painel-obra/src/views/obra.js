@@ -1,7 +1,7 @@
 import {
   obterObra, listarEtapas, listarLancamentos, atualizarObra, excluirObra, definirPublicado,
   criarEtapa, atualizarEtapa, excluirEtapa, criarLancamento, atualizarLancamento, excluirLancamento, sair,
-  anexarRecibo, removerRecibo, obterRecibo, enviarFoto, listarFotos, excluirFoto, atualizarFoto, obterFotoBin,
+  anexarRecibo, removerRecibo, obterRecibo, enviarFoto, listarFotos, excluirFoto, atualizarFoto, obterFotoBin, salvarFotoBin, excluirBin,
 } from '../dados.js';
 import { navegar } from '../main.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
@@ -191,7 +191,7 @@ export async function renderObra(container, obraId) {
               <input type="text" id="foto-texto" placeholder="Ex.: Concretagem da laje, medições…" />
             </label>
           </div>
-          <label>Fotos
+          <label>Fotos (pode escolher várias de uma vez)
             <input type="file" id="input-fotos" accept="image/*" multiple />
           </label>
           <div class="row-end">
@@ -671,10 +671,12 @@ export async function renderObra(container, obraId) {
     }
 
     if (abrir) {
+      const numero = numerarFotos(fotos);
       const itens = fotos.map((f) => ({
         thumb: f.thumbUrl || f.dataUrl || f.url,
         url: f.dataUrl || f.url || null,               // antigas já têm a cheia inline
         obterUrl: () => obterFotoBin(f.id),            // novas: busca a cheia sob demanda
+        numero: numero.get(f.id),
         nome: f.nome,
         data: fmtDataVisita(f.dataVisita) || dataBR(f.criadoEm ? new Date(f.criadoEm).toISOString() : ''),
         texto: f.texto,
@@ -734,77 +736,141 @@ export async function renderObra(container, obraId) {
     });
   }
 
-  // ---- Projeto da obra (link ou arquivo, guardado no doc da obra) ----
+  // ---- Projeto da obra (link ou arquivo) ----
+  // Os ARQUIVOS de projeto ficam FORA do documento da obra (em fotos_bin, por
+  // id), para não estourar o limite de 1 MB do documento quando há vários. O
+  // array obra.projetos guarda só metadados (nome, link ou nome do arquivo).
   const abrirProjeto = container.querySelector('#abrir-projeto');
   const formProjeto = container.querySelector('#form-projeto');
+  const listaProjEl = container.querySelector('#lista-projetos');
+  let projEditando = null; // id do projeto em edição (ou null = novo)
+
+  // Migra projetos antigos com arquivo inline (dataUrl no doc da obra) para o
+  // cofre à parte, deixando o documento leve — senão qualquer gravação nova
+  // reescreve os antigos e estoura o 1 MB.
+  const enxugarProjetos = async () => {
+    for (const p of (obra.projetos || [])) {
+      if (p.dataUrl) {
+        await salvarFotoBin(p.id, obra.id, p.dataUrl);
+        p.temArquivo = true;
+        delete p.dataUrl;
+      }
+    }
+  };
+
+  const abrirFormProjeto = (p = null) => {
+    projEditando = p ? p.id : null;
+    formProjeto.hidden = false;
+    container.querySelector('#proj-nome').value = p?.nome || '';
+    container.querySelector('#proj-link').value = p?.link || '';
+    container.querySelector('#proj-file').value = '';
+    container.querySelector('#salvar-projeto').textContent = p ? 'Salvar' : 'Adicionar';
+    const st = container.querySelector('#status-projeto');
+    if (st) st.hidden = true;
+    container.querySelector('#proj-nome').focus();
+  };
+
   if (abrirProjeto) {
     abrirProjeto.addEventListener('click', () => {
-      formProjeto.hidden = !formProjeto.hidden;
-      if (!formProjeto.hidden) container.querySelector('#proj-nome').focus();
+      if (formProjeto.hidden) abrirFormProjeto(null);
+      else formProjeto.hidden = true;
     });
     container.querySelector('#cancelar-projeto').addEventListener('click', () => {
       formProjeto.hidden = true;
+      projEditando = null;
     });
     formProjeto.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const nome = container.querySelector('#proj-nome').value.trim();
+      let nome = container.querySelector('#proj-nome').value.trim();
       const link = container.querySelector('#proj-link').value.trim();
       const file = container.querySelector('#proj-file').files[0];
       const status = container.querySelector('#status-projeto');
       status.hidden = false;
-      if (!nome) { status.className = 'status-voz erro'; status.textContent = 'Dê um nome ao projeto.'; return; }
-      if (!link && !file) { status.className = 'status-voz erro'; status.textContent = 'Cole um link ou escolha um arquivo.'; return; }
+      if (!link && !file && !projEditando) {
+        status.className = 'status-voz erro';
+        status.textContent = 'Cole um link ou escolha um arquivo.';
+        return;
+      }
+      if (!nome) nome = file ? file.name.replace(/\.[^.]+$/, '') : (link ? 'Link do projeto' : 'Projeto');
       const btn = container.querySelector('#salvar-projeto');
+      const rot = btn.textContent;
       btn.disabled = true;
       status.className = 'status-voz';
-      status.innerHTML = '<span class="spinner"></span> Adicionando…';
+      status.innerHTML = '<span class="spinner"></span> Salvando…';
       try {
-        const novo = { id: crypto.randomUUID(), nome, criadoEm: Date.now() };
-        if (file) {
-          // Imagens são otimizadas (mesma compressão das fotos da obra); PDF e
-          // demais arquivos vão como estão, respeitando o limite do banco.
+        await enxugarProjetos(); // deixa o doc leve antes de gravar
+
+        // Monta o projeto (novo ou o que está sendo editado).
+        const base = projEditando
+          ? { ...(obra.projetos || []).find((x) => x.id === projEditando) }
+          : { id: crypto.randomUUID(), criadoEm: Date.now() };
+        base.nome = nome;
+
+        if (link) {
+          // Link tem prioridade e é sempre leve. Limpa arquivo anterior, se houver.
+          base.link = /^https?:\/\//i.test(link) ? link : 'https://' + link;
+          if (base.temArquivo) { await excluirBin(base.id); base.temArquivo = false; base.arquivo = null; }
+        } else if (file) {
           const dataUrl = String(file.type).startsWith('image/')
-            ? await comprimirParaDataURL(file)
+            ? await comprimirParaDataURL(file, 300_000, 1400)
             : await arquivoParaDataURL(file);
-          if (dataURLBytes(dataUrl) > 700_000) {
-            throw new Error('Arquivo grande demais para anexar direto (limite ~700 KB). Para plantas e projetos pesados (DWG, RVT, SKP…), cole o link do Google Drive no campo acima.');
+          // Cada arquivo vira um documento próprio (limite ~1 MB). Base64 infla
+          // ~33%, então guardamos com folga; acima disso, oriente o link.
+          if (String(dataUrl).length > 1_000_000) {
+            throw new Error('Esse arquivo é grande demais para anexar direto. Envie por LINK (Google Drive/Dropbox) — cole o link no campo acima. (Ideal para PDF/DWG/RVT pesados.)');
           }
-          novo.dataUrl = dataUrl;
-          novo.arquivo = file.name;
-        } else {
-          novo.link = /^https?:\/\//i.test(link) ? link : 'https://' + link;
+          await salvarFotoBin(base.id, obra.id, dataUrl); // grava o binário à parte
+          base.temArquivo = true;
+          base.arquivo = file.name;
+          base.link = null;
         }
-        // Guarda no banco e atualiza SÓ a lista de projetos — sem recarregar a
-        // página inteira (que rebaixaria todas as fotos/NF e ficava lento).
-        const novos = [...(obra.projetos || []), novo];
+
+        const novos = projEditando
+          ? (obra.projetos || []).map((x) => (x.id === base.id ? base : x))
+          : [...(obra.projetos || []), base];
         await atualizarObra(obra.id, { projetos: novos });
         obra.projetos = novos;
-        container.querySelector('#lista-projetos').innerHTML = listaProjetos(obra.projetos);
+        listaProjEl.innerHTML = listaProjetos(obra.projetos);
         formProjeto.reset();
         formProjeto.hidden = true;
         status.hidden = true;
+        projEditando = null;
         btn.disabled = false;
+        btn.textContent = rot;
       } catch (err) {
         btn.disabled = false;
+        btn.textContent = rot;
         status.className = 'status-voz erro';
-        status.textContent = err?.message || 'Não foi possível adicionar.';
+        status.textContent = err?.message || 'Não foi possível salvar.';
       }
     });
   }
-  const listaProjEl = container.querySelector('#lista-projetos');
+
   listaProjEl.addEventListener('click', async (e) => {
     const ver = e.target.closest('[data-ver-projeto]');
     if (ver) {
       const p = (obra.projetos || []).find((x) => x.id === ver.getAttribute('data-ver-projeto'));
-      if (p?.dataUrl) abrirAnexo(p.dataUrl, p.arquivo || p.nome);
-      else if (p?.link) window.open(p.link, '_blank', 'noopener');
+      if (!p) return;
+      let dado = p.dataUrl;                       // antigos: inline
+      if (!dado && p.temArquivo) dado = await obterFotoBin(p.id); // novos: cofre
+      if (dado) abrirAnexo(dado, p.arquivo || p.nome);
+      else if (p.link) window.open(p.link, '_blank', 'noopener');
+      return;
+    }
+    const editar = e.target.closest('[data-edit-projeto]');
+    if (editar) {
+      const p = (obra.projetos || []).find((x) => x.id === editar.getAttribute('data-edit-projeto'));
+      if (p) abrirFormProjeto(p);
       return;
     }
     const del = e.target.closest('[data-del-projeto]');
     if (del) {
       if (!confirm('Remover este projeto?')) return;
-      const novos = (obra.projetos || []).filter((x) => x.id !== del.getAttribute('data-del-projeto'));
+      const id = del.getAttribute('data-del-projeto');
+      const alvo = (obra.projetos || []).find((x) => x.id === id);
+      const novos = (obra.projetos || []).filter((x) => x.id !== id);
       await atualizarObra(obra.id, { projetos: novos });
+      if (alvo?.temArquivo) await excluirBin(id);
       obra.projetos = novos;
       listaProjEl.innerHTML = listaProjetos(obra.projetos);
     }
@@ -1039,6 +1105,7 @@ function listaProjetos(projetos) {
         <span class="proj-nome">${icone} ${esc(p.nome || 'Projeto')}${rotulo ? ` <small class="muted">${rotulo}</small>` : ''}</span>
         <span class="proj-acoes">
           ${abrir}
+          <button class="btn btn-x" data-edit-projeto="${esc(p.id)}" title="Editar">✎</button>
           <button class="btn btn-x" data-del-projeto="${esc(p.id)}" title="Remover">×</button>
         </span>
       </li>`;
@@ -1046,11 +1113,31 @@ function listaProjetos(projetos) {
   </ul>`;
 }
 
+// Numera as fotos na MESMA ordem em que aparecem (por visita, mais recente
+// primeiro). O número é igual nos dois painéis (interno e do cliente), então a
+// cliente pode dizer "a foto 5" e a arquiteta sabe qual é.
+export function numerarFotos(fotos) {
+  const grupos = new Map();
+  fotos.forEach((f) => {
+    const chave = String(f.dataVisita || '').slice(0, 10)
+      || (f.criadoEm ? new Date(f.criadoEm).toISOString().slice(0, 10) : 'sem-data');
+    if (!grupos.has(chave)) grupos.set(chave, []);
+    grupos.get(chave).push(f);
+  });
+  const chaves = [...grupos.keys()].sort((a, b) => String(b).localeCompare(String(a)));
+  const mapa = new Map();
+  let n = 0;
+  for (const c of chaves) for (const f of grupos.get(c)) mapa.set(f.id, ++n);
+  return mapa;
+}
+
 // Fotos das visitas agrupadas em BLOCOS por visita técnica (uma data = um bloco).
 // Cada bloco tem: título "Visita técnica" + data ao lado, um espaço para a
 // observação da visita, e a grade de fotos — cada foto com observação própria.
 function gridFotos(fotos) {
   if (!fotos.length) return `<p class="muted">Nenhuma foto ainda. Envie as fotos das visitas à obra.</p>`;
+
+  const numero = numerarFotos(fotos);
 
   // Agrupa por visita. A chave é a data da visita; sem data, cai no dia em que
   // foi enviada. Guardamos o índice original de cada foto (o carrossel usa ele).
@@ -1085,6 +1172,7 @@ function gridFotos(fotos) {
         ${itens.map(({ f, idx }) => `
         <figure class="foto-item">
           <button class="foto-thumb" data-abrir-foto="${idx}" title="Ampliar">
+            <span class="foto-num">${numero.get(f.id)}</span>
             <img src="${esc(f.thumbUrl || f.dataUrl || f.url)}" alt="${esc(f.nome || 'foto')}" loading="lazy" />
             <span class="foto-zoom">⤢</span>
           </button>

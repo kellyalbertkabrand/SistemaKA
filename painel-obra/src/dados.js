@@ -361,6 +361,8 @@ export async function atualizarFoto(id, dados) {
 }
 
 // Imagem cheia sob demanda (ao ampliar/baixar). Fotos antigas usam o inline.
+// Também serve de "cofre" genérico de binários (arquivos de projeto), guardados
+// por id à parte do documento da obra para não estourar o limite de 1 MB.
 export async function obterFotoBin(id) {
   try {
     const d = await getDoc(doc(db, 'fotos_bin', id));
@@ -368,6 +370,10 @@ export async function obterFotoBin(id) {
   } catch {
     return null;
   }
+}
+
+export async function excluirBin(id) {
+  await deleteDoc(doc(db, 'fotos_bin', id)).catch(() => {});
 }
 
 export async function excluirFoto(id) {

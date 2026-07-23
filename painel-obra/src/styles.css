@@ -342,6 +342,14 @@ input:focus, select:focus, textarea:focus {
   font-size: 1.6rem; color: #fff; background: rgba(36, 31, 27, .28); opacity: 0; transition: opacity .18s ease;
 }
 .foto-thumb:hover .foto-zoom { opacity: 1; }
+/* Número da foto (referência: "a foto 5") — canto superior esquerdo. */
+.foto-num {
+  position: absolute; top: 6px; left: 6px; z-index: 1;
+  min-width: 1.4rem; height: 1.4rem; padding: 0 .35rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: var(--fonte-ui); font-size: .78rem; font-weight: 700; line-height: 1;
+  color: #fff; background: rgba(36, 31, 27, .72); border-radius: 999px;
+}
 .foto-item figcaption { margin-top: .35rem; }
 .foto-meta { display: flex; justify-content: space-between; align-items: flex-start; gap: .3rem; }
 .foto-acoes { display: inline-flex; gap: .1rem; flex: none; }

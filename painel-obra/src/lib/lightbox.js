@@ -88,7 +88,7 @@ export function abrirLightbox(itens, inicio = 0) {
         if (i === alvo) img.src = full; // só troca se ainda estiver nessa foto
       }).catch(() => {});
     }
-    cap.textContent = [it.data, it.texto].filter(Boolean).join(' — ');
+    cap.textContent = [it.numero ? `Foto ${it.numero}` : '', it.data, it.texto].filter(Boolean).join(' — ');
     cap.style.display = cap.textContent ? '' : 'none';
     contador.textContent = umSo ? '' : `${i + 1} / ${itens.length}`;
   };
