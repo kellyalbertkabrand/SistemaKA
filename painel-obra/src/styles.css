@@ -432,6 +432,8 @@ input:focus, select:focus, textarea:focus {
 .tl-valor { font-family: var(--fonte); }
 .tl-base { display: flex; justify-content: space-between; gap: 1rem; font-size: .85rem; margin-top: .15rem; }
 .tl-status { display: inline-flex; align-items: center; gap: .5rem; white-space: nowrap; color: var(--muted); }
+.nf-link { display: inline-flex; align-items: center; gap: .25rem; font-family: var(--fonte-ui); font-size: .76rem; font-weight: 600; color: var(--acento); background: var(--acento-tint); border: 1px solid #eddccb; border-radius: 999px; padding: .12rem .5rem; margin-left: .4rem; cursor: pointer; white-space: nowrap; }
+.nf-link:hover { background: #f6e6d8; }
 
 .pub-rodape { text-align: center; margin-top: 2.5rem; padding-top: 1.4rem; border-top: 1px solid var(--linha); }
 .pub-rodape-nome { font-size: .74rem; font-weight: 700; letter-spacing: .14em; color: var(--tinta); margin: 0 0 .3rem; }

@@ -4,6 +4,19 @@ import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { caixaLogo } from '../lib/marca.js';
 import { abrirLightbox } from '../lib/lightbox.js';
+import { dataURLParaBlob } from '../lib/imagem.js';
+
+// Abre a nota fiscal (imagem ou PDF) numa nova aba, a partir do dado guardado.
+function abrirNF(dado) {
+  if (!dado) return;
+  try {
+    const url = URL.createObjectURL(dataURLParaBlob(dado));
+    window.open(url, '_blank', 'noopener');
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } catch {
+    window.open(dado, '_blank', 'noopener'); // URL antiga (legado)
+  }
+}
 
 // Página pública do cliente (só leitura), acessada por /obra/{slug}.
 // Mostra o andamento da obra com visual limpo — e NADA interno.
@@ -152,6 +165,17 @@ export async function renderPublica(container, slug) {
     });
   }
 
+  // Abrir a nota fiscal ao clicar no lançamento (delegação sobrevive ao reordenar).
+  const pubLista = container.querySelector('#pub-lista');
+  if (pubLista) {
+    pubLista.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-ver-nf]');
+      if (!b) return;
+      const l = lancamentos.find((x) => x.id === b.getAttribute('data-ver-nf'));
+      if (l) abrirNF(l.reciboDataUrl || l.reciboUrl);
+    });
+  }
+
   // Reordenar a lista de atualizações também no painel do cliente.
   const selPub = container.querySelector('#pub-ord');
   if (selPub) {
@@ -166,17 +190,20 @@ export async function renderPublica(container, slug) {
 function listaTimeline(lancamentos) {
   if (!lancamentos.length) return `<p class="muted">Ainda não há lançamentos.</p>`;
   return `<ul class="pub-timeline">
-    ${lancamentos.map((l) => `
+    ${lancamentos.map((l) => {
+      const temNF = Boolean(l.reciboDataUrl || l.reciboUrl);
+      return `
       <li>
         <div class="tl-topo">
           <span class="tl-etapa">${esc(l.etapa)}</span>
           <span class="tl-valor">${moeda(l.valor)}</span>
         </div>
         <div class="tl-base">
-          <span>${esc(l.descricao || '')}</span>
+          <span>${esc(l.descricao || '')}${temNF ? ` <button class="nf-link" data-ver-nf="${esc(l.id)}">📎 Nota fiscal</button>` : ''}</span>
           <span class="tl-status">${dataBR(l.data)} ${pillStatus(l.status)}</span>
         </div>
-      </li>`).join('')}
+      </li>`;
+    }).join('')}
   </ul>`;
 }
 
