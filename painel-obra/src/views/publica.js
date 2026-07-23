@@ -3,20 +3,7 @@ import { obterObraPublicaPorSlug, listarEtapas, listarLancamentos, listarFotos }
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { caixaLogo } from '../lib/marca.js';
-import { abrirLightbox } from '../lib/lightbox.js';
-import { dataURLParaBlob } from '../lib/imagem.js';
-
-// Abre a nota fiscal (imagem ou PDF) numa nova aba, a partir do dado guardado.
-function abrirNF(dado) {
-  if (!dado) return;
-  try {
-    const url = URL.createObjectURL(dataURLParaBlob(dado));
-    window.open(url, '_blank', 'noopener');
-    setTimeout(() => URL.revokeObjectURL(url), 60000);
-  } catch {
-    window.open(dado, '_blank', 'noopener'); // URL antiga (legado)
-  }
-}
+import { abrirLightbox, abrirAnexo } from '../lib/lightbox.js';
 
 // Página pública do cliente (só leitura), acessada por /obra/{slug}.
 // Mostra o andamento da obra com visual limpo — e NADA interno.
@@ -172,7 +159,7 @@ export async function renderPublica(container, slug) {
       const b = e.target.closest('[data-ver-nf]');
       if (!b) return;
       const l = lancamentos.find((x) => x.id === b.getAttribute('data-ver-nf'));
-      if (l) abrirNF(l.reciboDataUrl || l.reciboUrl);
+      if (l) abrirAnexo(l.reciboDataUrl || l.reciboUrl, l.reciboNome);
     });
   }
 

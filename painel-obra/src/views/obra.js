@@ -9,8 +9,8 @@ import { reconhecimentoDisponivel, ouvir, parar } from '../lib/voice.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
 import { baixarExcel, numBR } from '../lib/exportar.js';
-import { comprimirParaDataURL, arquivoParaDataURL, dataURLBytes, dataURLParaBlob } from '../lib/imagem.js';
-import { abrirLightbox, baixarImagem } from '../lib/lightbox.js';
+import { comprimirParaDataURL, arquivoParaDataURL, dataURLBytes } from '../lib/imagem.js';
+import { abrirLightbox, baixarImagem, abrirAnexo } from '../lib/lightbox.js';
 
 // Data 'YYYY-MM-DD' -> 'dd/mm/aaaa' (sem depender de fuso).
 function fmtDataVisita(v) {
@@ -145,7 +145,10 @@ export async function renderObra(container, obraId) {
       <section class="card">
         <div class="row-between">
           <h2>Etapas</h2>
-          <button class="btn btn-mini" id="add-etapa">+ etapa</button>
+          <div class="row-end">
+            <button class="btn btn-mini" id="toggle-etapas">Ver etapas (${etapas.length}) ▾</button>
+            <button class="btn btn-mini" id="add-etapa">+ etapa</button>
+          </div>
         </div>
         <form id="form-etapa" class="form-inline" hidden>
           <input id="e-nome" placeholder="Nome da etapa" />
@@ -153,7 +156,7 @@ export async function renderObra(container, obraId) {
           <button class="btn btn-mini btn-primary" type="submit">Salvar</button>
         </form>
         ${chipsPadrao(etapas)}
-        <div id="tabela-etapas">${tabelaEtapas(etapas, lancamentos)}</div>
+        <div id="tabela-etapas" hidden>${tabelaEtapas(etapas, lancamentos)}</div>
       </section>
 
       <section class="card">
@@ -161,6 +164,7 @@ export async function renderObra(container, obraId) {
           <h2>Lançamentos</h2>
           ${lancamentos.length ? seletorOrdem('ord-lanc', 'data') : ''}
         </div>
+        <datalist id="lista-etapas-edit">${etapas.map((e) => `<option value="${esc(e.nome)}"></option>`).join('')}</datalist>
         <div id="tabela-lancamentos">${tabelaLancamentos(ordenarLancamentos(lancamentos, 'data'))}</div>
       </section>
 
@@ -279,6 +283,15 @@ export async function renderObra(container, obraId) {
   // ---- Etapas ----
   const addEtapaBtn = container.querySelector('#add-etapa');
   const formEtapa = container.querySelector('#form-etapa');
+  // Expandir/recolher a lista de etapas.
+  const toggleEtapas = container.querySelector('#toggle-etapas');
+  const tabelaEtapasEl = container.querySelector('#tabela-etapas');
+  toggleEtapas.addEventListener('click', () => {
+    tabelaEtapasEl.hidden = !tabelaEtapasEl.hidden;
+    toggleEtapas.textContent = tabelaEtapasEl.hidden
+      ? `Ver etapas (${etapas.length}) ▾`
+      : 'Ocultar etapas ▴';
+  });
   addEtapaBtn.addEventListener('click', () => {
     formEtapa.hidden = !formEtapa.hidden;
     if (!formEtapa.hidden) container.querySelector('#e-nome').focus();
@@ -357,6 +370,8 @@ export async function renderObra(container, obraId) {
   }
   // Delegação: sobrevive à re-renderização da tabela ao reordenar.
   tabelaLancEl.addEventListener('click', async (e) => {
+    const editar = e.target.closest('[data-edit-lanc]');
+    if (editar) { editarLancamentoLinha(editar); return; }
     const del = e.target.closest('[data-del-lanc]');
     if (del) { await excluirLancamento(del.getAttribute('data-del-lanc')); recarregar(); return; }
     const ver = e.target.closest('[data-ver-recibo]');
@@ -373,17 +388,55 @@ export async function renderObra(container, obraId) {
     if (anexar) abrirAnexoRecibo(anexar, anexar.getAttribute('data-anexar-recibo'));
   });
 
-  // Abre a NF (imagem ou PDF) numa nova aba, a partir do data URL guardado.
+  // Abre a NF (imagem ou PDF) grande na própria tela, com botão de baixar.
   function abrirAnexoEmAba(lanc) {
     const dado = lanc?.reciboDataUrl || lanc?.reciboUrl;
     if (!dado) return;
-    try {
-      const url = URL.createObjectURL(dataURLParaBlob(dado));
-      window.open(url, '_blank', 'noopener');
-      setTimeout(() => URL.revokeObjectURL(url), 60000);
-    } catch {
-      window.open(dado, '_blank', 'noopener'); // URL antiga (legado)
-    }
+    abrirAnexo(dado, lanc.reciboNome);
+  }
+
+  // Editar um lançamento inline (etapa, descrição, valor e status).
+  function editarLancamentoLinha(botao) {
+    const id = botao.getAttribute('data-edit-lanc');
+    const l = lancamentos.find((x) => x.id === id);
+    if (!l) return;
+    const tr = botao.closest('tr');
+    tr.innerHTML = `
+      <td>${dataBR(l.data)}</td>
+      <td><input class="ed-l-etapa" list="lista-etapas-edit" value="${esc(l.etapa || '')}" /></td>
+      <td><input class="ed-l-desc" value="${esc(l.descricao || '')}" /></td>
+      <td class="num"><input class="ed-l-valor" type="number" min="0" step="0.01" value="${esc(String(Number(l.valor || 0)))}" /></td>
+      <td>
+        <select class="ed-l-status">
+          <option value="pago">pago</option>
+          <option value="pendente">pendente</option>
+        </select>
+      </td>
+      <td class="muted">—</td>
+      <td class="acoes" style="white-space:nowrap">
+        <button class="btn btn-mini btn-primary ed-l-salvar">Salvar</button>
+        <button class="btn btn-mini ed-l-cancelar">Cancelar</button>
+      </td>`;
+    tr.querySelector('.ed-l-status').value = l.status === 'pendente' ? 'pendente' : 'pago';
+    tr.querySelector('.ed-l-etapa').focus();
+    tr.querySelector('.ed-l-cancelar').addEventListener('click', recarregar);
+    tr.querySelector('.ed-l-salvar').addEventListener('click', async () => {
+      const dados = {
+        etapa: tr.querySelector('.ed-l-etapa').value.trim() || 'Geral',
+        descricao: tr.querySelector('.ed-l-desc').value.trim() || null,
+        valor: Number(tr.querySelector('.ed-l-valor').value || 0),
+        status: tr.querySelector('.ed-l-status').value === 'pendente' ? 'pendente' : 'pago',
+      };
+      const btn = tr.querySelector('.ed-l-salvar');
+      btn.disabled = true; btn.textContent = 'Salvando…';
+      try {
+        await atualizarLancamento(id, dados);
+        recarregar();
+      } catch (err) {
+        btn.disabled = false; btn.textContent = 'Salvar';
+        alert('Erro ao salvar: ' + (err?.message || err));
+      }
+    });
   }
 
   // Anexar recibo/NF (imagem ou PDF) a um lançamento — otimiza e salva no banco.
@@ -750,7 +803,10 @@ function tabelaLancamentos(lancamentos) {
                    <button class="btn btn-x" data-remover-recibo="${esc(l.id)}" title="Remover nota">×</button>
                  </span>`
               : `<button class="btn btn-mini nf-add" data-anexar-recibo="${esc(l.id)}">+ anexar NF</button>`}</td>
-            <td class="acoes"><button class="btn btn-x" data-del-lanc="${esc(l.id)}" title="Excluir">×</button></td>
+            <td class="acoes" style="white-space:nowrap">
+              <button class="btn btn-x" data-edit-lanc="${esc(l.id)}" title="Editar">✎</button>
+              <button class="btn btn-x" data-del-lanc="${esc(l.id)}" title="Excluir">×</button>
+            </td>
           </tr>`;
         }).join('')}
       </tbody>
