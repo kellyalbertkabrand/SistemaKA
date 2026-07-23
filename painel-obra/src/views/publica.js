@@ -80,10 +80,10 @@ export async function renderPublica(container, slug) {
           </div>
         </div>
         <div class="pub-numeros">
-          ${num('Orçamento', moeda(obra.orcamento))}
+          ${num('Orçamento', moeda(obra.orcamento), 'val-orcado')}
           ${num('Pago', moeda(pago), 'val-ok')}
           ${num('Pendente', moeda(pendente), 'val-pend')}
-          ${num('Saldo disponível', moeda(saldo), saldo < 0 ? 'neg' : '')}
+          ${num('Saldo disponível', moeda(saldo), saldo < 0 ? 'neg' : 'val-saldo')}
           <p class="pub-nota">O saldo já desconta o que está pago e o que está pendente.</p>
         </div>
       </section>
@@ -128,23 +128,7 @@ export async function renderPublica(container, slug) {
       ${fotos.length ? `
       <section class="pub-bloco">
         <h2>Fotos da obra</h2>
-        <div class="fotos-grid" id="pub-fotos">
-          ${fotos.map((f, i) => {
-            const data = f.dataVisita ? dataBR(f.dataVisita)
-              : (f.criadoEm ? dataBR(new Date(f.criadoEm).toISOString()) : '');
-            return `
-            <figure class="foto-item">
-              <button class="foto-thumb" data-abrir-foto="${i}" title="Ampliar">
-                <img src="${esc(f.dataUrl || f.url)}" alt="Foto da obra" loading="lazy" />
-                <span class="foto-zoom">⤢</span>
-              </button>
-              <figcaption>
-                <span class="foto-data">${data}</span>
-                ${f.texto ? `<p class="foto-texto">${esc(f.texto)}</p>` : ''}
-              </figcaption>
-            </figure>`;
-          }).join('')}
-        </div>
+        <div id="pub-fotos">${blocosFotosPub(fotos)}</div>
       </section>` : ''}
 
       <footer class="pub-rodape">
@@ -254,6 +238,50 @@ function barraEtapa(nome, orcado, realizado) {
 
 function num(rotulo, valor, cls = '') {
   return `<div class="pub-num"><small>${rotulo}</small><strong class="${cls}">${valor}</strong></div>`;
+}
+
+// Data 'YYYY-MM-DD' -> 'dd/mm/aaaa' sem depender de fuso.
+function fmtDataVisita(v) {
+  if (!v) return '';
+  const [a, m, d] = String(v).slice(0, 10).split('-');
+  return d ? `${d}/${m}/${a}` : '';
+}
+
+// Fotos agrupadas em blocos por visita técnica (mesma leitura do painel interno,
+// só que somente-leitura para o cliente). Mantém o índice original para o
+// carrossel (data-abrir-foto).
+function blocosFotosPub(fotos) {
+  const grupos = new Map();
+  fotos.forEach((f, idx) => {
+    const chave = String(f.dataVisita || '').slice(0, 10)
+      || (f.criadoEm ? new Date(f.criadoEm).toISOString().slice(0, 10) : 'sem-data');
+    if (!grupos.has(chave)) grupos.set(chave, []);
+    grupos.get(chave).push({ f, idx });
+  });
+  const chaves = [...grupos.keys()].sort((a, b) => String(b).localeCompare(String(a)));
+
+  return chaves.map((chave) => {
+    const itens = grupos.get(chave);
+    const data = chave === 'sem-data' ? '' : fmtDataVisita(chave);
+    const obsVisita = (itens.find((it) => it.f.texto) || {}).f?.texto || '';
+    return `
+    <div class="visita-bloco">
+      <div class="visita-cab">
+        <h3 class="visita-titulo">Visita técnica${data ? ` <span class="visita-data">${data}</span>` : ''}</h3>
+      </div>
+      ${obsVisita ? `<p class="visita-obs">${esc(obsVisita)}</p>` : ''}
+      <div class="fotos-grid">
+        ${itens.map(({ f, idx }) => `
+        <figure class="foto-item">
+          <button class="foto-thumb" data-abrir-foto="${idx}" title="Ampliar">
+            <img src="${esc(f.dataUrl || f.url)}" alt="Foto da obra" loading="lazy" />
+            <span class="foto-zoom">⤢</span>
+          </button>
+          ${f.legenda ? `<figcaption><p class="foto-texto">${esc(f.legenda)}</p></figcaption>` : ''}
+        </figure>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // Corre a consulta do Firebase contra um tempo-limite, para a página nunca

@@ -1,7 +1,7 @@
 import {
   obterObra, listarEtapas, listarLancamentos, atualizarObra, excluirObra, definirPublicado,
   criarEtapa, atualizarEtapa, excluirEtapa, criarLancamento, atualizarLancamento, excluirLancamento, sair,
-  anexarRecibo, removerRecibo, enviarFoto, listarFotos, excluirFoto,
+  anexarRecibo, removerRecibo, enviarFoto, listarFotos, excluirFoto, atualizarFoto,
 } from '../dados.js';
 import { navegar } from '../main.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
@@ -109,9 +109,9 @@ export async function renderObra(container, obraId) {
       </form>
 
       <section class="kpis">
-        ${kpi('Orçado', moeda(obra.orcamento))}
+        ${kpi('Orçado', moeda(obra.orcamento), 'val-orcado')}
         ${kpi('Executado', moeda(executado))}
-        ${kpi('Saldo', moeda(saldo), saldo < 0 ? 'neg' : '')}
+        ${kpi('Saldo', moeda(saldo), saldo < 0 ? 'neg' : 'val-saldo')}
         ${kpi('Pago', moeda(pago))}
         ${kpi('Pendente', moeda(pendente))}
       </section>
@@ -137,10 +137,12 @@ export async function renderObra(container, obraId) {
         <h2>Lançar custo</h2>
         <p class="muted">Fale ou escreva — a IA organiza etapa, valor e status.</p>
         <div class="lancar-controles">
-          <button class="btn btn-mic" id="btn-mic">🎤 Falar</button>
-          <input id="texto-livre" class="texto-livre"
-            placeholder='Ex.: "material elétrico, três mil e quinhentos, pago no Pix"' />
-          <button class="btn btn-primary" id="btn-interpretar">Interpretar</button>
+          <textarea id="texto-livre" class="texto-livre" rows="2"
+            placeholder='Ex.: "material elétrico, três mil e quinhentos, pago no Pix"'></textarea>
+          <div class="lancar-botoes">
+            <button class="btn btn-mic" id="btn-mic">🎤 Falar</button>
+            <button class="btn btn-primary" id="btn-interpretar">✓ Organizar com a IA</button>
+          </div>
         </div>
         <p class="status-voz" id="status-voz" hidden></p>
         <div id="preview"></div>
@@ -627,6 +629,32 @@ export async function renderObra(container, obraId) {
     const abrir = e.target.closest('[data-abrir-foto]');
     const baixarBtn = e.target.closest('[data-baixar-foto]');
     const del = e.target.closest('[data-del-foto]');
+    const obsFoto = e.target.closest('[data-obs-foto]');
+    const obsVisita = e.target.closest('[data-obs-visita]');
+
+    // Escrever/editar a observação de UMA foto.
+    if (obsFoto) {
+      const id = obsFoto.getAttribute('data-obs-foto');
+      const f = fotos.find((x) => x.id === id);
+      const alvo = obsFoto.closest('figcaption').querySelector('.foto-legenda');
+      abrirEdicaoObs(alvo, f?.legenda || '', 'Observação desta foto…', async (valor) => {
+        await atualizarFoto(id, { legenda: valor || null });
+        recarregar();
+      });
+      return;
+    }
+
+    // Escrever/editar a observação da VISITA (vale para todas as fotos do bloco).
+    if (obsVisita) {
+      const ids = obsVisita.getAttribute('data-obs-visita').split(',').filter(Boolean);
+      const atual = (fotos.find((x) => ids.includes(x.id) && x.texto) || {}).texto || '';
+      const alvo = obsVisita.closest('.visita-bloco').querySelector('.visita-obs');
+      abrirEdicaoObs(alvo, atual, 'Observação da visita técnica…', async (valor) => {
+        for (const id of ids) await atualizarFoto(id, { texto: valor || null });
+        recarregar();
+      });
+      return;
+    }
 
     if (abrir) {
       const itens = fotos.map((f) => ({
@@ -649,6 +677,34 @@ export async function renderObra(container, obraId) {
       recarregar();
     }
   });
+
+  // Editor inline de observação (foto ou visita): troca o texto por um campo
+  // com Salvar/Cancelar. onSalvar recebe o novo valor e grava no banco.
+  function abrirEdicaoObs(alvo, valorAtual, placeholder, onSalvar) {
+    if (!alvo || alvo.querySelector('.obs-editor')) return;
+    const original = alvo.innerHTML;
+    alvo.innerHTML = `
+      <div class="obs-editor">
+        <textarea class="obs-input" rows="2" placeholder="${esc(placeholder)}">${esc(valorAtual || '')}</textarea>
+        <div class="obs-editor-acoes">
+          <button class="btn btn-mini obs-cancelar" type="button">Cancelar</button>
+          <button class="btn btn-mini btn-primary obs-salvar" type="button">Salvar</button>
+        </div>
+      </div>`;
+    const input = alvo.querySelector('.obs-input');
+    input.focus();
+    alvo.querySelector('.obs-cancelar').addEventListener('click', () => { alvo.innerHTML = original; });
+    alvo.querySelector('.obs-salvar').addEventListener('click', async () => {
+      const btn = alvo.querySelector('.obs-salvar');
+      btn.disabled = true; btn.textContent = 'Salvando…';
+      try {
+        await onSalvar(input.value.trim());
+      } catch (err) {
+        btn.disabled = false; btn.textContent = 'Salvar';
+        alert('Não foi possível salvar: ' + (err?.message || err));
+      }
+    });
+  }
 
   // ---- Projeto da obra (link ou arquivo, guardado no doc da obra) ----
   const abrirProjeto = container.querySelector('#abrir-projeto');
@@ -853,7 +909,11 @@ function configurarLancamento(container, obra, etapas, recarregar) {
 
   btnInterpretar.addEventListener('click', () => interpretar(inputTexto.value));
   inputTexto.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') { e.preventDefault(); interpretar(inputTexto.value); }
+    // Enter comum quebra linha (é um textarea); Ctrl/Cmd+Enter organiza com a IA.
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      interpretar(inputTexto.value);
+    }
   });
 }
 
@@ -937,32 +997,64 @@ function listaProjetos(projetos) {
   </ul>`;
 }
 
-// Galeria de fotos das visitas: miniaturas (abrem o carrossel), data, descrição,
-// baixar e excluir.
+// Fotos das visitas agrupadas em BLOCOS por visita técnica (uma data = um bloco).
+// Cada bloco tem: título "Visita técnica" + data ao lado, um espaço para a
+// observação da visita, e a grade de fotos — cada foto com observação própria.
 function gridFotos(fotos) {
   if (!fotos.length) return `<p class="muted">Nenhuma foto ainda. Envie as fotos das visitas à obra.</p>`;
-  return `<div class="fotos-grid">
-    ${fotos.map((f, idx) => {
-      const data = fmtDataVisita(f.dataVisita) || dataBR(f.criadoEm ? new Date(f.criadoEm).toISOString() : '');
-      return `
-      <figure class="foto-item">
-        <button class="foto-thumb" data-abrir-foto="${idx}" title="Ampliar">
-          <img src="${esc(f.dataUrl || f.url)}" alt="${esc(f.nome || 'foto')}" loading="lazy" />
-          <span class="foto-zoom">⤢</span>
-        </button>
-        <figcaption>
-          <div class="foto-meta">
-            <span class="foto-data">${data}</span>
-            <span class="foto-acoes">
-              <button class="btn btn-x" data-baixar-foto="${idx}" title="Baixar">⬇</button>
-              <button class="btn btn-x" data-del-foto="${esc(f.id)}" title="Excluir">×</button>
-            </span>
-          </div>
-          ${f.texto ? `<p class="foto-texto">${esc(f.texto)}</p>` : ''}
-        </figcaption>
-      </figure>`;
-    }).join('')}
-  </div>`;
+
+  // Agrupa por visita. A chave é a data da visita; sem data, cai no dia em que
+  // foi enviada. Guardamos o índice original de cada foto (o carrossel usa ele).
+  const grupos = new Map();
+  fotos.forEach((f, idx) => {
+    const chave = String(f.dataVisita || '').slice(0, 10)
+      || (f.criadoEm ? new Date(f.criadoEm).toISOString().slice(0, 10) : 'sem-data');
+    if (!grupos.has(chave)) grupos.set(chave, []);
+    grupos.get(chave).push({ f, idx });
+  });
+
+  // Visitas mais recentes primeiro.
+  const chaves = [...grupos.keys()].sort((a, b) => String(b).localeCompare(String(a)));
+
+  return chaves.map((chave) => {
+    const itens = grupos.get(chave);
+    const data = chave === 'sem-data' ? '' : fmtDataVisita(chave);
+    // A observação da visita é compartilhada pelo bloco (vem do envio das fotos).
+    const obsVisita = (itens.find((it) => it.f.texto) || {}).f?.texto || '';
+    const ids = itens.map((it) => it.f.id).join(',');
+
+    return `
+    <div class="visita-bloco" data-visita="${esc(chave)}">
+      <div class="visita-cab">
+        <h3 class="visita-titulo">Visita técnica${data ? ` <span class="visita-data">${data}</span>` : ''}</h3>
+        <button class="btn btn-x" data-obs-visita="${esc(ids)}" title="Observação da visita">✎</button>
+      </div>
+      <p class="visita-obs">${obsVisita
+        ? esc(obsVisita)
+        : '<span class="muted">Sem observação desta visita. Clique no ✎ para escrever.</span>'}</p>
+      <div class="fotos-grid">
+        ${itens.map(({ f, idx }) => `
+        <figure class="foto-item">
+          <button class="foto-thumb" data-abrir-foto="${idx}" title="Ampliar">
+            <img src="${esc(f.dataUrl || f.url)}" alt="${esc(f.nome || 'foto')}" loading="lazy" />
+            <span class="foto-zoom">⤢</span>
+          </button>
+          <figcaption>
+            <div class="foto-meta">
+              <span class="foto-legenda">${f.legenda
+                ? esc(f.legenda)
+                : '<span class="muted">sem observação</span>'}</span>
+              <span class="foto-acoes">
+                <button class="btn btn-x" data-obs-foto="${esc(f.id)}" title="Observação da foto">✎</button>
+                <button class="btn btn-x" data-baixar-foto="${idx}" title="Baixar">⬇</button>
+                <button class="btn btn-x" data-del-foto="${esc(f.id)}" title="Excluir">×</button>
+              </span>
+            </div>
+          </figcaption>
+        </figure>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function tabelaLancamentos(lancamentos) {

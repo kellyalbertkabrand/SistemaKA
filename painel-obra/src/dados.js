@@ -316,6 +316,10 @@ export async function listarFotos(obraId) {
   return fotos;
 }
 
+export async function atualizarFoto(id, dados) {
+  await updateDoc(doc(db, 'fotos', id), dados);
+}
+
 export async function excluirFoto(id) {
   await deleteDoc(doc(db, 'fotos', id));
 }

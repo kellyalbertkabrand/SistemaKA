@@ -25,13 +25,11 @@ export async function renderObras(container) {
     return;
   }
 
-  // Totais executados por obra (uma consulta só, somada no cliente).
+  // Os totais executados exigem baixar todos os lançamentos (pesado por causa
+  // das notas fiscais anexadas). Para a tela abrir NA HORA, renderizamos os
+  // cards já e preenchemos os totais em segundo plano (ver mais abaixo).
   let porObra = {};
-  try {
-    porObra = await totaisPorObra();
-  } catch {
-    porObra = {};
-  }
+  let totaisProntos = false;
 
   container.innerHTML = `
     ${navBar('painel')}
@@ -81,9 +79,27 @@ export async function renderObras(container) {
       <section class="lista-obras" id="lista">
         ${(obras || []).length === 0
           ? `<p class="muted center">Nenhuma obra ainda. Crie a primeira acima.</p>`
-          : obras.map((o) => cardObra(o, porObra[o.id] || 0)).join('')}
+          : obras.map((o) => cardObra(o, porObra[o.id] || 0, totaisProntos)).join('')}
       </section>
     </div>`;
+
+  // (Re)liga o clique de cada card — usado no 1º render e ao atualizar os totais.
+  const ligarCards = () => {
+    container.querySelectorAll('[data-obra]').forEach((el) => {
+      el.addEventListener('click', () => navegar(`/painel/${el.getAttribute('data-obra')}`));
+    });
+  };
+
+  // Preenche os totais em segundo plano e atualiza só a lista (sem travar a tela).
+  totaisPorObra().then((t) => {
+    porObra = t;
+    totaisProntos = true;
+    const lista = container.querySelector('#lista');
+    if (lista && (obras || []).length) {
+      lista.innerHTML = obras.map((o) => cardObra(o, porObra[o.id] || 0, true)).join('');
+      ligarCards();
+    }
+  }).catch(() => {});
 
   // Logout
   container.querySelector('#sair').addEventListener('click', async () => {
@@ -113,6 +129,11 @@ export async function renderObras(container) {
           if (t.includes('webp')) return 'webp';
           return 'jpg';
         };
+
+        // Totais a partir dos lançamentos já baixados (não depende do preenchimento
+        // em segundo plano lá de cima).
+        const execExport = {};
+        for (const l of todos) execExport[l.obraId] = (execExport[l.obraId] || 0) + Number(l.valor || 0);
 
         const nomePorId = Object.fromEntries((obras || []).map((o) => [o.id, o.nome]));
         const slugPorId = Object.fromEntries((obras || []).map((o) => [o.id, o.slug || nomeSeg(o.nome)]));
@@ -153,7 +174,7 @@ export async function renderObras(container) {
         const secoes = [
           { titulo: 'Obras', cabecalho: ['Obra', 'Cliente', 'Orçamento (R$)', 'Executado (R$)', 'Saldo (R$)'],
             linhas: (obras || []).map((o) => {
-              const exec = porObra[o.id] || 0;
+              const exec = execExport[o.id] || 0;
               return [o.nome, o.cliente || '', numBR(o.orcamento), numBR(exec), numBR(Number(o.orcamento || 0) - exec)];
             }) },
           { titulo: 'Lançamentos (todas as obras)', cabecalho: ['Obra', 'Data', 'Etapa', 'Descrição', 'Valor (R$)', 'Status', 'Nota fiscal (arquivo)'],
@@ -181,16 +202,16 @@ export async function renderObras(container) {
   }
 
   // Abrir uma obra
-  container.querySelectorAll('[data-obra]').forEach((el) => {
-    el.addEventListener('click', () => navegar(`/painel/${el.getAttribute('data-obra')}`));
-  });
+  ligarCards();
 
   configurarFormNovaObra(container);
 }
 
-function cardObra(o, executado) {
-  const saldo = Number(o.orcamento || 0) - executado;
-  const p = pct(executado, o.orcamento);
+function cardObra(o, executado, pronto = true) {
+  const exec = executado || 0;
+  const saldo = Number(o.orcamento || 0) - exec;
+  const p = pct(exec, o.orcamento);
+  const espera = '<span class="muted">…</span>';
   return `
     <article class="card obra-card" data-obra="${esc(o.id)}" role="button" tabindex="0">
       <div class="row-between">
@@ -200,12 +221,12 @@ function cardObra(o, executado) {
         </span>
       </div>
       <p class="muted">${esc(o.cliente || 'Sem cliente definido')}</p>
-      <div class="barra"><span style="width:${Math.min(p, 100)}%"></span></div>
+      <div class="barra"><span style="width:${pronto ? Math.min(p, 100) : 0}%"></span></div>
       <div class="mini-kpis">
         <div><small>Orçado</small><strong>${moeda(o.orcamento)}</strong></div>
-        <div><small>Executado</small><strong>${moeda(executado)}</strong></div>
-        <div><small>Saldo</small><strong class="${saldo < 0 ? 'neg' : ''}">${moeda(saldo)}</strong></div>
-        <div><small>Andamento</small><strong>${p}%</strong></div>
+        <div><small>Executado</small><strong>${pronto ? moeda(exec) : espera}</strong></div>
+        <div><small>Saldo</small><strong class="${pronto && saldo < 0 ? 'neg' : ''}">${pronto ? moeda(saldo) : espera}</strong></div>
+        <div><small>Andamento</small><strong>${pronto ? p + '%' : espera}</strong></div>
       </div>
     </article>`;
 }
