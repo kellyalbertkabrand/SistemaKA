@@ -87,13 +87,13 @@ export async function renderPublica(container, slug) {
         </div>
       </section>
 
-      <section class="pub-bloco">
+      <section class="pub-bloco pub-bloco-fases">
         ${etapas.length === 0 && extras.length === 0
-          ? `<h2>Por etapa</h2><p class="muted">As etapas aparecerão aqui conforme a obra avança.</p>`
-          : `<div class="row-between">
-              <h2>Por etapa</h2>
+          ? `${tituloSecao('🏗️', 'Fases da obra')}<p class="muted">As fases aparecerão aqui conforme a obra avança.</p>`
+          : `<div class="pub-bloco-cab">
+              ${tituloSecao('🏗️', 'Fases da obra')}
               <button class="btn-toggle" id="pub-toggle-etapas" aria-expanded="false">
-                <span class="chev">▾</span><span class="tog-lbl">Ver etapas (${etapas.length + extras.length})</span>
+                <span class="chev">▾</span><span class="tog-lbl">Ver fases (${etapas.length + extras.length})</span>
               </button>
             </div>
             <div class="pub-etapas" id="pub-etapas" hidden>
@@ -102,21 +102,21 @@ export async function renderPublica(container, slug) {
             </div>`}
       </section>
 
-      <section class="pub-bloco">
-        <div class="row-between">
-          <h2>Atualizações</h2>
+      <section class="pub-bloco pub-bloco-updates">
+        <div class="pub-bloco-cab">
+          ${tituloSecao('📋', 'Atualizações')}
           ${lancamentos.length ? seletorOrdem('pub-ord', 'data') : ''}
         </div>
         <div id="pub-lista">${listaTimeline(ordenarLancamentos(lancamentos, 'data'))}</div>
       </section>
 
       ${(obra.projetos && obra.projetos.length) ? `
-      <section class="pub-bloco">
-        <h2>Projeto da obra</h2>
+      <section class="pub-bloco pub-bloco-projeto">
+        ${tituloSecao('📐', 'Projeto da obra')}
         <ul class="proj-lista" id="pub-projetos">
           ${obra.projetos.map((p) => `
             <li class="proj-item">
-              <span class="proj-nome">📐 ${esc(p.nome || 'Projeto')}</span>
+              <span class="proj-nome">${p.link ? '🔗' : '📐'} ${esc(p.nome || 'Projeto')}</span>
               ${p.link
                 ? `<a class="btn btn-mini" href="${esc(/^https?:\/\//i.test(p.link) ? p.link : 'https://' + p.link)}" target="_blank" rel="noopener">Abrir</a>`
                 : `<button class="btn btn-mini" data-ver-projeto="${esc(p.id)}">Abrir</button>`}
@@ -124,8 +124,8 @@ export async function renderPublica(container, slug) {
         </ul>
       </section>` : ''}
 
-      <section class="pub-bloco" id="pub-fotos-sec" hidden>
-        <h2>Fotos da obra</h2>
+      <section class="pub-bloco pub-bloco-fotos" id="pub-fotos-sec" hidden>
+        ${tituloSecao('📷', 'Fotos da obra')}
         <div id="pub-fotos"><p class="muted"><span class="spinner"></span> Carregando fotos…</p></div>
       </section>
 
@@ -180,8 +180,8 @@ export async function renderPublica(container, slug) {
       pubToggleEtapas.classList.toggle('aberto', aberto);
       pubToggleEtapas.setAttribute('aria-expanded', String(aberto));
       pubToggleEtapas.querySelector('.tog-lbl').textContent = aberto
-        ? 'Ocultar etapas'
-        : `Ver etapas (${etapas.length + extras.length})`;
+        ? 'Ocultar fases'
+        : `Ver fases (${etapas.length + extras.length})`;
     });
   }
 
@@ -266,6 +266,12 @@ function barraEtapa(nome, orcado, realizado) {
 
 function num(rotulo, valor, cls = '') {
   return `<div class="pub-num"><small>${rotulo}</small><strong class="${cls}">${valor}</strong></div>`;
+}
+
+// Cabeçalho padrão de cada seção: um ícone em "caixinha" + o título. Deixa cada
+// bloco visualmente distinto (bate o olho e vê que é outra coisa).
+function tituloSecao(icone, texto) {
+  return `<h2 class="pub-sec-titulo"><span class="pub-sec-ico">${icone}</span>${esc(texto)}</h2>`;
 }
 
 // Data 'YYYY-MM-DD' -> 'dd/mm/aaaa' sem depender de fuso.
