@@ -1,7 +1,7 @@
 import {
   obterObra, listarEtapas, listarLancamentos, atualizarObra, excluirObra, definirPublicado,
   criarEtapa, atualizarEtapa, excluirEtapa, criarLancamento, atualizarLancamento, excluirLancamento, sair,
-  anexarRecibo, removerRecibo, enviarFoto, listarFotos, excluirFoto, atualizarFoto,
+  anexarRecibo, removerRecibo, obterRecibo, enviarFoto, listarFotos, excluirFoto, atualizarFoto, obterFotoBin,
 } from '../dados.js';
 import { navegar } from '../main.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
@@ -25,7 +25,7 @@ function msgErroAnexo(err) {
   const code = String(err?.code || '');
   const m = String(err?.message || err || '');
   if (code.includes('permission-denied') || m.includes('insufficient permissions'))
-    return 'As Regras do Firestore não permitem salvar. No Firebase → Firestore Database → Regras, publique firestore.rules (com a coleção "fotos").';
+    return 'As Regras do Firestore não permitem salvar. No Firebase → Firestore Database → Regras, publique o firestore.rules atualizado (com as coleções "fotos", "fotos_bin" e "recibos").';
   if (m.includes('longer than') || m.includes('maximum') || m.includes('exceeds') || code.includes('invalid-argument'))
     return 'A imagem ficou grande demais para o banco. Tente uma imagem um pouco menor.';
   return 'Não foi possível anexar: ' + m;
@@ -268,7 +268,8 @@ export async function renderObra(container, obraId) {
       const nfNome = new Map();
       let nfN = 0;
       for (const l of lancOrd) {
-        const dado = l.reciboDataUrl || l.reciboUrl;
+        let dado = l.reciboDataUrl || l.reciboUrl;
+        if (!dado && (l.temRecibo || l.reciboNome)) dado = (await obterRecibo(l.id))?.dataUrl;
         if (dado && String(dado).startsWith('data:')) {
           nfN++;
           const nome = `notas-fiscais/${String(nfN).padStart(2, '0')}-${nomeSeg((l.data || '').slice(0, 10) + '-' + (l.etapa || ''))}.${extDe(dado)}`;
@@ -281,7 +282,8 @@ export async function renderObra(container, obraId) {
       const fotoNome = new Map();
       let fN = 0;
       for (const f of (fotosExp || [])) {
-        const dado = f.dataUrl || f.url;
+        let dado = f.dataUrl || f.url;
+        if (!dado) dado = await obterFotoBin(f.id);
         if (dado && String(dado).startsWith('data:')) {
           fN++;
           const d = f.dataVisita || (f.criadoEm ? new Date(f.criadoEm).toISOString().slice(0, 10) : '') || 'foto';
@@ -303,7 +305,7 @@ export async function renderObra(container, obraId) {
         { titulo: 'Lançamentos', cabecalho: ['Data', 'Etapa', 'Descrição', 'Valor (R$)', 'Status', 'Nota fiscal (arquivo)'],
           linhas: lancOrd.map((l) => [
             dataBR(l.data), l.etapa, l.descricao || '', numBR(l.valor), l.status,
-            nfNome.get(l.id) || ((l.reciboDataUrl || l.reciboUrl) ? 'anexada' : '—'),
+            nfNome.get(l.id) || ((l.reciboDataUrl || l.reciboUrl || l.temRecibo || l.reciboNome) ? 'anexada' : '—'),
           ]) },
         { titulo: 'Fotos das visitas', cabecalho: ['Data da visita', 'Descrição', 'Arquivo'],
           linhas: (fotosExp || []).map((f) => [
@@ -498,10 +500,15 @@ export async function renderObra(container, obraId) {
   });
 
   // Abre a NF (imagem ou PDF) grande na própria tela, com botão de baixar.
-  function abrirAnexoEmAba(lanc) {
-    const dado = lanc?.reciboDataUrl || lanc?.reciboUrl;
-    if (!dado) return;
-    abrirAnexo(dado, lanc.reciboNome);
+  // Antigas têm o arquivo inline; novas ficam em "recibos" e buscamos na hora.
+  async function abrirAnexoEmAba(lanc) {
+    if (!lanc) return;
+    let dado = lanc.reciboDataUrl || lanc.reciboUrl;
+    if (!dado) {
+      const r = await obterRecibo(lanc.id);
+      dado = r?.dataUrl;
+    }
+    if (dado) abrirAnexo(dado, lanc.reciboNome);
   }
 
   // Editar um lançamento inline (etapa, descrição, valor e status).
@@ -569,7 +576,7 @@ export async function renderObra(container, obraId) {
             throw new Error('PDF muito grande. Envie um PDF menor ou uma foto da nota.');
           }
         }
-        await anexarRecibo(lancId, dataUrl, file.name);
+        await anexarRecibo(lancId, dataUrl, file.name, obra.id);
         recarregar();
       } catch (err) {
         botao.disabled = false;
@@ -616,10 +623,11 @@ export async function renderObra(container, obraId) {
           i++;
           btn.textContent = `Enviando ${i}/${files.length}…`;
           statusFotos.innerHTML = `<span class="spinner"></span> Otimizando e enviando ${i} de ${files.length}…`;
-          // Fotos mais leves (~160 KB) para a obra abrir rápido — resolução
-          // mais que suficiente para visualizar no celular e ampliar.
-          const dataUrl = await comprimirParaDataURL(f, 160_000, 1100);
-          await enviarFoto(obra.id, dataUrl, { ...base, nome: f.name });
+          // Miniatura leve (~30 KB) para a galeria abrir rápido + imagem cheia
+          // (~160 KB) guardada à parte, carregada só ao ampliar/baixar.
+          const thumbUrl = await comprimirParaDataURL(f, 30_000, 400);
+          const fullUrl = await comprimirParaDataURL(f, 160_000, 1100);
+          await enviarFoto(obra.id, { thumbUrl, fullUrl, ...base, nome: f.name });
         }
         recarregar();
       } catch (err) {
@@ -664,7 +672,9 @@ export async function renderObra(container, obraId) {
 
     if (abrir) {
       const itens = fotos.map((f) => ({
-        url: f.dataUrl || f.url,
+        thumb: f.thumbUrl || f.dataUrl || f.url,
+        url: f.dataUrl || f.url || null,               // antigas já têm a cheia inline
+        obterUrl: () => obterFotoBin(f.id),            // novas: busca a cheia sob demanda
         nome: f.nome,
         data: fmtDataVisita(f.dataVisita) || dataBR(f.criadoEm ? new Date(f.criadoEm).toISOString() : ''),
         texto: f.texto,
@@ -674,7 +684,10 @@ export async function renderObra(container, obraId) {
     }
     if (baixarBtn) {
       const f = fotos[Number(baixarBtn.getAttribute('data-baixar-foto'))];
-      if (f) baixarImagem(f.dataUrl || f.url, f.nome || 'foto.jpg');
+      if (f) {
+        const url = f.dataUrl || f.url || await obterFotoBin(f.id);
+        if (url) baixarImagem(url, f.nome || 'foto.jpg');
+      }
       return;
     }
     if (del) {
@@ -1072,7 +1085,7 @@ function gridFotos(fotos) {
         ${itens.map(({ f, idx }) => `
         <figure class="foto-item">
           <button class="foto-thumb" data-abrir-foto="${idx}" title="Ampliar">
-            <img src="${esc(f.dataUrl || f.url)}" alt="${esc(f.nome || 'foto')}" loading="lazy" />
+            <img src="${esc(f.thumbUrl || f.dataUrl || f.url)}" alt="${esc(f.nome || 'foto')}" loading="lazy" />
             <span class="foto-zoom">⤢</span>
           </button>
           <figcaption>
@@ -1102,7 +1115,7 @@ function tabelaLancamentos(lancamentos) {
       </thead>
       <tbody>
         ${lancamentos.map((l) => {
-          const temNF = Boolean(l.reciboDataUrl || l.reciboUrl);
+          const temNF = Boolean(l.reciboDataUrl || l.reciboUrl || l.temRecibo || l.reciboNome);
           return `
           <tr>
             <td>${dataBR(l.data)}</td>

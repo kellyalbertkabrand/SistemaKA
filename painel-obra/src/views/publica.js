@@ -1,5 +1,5 @@
 import { configurado } from '../firebase.js';
-import { obterObraPublicaPorSlug, listarEtapas, listarLancamentos, listarFotos } from '../dados.js';
+import { obterObraPublicaPorSlug, listarEtapas, listarLancamentos, listarFotos, obterRecibo, obterFotoBin } from '../dados.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { caixaLogo } from '../lib/marca.js';
@@ -180,7 +180,9 @@ export async function renderPublica(container, slug) {
       const b = e.target.closest('[data-abrir-foto]');
       if (!b) return;
       const itens = fotos.map((f) => ({
-        url: f.dataUrl || f.url,
+        thumb: f.thumbUrl || f.dataUrl || f.url,
+        url: f.dataUrl || f.url || null,
+        obterUrl: () => obterFotoBin(f.id),
         nome: f.nome,
         data: f.dataVisita ? dataBR(f.dataVisita)
           : (f.criadoEm ? dataBR(new Date(f.criadoEm).toISOString()) : ''),
@@ -193,11 +195,14 @@ export async function renderPublica(container, slug) {
   // Abrir a nota fiscal ao clicar no lançamento (delegação sobrevive ao reordenar).
   const pubLista = container.querySelector('#pub-lista');
   if (pubLista) {
-    pubLista.addEventListener('click', (e) => {
+    pubLista.addEventListener('click', async (e) => {
       const b = e.target.closest('[data-ver-nf]');
       if (!b) return;
       const l = lancamentos.find((x) => x.id === b.getAttribute('data-ver-nf'));
-      if (l) abrirAnexo(l.reciboDataUrl || l.reciboUrl, l.reciboNome);
+      if (!l) return;
+      let dado = l.reciboDataUrl || l.reciboUrl;
+      if (!dado) dado = (await obterRecibo(l.id))?.dataUrl;
+      if (dado) abrirAnexo(dado, l.reciboNome);
     });
   }
 
@@ -216,7 +221,7 @@ function listaTimeline(lancamentos) {
   if (!lancamentos.length) return `<p class="muted">Ainda não há lançamentos.</p>`;
   return `<ul class="pub-timeline">
     ${lancamentos.map((l) => {
-      const temNF = Boolean(l.reciboDataUrl || l.reciboUrl);
+      const temNF = Boolean(l.reciboDataUrl || l.reciboUrl || l.temRecibo || l.reciboNome);
       return `
       <li>
         <div class="tl-topo">
@@ -283,7 +288,7 @@ function blocosFotosPub(fotos) {
         ${itens.map(({ f, idx }) => `
         <figure class="foto-item">
           <button class="foto-thumb" data-abrir-foto="${idx}" title="Ampliar">
-            <img src="${esc(f.dataUrl || f.url)}" alt="Foto da obra" loading="lazy" />
+            <img src="${esc(f.thumbUrl || f.dataUrl || f.url)}" alt="Foto da obra" loading="lazy" />
             <span class="foto-zoom">⤢</span>
           </button>
           ${f.legenda ? `<figcaption><p class="foto-texto">${esc(f.legenda)}</p></figcaption>` : ''}

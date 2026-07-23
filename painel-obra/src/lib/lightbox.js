@@ -76,8 +76,18 @@ export function abrirLightbox(itens, inicio = 0) {
 
   const mostrar = () => {
     const it = itens[i];
-    img.src = it.url;
+    // Mostra já a miniatura (ou a URL pronta) e, se a imagem cheia ainda não
+    // veio, busca sob demanda e troca quando chegar — sem travar a abertura.
+    img.src = it.url || it.thumb || '';
     img.alt = it.nome || 'foto';
+    if (!it.url && typeof it.obterUrl === 'function') {
+      const alvo = i;
+      it.obterUrl().then((full) => {
+        if (!full) return;
+        it.url = full;
+        if (i === alvo) img.src = full; // só troca se ainda estiver nessa foto
+      }).catch(() => {});
+    }
     cap.textContent = [it.data, it.texto].filter(Boolean).join(' — ');
     cap.style.display = cap.textContent ? '' : 'none';
     contador.textContent = umSo ? '' : `${i + 1} / ${itens.length}`;
@@ -98,7 +108,11 @@ export function abrirLightbox(itens, inicio = 0) {
   prevBtn.addEventListener('click', prev);
   nextBtn.addEventListener('click', next);
   ov.querySelector('.lb-fechar').addEventListener('click', fechar);
-  ov.querySelector('.lb-baixar').addEventListener('click', () => baixarImagem(itens[i].url, itens[i].nome));
+  ov.querySelector('.lb-baixar').addEventListener('click', async () => {
+    const it = itens[i];
+    const url = it.url || (typeof it.obterUrl === 'function' ? await it.obterUrl() : null) || it.thumb;
+    if (url) baixarImagem(url, it.nome);
+  });
   ov.addEventListener('click', (e) => { if (e.target === ov || e.target.classList.contains('lb-fig')) fechar(); });
   document.addEventListener('keydown', onKey);
   mostrar();

@@ -32,6 +32,16 @@ service cloud.firestore {
       allow read: if logado() || obraPublicada(resource.data.obraId);
       allow write: if logado();
     }
+    // Imagem CHEIA das fotos (guardada à parte para a galeria carregar leve).
+    match /fotos_bin/{id} {
+      allow read: if logado() || obraPublicada(resource.data.obraId);
+      allow write: if logado();
+    }
+    // Arquivo da nota fiscal (guardado à parte; o lançamento fica leve p/ listar).
+    match /recibos/{id} {
+      allow read: if logado() || obraPublicada(resource.data.obraId);
+      allow write: if logado();
+    }
     match /convites/{token} {
       allow read: if true;
       allow write: if logado();

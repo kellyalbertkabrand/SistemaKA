@@ -1,11 +1,11 @@
-import { listarObras, totaisPorObra, listarLancamentosDoEscritorio, listarFotosDoEscritorio, criarObra, criarEtapas, slugExiste, sair } from '../dados.js';
+import { listarObras, totaisPorObra, listarLancamentosDoEscritorio, listarFotosDoEscritorio, criarObra, criarEtapas, slugExiste, sair, salvarFotoBin, definirThumbFoto, anexarRecibo, obterRecibo, obterFotoBin } from '../dados.js';
 import { navegar } from '../main.js';
 import { moeda, pct, slugify, esc, dataBR } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
 import { baixarBlob, montarExcelHTML, numBR } from '../lib/exportar.js';
 import { criarZip } from '../lib/zip.js';
-import { dataURLParaBytes } from '../lib/imagem.js';
+import { dataURLParaBytes, comprimirParaDataURL, dataURLParaBlob } from '../lib/imagem.js';
 
 // Lista de obras + cadastro de nova obra (com etapas opcionais).
 export async function renderObras(container) {
@@ -36,7 +36,10 @@ export async function renderObras(container) {
     <div class="app">
       <div class="pagina-topo">
         <h1>Painel de Obras</h1>
-        ${(obras || []).length ? `<button class="btn btn-mini" id="exportar-tudo">⬇ Exportar tudo</button>` : ''}
+        ${(obras || []).length ? `<div class="row-end">
+          <button class="btn btn-mini" id="otimizar-dados" title="Deixa o sistema mais rápido: separa as imagens/notas já enviadas">⚙ Otimizar imagens</button>
+          <button class="btn btn-mini" id="exportar-tudo">⬇ Exportar tudo</button>
+        </div>` : ''}
       </div>
 
       <section class="card">
@@ -106,6 +109,50 @@ export async function renderObras(container) {
     await sair();
   });
 
+  // Otimizar (uma vez): separa as imagens/notas antigas (base64 inline) em
+  // coleções próprias (fotos_bin / recibos), gerando miniaturas leves. Assim as
+  // aberturas seguintes ficam rápidas. Grava o pesado ANTES de apagar o inline.
+  const btnOt = container.querySelector('#otimizar-dados');
+  if (btnOt) {
+    btnOt.addEventListener('click', async () => {
+      if (!confirm('Otimizar as imagens e notas fiscais já enviadas? Deixa o sistema mais rápido. Pode levar um tempo — não feche a página.')) return;
+      const rot = btnOt.textContent;
+      btnOt.disabled = true;
+      try {
+        const [fotos, lancs] = await Promise.all([
+          listarFotosDoEscritorio(),
+          listarLancamentosDoEscritorio(),
+        ]);
+        const fotosAntigas = fotos.filter((f) => !f.thumbUrl && f.dataUrl);
+        const lancsAntigos = lancs.filter((l) => l.reciboDataUrl);
+        const total = fotosAntigas.length + lancsAntigos.length;
+        if (!total) {
+          btnOt.textContent = '✓ Já otimizado';
+          setTimeout(() => { btnOt.textContent = rot; btnOt.disabled = false; }, 2500);
+          return;
+        }
+        let feito = 0;
+        for (const f of fotosAntigas) {
+          btnOt.textContent = `Otimizando ${++feito}/${total}…`;
+          const thumb = await comprimirParaDataURL(dataURLParaBlob(f.dataUrl), 30_000, 400);
+          await salvarFotoBin(f.id, f.obraId, f.dataUrl); // grava a cheia primeiro
+          await definirThumbFoto(f.id, thumb);            // só então apaga o inline
+        }
+        for (const l of lancsAntigos) {
+          btnOt.textContent = `Otimizando ${++feito}/${total}…`;
+          await anexarRecibo(l.id, l.reciboDataUrl, l.reciboNome, l.obraId);
+        }
+        btnOt.textContent = '✓ Otimizado!';
+        setTimeout(() => renderObras(container), 1200);
+      } catch (err) {
+        btnOt.disabled = false;
+        btnOt.textContent = rot;
+        alert('Não foi possível otimizar agora: ' + (err?.message || err)
+          + '\n\nSe for erro de permissão, publique as Regras do Firestore (com as coleções fotos_bin e recibos).');
+      }
+    });
+  }
+
   // Exportar tudo: um ZIP com a planilha geral + uma pasta por obra
   // (notas fiscais e fotos).
   const btnExp = container.querySelector('#exportar-tudo');
@@ -147,7 +194,8 @@ export async function renderObras(container) {
         const nfNome = new Map();
         const contNF = {};
         for (const l of lancOrd) {
-          const dado = l.reciboDataUrl || l.reciboUrl;
+          let dado = l.reciboDataUrl || l.reciboUrl;
+          if (!dado && (l.temRecibo || l.reciboNome)) dado = (await obterRecibo(l.id))?.dataUrl;
           if (dado && String(dado).startsWith('data:')) {
             const p = pastaObra(l.obraId);
             contNF[p] = (contNF[p] || 0) + 1;
@@ -160,7 +208,8 @@ export async function renderObras(container) {
         const fNome = new Map();
         const contF = {};
         for (const f of fotosOrd) {
-          const dado = f.dataUrl || f.url;
+          let dado = f.dataUrl || f.url;
+          if (!dado) dado = await obterFotoBin(f.id);
           if (dado && String(dado).startsWith('data:')) {
             const p = pastaObra(f.obraId);
             contF[p] = (contF[p] || 0) + 1;
@@ -180,7 +229,7 @@ export async function renderObras(container) {
           { titulo: 'Lançamentos (todas as obras)', cabecalho: ['Obra', 'Data', 'Etapa', 'Descrição', 'Valor (R$)', 'Status', 'Nota fiscal (arquivo)'],
             linhas: lancOrd.map((l) => [
               nomePorId[l.obraId] || '', dataBR(l.data), l.etapa, l.descricao || '', numBR(l.valor), l.status,
-              nfNome.get(l.id) || ((l.reciboDataUrl || l.reciboUrl) ? 'anexada' : '—'),
+              nfNome.get(l.id) || ((l.reciboDataUrl || l.reciboUrl || l.temRecibo || l.reciboNome) ? 'anexada' : '—'),
             ]) },
           { titulo: 'Fotos (todas as obras)', cabecalho: ['Obra', 'Data da visita', 'Descrição', 'Arquivo'],
             linhas: fotosOrd.map((f) => [

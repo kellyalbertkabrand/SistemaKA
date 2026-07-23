@@ -26,6 +26,7 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
+  deleteField,
   query,
   where,
 } from 'firebase/firestore';
@@ -91,7 +92,8 @@ export async function definirPublicado(id, valor) {
   await updateDoc(doc(db, 'obras', id), { publicado: Boolean(valor) });
 }
 
-// Exclui a obra e TUDO ligado a ela (etapas, lançamentos e fotos).
+// Exclui a obra e TUDO ligado a ela (etapas, lançamentos, fotos e seus
+// binários pesados guardados à parte: imagens cheias e notas fiscais).
 export async function excluirObra(id) {
   const apagarPorObra = async (col) => {
     const snap = await getDocs(query(collection(db, col), where('obraId', '==', id)));
@@ -101,6 +103,8 @@ export async function excluirObra(id) {
     apagarPorObra('etapas'),
     apagarPorObra('lancamentos'),
     apagarPorObra('fotos'),
+    apagarPorObra('fotos_bin').catch(() => {}),
+    apagarPorObra('recibos').catch(() => {}),
   ]);
   await deleteDoc(doc(db, 'obras', id));
 }
@@ -275,38 +279,74 @@ export async function excluirFornecedor(id) {
 
 // ---------------------------------------------------------------------------
 // Recibo / Nota fiscal de um lançamento
-// A imagem/PDF já vem otimizado como data URL e é guardado no próprio
-// documento do lançamento (sem depender do Storage).
+// O arquivo pesado (imagem/PDF em data URL) fica numa coleção à parte
+// "recibos/{lancamentoId}", carregada só quando a nota é aberta. O documento
+// do lançamento guarda apenas o essencial (nome + flag), ficando leve para
+// listar (totais da home, tabela de lançamentos). Campo antigo reciboDataUrl,
+// se existir, é apagado na migração/gravação.
 // ---------------------------------------------------------------------------
-export async function anexarRecibo(lancamentoId, dataUrl, nome) {
+export async function anexarRecibo(lancamentoId, dataUrl, nome, obraId) {
+  await setDoc(doc(db, 'recibos', lancamentoId), {
+    dataUrl,
+    nome: nome || 'nota-fiscal',
+    obraId: obraId ?? null,
+    ownerId: uid(),
+    criadoEm: Date.now(),
+  });
   await updateDoc(doc(db, 'lancamentos', lancamentoId), {
-    reciboDataUrl: dataUrl,
+    temRecibo: true,
     reciboNome: nome || 'nota-fiscal',
     reciboEm: Date.now(),
+    reciboDataUrl: deleteField(),
   });
 }
 
 export async function removerRecibo(lancamentoId) {
+  await deleteDoc(doc(db, 'recibos', lancamentoId)).catch(() => {});
   await updateDoc(doc(db, 'lancamentos', lancamentoId), {
-    reciboDataUrl: null,
+    temRecibo: false,
     reciboNome: null,
     reciboEm: null,
+    reciboDataUrl: deleteField(),
   });
 }
 
+// Busca o arquivo da nota fiscal sob demanda (ao clicar em "ver NF").
+export async function obterRecibo(lancamentoId) {
+  try {
+    const d = await getDoc(doc(db, 'recibos', lancamentoId));
+    return d.exists() ? { dataUrl: d.data().dataUrl, nome: d.data().nome } : null;
+  } catch {
+    return null;
+  }
+}
+
 // ---------------------------------------------------------------------------
-// Fotos das visitas à obra (coleção "fotos") — imagem otimizada como data URL.
+// Fotos das visitas à obra.
+// A GALERIA carrega leve: o documento "fotos/{id}" guarda só uma MINIATURA
+// (thumbUrl, pequena) + metadados. A imagem CHEIA fica em "fotos_bin/{id}" e
+// é buscada apenas quando a foto é ampliada/baixada. Fotos antigas ainda têm
+// dataUrl inline (compatível): thumbUrl || dataUrl na hora de exibir.
 // ---------------------------------------------------------------------------
-export async function enviarFoto(obraId, dataUrl, meta = {}) {
-  await addDoc(collection(db, 'fotos'), {
+export async function enviarFoto(obraId, { thumbUrl, fullUrl, nome, texto, dataVisita }) {
+  const ref = doc(collection(db, 'fotos'));
+  await setDoc(ref, {
     obraId,
-    dataUrl,
-    nome: meta.nome ?? null,
-    texto: meta.texto ?? null,
-    dataVisita: meta.dataVisita ?? null,
+    thumbUrl: thumbUrl ?? null,
+    nome: nome ?? null,
+    texto: texto ?? null,
+    legenda: null,
+    dataVisita: dataVisita ?? null,
     ownerId: uid(),
     criadoEm: Date.now(),
   });
+  await setDoc(doc(db, 'fotos_bin', ref.id), {
+    obraId,
+    dataUrl: fullUrl,
+    ownerId: uid(),
+    criadoEm: Date.now(),
+  });
+  return ref.id;
 }
 
 export async function listarFotos(obraId) {
@@ -320,8 +360,36 @@ export async function atualizarFoto(id, dados) {
   await updateDoc(doc(db, 'fotos', id), dados);
 }
 
+// Imagem cheia sob demanda (ao ampliar/baixar). Fotos antigas usam o inline.
+export async function obterFotoBin(id) {
+  try {
+    const d = await getDoc(doc(db, 'fotos_bin', id));
+    return d.exists() ? d.data().dataUrl : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function excluirFoto(id) {
-  await deleteDoc(doc(db, 'fotos', id));
+  await Promise.all([
+    deleteDoc(doc(db, 'fotos', id)),
+    deleteDoc(doc(db, 'fotos_bin', id)).catch(() => {}),
+  ]);
+}
+
+// --- Migração das fotos antigas (base64 inline -> coleção "fotos_bin") ---
+// Grava o binário separado ANTES de apagar o inline, para nunca perder dado.
+export async function salvarFotoBin(id, obraId, dataUrl) {
+  await setDoc(doc(db, 'fotos_bin', id), {
+    obraId: obraId ?? null,
+    dataUrl,
+    ownerId: uid(),
+    criadoEm: Date.now(),
+  });
+}
+
+export async function definirThumbFoto(id, thumbUrl) {
+  await updateDoc(doc(db, 'fotos', id), { thumbUrl, dataUrl: deleteField() });
 }
 
 // Todas as fotos do escritório (para a exportação geral em ZIP).
