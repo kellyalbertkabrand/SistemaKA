@@ -8,8 +8,9 @@ import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
 import { reconhecimentoDisponivel, ouvir, parar } from '../lib/voice.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
-import { baixarExcel, numBR } from '../lib/exportar.js';
-import { comprimirParaDataURL, arquivoParaDataURL, dataURLBytes } from '../lib/imagem.js';
+import { baixarBlob, montarExcelHTML, numBR } from '../lib/exportar.js';
+import { comprimirParaDataURL, arquivoParaDataURL, dataURLBytes, dataURLParaBytes } from '../lib/imagem.js';
+import { criarZip } from '../lib/zip.js';
 import { abrirLightbox, baixarImagem, abrirAnexo } from '../lib/lightbox.js';
 
 // Data 'YYYY-MM-DD' -> 'dd/mm/aaaa' (sem depender de fuso).
@@ -79,7 +80,7 @@ export async function renderObra(container, obraId) {
             <button class="btn btn-mini" id="abrir-editar">✎ Editar obra</button>
           </p>
         </div>
-        <button class="btn btn-mini" id="exportar">⬇ Exportar (Excel)</button>
+        <button class="btn btn-mini" id="exportar">⬇ Exportar (Excel + anexos)</button>
       </div>
 
       <form id="form-editar" class="card" hidden>
@@ -207,36 +208,92 @@ export async function renderObra(container, obraId) {
     await sair();
   });
 
-  // ---- Exportar a obra (Excel, com links dos anexos) ----
-  container.querySelector('#exportar').addEventListener('click', () => {
-    const realizado = {};
-    for (const l of lancamentos) realizado[l.etapa] = (realizado[l.etapa] || 0) + Number(l.valor || 0);
-    const fmtData = (v) => {
-      if (!v) return '';
-      const [a, m, d] = String(v).slice(0, 10).split('-');
-      return d ? `${d}/${m}/${a}` : String(v);
-    };
-    const secoes = [
-      { titulo: `Obra: ${obra.nome}`, linhas: [
-        ['Cliente', obra.cliente || ''],
-        ['Orçamento', 'R$ ' + numBR(obra.orcamento)],
-        ['Executado', 'R$ ' + numBR(executado)],
-        ['Saldo', 'R$ ' + numBR(saldo)],
-      ] },
-      { titulo: 'Etapas', cabecalho: ['Etapa', 'Orçado (R$)', 'Realizado (R$)'],
-        linhas: etapas.map((et) => [et.nome, numBR(et.orcado), numBR(realizado[et.nome] || 0)]) },
-      { titulo: 'Lançamentos', cabecalho: ['Data', 'Etapa', 'Descrição', 'Valor (R$)', 'Status', 'Nota fiscal'],
-        linhas: ordenarLancamentos(lancamentos, 'data').map((l) => [
-          dataBR(l.data), l.etapa, l.descricao || '', numBR(l.valor), l.status,
-          (l.reciboDataUrl || l.reciboUrl) ? 'Anexada' : '—',
-        ]) },
-      { titulo: 'Fotos das visitas', cabecalho: ['Data da visita', 'Descrição'],
-        linhas: (fotos || []).map((f) => [
-          fmtData(f.dataVisita || (f.criadoEm ? new Date(f.criadoEm).toISOString() : '')),
-          f.texto || '',
-        ]) },
-    ];
-    baixarExcel(`obra-${obra.slug}.xls`, secoes);
+  // ---- Exportar a obra: um ZIP com a planilha + notas fiscais + fotos ----
+  container.querySelector('#exportar').addEventListener('click', async () => {
+    const btnExp = container.querySelector('#exportar');
+    const rotulo = btnExp.textContent;
+    btnExp.disabled = true; btnExp.textContent = 'Gerando…';
+    try {
+      const realizado = {};
+      for (const l of lancamentos) realizado[l.etapa] = (realizado[l.etapa] || 0) + Number(l.valor || 0);
+      const fmtData = (v) => {
+        if (!v) return '';
+        const [a, m, d] = String(v).slice(0, 10).split('-');
+        return d ? `${d}/${m}/${a}` : String(v);
+      };
+      const nomeSeg = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'item';
+      const extDe = (dado) => {
+        const t = (/^data:([^;]+)/.exec(dado || '') || [])[1] || '';
+        if (t.includes('pdf')) return 'pdf';
+        if (t.includes('png')) return 'png';
+        if (t.includes('webp')) return 'webp';
+        return 'jpg';
+      };
+
+      const arquivos = [];
+      const lancOrd = ordenarLancamentos(lancamentos, 'data');
+
+      // Notas fiscais -> pasta notas-fiscais/ (e nome de referência p/ a planilha)
+      const nfNome = new Map();
+      let nfN = 0;
+      for (const l of lancOrd) {
+        const dado = l.reciboDataUrl || l.reciboUrl;
+        if (dado && String(dado).startsWith('data:')) {
+          nfN++;
+          const nome = `notas-fiscais/${String(nfN).padStart(2, '0')}-${nomeSeg((l.data || '').slice(0, 10) + '-' + (l.etapa || ''))}.${extDe(dado)}`;
+          arquivos.push({ nome, dados: dataURLParaBytes(dado) });
+          nfNome.set(l.id, nome);
+        }
+      }
+
+      // Fotos -> pasta fotos/
+      const fotoNome = new Map();
+      let fN = 0;
+      for (const f of (fotos || [])) {
+        const dado = f.dataUrl || f.url;
+        if (dado && String(dado).startsWith('data:')) {
+          fN++;
+          const d = f.dataVisita || (f.criadoEm ? new Date(f.criadoEm).toISOString().slice(0, 10) : '') || 'foto';
+          const nome = `fotos/${String(fN).padStart(2, '0')}-${nomeSeg(d)}.jpg`;
+          arquivos.push({ nome, dados: dataURLParaBytes(dado) });
+          fotoNome.set(f, nome);
+        }
+      }
+
+      const secoes = [
+        { titulo: `Obra: ${obra.nome}`, linhas: [
+          ['Cliente', obra.cliente || ''],
+          ['Orçamento', 'R$ ' + numBR(obra.orcamento)],
+          ['Executado', 'R$ ' + numBR(executado)],
+          ['Saldo', 'R$ ' + numBR(saldo)],
+        ] },
+        { titulo: 'Etapas', cabecalho: ['Etapa', 'Orçado (R$)', 'Realizado (R$)'],
+          linhas: etapas.map((et) => [et.nome, numBR(et.orcado), numBR(realizado[et.nome] || 0)]) },
+        { titulo: 'Lançamentos', cabecalho: ['Data', 'Etapa', 'Descrição', 'Valor (R$)', 'Status', 'Nota fiscal (arquivo)'],
+          linhas: lancOrd.map((l) => [
+            dataBR(l.data), l.etapa, l.descricao || '', numBR(l.valor), l.status,
+            nfNome.get(l.id) || ((l.reciboDataUrl || l.reciboUrl) ? 'anexada' : '—'),
+          ]) },
+        { titulo: 'Fotos das visitas', cabecalho: ['Data da visita', 'Descrição', 'Arquivo'],
+          linhas: (fotos || []).map((f) => [
+            fmtData(f.dataVisita || (f.criadoEm ? new Date(f.criadoEm).toISOString() : '')),
+            f.texto || '', fotoNome.get(f) || '',
+          ]) },
+      ];
+
+      // A planilha vai no topo do ZIP.
+      arquivos.unshift({
+        nome: `obra-${obra.slug}.xls`,
+        dados: new TextEncoder().encode('﻿' + montarExcelHTML(secoes)),
+      });
+
+      baixarBlob(`obra-${obra.slug}.zip`, criarZip(arquivos));
+    } catch (err) {
+      alert('Não foi possível exportar: ' + (err?.message || err));
+    } finally {
+      btnExp.disabled = false; btnExp.textContent = rotulo;
+    }
   });
 
   // ---- Editar obra (nome, cliente, orçamento total) ----
