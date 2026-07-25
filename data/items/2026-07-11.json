@@ -1,7 +1,7 @@
 {
   "date": "2026-07-11",
-  "generated_at": "2026-07-24T08:13:53.279868+00:00",
-  "count": 2,
+  "generated_at": "2026-07-25T07:56:49.129072+00:00",
+  "count": 3,
   "items": [
     {
       "title": "Influenciador expõe mensagem de Vini Jr. falando em processo - VEJA RIO",
@@ -14,14 +14,14 @@
       "published": "2026-07-11",
       "raw_summary": "Rafael Murmura afirmou que jogador estava sendo investigado por não bater pênalti no jogo em que Brasil foi eliminado",
       "title_pt": "",
-      "summary_pt": "Revelação de conversa privada entre influenciador e jogador sobre investigação em campeonato.",
+      "summary_pt": "Criador de conteúdo divulga suposta ameaça legal do jogador após vídeo sobre Copa.",
       "angle_pt": "",
       "pme_pt": "",
       "roteiro_pt": "",
       "link_kelly": "",
       "authors": "",
       "score": 9,
-      "fetched_at": "2026-07-24T08:10:38.243119+00:00",
+      "fetched_at": "2026-07-25T07:53:41.477898+00:00",
       "id": "6223d7eaaf0b82c0"
     },
     {
@@ -35,15 +35,36 @@
       "published": "2026-07-11",
       "raw_summary": "Rafael Murmura divulgou captura de tela com aviso atribuído ao atleta nas redes sociais",
       "title_pt": "",
-      "summary_pt": "Influenciador divulga captura de tela atribuída a atleta com aviso de processo judicial.",
+      "summary_pt": "Captura de tela divulgada nas redes como prova de intimidação de atleta famoso.",
       "angle_pt": "",
       "pme_pt": "",
       "roteiro_pt": "",
       "link_kelly": "",
       "authors": "",
       "score": 9,
-      "fetched_at": "2026-07-24T08:10:43.071752+00:00",
+      "fetched_at": "2026-07-25T07:53:49.361792+00:00",
       "id": "b347d3db928949d9"
+    },
+    {
+      "title": "Vídeo: influencer diz ter sido ameaçado de processo por Vini Jr. após vídeo sobre pênalti na Copa - Farol da Bahia",
+      "link": "https://www.faroldabahia.com.br/noticia/video-influencer-diz-ter-sido-ameacado-de-processo-por-vini-jr-apos-video-sobre-penalti-na-copa",
+      "source": "Farol da Bahia",
+      "lang": "pt",
+      "region": "BR",
+      "category": "influencer",
+      "kind": "noticia",
+      "published": "2026-07-11",
+      "raw_summary": "Rafael Murmura publicou nas redes sociais um suposto print de conversa com o atacante",
+      "title_pt": "",
+      "summary_pt": "Influenciador publica print de conversa alegando pressão legal por conteúdo esportivo.",
+      "angle_pt": "",
+      "pme_pt": "",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 9,
+      "fetched_at": "2026-07-25T07:53:46.702727+00:00",
+      "id": "b48d2c0c49e77909"
     }
   ]
 }
