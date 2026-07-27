@@ -2,13 +2,17 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import {
   anexarDocumento,
   baixarDocumento,
+  baixarTextoArquivo,
   criarCuidadora,
+  cuidadorasCsv,
+  dadosCuidadoraTxt,
   excluirCuidadora,
   linkPublicoCadastroCuidadora,
   listarCuidadoras,
   listarDocumentos,
   marcarCuidadoraRevisada,
   mensagemDadosCuidadora,
+  nomeArquivoCuidadora,
   prepararArquivo,
   removerDocumento,
   salvarCuidadora,
@@ -134,6 +138,17 @@ export function GestaoCuidadoras() {
         <button className="btn--ghost" onClick={() => void copiarLinkCadastro()}>
           Copiar link de cadastro
         </button>
+        {lista.length > 0 && (
+          <button
+            className="btn--ghost"
+            onClick={() =>
+              baixarTextoArquivo('cuidadoras.csv', cuidadorasCsv(listaFiltrada), 'text/csv')
+            }
+            title="Exporta a lista (respeitando a busca) em planilha CSV"
+          >
+            Exportar planilha
+          </button>
+        )}
         <span className="espaco" />
       </div>
 
@@ -369,6 +384,26 @@ function FichaCuidadoraView({ cuidadora, aoVoltar }: { cuidadora: Cuidadora; aoV
               }
             >
               Enviar dados no WhatsApp
+            </button>
+            <button
+              type="button"
+              className="btn--voltar"
+              onClick={() => {
+                const c = { ...cuidadora, ...f } as Cuidadora
+                baixarTextoArquivo(`${nomeArquivoCuidadora(c.nome)}.txt`, dadosCuidadoraTxt(c), 'text/plain')
+              }}
+            >
+              Baixar .txt
+            </button>
+            <button
+              type="button"
+              className="btn--voltar"
+              onClick={() => {
+                const c = { ...cuidadora, ...f } as Cuidadora
+                baixarTextoArquivo(`${nomeArquivoCuidadora(c.nome)}.csv`, cuidadorasCsv([c]), 'text/csv')
+              }}
+            >
+              Baixar planilha (.csv)
             </button>
             {msg && <span style={{ color: '#2e6b45', fontSize: '0.8rem' }}>{msg}</span>}
             <span className="espaco" style={{ flex: 1 }} />

@@ -280,6 +280,69 @@ export function mensagemDadosCuidadora(c: Cuidadora): string {
   return linhas.join('\n')
 }
 
+// ---- Exportar dados (TXT / planilha CSV) -------------------------------------
+
+/** Texto simples com os dados da cuidadora (sem os *asteriscos* do WhatsApp). */
+export function dadosCuidadoraTxt(c: Cuidadora): string {
+  return mensagemDadosCuidadora(c).replace(/\*/g, '')
+}
+
+// Colunas da planilha (mesma ordem para uma ou várias cuidadoras).
+const COLUNAS_CSV: { rot: string; val: (c: Cuidadora) => string }[] = [
+  { rot: 'Nome', val: (c) => c.nome },
+  { rot: 'CPF', val: (c) => c.cpf ?? '' },
+  { rot: 'RG', val: (c) => c.rg ?? '' },
+  { rot: 'PIS/NIT', val: (c) => c.pis ?? '' },
+  { rot: 'Telefone', val: (c) => c.telefone ?? '' },
+  { rot: 'E-mail', val: (c) => c.email ?? '' },
+  { rot: 'Nascimento', val: (c) => c.data_nascimento ?? '' },
+  { rot: 'Endereço', val: (c) => c.endereco ?? '' },
+  { rot: 'Cidade/UF', val: (c) => c.cidade ?? '' },
+  { rot: 'PIX - chave', val: (c) => c.pix_chave ?? '' },
+  { rot: 'PIX - tipo', val: (c) => rotuloPixTipo(c.pix_tipo) },
+  { rot: 'PIX - banco', val: (c) => c.pix_banco ?? '' },
+  { rot: 'Status', val: (c) => c.status },
+  { rot: 'Início', val: (c) => c.inicio ?? '' },
+  { rot: 'Observações', val: (c) => c.observacoes ?? '' },
+]
+
+function celulaCsv(v: string): string {
+  const s = String(v ?? '')
+  return /[";\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s
+}
+
+/** Planilha CSV (separador ';', com BOM para o Excel abrir os acentos). */
+export function cuidadorasCsv(lista: Cuidadora[]): string {
+  const cab = COLUNAS_CSV.map((c) => celulaCsv(c.rot)).join(';')
+  const linhas = lista.map((cui) => COLUNAS_CSV.map((c) => celulaCsv(c.val(cui))).join(';'))
+  return `﻿${[cab, ...linhas].join('\r\n')}`
+}
+
+/** Baixa um texto como arquivo (.txt / .csv). */
+export function baixarTextoArquivo(nomeArquivo: string, conteudo: string, mime: string): void {
+  const blob = new Blob([conteudo], { type: `${mime};charset=utf-8` })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = nomeArquivo
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 2000)
+}
+
+/** Nome de arquivo seguro a partir do nome da pessoa. */
+export function nomeArquivoCuidadora(nome: string): string {
+  return (
+    nome
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'cuidadora'
+  )
+}
+
 // ---- Preparação de arquivo (compressão para caber no Firestore) ----------------
 
 export interface PreparadoParaAnexo {
