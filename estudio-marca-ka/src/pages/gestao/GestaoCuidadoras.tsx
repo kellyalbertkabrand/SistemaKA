@@ -177,7 +177,12 @@ export function GestaoCuidadoras() {
                     <button className="cel-abrir" onClick={() => abrir(c)} title="Abrir ficha">
                       <strong>{c.nome}</strong>
                     </button>
-                    {!c.revisado && (
+                    {c.rascunho && (
+                      <span className="badge badge--dourado" style={{ marginLeft: 8 }} title="Ainda preenchendo pelo link (salvo automaticamente)">
+                        preenchendo
+                      </span>
+                    )}
+                    {!c.revisado && !c.rascunho && (
                       <span className="badge badge--verde" style={{ marginLeft: 8 }}>
                         NOVO
                       </span>

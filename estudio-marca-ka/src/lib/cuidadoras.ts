@@ -50,6 +50,8 @@ export interface Cuidadora {
   origem: string | null
   /** false enquanto a KA ainda não abriu a ficha de um cadastro novo. */
   revisado: boolean
+  /** true enquanto a pessoa ainda está preenchendo (auto-salvo, não enviou). */
+  rascunho?: boolean
   criado_em: string
 }
 
@@ -131,41 +133,71 @@ export function linkPublicoCadastroCuidadora(): string {
   return `${window.location.origin}/cadastro-cuidadora`
 }
 
-/** Cadastro feito pela própria cuidadora pelo link público. */
+// Só os campos da ficha (para gravar sem os campos de controle).
+function camposFicha(d: Partial<FichaCuidadora>) {
+  return {
+    nome: d.nome,
+    cpf: d.cpf ?? null,
+    rg: d.rg ?? null,
+    pis: d.pis ?? null,
+    telefone: d.telefone ?? null,
+    email: d.email ?? null,
+    data_nascimento: d.data_nascimento ?? null,
+    endereco: d.endereco ?? null,
+    cidade: d.cidade ?? null,
+    pix_chave: d.pix_chave ?? null,
+    pix_banco: d.pix_banco ?? null,
+    pix_tipo: d.pix_tipo ?? null,
+    observacoes: d.observacoes ?? null,
+  }
+}
+
+/** Cadastro feito pela própria cuidadora pelo link público (envio direto). */
 export async function cadastrarCuidadoraPublico(
   dados: FichaCuidadora,
   arquivos: PreparadoParaAnexo[] = [],
 ): Promise<void> {
   const novo = limpar({
-    nome: dados.nome,
-    cpf: dados.cpf ?? null,
-    rg: dados.rg ?? null,
-    pis: dados.pis ?? null,
-    telefone: dados.telefone ?? null,
-    email: dados.email ?? null,
-    data_nascimento: dados.data_nascimento ?? null,
-    endereco: dados.endereco ?? null,
-    cidade: dados.cidade ?? null,
-    pix_chave: dados.pix_chave ?? null,
-    pix_banco: dados.pix_banco ?? null,
-    pix_tipo: dados.pix_tipo ?? null,
+    ...camposFicha(dados),
     inicio: null,
     status: 'pendente' as CuidadoraStatus,
-    observacoes: dados.observacoes ?? null,
     origem: 'auto-cadastro',
     revisado: false,
+    rascunho: false,
     criado_em: agora(),
   })
   const ref = await addDoc(collection(db, 'cuidadoras'), novo)
-  for (const arq of arquivos) {
-    await addDoc(collection(db, 'cuidadoras', ref.id, 'documentos'), {
-      nome: arq.nome,
-      tipo: arq.tipo,
-      tamanho: arq.tamanho,
-      dataUrl: arq.dataUrl,
-      criado_em: agora(),
-    })
-  }
+  for (const arq of arquivos) await anexarDocumento(ref.id, arq)
+}
+
+// ---- Auto-salvamento do cadastro público (rascunho) --------------------------
+// A pessoa começa a preencher e o sistema já vai salvando: cria um rascunho na
+// 1ª vez (precisa do nome) e atualiza a cada mudança. Assim nada se perde mesmo
+// que ela não clique em "Enviar".
+
+/** Cria o rascunho da cuidadora (auto-cadastro em preenchimento) e devolve o id. */
+export async function criarRascunhoCuidadora(dados: FichaCuidadora): Promise<string> {
+  const novo = limpar({
+    ...camposFicha(dados),
+    inicio: null,
+    status: 'pendente' as CuidadoraStatus,
+    origem: 'auto-cadastro',
+    revisado: false,
+    rascunho: true,
+    criado_em: agora(),
+  })
+  const ref = await addDoc(collection(db, 'cuidadoras'), novo)
+  return ref.id
+}
+
+/** Atualiza o rascunho conforme a pessoa preenche (auto-save). */
+export async function atualizarRascunhoCuidadora(id: string, dados: Partial<FichaCuidadora>): Promise<void> {
+  await updateDoc(doc(db, 'cuidadoras', id), limpar(camposFicha(dados)))
+}
+
+/** Marca o cadastro como enviado (deixa de ser rascunho) e grava os dados finais. */
+export async function finalizarCuidadora(id: string, dados: FichaCuidadora): Promise<void> {
+  await updateDoc(doc(db, 'cuidadoras', id), limpar({ ...camposFicha(dados), rascunho: false }))
 }
 
 // ---- Documentos ----------------------------------------------------------------
@@ -180,14 +212,15 @@ export async function listarDocumentos(cuidadoraId: string): Promise<DocumentoCu
 export async function anexarDocumento(
   cuidadoraId: string,
   arq: PreparadoParaAnexo,
-): Promise<void> {
-  await addDoc(collection(db, 'cuidadoras', cuidadoraId, 'documentos'), {
+): Promise<string> {
+  const ref = await addDoc(collection(db, 'cuidadoras', cuidadoraId, 'documentos'), {
     nome: arq.nome,
     tipo: arq.tipo,
     tamanho: arq.tamanho,
     dataUrl: arq.dataUrl,
     criado_em: agora(),
   })
+  return ref.id
 }
 
 export async function removerDocumento(cuidadoraId: string, docId: string): Promise<void> {

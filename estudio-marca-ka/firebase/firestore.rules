@@ -81,13 +81,20 @@ service cloud.firestore {
 //     match /site_metricas/{id} { allow read, write: if ehKA(); }
 //
 //     // CUIDADORAS (controle pessoal da KA): o link público /cadastro-cuidadora
-//     // pode CRIAR a ficha e os documentos anexados; ler/editar/apagar só a KA.
+//     // pode CRIAR a ficha e os documentos anexados. O auto-salvamento também
+//     // ATUALIZA a própria ficha ENQUANTO é rascunho (ainda não enviada e não
+//     // revisada pela KA); depois de enviada/revisada, só a KA edita.
 //     match /cuidadoras/{id} {
 //       allow create: if true;
-//       allow read, update, delete: if ehKA();
+//       allow update: if ehKA()
+//         || (resource.data.rascunho == true && resource.data.revisado == false);
+//       allow read, delete: if ehKA();
 //       match /documentos/{docId} {
 //         allow create: if true;
-//         allow read, update, delete: if ehKA();
+//         // remover um anexo durante o preenchimento (rascunho) é liberado.
+//         allow delete: if ehKA()
+//           || get(/databases/$(database)/documents/cuidadoras/$(id)).data.rascunho == true;
+//         allow read, update: if ehKA();
 //       }
 //     }
 //   }
