@@ -50,7 +50,6 @@ function audioDoVideo(video: HTMLVideoElement): MediaStream {
 // Embute as fontes da KA (self-hosted) como base64 e passa direto ao
 // html-to-image. Assim ele NÃO tenta varrer/baixar as fontes do Google
 // (cross-origin), que travavam o embed e faziam o cabeçalho cair no fallback.
-let cacheFontCss: string | null = null
 function bufParaBase64(buf: ArrayBuffer): string {
   const bytes = new Uint8Array(buf)
   let bin = ''
@@ -60,27 +59,35 @@ function bufParaBase64(buf: ArrayBuffer): string {
   }
   return btoa(bin)
 }
-async function fontEmbedCssKA(): Promise<string> {
-  if (cacheFontCss !== null) return cacheFontCss
-  // Só a Montserrat: é a fonte do card de Mídia (cabeçalho, texto, rodapé) e o
-  // único que gera moldura/vídeo. Embutir as 4 fontes deixava o SVG grande
-  // demais e travava o Safari do iPhone em "Preparando a moldura".
-  const fontes = [
-    { fam: 'Montserrat KA', style: 'normal', weight: '100 900', file: 'montserrat-var.woff2' },
-  ]
-  const partes = await Promise.all(
-    fontes.map(async (f) => {
-      try {
-        const res = await fetch(`/clientes/ka/fonts/${f.file}`)
-        const b64 = bufParaBase64(await res.arrayBuffer())
-        return `@font-face{font-family:'${f.fam}';font-style:${f.style};font-weight:${f.weight};font-display:block;src:url(data:font/woff2;base64,${b64}) format('woff2');}`
-      } catch {
-        return ''
-      }
-    }),
-  )
-  cacheFontCss = partes.join('\n')
-  return cacheFontCss
+async function embutirFonte(fam: string, weight: string, url: string): Promise<string> {
+  try {
+    const res = await fetch(url)
+    const b64 = bufParaBase64(await res.arrayBuffer())
+    return `@font-face{font-family:'${fam}';font-style:normal;font-weight:${weight};font-display:block;src:url(data:font/woff2;base64,${b64}) format('woff2');}`
+  } catch {
+    return ''
+  }
+}
+
+// Fontes embutidas por cliente, para o html-to-image NÃO varrer o Google Fonts
+// (cross-origin) e não cair no fallback. Embutimos SÓ o necessário para o card
+// que gera moldura/vídeo, senão o SVG fica grande e trava o Safari do iPhone:
+//  - KA (card Mídia): Montserrat (cabeçalho, texto, rodapé).
+//  - Shapes (card Capa): Montilla peso 500 (título + logo).
+const cacheFontCss: Record<string, string> = {}
+async function fontEmbedCss(cliente: 'ka' | 'shapes'): Promise<string> {
+  if (cacheFontCss[cliente] != null) return cacheFontCss[cliente]
+  const partes =
+    cliente === 'shapes'
+      ? [await embutirFonte('Montilla', '500', '/clientes/shapes/fonts/montilla-500.woff2')]
+      : [await embutirFonte('Montserrat KA', '100 900', '/clientes/ka/fonts/montserrat-var.woff2')]
+  cacheFontCss[cliente] = partes.filter(Boolean).join('\n')
+  return cacheFontCss[cliente]
+}
+
+// Descobre o cliente pelo nó do card (para escolher as fontes certas).
+function clienteDoNode(node: HTMLElement): 'ka' | 'shapes' {
+  return /shapes/.test(node.className || '') || node.querySelector('[class*="shapes-"]') ? 'shapes' : 'ka'
 }
 
 function carregarImg(src: string): Promise<HTMLImageElement> {
@@ -214,7 +221,7 @@ async function molduraComJanela(
   const rect = medirJanela(node)
 
   await garantirFontesKA()
-  const fontEmbedCSS = await fontEmbedCssKA()
+  const fontEmbedCSS = await fontEmbedCss(clienteDoNode(node))
   const opts = {
     pixelRatio,
     width: W,

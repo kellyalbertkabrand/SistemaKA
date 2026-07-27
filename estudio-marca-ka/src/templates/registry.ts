@@ -233,10 +233,11 @@ export const TEMPLATES: Template[] = [
     campos: [
       {
         id: 'foto',
-        label: 'Foto',
+        label: 'Foto ou vídeo',
         tipo: 'imagem',
         obrigatorio: true,
-        ajuda: 'Use "Tamanho da foto" para a foto ocupar o card todo (100%) ou aparecer menor, mostrando a cor de fundo em volta.',
+        aceitaVideo: true,
+        ajuda: 'Aceita foto OU vídeo. Use "Tamanho da foto" para ocupar o card todo (100%) ou menor, mostrando a cor de fundo em volta. Com vídeo, dá para baixar a moldura (p/ CapCut) ou o vídeo pronto com áudio.',
       },
       {
         id: 'cor_fundo',

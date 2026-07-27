@@ -268,9 +268,14 @@ margens. Enquadramento (posição/zoom) fica em `foto_x`, `foto_y`, `foto_zoom`
    OU cor escolhida; estrelas; card branco). Tem campo `cor_fundo` cuja 1ª
    amostra é a textura laranja (`url(...)`, padrão).
 2. **shapes-produto** — Post de Produto (foto em forma + cor de fundo + texto).
-3. **shapes-capa** — Capa (foto redimensionável revelando a cor de fundo +
-   título + logo). Campos `cor_fundo` e `cor_fonte`; título e logo seguem a cor
-   do texto. `foto_area` controla o tamanho (100% = tela cheia).
+3. **shapes-capa** — Capa (foto OU **vídeo** redimensionável revelando a cor de
+   fundo + título + logo). Campos `cor_fundo` e `cor_fonte`; título e logo
+   seguem a cor do texto. `foto_area` controla o tamanho (100% = tela cheia).
+   **Aceita vídeo** (`aceitaVideo`, jul/2026 — 1º card de vídeo da Shapes, tipo
+   capa de reels): quando é vídeo, exporta PNG, moldura (p/ CapCut) e MP4 com
+   áudio (`exportarVideo.ts`). O export detecta o cliente pelo nó
+   (`clienteDoNode`) e embute só a fonte necessária — Shapes = Montilla 500 (o
+   peso do título/logo), para o SVG não pesar e travar o iPhone.
 4. **shapes-frase** — Frase + foto (carrossel 03): fundo creme, texto em cima,
    foto no meio (redimensionável, moldura 76%×66%), texto embaixo. **Sem logo.**
    Itálico com `*asteriscos*`. Campos `cor_fundo`/`cor_fonte`. `areaPadrao: 100`.

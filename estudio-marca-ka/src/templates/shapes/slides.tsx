@@ -20,6 +20,7 @@ export function ShapesCapaCard({ valores, formato }: RenderProps) {
   const fator = Math.min(100, Math.max(60, Number.isFinite(areaRaw) ? areaRaw : 92)) / 100
   const frameW = Math.round(formato.largura * fator)
   const frameH = Math.round(formato.altura * fator)
+  const ehVideo = String(valores.foto_kind) === 'video' || foto.startsWith('data:video') || foto.startsWith('blob:')
 
   return (
     <div
@@ -28,7 +29,11 @@ export function ShapesCapaCard({ valores, formato }: RenderProps) {
     >
       <div className="foto-frame" style={{ width: frameW, height: frameH }}>
         {foto ? (
-          <img className="bg" src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+          ehVideo ? (
+            <video className="bg" src={foto} style={estiloImagem(valores, 'foto')} autoPlay muted loop playsInline />
+          ) : (
+            <img className="bg" src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+          )
         ) : (
           <div className="bg-ph">Sua foto aqui</div>
         )}
