@@ -137,6 +137,22 @@
 .gestao-acoes .espaco {
   flex: 1;
 }
+/* Botão "Enviar pelo WhatsApp" (verde do WhatsApp). */
+.btn--wpp {
+  background: #25d366;
+  border-color: #25d366;
+  color: #0b3d20;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.btn--wpp:hover {
+  background: #1eb457;
+  border-color: #1eb457;
+}
+
 /* Seletor "Ordenar por" (fica à direita das chips). */
 .gestao-acoes .ordenar {
   margin-left: auto;

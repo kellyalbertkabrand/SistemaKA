@@ -4,18 +4,28 @@ import {
   criarRascunhoCuidadora,
   atualizarRascunhoCuidadora,
   finalizarCuidadora,
-  anexarDocumento,
-  removerDocumento,
-  prepararArquivo,
   type FichaCuidadora,
-  type PreparadoParaAnexo,
 } from '../../lib/cuidadoras'
 import '../../styles/gestao.css'
 
 // Chave do rascunho no navegador (guarda o id do doc + os valores já digitados).
 const CHAVE = 'cuidadora-cadastro-rascunho'
 
-type Anexo = PreparadoParaAnexo & { docId?: string }
+// WhatsApp da KA (só dígitos, com DDI 55). Ex.: '5551999999999'. Vazio abre o
+// WhatsApp sem destinatário fixo (a pessoa escolhe o contato).
+const WHATSAPP_KA = ''
+
+// Link do WhatsApp com a mensagem dos documentos já escrita.
+function linkWhatsAppDocs(nome: string): string {
+  const msg = [
+    `Olá! Aqui é ${nome.trim() || '[meu nome]'}, sobre o cadastro de cuidadora.`,
+    'Estou enviando meus documentos:',
+    '• Comprovante de residência atualizado',
+    '• Foto atualizada do meu documento com o CPF',
+  ].join('\n')
+  const base = WHATSAPP_KA ? `https://wa.me/${WHATSAPP_KA}` : 'https://wa.me/'
+  return `${base}?text=${encodeURIComponent(msg)}`
+}
 
 // Página pública: a pessoa que vai começar a trabalhar preenche a própria
 // ficha e anexa os documentos. Link: /cadastro-cuidadora
@@ -41,13 +51,10 @@ export function CuidadoraCadastro() {
   }
 
   const [f, setF] = useState<FichaCuidadora>(inicial.current.valores)
-  const [arquivos, setArquivos] = useState<Anexo[]>([])
-  const [preparando, setPreparando] = useState(false)
   const [enviando, setEnviando] = useState(false)
   const [pronto, setPronto] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
   const [salvo, setSalvo] = useState<'idle' | 'salvando' | 'salvo'>('idle')
-  const inputRef = useRef<HTMLInputElement>(null)
   const idRef = useRef<string | null>(inicial.current.id)
   const criacaoRef = useRef<Promise<string> | null>(null)
 
@@ -101,46 +108,6 @@ export function CuidadoraCadastro() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [f, pronto])
 
-  async function escolherArquivos(files: FileList | null) {
-    if (!files?.length) return
-    setPreparando(true)
-    setErro(null)
-    try {
-      const novos: Anexo[] = []
-      for (const file of Array.from(files)) novos.push(await prepararArquivo(file))
-      setArquivos((atual) => [...atual, ...novos])
-      // Auto-anexa ao rascunho (salva o documento na hora).
-      const id = await garantirRascunho()
-      if (id) {
-        for (const n of novos) {
-          try {
-            const docId = await anexarDocumento(id, n)
-            setArquivos((atual) => atual.map((x) => (x === n ? { ...x, docId } : x)))
-          } catch {
-            /* deixa para reenviar no "Enviar" */
-          }
-        }
-      }
-    } catch (e) {
-      setErro(e instanceof Error ? e.message : String(e))
-    } finally {
-      setPreparando(false)
-      if (inputRef.current) inputRef.current.value = ''
-    }
-  }
-
-  async function removerArquivo(i: number) {
-    const alvo = arquivos[i]
-    setArquivos((atual) => atual.filter((_, idx) => idx !== i))
-    if (alvo?.docId && idRef.current) {
-      try {
-        await removerDocumento(idRef.current, alvo.docId)
-      } catch {
-        /* ignora */
-      }
-    }
-  }
-
   async function enviar(e: FormEvent) {
     e.preventDefault()
     if (!f.nome.trim()) return
@@ -148,21 +115,8 @@ export function CuidadoraCadastro() {
     setErro(null)
     try {
       const id = await garantirRascunho()
-      if (id) {
-        // Garante que todos os documentos foram anexados, depois finaliza.
-        for (const arq of arquivos) {
-          if (!arq.docId) {
-            try {
-              arq.docId = await anexarDocumento(id, arq)
-            } catch {
-              /* segue */
-            }
-          }
-        }
-        await finalizarCuidadora(id, { ...f, nome: f.nome.trim() })
-      } else {
-        await cadastrarCuidadoraPublico({ ...f, nome: f.nome.trim() }, arquivos)
-      }
+      if (id) await finalizarCuidadora(id, { ...f, nome: f.nome.trim() })
+      else await cadastrarCuidadoraPublico({ ...f, nome: f.nome.trim() })
       try {
         localStorage.removeItem(CHAVE)
       } catch {
@@ -185,8 +139,9 @@ export function CuidadoraCadastro() {
             <h1>Cadastro recebido! ✅</h1>
           </div>
           <p style={{ marginTop: '0.6rem', color: 'var(--t-500)', lineHeight: 1.6 }}>
-            Obrigada! Seus dados e documentos foram enviados com sucesso. A Kelly vai revisar e
-            entrar em contato com você.
+            Obrigada! Seus dados foram enviados. Se ainda não mandou o <strong>comprovante de
+            residência</strong> e a <strong>foto do documento com o CPF</strong> pelo WhatsApp, é só
+            enviar. A Kelly vai revisar e entrar em contato com você.
           </p>
           <div className="pub-rodape">Sistema Visual de Publicações da Marca · KA</div>
         </div>
@@ -201,8 +156,8 @@ export function CuidadoraCadastro() {
           <div className="eyebrow">Cadastro de cuidadora</div>
           <h1>Ficha de cadastro</h1>
           <div className="pub-doc__meta">
-            Preencha os seus dados e anexe os documentos pedidos. Campos com * são obrigatórios.{' '}
-            <strong>Vai salvando sozinho</strong> conforme você preenche.
+            Preencha os seus dados e envie os documentos pelo WhatsApp. Campos com * são
+            obrigatórios. <strong>Vai salvando sozinho</strong> conforme você preenche.
           </div>
         </div>
 
@@ -300,59 +255,21 @@ export function CuidadoraCadastro() {
           </div>
 
           <h3 style={{ fontSize: '1rem', margin: '0.6rem 0 0.5rem' }}>Documentos</h3>
-          <p style={{ fontSize: '0.8rem', color: 'var(--t-500)', marginBottom: '0.8rem' }}>
-            Anexe fotos do RG e do CPF (frente e verso) e um comprovante de endereço. Pode tirar a
-            foto na hora pelo celular, as imagens são compactadas sozinhas.
+          <p style={{ fontSize: '0.85rem', color: 'var(--t-500)', marginBottom: '0.6rem', lineHeight: 1.55 }}>
+            Envie estes dois documentos <strong>pelo WhatsApp</strong> (é só tirar a foto e mandar):
           </p>
-
-          <input
-            ref={inputRef}
-            type="file"
-            multiple
-            accept="image/*,.pdf"
-            style={{ display: 'none' }}
-            onChange={(e) => void escolherArquivos(e.target.files)}
-          />
-          <p style={{ marginBottom: '0.8rem' }}>
-            <button
-              type="button"
-              className="btn--voltar"
-              disabled={preparando}
-              onClick={() => inputRef.current?.click()}
-            >
-              {preparando ? 'Processando…' : '+ Anexar documento'}
-            </button>
+          <ul style={{ fontSize: '0.88rem', margin: '0 0 0.9rem', paddingLeft: '1.1rem', lineHeight: 1.7 }}>
+            <li>Comprovante de residência atualizado</li>
+            <li>Foto atualizada do seu documento com o CPF</li>
+          </ul>
+          <p style={{ marginBottom: '1.1rem' }}>
+            <a className="btn btn--wpp" href={linkWhatsAppDocs(f.nome)} target="_blank" rel="noopener noreferrer">
+              📲 Enviar documentos pelo WhatsApp
+            </a>
           </p>
-
-          {arquivos.length > 0 && (
-            <ul style={{ listStyle: 'none', marginBottom: '1rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              {arquivos.map((a, i) => (
-                <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.82rem' }}>
-                  {a.tipo.startsWith('image/') ? (
-                    <img
-                      src={a.dataUrl}
-                      alt=""
-                      style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 8, border: '1px solid rgba(15,25,35,0.1)' }}
-                    />
-                  ) : (
-                    <span>📄</span>
-                  )}
-                  <span style={{ flex: 1 }}>{a.nome}</span>
-                  {a.docId && <span style={{ color: '#2e6b45', fontSize: '0.72rem' }}>salvo ✓</span>}
-                  <button
-                    type="button"
-                    className="btn-mini btn-mini--perigo"
-                    onClick={() => void removerArquivo(i)}
-                  >
-                    Remover
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
 
           <div className="pub-acoes" style={{ alignItems: 'center', gap: '0.8rem' }}>
-            <button className="btn" type="submit" disabled={enviando || preparando || !f.nome.trim()}>
+            <button className="btn" type="submit" disabled={enviando || !f.nome.trim()}>
               {enviando ? 'Enviando…' : 'Enviar cadastro'}
             </button>
             <span style={{ fontSize: '0.78rem', color: 'var(--t-500)' }}>
