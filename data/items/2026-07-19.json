@@ -1,7 +1,7 @@
 {
   "date": "2026-07-19",
-  "generated_at": "2026-07-21T08:14:38.025640+00:00",
-  "count": 21,
+  "generated_at": "2026-07-27T09:37:46.197738+00:00",
+  "count": 22,
   "items": [
     {
       "title": "Porto de Caruaru faz rebranding no escudo para volta ao Estadual; veja novos uniformes - Blog de Cassio Zirpoli",
@@ -233,6 +233,27 @@
       "score": 9,
       "fetched_at": "2026-07-20T08:43:11.005862+00:00",
       "id": "3970a8d9589a075d"
+    },
+    {
+      "title": "Influenciador IShowSpeed comemora título da Espanha após polêmica com torcida da Argentina na Copa - O GLOBO",
+      "link": "https://oglobo.globo.com/esportes/copa-do-mundo-2026/noticia/2026/07/19/influenciador-ishowspeed-comemora-titulo-da-espanha-apos-polemica-com-torcida-da-argentina-na-copa.ghtml",
+      "source": "O GLOBO",
+      "lang": "pt",
+      "region": "BR",
+      "category": "influencer",
+      "kind": "noticia",
+      "published": "2026-07-19",
+      "raw_summary": "Durante torneio, streamer de 21 anos foi atacado por torcedores argentinos com gestos racistas por torcer para rivais",
+      "title_pt": "",
+      "summary_pt": "Streamer enfrenta ataques racistas por escolha de torcida e aprende lição sobre impacto de posicionamento público.",
+      "angle_pt": "",
+      "pme_pt": "",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 9,
+      "fetched_at": "2026-07-27T09:34:27.973885+00:00",
+      "id": "36015a905a0ddbcc"
     },
     {
       "title": "Boa experiência faz 78% dos consumidores aceitarem pagar mais - Diário dos Campos",
