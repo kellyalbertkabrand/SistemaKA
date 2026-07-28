@@ -459,8 +459,11 @@ export async function gerarVideoBlob(
 
   // Encerra a gravação quando: o vídeo termina; OU ele TRAVA (currentTime parou
   // de avançar por ~2,5s — acontece quando a pessoa rola/sai da aba no iPhone);
-  // OU um teto absoluto de 65s. Assim o botão NUNCA fica preso.
+  // OU nunca começou a tocar (currentTime preso em ~0 por ~6s — comum quando há
+  // muitos vídeos disputando no iPhone); OU um teto absoluto de 65s. Assim o
+  // botão NUNCA fica preso.
   let cancelado = false
+  let avancou = false
   await new Promise<void>((resolve) => {
     let ultimo = -1
     let mudouEm = performance.now()
@@ -481,8 +484,10 @@ export async function gerarVideoBlob(
         ultimo = ct
         mudouEm = performance.now()
       }
+      if (ct > 0.2) avancou = true
       const travou = ct > 0.2 && performance.now() - mudouEm > 2500
-      if (video.ended || travou || decorrido > 65) {
+      const naoIniciou = !avancou && decorrido > 6
+      if (video.ended || travou || naoIniciou || decorrido > 65) {
         clearInterval(prog)
         resolve()
       }
@@ -499,6 +504,14 @@ export async function gerarVideoBlob(
 
   // Cancelado pelo usuário: descarta o que gravou e avisa o rodar (sem erro visível).
   if (cancelado) throw new Error(CANCELADO)
+
+  // Nunca tocou: em vez de entregar um vídeo vazio, avisa com clareza.
+  if (!avancou) {
+    throw new Error(
+      'Não consegui reproduzir este vídeo para gravar (comum no iPhone quando há vários vídeos). ' +
+        'Use "Baixar moldura (PNG)" e monte no CapCut, ou tente no Chrome do computador.',
+    )
+  }
 
   const blob = new Blob(chunks, { type: mime?.startsWith('video/mp4') ? 'video/mp4' : 'video/webm' })
   const ext = mime?.startsWith('video/mp4') ? 'mp4' : 'webm'

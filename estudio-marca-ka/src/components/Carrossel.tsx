@@ -149,6 +149,10 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   const nodeRefs = useRef<(HTMLDivElement | null)[]>([])
   // Nó do slide VISÍVEL (usado no vídeo: o card precisa estar visível/tocando).
   const stageRef = useRef<HTMLDivElement>(null)
+  // Container fora da tela com TODOS os slides (p/ exportar PNG). Os vídeos ali
+  // ficam PAUSADOS — se todos tocarem juntos, o iPhone limita e o vídeo do palco
+  // não avança, e a gravação fica presa esperando (o "fica rodando sem salvar").
+  const offscreenRef = useRef<HTMLDivElement>(null)
 
   const slide = slides[sel]
   const template = porId(slide.templateId)
@@ -167,6 +171,26 @@ export function Carrossel({ templates }: { templates: Template[] }) {
 
   const previewW = 320
   const escala = previewW / formato.largura
+
+  // Mantém PAUSADOS os vídeos do container fora da tela (todos os slides). Só o
+  // vídeo do palco (o slide visível) toca — assim o iPhone não estrangula a
+  // reprodução e a gravação do vídeo não trava esperando o quadro avançar.
+  useEffect(() => {
+    const parar = () => {
+      offscreenRef.current?.querySelectorAll('video').forEach((v) => {
+        try {
+          v.pause()
+          v.currentTime = 0
+        } catch {
+          /* ignora */
+        }
+      })
+    }
+    parar()
+    // O autoplay pode disparar logo após montar; repausa uma vez depois.
+    const t = setTimeout(parar, 400)
+    return () => clearTimeout(t)
+  }, [slides])
 
   function addSlide() {
     if (slides.length >= MAX_SLIDES) return
@@ -708,7 +732,7 @@ export function Carrossel({ templates }: { templates: Template[] }) {
       </div>
 
       {/* Nós em tamanho real (escondidos) para exportação */}
-      <div className="carrossel__offscreen" aria-hidden>
+      <div className="carrossel__offscreen" aria-hidden ref={offscreenRef}>
         {slides.map((s, i) => {
           const t = porId(s.templateId)
           const R = t.render
