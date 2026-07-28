@@ -271,11 +271,27 @@ margens. Enquadramento (posição/zoom) fica em `foto_x`, `foto_y`, `foto_zoom`
 3. **shapes-capa** — Capa (foto OU **vídeo** redimensionável revelando a cor de
    fundo + título + logo). Campos `cor_fundo` e `cor_fonte`; título e logo
    seguem a cor do texto. `foto_area` controla o tamanho (100% = tela cheia).
-   **Aceita vídeo** (`aceitaVideo`, jul/2026 — 1º card de vídeo da Shapes, tipo
-   capa de reels): quando é vídeo, exporta PNG, moldura (p/ CapCut) e MP4 com
-   áudio (`exportarVideo.ts`). O export detecta o cliente pelo nó
-   (`clienteDoNode`) e embute só a fonte necessária — Shapes = Montilla 500 (o
-   peso do título/logo), para o SVG não pesar e travar o iPhone.
+   **Aceita vídeo** (`aceitaVideo`, jul/2026): quando é vídeo, exporta PNG,
+   moldura (p/ CapCut) e MP4 com áudio (`exportarVideo.ts`). O export detecta o
+   cliente pelo nó (`clienteDoNode`) e embute só a fonte necessária — Shapes =
+   Montilla 500 (o peso do título/logo), para o SVG não pesar e travar o iPhone.
+
+   > **VÍDEO EM TODOS OS CARDS COM FOTO (jul/2026):** o `aceitaVideo` foi ligado
+   > em TODOS os templates da Shapes que usam foto (produto, frase, grafismo,
+   > cores, forma, cta) — não só a Capa. O `exportarVideo.ts` foi generalizado
+   > (`caminhoJanela`/`videoSobreposto`/`medirJanela`→`Janela{...forma}`):
+   > • Cards de **vídeo-FUNDO** (capa/cta — texto/logo POR CIMA do vídeo): a
+   >   moldura NÃO perfura mais a janela (era o que apagava o título/logo no
+   >   MP4); o fundo do card fica transparente (`.moldura-video--sobreposto`) e o
+   >   canvas pinta a cor do card atrás do vídeo. Conserta "saiu o vídeo mas sem
+   >   o logo e o texto".
+   > • Cards com **janela em forma orgânica** (produto/cores/forma): o recorte do
+   >   vídeo e o furo da moldura seguem a forma (`Path2D`+`DOMMatrix`), lendo
+   >   `data-forma` na `.foto-blob`.
+   > • Cards com **janela retangular** (frase/grafismo + mídia da KA) seguem
+   >   perfurando o retângulo (raio 18 na KA). `EditorPeca` detecta o vídeo de
+   >   forma genérica (`data:video`/`_kind`), então os 3 botões de export
+   >   aparecem em qualquer card com vídeo.
 4. **shapes-frase** — Frase + foto (carrossel 03): fundo creme, texto em cima,
    foto no meio (redimensionável, moldura 76%×66%), texto embaixo. **Sem logo.**
    Itálico com `*asteriscos*`. Campos `cor_fundo`/`cor_fonte`. `areaPadrao: 100`.
