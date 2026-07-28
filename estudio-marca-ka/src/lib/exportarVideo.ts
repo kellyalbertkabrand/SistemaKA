@@ -220,6 +220,8 @@ interface Janela {
   h: number
   /** id da forma orgânica (shape-blob1…) OU null para retângulo. */
   forma: string | null
+  /** raio dos cantos do retângulo (px reais); ignorado se `forma` != null. */
+  raio: number
 }
 function medirJanela(node: HTMLElement): Janela {
   const W = node.offsetWidth
@@ -236,12 +238,17 @@ function medirJanela(node: HTMLElement): Janela {
   const fr = frameEl.getBoundingClientRect()
   // Forma orgânica: os cards da Shapes marcam a foto-blob com data-forma.
   const forma = frameEl.getAttribute?.('data-forma') || null
+  // Raio real dos cantos (o card é medido em 1080px, então o computed style já
+  // vem em px reais — mesmo com o preview escalado). Assim o recorte do vídeo
+  // bate com a moldura: KA (18px) arredonda, frase/grafismo/capa (0) são retos.
+  const raio = forma ? 0 : parseFloat(getComputedStyle(frameEl).borderTopLeftRadius) || 0
   return {
     x: ((fr.left - cardRect.left) / cardRect.width) * W,
     y: ((fr.top - cardRect.top) / cardRect.height) * H,
     w: (fr.width / cardRect.width) * W,
     h: (fr.height / cardRect.height) * H,
     forma,
+    raio,
   }
 }
 
@@ -307,7 +314,7 @@ async function molduraComJanela(
   // já estão por cima e não há nada para perfurar). A forma pode ser orgânica.
   if (!sobreposto) {
     ctx.globalCompositeOperation = 'destination-out'
-    ctx.fill(caminhoJanela(rect, rect.forma, pixelRatio))
+    ctx.fill(caminhoJanela(rect, rect.forma, pixelRatio, rect.raio))
     ctx.globalCompositeOperation = 'source-over'
   }
   return { canvas, rect, sobreposto }
@@ -430,11 +437,10 @@ export async function gerarVideoBlob(
       const dx = rect.x + (rect.w - dw) / 2
       const dy = rect.y + (rect.h - dh) / 2
       ctx.save()
-      // Recorta o vídeo na FORMA da janela (retângulo arredondado OU forma
-      // orgânica da Shapes). Nos cards de vídeo-fundo (capa/cta) a moldura por
-      // cima cobre o resto; nos de janela, a moldura foi perfurada. Vídeo-fundo
-      // usa canto reto (raio 0) — o próprio card já define o recorte.
-      ctx.clip(caminhoJanela(rect, rect.forma, 1, sobreposto ? 0 : 18))
+      // Recorta o vídeo na FORMA da janela (retângulo com o raio real do frame
+      // OU forma orgânica da Shapes). Nos cards de vídeo-fundo (capa/cta) a
+      // moldura por cima cobre o resto; nos de janela, a moldura foi perfurada.
+      ctx.clip(caminhoJanela(rect, rect.forma, 1, rect.raio))
       ctx.drawImage(video!, dx, dy, dw, dh)
       ctx.restore()
     }
