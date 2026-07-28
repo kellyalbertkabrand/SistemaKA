@@ -371,8 +371,10 @@ export async function gerarVideoBlob(
   const { canvas: moldura, rect, sobreposto } = await molduraComJanela(node, 1, sinal)
   // Cards de vídeo-fundo (capa/cta): a moldura fica com o fundo do card
   // transparente, então pintamos a cor do card ATRÁS do vídeo (aparece nas
-  // margens quando a foto é menor que o card). Cards com janela não precisam.
-  const corFundoCard = sobreposto ? getComputedStyle(node).backgroundColor : ''
+  // margens quando a foto é menor que o card). O nó exportado é um WRAPPER, então
+  // a cor de fundo está no card interno (.shapes-capa) — lemos dali, não do nó.
+  const cardEl = (node.querySelector('.shapes-capa, .shapes-cta') as HTMLElement | null) ?? node
+  const corFundoCard = sobreposto ? getComputedStyle(cardEl).backgroundColor : ''
 
   const canvas = document.createElement('canvas')
   canvas.width = W

@@ -282,8 +282,12 @@
 }
 /* Cards de vídeo-FUNDO (capa, cta): o texto/logo ficam POR CIMA do vídeo.
    Deixa o fundo do card transparente (o canvas pinta a cor atrás do vídeo) e
-   não perfura nada — assim o título e o logo sobrevivem no vídeo exportado. */
-.moldura-video--sobreposto {
+   não perfura nada — assim o título e o logo sobrevivem no vídeo exportado.
+   O nó exportado é um WRAPPER em volta do card, então a cor de fundo fica na
+   `.shapes-capa`/`.shapes-cta` (via style inline) — precisamos zerá-la ali. */
+.moldura-video--sobreposto,
+.moldura-video--sobreposto .shapes-capa,
+.moldura-video--sobreposto .shapes-cta {
   background: transparent !important;
 }
 .moldura-video--sobreposto .bg,
