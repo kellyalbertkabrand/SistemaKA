@@ -268,6 +268,29 @@
   text-align: center;
 }
 
+/* ---- Exportação de VÍDEO (moldura) ----
+   Cards com JANELA (foto em forma orgânica): esconde a mídia e deixa a
+   foto-blob transparente; o buraco (na forma) é perfurado no canvas e o vídeo
+   aparece por baixo. Vale p/ produto, cores e forma. */
+.moldura-video .foto-blob {
+  background: transparent !important;
+}
+.moldura-video .foto-blob img,
+.moldura-video .foto-blob video,
+.moldura-video .foto-ph {
+  visibility: hidden !important;
+}
+/* Cards de vídeo-FUNDO (capa, cta): o texto/logo ficam POR CIMA do vídeo.
+   Deixa o fundo do card transparente (o canvas pinta a cor atrás do vídeo) e
+   não perfura nada — assim o título e o logo sobrevivem no vídeo exportado. */
+.moldura-video--sobreposto {
+  background: transparent !important;
+}
+.moldura-video--sobreposto .bg,
+.moldura-video--sobreposto .bg-ph {
+  visibility: hidden !important;
+}
+
 /* placeholder comum de foto */
 .shapes-capa .bg-ph,
 .shapes-cores .foto-ph,

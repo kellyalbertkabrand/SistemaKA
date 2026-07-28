@@ -7,6 +7,11 @@ import { ShapesClips, idsClipSeguro } from './ShapesClips'
 import { comEnfase } from './enfase'
 import './shapes.css'
 
+// A foto pode ser um vídeo (data:video / blob:) — o campo aceita os dois.
+function ehArquivoVideo(valores: RenderProps['valores'], foto: string): boolean {
+  return String(valores.foto_kind) === 'video' || foto.startsWith('data:video') || foto.startsWith('blob:')
+}
+
 // 1 · Capa — foto (tamanho ajustável) + título grande + logo.
 // A foto vai de 60% a 100% do card; abaixo de 100% aparece a cor de fundo em volta.
 export function ShapesCapaCard({ valores, formato }: RenderProps) {
@@ -20,7 +25,7 @@ export function ShapesCapaCard({ valores, formato }: RenderProps) {
   const fator = Math.min(100, Math.max(60, Number.isFinite(areaRaw) ? areaRaw : 92)) / 100
   const frameW = Math.round(formato.largura * fator)
   const frameH = Math.round(formato.altura * fator)
-  const ehVideo = String(valores.foto_kind) === 'video' || foto.startsWith('data:video') || foto.startsWith('blob:')
+  const ehVideo = ehArquivoVideo(valores, foto)
 
   return (
     <div
@@ -56,6 +61,7 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
   const corFonte = String(valores.cor_fonte || '#131313')
   const logoUrl = logoShapes(String(valores.cor_logo || 'auto'), cor)
   const uid = idsClipSeguro(useId())
+  const ehVideo = ehArquivoVideo(valores, foto)
   const caixa = caixaFoto(formato.largura - 192, formato.altura - 500, ratioForma(forma), Number(valores.foto_area))
   return (
     <div
@@ -67,6 +73,7 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
       <div className="blob-wrap">
         <div
           className="foto-blob"
+          data-forma={forma}
           style={{
             width: caixa.largura,
             height: caixa.altura,
@@ -75,7 +82,11 @@ export function ShapesCoresCard({ valores, formato }: RenderProps) {
           }}
         >
           {foto ? (
-            <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+            ehVideo ? (
+              <video src={foto} style={estiloImagem(valores, 'foto')} autoPlay muted loop playsInline />
+            ) : (
+              <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+            )
           ) : (
             <div className="foto-ph">Sua foto aqui</div>
           )}
@@ -97,6 +108,7 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
   const corFonte = String(valores.cor_fonte || '#FFFFFF')
   const logoUrl = logoShapes(String(valores.cor_logo || 'auto'), cor)
   const uid = idsClipSeguro(useId())
+  const ehVideo = ehArquivoVideo(valores, foto)
   const story = formato.formato === 'story'
   const caixa = story
     ? caixaFoto(formato.largura - 192, formato.altura - 600, ratioForma(forma), Number(valores.foto_area))
@@ -105,6 +117,7 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
   const blob = (
     <div
       className="foto-blob"
+      data-forma={forma}
       style={{
         width: caixa.largura,
         height: caixa.altura,
@@ -113,7 +126,11 @@ export function ShapesFormaCard({ valores, formato }: RenderProps) {
       }}
     >
       {foto ? (
-        <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+        ehVideo ? (
+          <video src={foto} style={estiloImagem(valores, 'foto')} autoPlay muted loop playsInline />
+        ) : (
+          <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+        )
       ) : (
         <div className="foto-ph">Sua foto aqui</div>
       )}
@@ -164,11 +181,16 @@ export function ShapesCtaCard({ valores, formato }: RenderProps) {
   const fator = Math.min(120, Math.max(60, Number.isFinite(areaRaw) ? areaRaw : 100)) / 100
   const blobW = Math.round(formato.largura * 0.86 * fator)
   const blobH = Math.round(blobW / f.ratio)
+  const ehVideo = ehArquivoVideo(valores, foto)
 
   return (
     <div className="shapes-cta" style={{ width: formato.largura, height: formato.altura, color: corFonte }}>
       {foto ? (
-        <img className="bg" src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+        ehVideo ? (
+          <video className="bg" src={foto} style={estiloImagem(valores, 'foto')} autoPlay muted loop playsInline />
+        ) : (
+          <img className="bg" src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+        )
       ) : (
         <div className="bg-ph">Sua foto aqui</div>
       )}

@@ -18,6 +18,8 @@ export function ShapesFraseCard({ valores, formato }: RenderProps) {
   const fator = Math.min(120, Math.max(60, Number.isFinite(areaRaw) ? areaRaw : 100)) / 100
   const frameW = Math.round(formato.largura * 0.76 * fator)
   const frameH = Math.round(formato.altura * 0.66 * fator)
+  const ehVideo =
+    String(valores.foto_kind) === 'video' || foto.startsWith('data:video') || foto.startsWith('blob:')
 
   return (
     <div
@@ -40,7 +42,11 @@ export function ShapesFraseCard({ valores, formato }: RenderProps) {
         }}
       >
         {foto ? (
-          <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+          ehVideo ? (
+            <video src={foto} style={estiloImagem(valores, 'foto')} autoPlay muted loop playsInline />
+          ) : (
+            <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+          )
         ) : (
           <div className="ph">
             <div className="ph-t1">espaço da imagem</div>

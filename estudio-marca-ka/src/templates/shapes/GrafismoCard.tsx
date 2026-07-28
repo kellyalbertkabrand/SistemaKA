@@ -48,6 +48,8 @@ export function ShapesGrafismoCard({ valores, formato }: RenderProps) {
   const corFonte = String(valores.cor_fonte || '#131313')
   const corGraf = String(valores.cor_grafismo || '#DFC0DF')
   const story = formato.formato === 'story'
+  const ehVideo =
+    String(valores.foto_kind) === 'video' || foto.startsWith('data:video') || foto.startsWith('blob:')
 
   // moldura da foto (base 498 × 58% da altura), escalada pelo "Tamanho da foto".
   const areaRaw = Number(valores.foto_area)
@@ -78,7 +80,11 @@ export function ShapesGrafismoCard({ valores, formato }: RenderProps) {
         style={{ width: fw, height: fh, left: Math.round(cx - fw / 2), top: Math.round(cy - fh / 2) }}
       >
         {foto ? (
-          <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+          ehVideo ? (
+            <video src={foto} style={estiloImagem(valores, 'foto')} autoPlay muted loop playsInline />
+          ) : (
+            <img src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+          )
         ) : (
           <div className="ph">
             <div className="ph-t1">espaço da imagem</div>

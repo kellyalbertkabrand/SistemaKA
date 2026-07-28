@@ -196,10 +196,11 @@ export const TEMPLATES: Template[] = [
     campos: [
       {
         id: 'foto',
-        label: 'Foto do produto',
+        label: 'Foto ou vídeo do produto',
         tipo: 'imagem',
         obrigatorio: true,
-        ajuda: 'Envie uma foto do produto (JPG ou PNG). Fica dentro da forma orgânica.',
+        aceitaVideo: true,
+        ajuda: 'Envie uma foto OU vídeo do produto. Fica dentro da forma orgânica. Com vídeo, dá para baixar a moldura (p/ CapCut) ou o vídeo pronto com áudio.',
       },
       { id: 'forma', label: 'Forma da foto', tipo: 'forma', padrao: 'shape-blob1' },
       {
@@ -285,11 +286,12 @@ export const TEMPLATES: Template[] = [
       },
       {
         id: 'foto',
-        label: 'Foto',
+        label: 'Foto ou vídeo',
         tipo: 'imagem',
         obrigatorio: true,
+        aceitaVideo: true,
         areaPadrao: 100,
-        ajuda: 'Use "Tamanho da foto" para aumentar ou diminuir o espaço da imagem.',
+        ajuda: 'Aceita foto OU vídeo. Use "Tamanho da foto" para aumentar ou diminuir o espaço. Com vídeo, dá para baixar a moldura (p/ CapCut) ou o vídeo pronto com áudio.',
       },
       {
         id: 'texto_baixo',
@@ -323,11 +325,12 @@ export const TEMPLATES: Template[] = [
       },
       {
         id: 'foto',
-        label: 'Foto',
+        label: 'Foto ou vídeo',
         tipo: 'imagem',
         obrigatorio: true,
+        aceitaVideo: true,
         areaPadrao: 100,
-        ajuda: 'Use "Tamanho da foto" para aumentar ou diminuir o espaço da imagem.',
+        ajuda: 'Aceita foto OU vídeo. Use "Tamanho da foto" para aumentar ou diminuir o espaço. Com vídeo, dá para baixar a moldura (p/ CapCut) ou o vídeo pronto com áudio.',
       },
       {
         id: 'texto_baixo',
@@ -358,7 +361,7 @@ export const TEMPLATES: Template[] = [
         opcoes: SWATCHES,
       },
       { id: 'cor_fonte', label: 'Cor do texto', tipo: 'cor', padrao: '#131313', opcoes: SWATCHES },
-      { id: 'foto', label: 'Foto do produto', tipo: 'imagem', obrigatorio: true },
+      { id: 'foto', label: 'Foto ou vídeo do produto', tipo: 'imagem', obrigatorio: true, aceitaVideo: true },
       { id: 'forma', label: 'Forma da foto', tipo: 'forma', padrao: 'shape-blob2' },
       {
         id: 'texto',
@@ -388,7 +391,7 @@ export const TEMPLATES: Template[] = [
         opcoes: SWATCHES,
       },
       { id: 'cor_fonte', label: 'Cor do texto', tipo: 'cor', padrao: '#FFFFFF', opcoes: SWATCHES },
-      { id: 'foto', label: 'Foto do produto', tipo: 'imagem', obrigatorio: true },
+      { id: 'foto', label: 'Foto ou vídeo do produto', tipo: 'imagem', obrigatorio: true, aceitaVideo: true },
       { id: 'forma', label: 'Forma da foto', tipo: 'forma', padrao: 'shape-blob3' },
       {
         id: 'texto',
@@ -412,10 +415,11 @@ export const TEMPLATES: Template[] = [
     campos: [
       {
         id: 'foto',
-        label: 'Foto de fundo',
+        label: 'Foto ou vídeo de fundo',
         tipo: 'imagem',
+        aceitaVideo: true,
         areaPadrao: 100,
-        ajuda: 'Aqui "Tamanho da foto" controla o tamanho da forma orgânica.',
+        ajuda: 'Aceita foto OU vídeo de fundo. Aqui "Tamanho da foto" controla o tamanho da forma orgânica. Com vídeo, dá para baixar a moldura (p/ CapCut) ou o vídeo pronto com áudio.',
       },
       { id: 'forma', label: 'Forma (o texto fica dentro)', tipo: 'forma', padrao: 'shape-blob1' },
       {

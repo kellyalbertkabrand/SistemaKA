@@ -18,6 +18,8 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
   const corFonte = String(valores.cor_fonte || '#FFFFFF')
   const logoUrl = logoShapes(String(valores.cor_logo || 'auto'), cor)
   const uid = idsClipSeguro(useId())
+  const ehVideo =
+    String(valores.foto_kind) === 'video' || foto.startsWith('data:video') || foto.startsWith('blob:')
 
   // caixa da foto com a proporção nativa da forma (contain), para o clip não
   // esticar; tamanho ajustável pelo slider "Tamanho da foto" (foto_area).
@@ -45,6 +47,7 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
       <div className="blob-wrap">
         <div
           className="foto-blob"
+          data-forma={forma}
           style={{
             width: caixa.largura,
             height: caixa.altura,
@@ -53,7 +56,11 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
           }}
         >
           {foto ? (
-            <img src={foto} alt="" style={estiloImagem(valores, 'foto')} />
+            ehVideo ? (
+              <video src={foto} style={estiloImagem(valores, 'foto')} autoPlay muted loop playsInline />
+            ) : (
+              <img src={foto} alt="" style={estiloImagem(valores, 'foto')} />
+            )
           ) : (
             <div className="foto-ph">Sua foto aqui</div>
           )}

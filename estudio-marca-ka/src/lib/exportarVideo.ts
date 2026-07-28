@@ -1,6 +1,7 @@
 import { toPng } from 'html-to-image'
 import { assinarPngDataUrl, metaPadrao, type MetaAssinatura } from './assinatura'
 import { entregarArquivo, dataUrlParaBlob } from './exportar'
+import { FORMAS } from '../templates/formas'
 
 // ============================================================================
 // Exportação de VÍDEO. O card da KA vira um vídeo: desenhamos o vídeo do
@@ -173,34 +174,74 @@ async function garantirFontesKA(): Promise<void> {
   if (document.fonts?.ready) await document.fonts.ready
 }
 
-function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
-  const raio = Math.min(r, w / 2, h / 2)
-  ctx.beginPath()
-  ctx.moveTo(x + raio, y)
-  ctx.arcTo(x + w, y, x + w, y + h, raio)
-  ctx.arcTo(x + w, y + h, x, y + h, raio)
-  ctx.arcTo(x, y + h, x, y, raio)
-  ctx.arcTo(x, y, x + w, y, raio)
-  ctx.closePath()
+// Caminho (Path2D) da janela do vídeo: forma orgânica escalada OU retângulo
+// arredondado. Usado para recortar o vídeo e para perfurar a moldura.
+function caminhoJanela(
+  rect: { x: number; y: number; w: number; h: number },
+  forma: string | null,
+  pr: number,
+  raio = 18,
+): Path2D {
+  const p = new Path2D()
+  const f = forma ? FORMAS.find((x) => x.id === forma) : null
+  if (f) {
+    const base = new Path2D(f.d) // `d` em objectBoundingBox (0–1)
+    const m = new DOMMatrix().translateSelf(rect.x * pr, rect.y * pr).scaleSelf(rect.w * pr, rect.h * pr)
+    p.addPath(base, m)
+  } else {
+    const x = rect.x * pr,
+      y = rect.y * pr,
+      w = rect.w * pr,
+      h = rect.h * pr
+    const r = Math.min(raio * pr, w / 2, h / 2)
+    if (r > 0 && typeof (p as { roundRect?: unknown }).roundRect === 'function') p.roundRect(x, y, w, h, r)
+    else p.rect(x, y, w, h)
+  }
+  return p
+}
+
+// Cards onde o texto/logo ficam POR CIMA do vídeo (o vídeo é o fundo): a moldura
+// não pode "perfurar" a janela (apagaria o texto), então deixamos o fundo
+// transparente e mantemos só o texto/logo por cima.
+function videoSobreposto(node: HTMLElement): boolean {
+  return !!node.querySelector('.shapes-capa, .shapes-cta')
 }
 
 /**
- * Gera e baixa um vídeo (.webm) do card: vídeo do cliente na área de mídia +
- * moldura da KA por cima. `node` é a arte em tamanho real (1080px).
+ * Gera e baixa um vídeo do card: vídeo do cliente na área de mídia + moldura
+ * (texto/logo) por cima. `node` é a arte em tamanho real (1080px).
  */
-// Retângulo da área de mídia dentro do card, em coordenadas reais (1080px).
-function medirJanela(node: HTMLElement) {
+// Janela da mídia dentro do card (coords reais 1080px) + a FORMA da janela
+// (retângulo arredondado ou uma forma orgânica da Shapes).
+interface Janela {
+  x: number
+  y: number
+  w: number
+  h: number
+  /** id da forma orgânica (shape-blob1…) OU null para retângulo. */
+  forma: string | null
+}
+function medirJanela(node: HTMLElement): Janela {
   const W = node.offsetWidth
   const H = node.offsetHeight
   const cardRect = node.getBoundingClientRect()
+  // A "janela" é o elemento que CONTÉM o vídeo (o frame da mídia / a foto).
+  const videoEl = node.querySelector('video') as HTMLElement | null
   const frameEl =
-    (node.querySelector('.midia-frame') as HTMLElement) ?? (node.querySelector('video') as HTMLElement)
+    (videoEl?.parentElement as HTMLElement) ??
+    (node.querySelector('.midia-frame') as HTMLElement) ??
+    (node.querySelector('.foto-blob') as HTMLElement) ??
+    (node.querySelector('.foto-frame') as HTMLElement) ??
+    node
   const fr = frameEl.getBoundingClientRect()
+  // Forma orgânica: os cards da Shapes marcam a foto-blob com data-forma.
+  const forma = frameEl.getAttribute?.('data-forma') || null
   return {
     x: ((fr.left - cardRect.left) / cardRect.width) * W,
     y: ((fr.top - cardRect.top) / cardRect.height) * H,
     w: (fr.width / cardRect.width) * W,
     h: (fr.height / cardRect.height) * H,
+    forma,
   }
 }
 
@@ -215,10 +256,11 @@ async function molduraComJanela(
   node: HTMLElement,
   pixelRatio: number,
   sinal?: AbortSignal,
-): Promise<{ canvas: HTMLCanvasElement; rect: { x: number; y: number; w: number; h: number } }> {
+): Promise<{ canvas: HTMLCanvasElement; rect: Janela; sobreposto: boolean }> {
   const W = node.offsetWidth
   const H = node.offsetHeight
   const rect = medirJanela(node)
+  const sobreposto = videoSobreposto(node)
 
   await garantirFontesKA()
   const fontEmbedCSS = await fontEmbedCss(clienteDoNode(node))
@@ -234,7 +276,11 @@ async function molduraComJanela(
     fontEmbedCSS,
     style: { transform: 'none', margin: '0' },
   }
-  node.classList.add('moldura-video')
+  // Cards onde o vídeo é FUNDO (capa/cta): o texto/logo ficam por cima, então
+  // não escondemos a mídia com a classe — só a deixamos transparente (o próprio
+  // <video> é excluído pelo filtro). Cards com JANELA (mídia da KA, forma da
+  // Shapes): a classe esconde a mídia e o buraco é perfurado no canvas.
+  node.classList.add(sobreposto ? 'moldura-video--sobreposto' : 'moldura-video')
   let molduraUrl: string
   try {
     // Uma única rasterização, com tempo limite: o toPng do Safari às vezes
@@ -248,7 +294,7 @@ async function molduraComJanela(
       sinal,
     )
   } finally {
-    node.classList.remove('moldura-video')
+    node.classList.remove('moldura-video', 'moldura-video--sobreposto')
   }
   const img = await carregarImg(molduraUrl)
 
@@ -257,11 +303,14 @@ async function molduraComJanela(
   canvas.height = H * pixelRatio
   const ctx = canvas.getContext('2d')!
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-  ctx.globalCompositeOperation = 'destination-out'
-  roundRect(ctx, rect.x * pixelRatio, rect.y * pixelRatio, rect.w * pixelRatio, rect.h * pixelRatio, 18 * pixelRatio)
-  ctx.fill()
-  ctx.globalCompositeOperation = 'source-over'
-  return { canvas, rect }
+  // Perfura a janela (só nos cards com janela — no vídeo-de-fundo o texto/logo
+  // já estão por cima e não há nada para perfurar). A forma pode ser orgânica.
+  if (!sobreposto) {
+    ctx.globalCompositeOperation = 'destination-out'
+    ctx.fill(caminhoJanela(rect, rect.forma, pixelRatio))
+    ctx.globalCompositeOperation = 'source-over'
+  }
+  return { canvas, rect, sobreposto }
 }
 
 /**
@@ -319,7 +368,11 @@ export async function gerarVideoBlob(
 
   aoProgresso?.('Preparando a moldura…')
   // Moldura com a janela perfurada — o vídeo aparece por baixo dela.
-  const { canvas: moldura, rect } = await molduraComJanela(node, 1, sinal)
+  const { canvas: moldura, rect, sobreposto } = await molduraComJanela(node, 1, sinal)
+  // Cards de vídeo-fundo (capa/cta): a moldura fica com o fundo do card
+  // transparente, então pintamos a cor do card ATRÁS do vídeo (aparece nas
+  // margens quando a foto é menor que o card). Cards com janela não precisam.
+  const corFundoCard = sobreposto ? getComputedStyle(node).backgroundColor : ''
 
   const canvas = document.createElement('canvas')
   canvas.width = W
@@ -362,6 +415,10 @@ export async function gerarVideoBlob(
 
   function desenhaQuadro() {
     ctx.clearRect(0, 0, W, H)
+    if (corFundoCard) {
+      ctx.fillStyle = corFundoCard
+      ctx.fillRect(0, 0, W, H)
+    }
     const vw = video!.videoWidth
     const vh = video!.videoHeight
     if (vw && vh) {
@@ -371,8 +428,11 @@ export async function gerarVideoBlob(
       const dx = rect.x + (rect.w - dw) / 2
       const dy = rect.y + (rect.h - dh) / 2
       ctx.save()
-      roundRect(ctx, rect.x, rect.y, rect.w, rect.h, 18)
-      ctx.clip()
+      // Recorta o vídeo na FORMA da janela (retângulo arredondado OU forma
+      // orgânica da Shapes). Nos cards de vídeo-fundo (capa/cta) a moldura por
+      // cima cobre o resto; nos de janela, a moldura foi perfurada. Vídeo-fundo
+      // usa canto reto (raio 0) — o próprio card já define o recorte.
+      ctx.clip(caminhoJanela(rect, rect.forma, 1, sobreposto ? 0 : 18))
       ctx.drawImage(video!, dx, dy, dw, dh)
       ctx.restore()
     }
