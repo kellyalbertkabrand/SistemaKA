@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { Campo, ValoresPeca } from '../templates/types'
 import { FORMAS } from '../templates/formas'
 import { TEXTURAS_KA, estiloTextura } from '../templates/ka/texturas'
@@ -47,6 +48,9 @@ function reduzirImagem(file: File, maxDim: number, qualidade: number): Promise<s
 
 export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
   const { mostrar } = useToast()
+  // Vídeos que ainda estão decodificando (mostra "Carregando vídeo…" até o card
+  // conseguir exibir). Um vídeo grande leva alguns segundos para o 1º quadro.
+  const [carregandoVideo, setCarregandoVideo] = useState<Record<string, boolean>>({})
   async function handleImagem(id: string, file: File | undefined) {
     if (!file) return
     const ehVideo = file.type.startsWith('video')
@@ -65,7 +69,11 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
     if (ehVideo) {
       // Vídeo: object URL (blob), aguenta arquivos grandes sem virar texto
       // gigante (data URL travava/estourava com gravações de tela).
+      setCarregandoVideo((c) => ({ ...c, [id]: true }))
       onSet(id, URL.createObjectURL(file))
+      // Rede de segurança: se por algum motivo o vídeo não disparar carregado/
+      // erro, tira a mensagem sozinha depois de 30s (não deixa presa).
+      setTimeout(() => setCarregandoVideo((c) => ({ ...c, [id]: false })), 30000)
     } else {
       // Imagem: reduz para no máx. 2600px e re-codifica (JPEG). Fotos de celular
       // têm vários MB; o data URL gigante fazia a FOTO SUMIR do PNG no iPhone
@@ -214,6 +222,11 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
                   accept={c.aceitaVideo ? 'image/*,video/*' : 'image/*'}
                   onChange={(e) => handleImagem(c.id, e.target.files?.[0])}
                 />
+                {carregandoVideo[c.id] && (
+                  <p className="video-carregando">
+                    <span className="spin-mini" /> Carregando vídeo… ele aparece no card em instantes.
+                  </p>
+                )}
                 {c.redimensionavel2d ? (
                   <div className="ajuste-foto tamanho-foto">
                     <label>Largura da área</label>
@@ -249,7 +262,19 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
                   <>
                     {String(valores[`${c.id}_kind`]) === 'video' ||
                     String(valores[c.id]).startsWith('data:video') ? (
-                      <video className="img-preview" src={String(valores[c.id])} autoPlay muted loop playsInline />
+                      <video
+                        className="img-preview"
+                        src={String(valores[c.id])}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        onLoadedData={() => setCarregandoVideo((v) => ({ ...v, [c.id]: false }))}
+                        onError={() => {
+                          setCarregandoVideo((v) => ({ ...v, [c.id]: false }))
+                          mostrar('Não consegui carregar este vídeo. Tente um .mp4 (H.264).', 'erro')
+                        }}
+                      />
                     ) : (
                       <img className="img-preview" src={String(valores[c.id])} alt="pré-visualização" />
                     )}

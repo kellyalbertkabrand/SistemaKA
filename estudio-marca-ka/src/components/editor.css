@@ -204,6 +204,25 @@
     transform: rotate(360deg);
   }
 }
+/* "Carregando vídeo…" logo abaixo do seletor de arquivo (vídeo decodificando). */
+.video-carregando {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  background: #eef7f6;
+  border: 1px solid #bcdedb;
+  border-radius: 8px;
+  color: #1f4f4b;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.video-carregando .spin-mini {
+  border-color: rgba(31, 79, 75, 0.35);
+  border-top-color: #1f4f4b;
+}
+
 /* Caixa de ATENÇÃO (âmbar) durante a gravação do vídeo. */
 .aviso-atencao {
   background: #fff4d6;
