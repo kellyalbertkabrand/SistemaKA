@@ -8,6 +8,7 @@ import {
   ShapesCoresCard,
   ShapesFormaCard,
   ShapesCtaCard,
+  ShapesImagemCard,
 } from './shapes/slides'
 import { PALETA_SHAPES } from './shapes/cores'
 import {
@@ -215,6 +216,15 @@ export const TEMPLATES: Template[] = [
         placeholder: 'Ex.: design\nautoral',
         ajuda: 'Texto curto. Use quebras de linha para separar as palavras.',
         padrao: 'design\nautoral',
+      },
+      {
+        id: 'texto_tam',
+        label: 'Tamanho do texto',
+        tipo: 'range',
+        min: 34,
+        max: 96,
+        padrao: 66,
+        ajuda: 'Diminua o texto para a foto ficar MAIOR (o espaço da foto é flexível).',
       },
       campoCorLogo(),
     ],
@@ -438,6 +448,66 @@ export const TEMPLATES: Template[] = [
       campoCorLogo(),
     ],
     render: ShapesCtaCard,
+  },
+  {
+    id: 'shapes-imagem',
+    clienteSlug: 'shapes',
+    clienteNome: 'Shapes',
+    nome: 'Imagem inteira (tela cheia)',
+    descricao:
+      'A foto ou vídeo ocupa o card todo (posição e zoom ajustáveis). O texto é ' +
+      'opcional, numa caixa translúcida de cantos arredondados que você posiciona ' +
+      'em cima, no meio ou embaixo. Sem texto, fica só a imagem.',
+    formatos: FORMATOS,
+    campos: [
+      {
+        id: 'foto',
+        label: 'Foto ou vídeo (tela cheia)',
+        tipo: 'imagem',
+        obrigatorio: true,
+        aceitaVideo: true,
+        areaPadrao: 100,
+        ajuda: 'Ocupa o card inteiro. Use Posição horizontal/vertical e Zoom para enquadrar. Aceita vídeo.',
+      },
+      {
+        id: 'texto',
+        label: 'Texto (opcional)',
+        tipo: 'textarea',
+        placeholder: 'Deixe em branco para ficar só a imagem',
+        ajuda: 'Deixe VAZIO para o card ficar só com a imagem. Aspas = negrito ("assim"), *asteriscos* = itálico.',
+        padrao: '',
+      },
+      {
+        id: 'caixa_pos',
+        label: 'Posição do texto',
+        tipo: 'select',
+        padrao: 'base',
+        opcoes: [
+          { valor: 'topo', rotulo: 'Em cima' },
+          { valor: 'meio', rotulo: 'No meio' },
+          { valor: 'base', rotulo: 'Embaixo' },
+        ],
+      },
+      {
+        id: 'texto_tam',
+        label: 'Tamanho do texto',
+        tipo: 'range',
+        min: 26,
+        max: 84,
+        padrao: 46,
+      },
+      { id: 'cor_caixa', label: 'Cor da caixa', tipo: 'cor', padrao: '#FFFFFF', opcoes: SWATCHES },
+      {
+        id: 'caixa_op',
+        label: 'Opacidade da caixa (0 = só o texto, 100 = sólida)',
+        tipo: 'range',
+        min: 0,
+        max: 100,
+        padrao: 82,
+      },
+      { id: 'cor_fonte', label: 'Cor do texto', tipo: 'cor', padrao: '#131313', opcoes: SWATCHES },
+    ],
+    render: ShapesImagemCard,
   },
 
   // ==== KA | Inteligência para Marcas ======================================

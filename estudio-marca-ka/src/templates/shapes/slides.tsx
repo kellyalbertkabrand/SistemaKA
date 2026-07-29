@@ -2,7 +2,7 @@ import { useId } from 'react'
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
 import { ratioForma, caixaFoto, FORMAS } from '../formas'
-import { logoShapes } from './cores'
+import { logoShapes, corLogoShapes, comAlpha } from './cores'
 import { ShapesClips, idsClipSeguro } from './ShapesClips'
 import { comEnfase } from './enfase'
 import './shapes.css'
@@ -20,6 +20,9 @@ export function ShapesCapaCard({ valores, formato }: RenderProps) {
   const corFundo = String(valores.cor_fundo || '#EDE9DE')
   const corFonte = String(valores.cor_fonte || '#131313')
   const logoSrc = logoShapes(String(valores.cor_logo || 'auto'), corFundo)
+  // A palavra "shapes" (ao lado do símbolo) segue a cor DO LOGO, não a cor do
+  // texto — senão o símbolo sai preto e a palavra branca (bug reportado).
+  const corLogo = corLogoShapes(String(valores.cor_logo || 'auto'), corFundo)
 
   const areaRaw = Number(valores.foto_area)
   const fator = Math.min(100, Math.max(60, Number.isFinite(areaRaw) ? areaRaw : 92)) / 100
@@ -46,7 +49,7 @@ export function ShapesCapaCard({ valores, formato }: RenderProps) {
       {titulo && <div className="titulo">{comEnfase(titulo)}</div>}
       <div className="logo">
         <img src={logoSrc} alt="" crossOrigin="anonymous" />
-        <span>shapes</span>
+        <span style={{ color: corLogo }}>shapes</span>
       </div>
     </div>
   )
@@ -205,6 +208,42 @@ export function ShapesCtaCard({ valores, formato }: RenderProps) {
         {sub && <div className="sub">{sub}</div>}
         {extra && <div className="extra">{extra}</div>}
       </div>
+    </div>
+  )
+}
+
+// 6 · Imagem inteira (tela cheia) — a foto/vídeo ocupa TODO o card (posição e
+// zoom ajustáveis). O texto é OPCIONAL: quando existe, aparece numa caixa
+// translúcida de cantos arredondados, posicionável (topo/meio/base) e com o
+// tamanho do texto ajustável. Sem texto = só a imagem (ótimo p/ abrir carrossel).
+export function ShapesImagemCard({ valores, formato }: RenderProps) {
+  const foto = String(valores.foto || '')
+  const texto = String(valores.texto || '')
+  const pos = String(valores.caixa_pos || 'base') // topo | meio | base
+  const corCaixa = String(valores.cor_caixa || '#FFFFFF')
+  const corFonte = String(valores.cor_fonte || '#131313')
+  const opRaw = Number(valores.caixa_op)
+  const op = Math.min(100, Math.max(0, Number.isFinite(opRaw) ? opRaw : 82)) / 100
+  const tamRaw = Number(valores.texto_tam)
+  const tam = Math.min(84, Math.max(26, Number.isFinite(tamRaw) ? tamRaw : 46))
+  const ehVideo = ehArquivoVideo(valores, foto)
+
+  return (
+    <div className={`shapes-imagem pos-${pos}`} style={{ width: formato.largura, height: formato.altura }}>
+      {foto ? (
+        ehVideo ? (
+          <video className="bg" src={foto} style={estiloImagem(valores, 'foto')} autoPlay muted loop playsInline />
+        ) : (
+          <img className="bg" src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+        )
+      ) : (
+        <div className="bg-ph">Sua foto ou vídeo aqui</div>
+      )}
+      {texto && (
+        <div className="caixa" style={{ background: comAlpha(corCaixa, op), color: corFonte, fontSize: tam }}>
+          {comEnfase(texto)}
+        </div>
+      )}
     </div>
   )
 }

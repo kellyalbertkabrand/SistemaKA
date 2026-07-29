@@ -20,6 +20,7 @@ export type CampoTipo =
   | 'paleta'
   | 'forma'
   | 'textura'
+  | 'range'
 
 export interface CampoBase {
   id: string
@@ -89,6 +90,15 @@ export interface CampoTextura extends CampoBase {
   intensidadePadrao?: number
 }
 
+/** Controle deslizante (slider) numérico simples — ex.: tamanho do texto. */
+export interface CampoRange extends CampoBase {
+  tipo: 'range'
+  min: number
+  max: number
+  passo?: number
+  padrao?: number
+}
+
 export type Campo =
   | CampoTexto
   | CampoImagem
@@ -98,6 +108,7 @@ export type Campo =
   | CampoPaleta
   | CampoForma
   | CampoTextura
+  | CampoRange
 
 /** Dimensões reais (px) de cada formato suportado pelo template. */
 export interface FormatoDef {
@@ -136,6 +147,7 @@ export function valoresPadrao(campos: Campo[]): ValoresPeca {
     else if (c.tipo === 'paleta') v[c.id] = c.padrao ?? c.opcoes[0]?.valor ?? ''
     else if (c.tipo === 'cor') v[c.id] = c.padrao ?? '#000000'
     else if (c.tipo === 'forma') v[c.id] = c.padrao ?? 'shape-blob1'
+    else if (c.tipo === 'range') v[c.id] = c.padrao ?? c.min
     else if (c.tipo === 'texto' || c.tipo === 'textarea') v[c.id] = c.padrao ?? ''
     else if (c.tipo === 'textura') {
       v[c.id] = c.padrao ?? 'nenhuma'

@@ -307,9 +307,27 @@ margens. Enquadramento (posição/zoom) fica em `foto_x`, `foto_y`, `foto_zoom`
 7. **shapes-cta** — CTA "acesse a loja": foto de fundo (sem blur) + **forma
    orgânica** semi-transparente (`fillOpacity` 0.82, 86% da largura, cor
    `#363E31` padrão, forma selecionável) + concha + botão bordado + chamadas.
+8. **shapes-imagem** — **Imagem inteira (tela cheia)** (`ShapesImagemCard` em
+   `slides.tsx`, jul/2026): a foto/vídeo ocupa o card TODO (posição/zoom pelos
+   `foto_x/foto_y/foto_zoom`, sem `foto_area`). O **texto é opcional**: vazio =
+   só a imagem (ótimo p/ abrir carrossel); preenchido = aparece numa **caixa
+   translúcida de cantos arredondados** (`.caixa`), posicionável em **cima/meio/
+   embaixo** (`caixa_pos` → classe `pos-topo/meio/base`), com **tamanho do texto**
+   (`texto_tam`, tipo `range`) e **opacidade da caixa** (`caixa_op`, 0–100 →
+   `comAlpha(cor_caixa, op)`). Vídeo-fundo (é `sobreposto` no `exportarVideo.ts`,
+   como capa/cta). Aceita vídeo. Vale nos 3 formatos.
 
 > `foto_area` é semeado por `valoresPadrao` (companheiro `${id}_area`); um campo
 > `imagem` pode definir `areaPadrao` para o tamanho inicial da foto.
+>
+> **Tipo de campo `range` (jul/2026):** slider numérico simples (`min`/`max`/
+> `passo`/`padrao`) — usado no "Tamanho do texto" do **shapes-produto** (34–96,
+> padrão 66; menos texto = foto maior, já que o espaço da foto é flexível) e no
+> shapes-imagem. Renderizado em `CamposEditor` (`c.tipo === 'range'`).
+>
+> **Logo da Capa (jul/2026):** a palavra "shapes" ao lado do símbolo passou a
+> seguir a **cor do LOGO** (`corLogoShapes` em `cores.ts`), não a cor do texto —
+> antes o símbolo saía preto e a palavra branca ("metade preto, metade branco").
 
 ---
 

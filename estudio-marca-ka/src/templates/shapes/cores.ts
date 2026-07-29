@@ -54,6 +54,31 @@ export function logoShapes(corLogo: string, corFundo: string): string {
   return `${base}shapes-logo-branco.png`
 }
 
+// Cor (hex) do LOGO da Shapes, na mesma lógica do logoShapes — usada onde o
+// logo é desenhado como TEXTO (o "shapes" ao lado do símbolo na Capa), para o
+// símbolo e a palavra ficarem SEMPRE da mesma cor (o bug do "metade preto,
+// metade branco" era o símbolo seguir o logo e a palavra seguir a cor do texto).
+export function corLogoShapes(corLogo: string, corFundo: string): string {
+  const escolha =
+    (corLogo || 'auto') === 'auto'
+      ? corContraste(corFundo) === '#FFFFFF'
+        ? 'branco'
+        : 'preto'
+      : corLogo
+  if (escolha === 'laranja') return '#E37037'
+  if (escolha === 'branco') return '#FFFFFF'
+  return '#010101'
+}
+
+// Converte um hex (#rrggbb) para rgba com a transparência dada (0–1). Usado na
+// caixa de texto translúcida sobre a foto no template "Imagem inteira".
+export function comAlpha(hex: string, alpha: number): string {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim())
+  if (!m) return hex
+  const n = parseInt(m[1], 16)
+  return `rgba(${(n >> 16) & 0xff}, ${(n >> 8) & 0xff}, ${n & 0xff}, ${alpha})`
+}
+
 // Preto ou branco da marca, o que tiver mais contraste com o fundo — para
 // logo e texto continuarem legíveis em qualquer cor da gama.
 export function corContraste(fundo: string): '#010101' | '#FFFFFF' {

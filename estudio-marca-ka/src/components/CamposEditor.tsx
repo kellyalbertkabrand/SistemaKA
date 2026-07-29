@@ -392,6 +392,19 @@ export function CamposEditor({ campos, valores, onSet, idPrefix = '' }: Props) {
               </>
             )}
 
+            {c.tipo === 'range' && (
+              <div className="ajuste-foto tamanho-foto">
+                <input
+                  type="range"
+                  min={c.min}
+                  max={c.max}
+                  step={c.passo ?? 1}
+                  value={Number(valores[c.id] ?? c.padrao ?? c.min)}
+                  onChange={(e) => onSet(c.id, Number(e.target.value))}
+                />
+              </div>
+            )}
+
             {c.ajuda && <p className="editor__hint">{c.ajuda}</p>}
           </div>
         )

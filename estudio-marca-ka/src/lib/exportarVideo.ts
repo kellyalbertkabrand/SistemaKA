@@ -204,7 +204,7 @@ function caminhoJanela(
 // não pode "perfurar" a janela (apagaria o texto), então deixamos o fundo
 // transparente e mantemos só o texto/logo por cima.
 function videoSobreposto(node: HTMLElement): boolean {
-  return !!node.querySelector('.shapes-capa, .shapes-cta')
+  return !!node.querySelector('.shapes-capa, .shapes-cta, .shapes-imagem')
 }
 
 /**
@@ -380,7 +380,7 @@ export async function gerarVideoBlob(
   // transparente, então pintamos a cor do card ATRÁS do vídeo (aparece nas
   // margens quando a foto é menor que o card). O nó exportado é um WRAPPER, então
   // a cor de fundo está no card interno (.shapes-capa) — lemos dali, não do nó.
-  const cardEl = (node.querySelector('.shapes-capa, .shapes-cta') as HTMLElement | null) ?? node
+  const cardEl = (node.querySelector('.shapes-capa, .shapes-cta, .shapes-imagem') as HTMLElement | null) ?? node
   const corFundoCard = sobreposto ? getComputedStyle(cardEl).backgroundColor : ''
 
   const canvas = document.createElement('canvas')

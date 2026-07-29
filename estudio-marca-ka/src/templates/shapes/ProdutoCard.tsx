@@ -14,6 +14,10 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
   const cor = String(valores.cor_fundo || '#FF7829')
   const foto = String(valores.foto || '')
   const texto = String(valores.texto || '')
+  // Tamanho do texto ajustável (range limitado). Menos texto = foto MAIOR (o
+  // espaço da foto é flexível). Padrão 66px, como era fixo antes.
+  const tamRaw = Number(valores.texto_tam)
+  const tamTexto = Math.min(96, Math.max(34, Number.isFinite(tamRaw) ? tamRaw : 66))
   const forma = String(valores.forma || 'shape-blob1')
   const corFonte = String(valores.cor_fonte || '#FFFFFF')
   const logoUrl = logoShapes(String(valores.cor_logo || 'auto'), cor)
@@ -67,7 +71,11 @@ export function ShapesProdutoCard({ valores, formato }: RenderProps) {
         </div>
       </div>
 
-      {texto && <div className="texto">{comEnfase(texto)}</div>}
+      {texto && (
+        <div className="texto" style={{ fontSize: tamTexto }}>
+          {comEnfase(texto)}
+        </div>
+      )}
     </div>
   )
 }
