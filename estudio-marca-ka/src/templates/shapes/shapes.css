@@ -268,6 +268,20 @@
   text-align: center;
 }
 
+/* Vídeo dentro da janela (produto/cores/forma = foto-blob; frase/grafismo =
+   frame): preenche igual à <img>. Sem isto o <video> fica no tamanho nativo e
+   "some" da moldura (a <img> tinha regra própria; o <video> não tinha). */
+.shapes-prod .foto-blob video,
+.shapes-cores .foto-blob video,
+.shapes-forma .foto-blob video,
+.shapes-frase .frame video,
+.shapes-graf .frame video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 /* ---- Exportação de VÍDEO (moldura) ----
    Cards com JANELA (foto em forma orgânica): esconde a mídia e deixa a
    foto-blob transparente; o buraco (na forma) é perfurado no canvas e o vídeo
