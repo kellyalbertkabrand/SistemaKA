@@ -152,11 +152,7 @@ export const TEMPLATES: Template[] = [
         obrigatorio: true,
         placeholder: 'Cole aqui o depoimento real do cliente…',
         ajuda: 'Transcreva o depoimento real. Quebre em linhas curtas para leitura.',
-        padrao:
-          'Meu pedido chegou rapidinho!\n' +
-          'Amei a luminária!\n' +
-          'Super fácil de montar e ficou linda na minha sala!\n' +
-          'Já pedi outra pra dar de presente.',
+        padrao: 'Meu pedido chegou rapidinho!\nAmei a luminária!',
       },
       {
         id: 'who',
