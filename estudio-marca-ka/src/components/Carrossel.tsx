@@ -6,10 +6,9 @@ import { PreviewCheia } from './PreviewCheia'
 import { salvarRascunho, lerRascunho, limparRascunho } from '../lib/persistencia'
 import { useHistorico } from '../lib/historico'
 import { migrarConteudo } from '../templates/migrar'
-import { baixarPng, gerarPngBlob, entregarArquivos } from '../lib/exportar'
+import { baixarPng, gerarPngBlob, entregarArquivo, entregarArquivos } from '../lib/exportar'
 import {
   baixarMolduraPng,
-  baixarVideoDoCard,
   gerarVideoBlob,
   suportaGravacaoVideo,
   CANCELADO,
@@ -125,6 +124,11 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   const [acao, setAcao] = useState<'png' | 'moldura' | 'video' | 'tudo' | null>(null)
   const [statusVideo, setStatusVideo] = useState<string | null>(null)
   const [feito, setFeito] = useState<'imagem' | 'video' | null>(null)
+  // Arquivos JÁ prontos aguardando o TOQUE para salvar no rolo. No iPhone o
+  // navigator.share só funciona dentro de um toque "fresco"; como gravar o vídeo
+  // leva vários segundos, o toque original expira. Então guardamos os arquivos e
+  // mostramos um botão "Salvar no rolo" — esse novo toque compartilha na hora.
+  const [pronto, setPronto] = useState<{ arquivos: { nome: string; blob: Blob }[]; titulo: string } | null>(null)
   // true enquanto grava algum vídeo (mostra o aviso de atenção também no "salvar tudo").
   const [gravandoVideo, setGravandoVideo] = useState(false)
   const ocupado = acao !== null
@@ -321,6 +325,7 @@ export function Carrossel({ templates }: { templates: Template[] }) {
     const ac = new AbortController()
     abortRef.current = ac
     setFeito(null)
+    setPronto(null)
     setAcao(qual)
     try {
       await fn(ac.signal)
@@ -358,14 +363,24 @@ export function Carrossel({ templates }: { templates: Template[] }) {
       )
   }
 
+  // No iPhone, salvar no rolo exige um toque "fresco" (Web Share). Como gravar o
+  // vídeo demora, guardamos o arquivo pronto e o botão "Salvar no rolo" (toque
+  // novo) faz o compartilhamento. No computador, baixa direto.
+  const ehMobile = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches
+
   const baixarVideo = () => {
     const node = stageRef.current
-    if (node)
-      void rodar(
-        'video',
-        (sinal) => baixarVideoDoCard(node, nomeSlide(), (f) => setStatusVideo(f), sinal),
-        'video',
-      )
+    if (!node) return
+    void rodar(
+      'video',
+      async (sinal) => {
+        const { blob, ext } = await gerarVideoBlob(node, (f) => setStatusVideo(f), sinal)
+        const arquivos = [{ nome: `${nomeSlide()}.${ext}`, blob }]
+        if (ehMobile) setPronto({ arquivos, titulo: nomeSlide() })
+        else await entregarArquivo(blob, `${nomeSlide()}.${ext}`, nomeSlide())
+      },
+      ehMobile ? undefined : 'video',
+    )
   }
 
   const esperar = (ms: number) => new Promise((r) => setTimeout(r, ms))
@@ -404,9 +419,12 @@ export function Carrossel({ templates }: { templates: Template[] }) {
             }
           }
         }
-        if (arquivos.length) await entregarArquivos(arquivos, `${slug}-carrossel`, 'Carrossel')
+        if (arquivos.length) {
+          if (ehMobile) setPronto({ arquivos, titulo: `${slug}-carrossel` })
+          else await entregarArquivos(arquivos, `${slug}-carrossel`, 'Carrossel')
+        }
       },
-      'video',
+      ehMobile ? undefined : 'video',
     )
   }
 
@@ -637,6 +655,29 @@ export function Carrossel({ templates }: { templates: Template[] }) {
                 <p className="editor__hint">
                   <strong>Este slide tem vídeo.</strong> Escolha como baixar:
                 </p>
+              )}
+
+              {pronto && (
+                <div className="pronto-salvar">
+                  <strong>✓ Pronto para salvar!</strong>
+                  <p>Toque no botão abaixo para salvar no <strong>rolo de câmera</strong>.</p>
+                  <button
+                    type="button"
+                    className="btn btn--salvar-rolo"
+                    onClick={async () => {
+                      try {
+                        await entregarArquivos(pronto.arquivos, pronto.titulo, 'Carrossel')
+                        setFeito('video')
+                      } catch (e) {
+                        mostrar((e as Error).message, 'erro')
+                      }
+                      setPronto(null)
+                    }}
+                  >
+                    📲 Salvar {pronto.arquivos.length > 1 ? `${pronto.arquivos.length} itens` : 'vídeo'} no rolo
+                    de câmera
+                  </button>
+                </div>
               )}
 
               <button className="btn" onClick={baixarSlide} disabled={ocupado}>

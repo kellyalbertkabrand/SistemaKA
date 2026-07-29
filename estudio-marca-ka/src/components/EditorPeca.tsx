@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Template, ValoresPeca, FormatoDef } from '../templates/types'
 import { valoresPadrao } from '../templates/types'
-import { baixarPng } from '../lib/exportar'
-import { baixarMolduraPng, baixarVideoDoCard, suportaGravacaoVideo, CANCELADO } from '../lib/exportarVideo'
+import { baixarPng, entregarArquivo } from '../lib/exportar'
+import { baixarMolduraPng, gerarVideoBlob, suportaGravacaoVideo, CANCELADO } from '../lib/exportarVideo'
 import { metaPadrao } from '../lib/assinatura'
 import { CamposEditor } from './CamposEditor'
 import { PreviewCheia } from './PreviewCheia'
@@ -61,6 +61,10 @@ export function EditorPeca({ template }: { template: Template }) {
   const [statusVideo, setStatusVideo] = useState<string | null>(null)
   // O que acabou de baixar (para mostrar as instruções pós-download).
   const [feito, setFeito] = useState<'imagem' | 'video' | null>(null)
+  // Vídeo pronto aguardando o TOQUE para salvar no rolo (iPhone: o Web Share só
+  // funciona num toque novo; a gravação demora e o toque original expira).
+  const [pronto, setPronto] = useState<{ nome: string; blob: Blob } | null>(null)
+  const ehMobile = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches
   const ocupado = acao !== null
   const artRef = useRef<HTMLDivElement>(null)
   // Permite CANCELAR uma exportação travada sem perder o trabalho.
@@ -129,16 +133,17 @@ export function EditorPeca({ template }: { template: Template }) {
   async function rodar(
     qual: 'png' | 'moldura' | 'video',
     fn: (sinal: AbortSignal) => Promise<void>,
-    tipoFeito: 'imagem' | 'video',
+    tipoFeito?: 'imagem' | 'video',
   ) {
     if (!artRef.current) return
     const ac = new AbortController()
     abortRef.current = ac
     setFeito(null)
+    setPronto(null)
     setAcao(qual)
     try {
       await fn(ac.signal)
-      setFeito(tipoFeito)
+      if (tipoFeito) setFeito(tipoFeito)
     } catch (e) {
       // Cancelamento pelo usuário: não é erro, some sem alerta e mantém o trabalho.
       if ((e as Error).message !== CANCELADO && (e as Error).name !== 'AbortError') {
@@ -167,8 +172,15 @@ export function EditorPeca({ template }: { template: Template }) {
   const handleVideo = () =>
     rodar(
       'video',
-      (sinal) => baixarVideoDoCard(artRef.current!, nomeBase(), (f) => setStatusVideo(f), sinal),
-      'video',
+      async (sinal) => {
+        const { blob, ext } = await gerarVideoBlob(artRef.current!, (f) => setStatusVideo(f), sinal)
+        const arquivo = { nome: `${nomeBase()}.${ext}`, blob }
+        // iPhone: guarda o vídeo e espera um toque novo para salvar no rolo.
+        // Computador: baixa direto.
+        if (ehMobile) setPronto(arquivo)
+        else await entregarArquivo(blob, arquivo.nome, nomeBase())
+      },
+      ehMobile ? undefined : 'video',
     )
 
   return (
@@ -245,6 +257,28 @@ export function EditorPeca({ template }: { template: Template }) {
                 </p>
               )}
             </>
+          )}
+
+          {pronto && (
+            <div className="pronto-salvar">
+              <strong>✓ Vídeo pronto!</strong>
+              <p>Toque no botão para salvar no <strong>rolo de câmera</strong>.</p>
+              <button
+                type="button"
+                className="btn btn--salvar-rolo"
+                onClick={async () => {
+                  try {
+                    await entregarArquivo(pronto.blob, pronto.nome, 'Vídeo')
+                    setFeito('video')
+                  } catch (e) {
+                    mostrar((e as Error).message, 'erro')
+                  }
+                  setPronto(null)
+                }}
+              >
+                📲 Salvar vídeo no rolo de câmera
+              </button>
+            </div>
           )}
 
           {acao === 'video' && (

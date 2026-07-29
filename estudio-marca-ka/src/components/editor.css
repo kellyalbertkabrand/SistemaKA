@@ -215,6 +215,43 @@
   font-size: 0.83rem;
   line-height: 1.5;
 }
+/* Bloco "pronto para salvar" — no iPhone salvar no rolo precisa de um toque novo
+   (Web Share), então o vídeo fica pronto e a pessoa toca aqui. */
+.pronto-salvar {
+  border: 2px solid #2f6f6a;
+  background: #eef7f6;
+  border-radius: 12px;
+  padding: 0.85rem 0.95rem;
+  text-align: center;
+}
+.pronto-salvar strong {
+  color: #1f4f4b;
+}
+.pronto-salvar p {
+  margin: 0.25rem 0 0.75rem;
+  font-size: 0.85rem;
+  color: #33564f;
+}
+.btn--salvar-rolo {
+  background: #2f6f6a !important;
+  color: #fff !important;
+  font-weight: 700;
+  animation: pulsarSalvar 1.6s ease-in-out infinite;
+}
+@keyframes pulsarSalvar {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(47, 111, 106, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(47, 111, 106, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn--salvar-rolo {
+    animation: none;
+  }
+}
 .aviso-atencao strong {
   color: #5a3d00;
 }
