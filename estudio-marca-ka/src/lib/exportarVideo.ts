@@ -422,6 +422,24 @@ export async function gerarVideoBlob(
   video.loop = false
   await video.play().catch(() => {})
 
+  // iPhone: TIRAR O MUDO sem um toque "fresco" faz o iOS PAUSAR o vídeo — aí ele
+  // não avança, a gravação estoura o tempo e falha ("não vai conseguir"). Isso
+  // acontece no "salvar tudo" (o toque já expirou quando cada vídeo grava). Se
+  // detectarmos que não começou a andar, voltamos pro MUDO (o autoplay mudo é
+  // sempre permitido) e gravamos ao menos a IMAGEM — melhor um vídeo sem áudio
+  // do que nenhum. No computador (e no vídeo único logo após o toque) o áudio
+  // continua entrando normalmente.
+  await esperar(280)
+  if (video.paused || video.currentTime < 0.05) {
+    video.muted = true
+    try {
+      video.currentTime = 0
+    } catch {
+      /* ignora */
+    }
+    await video.play().catch(() => {})
+  }
+
   function desenhaQuadro() {
     ctx.clearRect(0, 0, W, H)
     if (corFundoCard) {
