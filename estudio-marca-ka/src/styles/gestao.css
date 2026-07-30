@@ -2826,6 +2826,31 @@
 .vm-tarefa--concluida .vm-tarefa__check {
   color: #4f7a4f;
 }
+/* Título da tarefa editável (clica → vira campo). */
+.vm-tarefa__fase--btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--t-900);
+  text-align: left;
+  cursor: text;
+  border-bottom: 1px dashed transparent;
+}
+.vm-tarefa__fase--btn:hover {
+  border-bottom-color: rgba(21, 37, 53, 0.25);
+}
+.vm-edit {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--dourado-c, #c8a24a);
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 700;
+}
+
 /* Form da VM para adicionar tarefa no portal dela. */
 .vm-add {
   display: flex;

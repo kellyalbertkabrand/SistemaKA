@@ -35,6 +35,8 @@ export function PortalVM() {
   const [novoTitulo, setNovoTitulo] = useState('')
   const [novaData, setNovaData] = useState('')
   const [adicionando, setAdicionando] = useState(false)
+  const [editId, setEditId] = useState<string | null>(null)
+  const [editTitulo, setEditTitulo] = useState('')
   useTituloPagina('Valores a receber e atividades · VM Rocks')
 
   useEffect(() => {
@@ -97,6 +99,25 @@ export function PortalVM() {
       setErro(err instanceof Error ? err.message : String(err))
     } finally {
       setAdicionando(false)
+    }
+  }
+
+  // A VM EDITA o texto da própria tarefa (clica no título → vira campo).
+  function iniciarEdicao(a: Atividade) {
+    setEditId(a.id)
+    setEditTitulo(a.titulo)
+  }
+  async function salvarEdicao() {
+    const id = editId
+    if (!id) return
+    const titulo = editTitulo.trim()
+    setEditId(null)
+    if (!titulo) return
+    setAtividades((l) => l.map((x) => (x.id === id ? { ...x, titulo } : x)))
+    try {
+      await editarAtividade(id, { titulo })
+    } catch {
+      /* mantém o valor otimista; ao recarregar vem o certo */
     }
   }
 
@@ -254,12 +275,29 @@ export function PortalVM() {
                   {a.feito ? '☑' : '☐'}
                 </button>
                 <div className="vm-tarefa__corpo">
-                  <div
-                    className="vm-tarefa__fase"
-                    style={a.feito ? { textDecoration: 'line-through', opacity: 0.6 } : undefined}
-                  >
-                    {a.titulo}
-                  </div>
+                  {editId === a.id ? (
+                    <input
+                      className="vm-edit"
+                      value={editTitulo}
+                      autoFocus
+                      onChange={(e) => setEditTitulo(e.target.value)}
+                      onBlur={() => void salvarEdicao()}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') void salvarEdicao()
+                        if (e.key === 'Escape') setEditId(null)
+                      }}
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      className="vm-tarefa__fase vm-tarefa__fase--btn"
+                      style={a.feito ? { textDecoration: 'line-through', opacity: 0.6 } : undefined}
+                      onClick={() => iniciarEdicao(a)}
+                      title="Clique para editar"
+                    >
+                      {a.titulo}
+                    </button>
+                  )}
                   <div className="vm-tarefa__meta">
                     <span className="vm-tag">{a.cliente_nome ? a.cliente_nome : 'Geral'}</span>
                     <label className="vm-data">
