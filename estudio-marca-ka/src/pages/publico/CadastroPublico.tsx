@@ -78,6 +78,16 @@ export function CadastroPublico() {
               <label>E-mail</label>
               <input type="email" value={f.email_contato ?? ''} onChange={(e) => campo('email_contato', e.target.value || null)} />
             </div>
+          </div>
+
+          <h3 style={{ fontSize: '1.05rem', margin: '1.4rem 0 0.3rem' }}>Sócios (se houver)</h3>
+          <p style={{ fontSize: '0.8rem', color: 'var(--t-500)', marginBottom: '0.9rem' }}>
+            <strong>Opcional.</strong> Se a empresa tiver mais de um sócio, adicione os dados de cada
+            um e marque quem vai assinar o contrato. Se não tiver, é só deixar em branco.
+          </p>
+          <SociosEditor lista={f.socios ?? []} onChange={(l) => campo('socios', l)} />
+
+          <div className="form-grade" style={{ marginTop: '1.2rem' }}>
             <div className="field">
               <label>Telefone / WhatsApp</label>
               <input value={f.telefone ?? ''} onChange={(e) => campo('telefone', e.target.value || null)} />
@@ -147,13 +157,6 @@ export function CadastroPublico() {
               <input type="email" value={f.contrato_email ?? ''} onChange={(e) => campo('contrato_email', e.target.value || null)} />
             </div>
           </div>
-
-          <h3 style={{ fontSize: '1.05rem', margin: '1.4rem 0 0.3rem' }}>Sócios (se houver)</h3>
-          <p style={{ fontSize: '0.8rem', color: 'var(--t-500)', marginBottom: '0.9rem' }}>
-            <strong>Opcional.</strong> Se a empresa tiver mais de um sócio, adicione os dados de cada
-            um e marque quem vai assinar o contrato. Se não tiver, é só deixar em branco.
-          </p>
-          <SociosEditor lista={f.socios ?? []} onChange={(l) => campo('socios', l)} />
 
           <div className="pub-acoes">
             <button className="btn" type="submit" disabled={enviando || !f.nome_marca.trim()}>
