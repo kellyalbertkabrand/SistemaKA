@@ -2824,6 +2824,58 @@
 .vm-tarefa--concluida .vm-tarefa__check {
   color: #4f7a4f;
 }
+/* Meta da tarefa: etiqueta do cliente + seletor de data moderno. */
+.vm-tarefa__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.vm-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(21, 37, 53, 0.06);
+  color: var(--t-600);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+/* Data moderna: pílula com ícone; o input fica "sem cara de formulário". */
+.vm-data {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 10px;
+  border: 1px solid rgba(21, 37, 53, 0.14);
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.vm-data:hover,
+.vm-data:focus-within {
+  border-color: var(--dourado-c, #c8a24a);
+  box-shadow: 0 0 0 3px rgba(200, 162, 74, 0.16);
+}
+.vm-data__ic {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+.vm-data input[type='date'] {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  font-size: 0.82rem;
+  color: var(--t-800);
+  cursor: pointer;
+  outline: none;
+}
+.vm-data input[type='date']::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.5;
+}
 .vm-tarefa__fase {
   font-weight: 700;
   color: var(--t-900);

@@ -115,8 +115,8 @@ export function PortalVM() {
   return (
     <div className="proj-pub vm-portal">
       <header className="proj-hero">
-        <div className="proj-hero__eyebrow">VM Rocks</div>
-        <h1>Valores a Receber e atividades</h1>
+        <div className="proj-hero__eyebrow">Portal da parceira</div>
+        <h1>VM Rocks</h1>
         <div className="proj-hero__meta">
           Valores a Receber e atividades em projetos em parceria com a KA | Inteligência para Marcas
         </div>
@@ -127,7 +127,7 @@ export function PortalVM() {
 
       {/* ===== A RECEBER ===== */}
       <div className="proj-card">
-        <div className="proj-card__titulo">Você tem a receber</div>
+        <div className="proj-card__titulo">A Receber</div>
         <div className="vm-total">
           {formatarBRL(totalGeral)}
           {totalContratoMensal > 0 && <span className="vm-total__mes"> + {formatarBRL(totalContratoMensal)}/mês</span>}
@@ -212,9 +212,11 @@ export function PortalVM() {
                     {a.titulo}
                   </div>
                   <div className="vm-tarefa__meta">
-                    {a.cliente_nome ? a.cliente_nome : 'Geral'}
-                    <label style={{ marginLeft: 8 }}>
-                      Data:{' '}
+                    <span className="vm-tag">{a.cliente_nome ? a.cliente_nome : 'Geral'}</span>
+                    <label className="vm-data">
+                      <span className="vm-data__ic" aria-hidden>
+                        📅
+                      </span>
                       <input
                         type="date"
                         value={a.data ?? ''}
@@ -231,7 +233,7 @@ export function PortalVM() {
 
       {/* ===== TAREFAS DA VM (agrupadas por cliente) ===== */}
       <div className="proj-card">
-        <div className="proj-card__titulo">Suas tarefas nos projetos</div>
+        <div className="proj-card__titulo">Atividades da VM nos projetos</div>
         {tarefas.length === 0 ? (
           <p className="ativ-vazio">Nenhuma etapa sua em aberto. Tudo em dia ✨</p>
         ) : (
