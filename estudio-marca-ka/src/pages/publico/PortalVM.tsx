@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { listarClientes } from '../../lib/api'
 import { formatarBRL, formatarData, listarCobrancas, statusEfetivo } from '../../lib/gestao'
-import { listarProjetos, pendenciasDeProjetos, type Pendencia, type Projeto } from '../../lib/projetos'
+import { listarProjetos, salvarProjeto, type FaseProjeto, type Projeto } from '../../lib/projetos'
 import { linhasFinanceiro, rotuloForma, type LinhaFinanceiro } from '../../lib/financeiro'
 import {
   listarAtividades,
@@ -23,8 +23,6 @@ import '../../styles/projeto.css'
 // Não mostra clientes, caixa da KA, cuidadoras nem nada mais.
 // ============================================================================
 
-const ROTULO_FASE = { pendente: 'A seguir', andamento: '● Em andamento', concluida: 'Concluída' }
-
 export function PortalVM() {
   const [projetos, setProjetos] = useState<Projeto[] | null>(null)
   const [clientes, setClientes] = useState<Cliente[]>([])
@@ -37,6 +35,7 @@ export function PortalVM() {
   const [adicionando, setAdicionando] = useState(false)
   const [editId, setEditId] = useState<string | null>(null)
   const [editTitulo, setEditTitulo] = useState('')
+  const [novaFaseTxt, setNovaFaseTxt] = useState<Record<string, string>>({}) // por projeto
   useTituloPagina('Valores a receber e atividades · VM Rocks')
 
   useEffect(() => {
@@ -66,7 +65,15 @@ export function PortalVM() {
 
   // Tarefas da VM (etapas em aberto onde o responsável é a VM), AGRUPADAS por
   // cliente — assim a VM vê organizado quem é quem.
-  const tarefas: Pendencia[] = projetos ? pendenciasDeProjetos(projetos, 'VM') : []
+  // Projetos que têm etapas da VM — cada um com as etapas dela (todos os
+  // status), para a VM mudar o status e ADICIONAR novas etapas. Ao salvar,
+  // propaga em tempo real para o sistema E para a página do cliente (onSnapshot).
+  const projetosVM = (projetos ?? [])
+    .filter((p) => (p.fases ?? []).some((f) => f.responsavel === 'VM'))
+    .map((p) => ({
+      projeto: p,
+      fases: (p.fases ?? []).map((f, idx) => ({ f, idx })).filter((x) => x.f.responsavel === 'VM'),
+    }))
   // Tarefas AVULSAS que a Kelly cria direto em Atividades com a categoria "VM
   // Rocks" (categoria 'vm'). A VM pode marcar como concluída e mudar a data — as
   // não feitas primeiro (por data), as concluídas por último.
@@ -140,16 +147,35 @@ export function PortalVM() {
       /* mantém o valor otimista; recarregar traz o certo */
     }
   }
-  const tarefasPorCliente = (() => {
-    const map = new Map<string, { cliente: string; itens: Pendencia[] }>()
-    for (const pd of tarefas) {
-      const cliente = pd.cliente_nome || 'Sem cliente'
-      const cur = map.get(cliente) ?? { cliente, itens: [] }
-      cur.itens.push(pd)
-      map.set(cliente, cur)
+  // A VM muda o STATUS de uma etapa do projeto e ADICIONA novas etapas. Salvar
+  // grava no projeto (Firestore) → reflete em todo o sistema e na página do
+  // cliente (que escuta em tempo real).
+  async function mudarStatusFase(projeto: Projeto, idx: number, status: FaseProjeto['status']) {
+    const fases = projeto.fases.map((f, i) =>
+      i === idx
+        ? { ...f, status, concluida_em: status === 'concluida' ? f.concluida_em ?? new Date().toISOString() : null }
+        : f,
+    )
+    setProjetos((l) => (l ?? []).map((p) => (p.id === projeto.id ? { ...p, fases } : p)))
+    try {
+      await salvarProjeto(projeto.id, { fases })
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : String(e))
     }
-    return [...map.values()].sort((a, b) => a.cliente.localeCompare(b.cliente))
-  })()
+  }
+  async function adicionarFaseVM(projeto: Projeto) {
+    const nome = (novaFaseTxt[projeto.id] ?? '').trim()
+    if (!nome) return
+    const nova: FaseProjeto = { nome, descricao: null, status: 'pendente', concluida_em: null, responsavel: 'VM', data: null }
+    const fases = [...projeto.fases, nova]
+    setProjetos((l) => (l ?? []).map((p) => (p.id === projeto.id ? { ...p, fases } : p)))
+    setNovaFaseTxt((m) => ({ ...m, [projeto.id]: '' }))
+    try {
+      await salvarProjeto(projeto.id, { fases })
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : String(e))
+    }
+  }
 
   // A receber da VM: cobranças em aberto onde ela participa + pagamentos de
   // contrato marcados como "VM Rocks".
@@ -318,32 +344,68 @@ export function PortalVM() {
         )}
       </div>
 
-      {/* ===== TAREFAS DA VM (agrupadas por cliente) ===== */}
+      {/* ===== ATIVIDADES DA VM NOS PROJETOS (muda status + adiciona) ===== */}
       <div className="proj-card">
         <div className="proj-card__titulo">Atividades da VM nos projetos</div>
-        {tarefas.length === 0 ? (
-          <p className="ativ-vazio">Nenhuma etapa sua em aberto. Tudo em dia ✨</p>
+        <p className="ativ-vazio" style={{ marginTop: 0 }}>
+          Mude o status e adicione atividades — atualiza no sistema e na página do cliente na hora.
+        </p>
+        {projetosVM.length === 0 ? (
+          <p className="ativ-vazio">Você ainda não tem etapas nos projetos.</p>
         ) : (
-          tarefasPorCliente.map((g) => (
-            <section key={g.cliente} className="vm-grupo">
+          projetosVM.map(({ projeto, fases }) => (
+            <section key={projeto.id} className="vm-grupo">
               <h3 className="vm-grupo__cli">
-                {g.cliente} <span className="vm-grupo__n">{g.itens.length}</span>
+                {projeto.nome}{' '}
+                <span className="vm-grupo__n">{nomeCliente(projeto.cliente_id) || projeto.cliente_nome}</span>
               </h3>
               <div className="vm-tarefas">
-                {g.itens.map((pd) => (
-                  <div key={`${pd.projeto_id}-${pd.fase_idx}`} className={`vm-tarefa vm-tarefa--${pd.status}`}>
-                    <div className="vm-tarefa__ponto">{pd.status === 'andamento' ? '●' : '○'}</div>
+                {fases.map(({ f, idx }) => (
+                  <div key={idx} className={`vm-tarefa vm-tarefa--${f.status}`}>
+                    <div className="vm-tarefa__ponto">
+                      {f.status === 'concluida' ? '☑' : f.status === 'andamento' ? '●' : '○'}
+                    </div>
                     <div className="vm-tarefa__corpo">
-                      <div className="vm-tarefa__fase">{pd.fase_nome}</div>
-                      {pd.fase_desc && <div className="vm-tarefa__desc">{pd.fase_desc}</div>}
+                      <div
+                        className="vm-tarefa__fase"
+                        style={f.status === 'concluida' ? { textDecoration: 'line-through', opacity: 0.6 } : undefined}
+                      >
+                        {f.nome}
+                      </div>
+                      {f.descricao && <div className="vm-tarefa__desc">{f.descricao}</div>}
                       <div className="vm-tarefa__meta">
-                        {pd.projeto_nome} · {ROTULO_FASE[pd.status]}
-                        {pd.data ? ` · previsto ${formatarData(pd.data)}` : ''}
+                        <select
+                          className={`fase-status-sel status-${f.status}`}
+                          value={f.status}
+                          title="Mudar o status desta etapa"
+                          onChange={(e) => void mudarStatusFase(projeto, idx, e.target.value as FaseProjeto['status'])}
+                        >
+                          <option value="pendente">Pendente</option>
+                          <option value="andamento">Em andamento</option>
+                          <option value="concluida">Concluída</option>
+                        </select>
+                        {f.data && <span className="vm-tag">previsto {formatarData(f.data)}</span>}
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
+              <form
+                className="vm-add"
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  void adicionarFaseVM(projeto)
+                }}
+              >
+                <input
+                  value={novaFaseTxt[projeto.id] ?? ''}
+                  onChange={(e) => setNovaFaseTxt((m) => ({ ...m, [projeto.id]: e.target.value }))}
+                  placeholder="Nova atividade neste projeto…"
+                />
+                <button className="btn" type="submit" disabled={!(novaFaseTxt[projeto.id] ?? '').trim()}>
+                  + Adicionar
+                </button>
+              </form>
             </section>
           ))
         )}
