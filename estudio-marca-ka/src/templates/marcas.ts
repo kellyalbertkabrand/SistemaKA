@@ -5,6 +5,7 @@
 
 import { CORES_PRIMARIAS, CORES_SECUNDARIAS } from './shapes/cores'
 import { PALETA_KA, COR_MARINHO } from './ka/cores'
+import { PALETA_CONECTA, COR_AZUL } from './conecta/cores'
 
 export interface MarcaVisual {
   /** Cor principal da marca (fallback da capa e detalhes). */
@@ -35,6 +36,11 @@ const MARCAS: Record<string, MarcaVisual> = {
     logo: '/clientes/ka/ka-branco.png',
     paleta: PALETA_KA,
     tagline: 'Branding · Posicionamento · IA — os carrosséis da própria KA.',
+  },
+  conecta: {
+    corPrincipal: COR_AZUL,
+    paleta: PALETA_CONECTA,
+    tagline: 'A rede que aproxima pessoas e oportunidades. (identidade provisória)',
   },
 }
 

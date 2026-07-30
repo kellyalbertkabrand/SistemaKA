@@ -21,6 +21,13 @@ import {
   KaFeedbackCard,
 } from './ka/KaCards'
 import { FUNDOS_KA } from './ka/cores'
+import {
+  ConectaCapaCard,
+  ConectaTextoCard,
+  ConectaPostCard,
+  ConectaFeedbackCard,
+} from './conecta/ConectaCards'
+import { FUNDOS_CONECTA, COR_ACENTO } from './conecta/cores'
 
 // Paleta oficial da Shapes (primárias + gama secundária) para os fundos.
 const SWATCHES = PALETA_SHAPES
@@ -115,6 +122,33 @@ const FORMATOS = [
   { formato: 'story' as const, rotulo: 'Story 9:16', largura: 1080, altura: 1920 },
   { formato: 'card' as const, rotulo: 'Quadrado 1:1', largura: 1080, altura: 1080 },
 ]
+
+// ---- O Conecta (marca provisória) ----------------------------------------
+// Fundo e texto escolhem da paleta provisória; o texto pode ser "Automático".
+function campoFundoConecta(padrao: string): Campo {
+  return {
+    id: 'cor_fundo',
+    label: 'Cor de fundo',
+    tipo: 'paleta',
+    padrao,
+    ajuda: 'Clique numa cor da paleta d’O Conecta.',
+    opcoes: FUNDOS_CONECTA.map((f) => ({ valor: f.valor, rotulo: f.rotulo, cor: f.hex })),
+  }
+}
+
+function campoCorTextoConecta(): Campo {
+  return {
+    id: 'cor_fonte',
+    label: 'Cor do texto',
+    tipo: 'paleta',
+    padrao: 'auto',
+    ajuda: 'A primeira (A) combina com o fundo. Ou escolha uma cor fixa.',
+    opcoes: [
+      { valor: 'auto', rotulo: 'Automático (combina com o fundo)' },
+      ...FUNDOS_CONECTA.map((f) => ({ valor: f.valor, rotulo: f.rotulo, cor: f.hex })),
+    ],
+  }
+}
 
 // ============================================================================
 // Registro de templates validados pela KA.
@@ -781,6 +815,157 @@ export const TEMPLATES: Template[] = [
       campoCorTextoKA(),
     ],
     render: KaFeedbackCard,
+  },
+
+  // ==== O Conecta (marca provisória) =======================================
+  {
+    id: 'conecta-capa',
+    clienteSlug: 'conecta',
+    clienteNome: 'O Conecta',
+    nome: 'Capa (título)',
+    descricao:
+      'Capa com título grande e subtítulo opcional, no padrão limpo e moderno ' +
+      'd’O Conecta. Fundo e texto na paleta da marca.',
+    formatos: FORMATOS,
+    campos: [
+      {
+        id: 'titulo',
+        label: 'Título',
+        tipo: 'textarea',
+        obrigatorio: true,
+        placeholder: 'Ex.: Conexões que geram *resultado.*',
+        ajuda: 'Aspas ou *asteriscos* = negrito. Quebre em linhas curtas.',
+        padrao: 'Conexões que\ngeram *resultado.*',
+      },
+      {
+        id: 'subtitulo',
+        label: 'Subtítulo (opcional)',
+        tipo: 'textarea',
+        placeholder: 'Uma linha de apoio…',
+        padrao: 'A rede que aproxima pessoas e oportunidades.',
+      },
+      campoFundoConecta('azul'),
+      campoCorTextoConecta(),
+    ],
+    render: ConectaCapaCard,
+  },
+  {
+    id: 'conecta-texto',
+    clienteSlug: 'conecta',
+    clienteNome: 'O Conecta',
+    nome: 'Texto / frase',
+    descricao:
+      'Card de desenvolvimento: um rótulo curto opcional em destaque e o corpo ' +
+      'do texto, com palavras em negrito.',
+    formatos: FORMATOS,
+    campos: [
+      {
+        id: 'titulo',
+        label: 'Rótulo (opcional)',
+        tipo: 'texto',
+        placeholder: 'Ex.: O ponto',
+        padrao: '',
+      },
+      {
+        id: 'texto',
+        label: 'Texto',
+        tipo: 'textarea',
+        obrigatorio: true,
+        placeholder: 'O insight do card…',
+        ajuda: 'Aspas ou *asteriscos* = negrito.',
+        padrao: 'Networking não é trocar cartões.\n\nÉ criar *relações* que duram.',
+      },
+      campoFundoConecta('creme'),
+      campoCorTextoConecta(),
+    ],
+    render: ConectaTextoCard,
+  },
+  {
+    id: 'conecta-post',
+    clienteSlug: 'conecta',
+    clienteNome: 'O Conecta',
+    nome: 'Post com foto',
+    descricao:
+      'Foto (ou vídeo) ocupando o card todo, com um véu escuro embaixo, um ' +
+      'rótulo colorido e o título. Ótimo para chamadas e eventos.',
+    formatos: FORMATOS,
+    campos: [
+      {
+        id: 'foto',
+        label: 'Foto ou vídeo',
+        tipo: 'imagem',
+        obrigatorio: true,
+        aceitaVideo: true,
+        areaPadrao: 100,
+        ajuda: 'Ocupa o card inteiro. Use Posição e Zoom para enquadrar. Aceita vídeo.',
+      },
+      {
+        id: 'rotulo',
+        label: 'Rótulo (opcional)',
+        tipo: 'texto',
+        placeholder: 'Ex.: EVENTO',
+        padrao: 'CONECTA',
+      },
+      {
+        id: 'titulo',
+        label: 'Título',
+        tipo: 'textarea',
+        obrigatorio: true,
+        placeholder: 'Ex.: Encontro de\nlideranças',
+        padrao: 'Encontro de\nlideranças',
+      },
+      { id: 'cor_acento', label: 'Cor do rótulo', tipo: 'cor', padrao: COR_ACENTO, opcoes: FUNDOS_CONECTA.map((f) => ({ valor: f.hex, rotulo: f.rotulo })) },
+    ],
+    render: ConectaPostCard,
+  },
+  {
+    id: 'conecta-feedback',
+    clienteSlug: 'conecta',
+    clienteNome: 'O Conecta',
+    nome: 'Card de Feedback',
+    descricao:
+      'Prova social no modelo de review: box branco com avatar, nome, estrelas ' +
+      'douradas e o depoimento real.',
+    formatos: FORMATOS,
+    campos: [
+      {
+        id: 'nome',
+        label: 'Nome do cliente',
+        tipo: 'texto',
+        obrigatorio: true,
+        placeholder: 'Como o cliente aparece',
+        padrao: 'Cliente Conecta',
+      },
+      {
+        id: 'subtitulo',
+        label: 'Subtítulo (opcional)',
+        tipo: 'texto',
+        placeholder: 'Ex.: Empresa · Cidade',
+        padrao: '',
+      },
+      {
+        id: 'texto',
+        label: 'Depoimento',
+        tipo: 'textarea',
+        obrigatorio: true,
+        placeholder: 'Cole aqui o depoimento real…',
+        ajuda: 'Transcreva o depoimento REAL. Sem data.',
+        padrao: 'Fiz conexões que mudaram o rumo do meu negócio. Recomendo demais!',
+      },
+      { id: 'nota', label: 'Nota (estrelas)', tipo: 'estrelas', padrao: 5 },
+      {
+        id: 'inicial',
+        label: 'Letra do avatar (opcional)',
+        tipo: 'texto',
+        maxLen: 2,
+        placeholder: 'Vazio = 1ª letra do nome',
+        padrao: '',
+      },
+      { id: 'rotulo', label: 'Rótulo do topo', tipo: 'texto', padrao: 'FEEDBACK' },
+      campoFundoConecta('azul'),
+      campoCorTextoConecta(),
+    ],
+    render: ConectaFeedbackCard,
   },
 ]
 

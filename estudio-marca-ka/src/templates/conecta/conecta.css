@@ -1,0 +1,240 @@
+/* ==========================================================================
+   O Conecta — estilos dos cards (marca provisória, jul/2026).
+
+   PROVISÓRIO: tipografia em stack de sistema para não depender de arquivos de
+   fonte. Quando a KA passar a fonte oficial da marca, declarar o @font-face
+   aqui e trocar a família em `.conecta-card`.
+   ========================================================================== */
+
+.conecta-card {
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Montserrat KA', system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  padding: 96px 88px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.conecta-card * {
+  box-sizing: border-box;
+}
+
+/* Cabeçalho: wordmark da marca (provisório em texto). */
+.conecta-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.92;
+}
+
+.conecta-header .ponto {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex: none;
+}
+
+/* Miolo: ocupa o espaço entre cabeçalho e rodapé. */
+.conecta-miolo {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 28px;
+}
+
+/* Rodapé: assinatura discreta. */
+.conecta-footer {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+/* ---- Capa -------------------------------------------------------------- */
+.conecta-capa .titulo {
+  font-size: 104px;
+  line-height: 1.04;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  white-space: pre-line;
+}
+
+.conecta-capa .sub {
+  font-size: 38px;
+  line-height: 1.35;
+  font-weight: 500;
+  opacity: 0.86;
+  white-space: pre-line;
+}
+
+.conecta-card.fmt-story { padding: 130px 96px; }
+.conecta-card.fmt-story .conecta-capa .titulo,
+.conecta-card.fmt-story .titulo { font-size: 116px; }
+
+/* ---- Texto / frase ----------------------------------------------------- */
+.conecta-texto .titulo {
+  font-size: 46px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.conecta-texto .corpo {
+  font-size: 58px;
+  line-height: 1.32;
+  font-weight: 500;
+  white-space: pre-line;
+}
+
+/* Destaque (aspas / *asteriscos*) — mesma cor do texto, peso forte. */
+.conecta-destaque {
+  font-weight: 800;
+}
+
+/* ---- Post com foto ----------------------------------------------------- */
+.conecta-post {
+  padding: 0;
+  justify-content: flex-end;
+}
+
+.conecta-post .foto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.conecta-post .veu {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.72) 0%,
+    rgba(0, 0, 0, 0.28) 42%,
+    rgba(0, 0, 0, 0) 70%
+  );
+}
+
+.conecta-post .conteudo {
+  position: relative;
+  padding: 96px 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.conecta-post .rotulo {
+  align-self: flex-start;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 12px 26px;
+  border-radius: 999px;
+}
+
+.conecta-post .titulo {
+  font-size: 74px;
+  line-height: 1.08;
+  font-weight: 800;
+  white-space: pre-line;
+}
+
+.conecta-post .marca {
+  margin-top: 8px;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.conecta-post .foto-ph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #16324f 0%, #2e7be4 100%);
+  opacity: 0.9;
+}
+
+/* ---- Feedback ---------------------------------------------------------- */
+.conecta-fb .rotulo {
+  align-self: flex-start;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.conecta-fb .box {
+  background: #ffffff;
+  border-radius: 40px;
+  padding: 64px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.18);
+  color: #1a1a1a;
+}
+
+.conecta-fb .head {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+
+.conecta-fb .av {
+  width: 96px;
+  height: 96px;
+  flex: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  font-weight: 800;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2e7be4 0%, #14b8a6 100%);
+}
+
+.conecta-fb .nm {
+  font-size: 40px;
+  font-weight: 800;
+}
+
+.conecta-fb .rl {
+  font-size: 26px;
+  font-weight: 500;
+  color: #5f6368;
+  margin-top: 4px;
+}
+
+.conecta-fb .stars {
+  font-size: 46px;
+  letter-spacing: 0.08em;
+  color: #fbbc04;
+}
+
+.conecta-fb .depo {
+  font-size: 34px;
+  line-height: 1.45;
+  color: #3c4043;
+  white-space: pre-line;
+}
