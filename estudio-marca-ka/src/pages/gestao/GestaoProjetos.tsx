@@ -27,6 +27,7 @@ import {
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
+import { BotaoLinkVM } from '../../components/BotaoLinkVM'
 import { autoAltura } from '../../lib/ui'
 import { rotuloStatus } from '../../lib/rotulos'
 import { useFichaUrl } from '../../hooks/useFichaUrl'
@@ -149,6 +150,7 @@ export function GestaoProjetos() {
           </button>
         </div>
         <span className="espaco" />
+        <BotaoLinkVM rotulo="Link da VM" />
         <button className="btn" onClick={() => abrirUrl('novo')}>
           + Novo projeto
         </button>

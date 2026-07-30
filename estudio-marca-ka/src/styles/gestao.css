@@ -1922,6 +1922,10 @@
   color: #2e6b45;
   border-color: rgba(46, 107, 69, 0.4);
 }
+.ativ-grupo__tit.cat--vm {
+  color: #b5451f;
+  border-color: rgba(181, 69, 31, 0.4);
+}
 .ativ-vazio {
   color: var(--t-400);
   font-size: 0.82rem;

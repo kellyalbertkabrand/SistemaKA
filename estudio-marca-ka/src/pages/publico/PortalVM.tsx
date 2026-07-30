@@ -3,6 +3,7 @@ import { listarClientes } from '../../lib/api'
 import { formatarBRL, formatarData, listarCobrancas, statusEfetivo } from '../../lib/gestao'
 import { listarProjetos, pendenciasDeProjetos, type Pendencia, type Projeto } from '../../lib/projetos'
 import { linhasFinanceiro, rotuloForma, type LinhaFinanceiro } from '../../lib/financeiro'
+import { listarAtividades, type Atividade } from '../../lib/atividades'
 import type { Cliente, Cobranca } from '../../lib/database.types'
 import { somarDinheiro, arredondar } from '../../lib/ui'
 import '../../styles/gestao.css'
@@ -21,15 +22,17 @@ export function PortalVM() {
   const [projetos, setProjetos] = useState<Projeto[] | null>(null)
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [cobrancas, setCobrancas] = useState<Cobranca[]>([])
+  const [atividades, setAtividades] = useState<Atividade[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
 
   useEffect(() => {
-    Promise.all([listarProjetos(), listarClientes(), listarCobrancas()])
-      .then(([ps, cs, cb]) => {
+    Promise.all([listarProjetos(), listarClientes(), listarCobrancas(), listarAtividades()])
+      .then(([ps, cs, cb, ativ]) => {
         setProjetos(ps)
         setClientes(cs)
         setCobrancas(cb)
+        setAtividades(ativ)
       })
       .catch((e) => setErro(e instanceof Error ? e.message : String(e)))
       .finally(() => setCarregando(false))
@@ -51,6 +54,11 @@ export function PortalVM() {
   // Tarefas da VM (etapas em aberto onde o responsável é a VM), AGRUPADAS por
   // cliente — assim a VM vê organizado quem é quem.
   const tarefas: Pendencia[] = projetos ? pendenciasDeProjetos(projetos, 'VM') : []
+  // Tarefas AVULSAS que a Kelly cria direto em Atividades com a categoria "VM
+  // Rocks" (categoria 'vm') — em aberto, mais recentes primeiro.
+  const tarefasAvulsas = atividades
+    .filter((a) => a.categoria === 'vm' && !a.feito)
+    .sort((a, b) => (a.data || '￿').localeCompare(b.data || '￿'))
   const tarefasPorCliente = (() => {
     const map = new Map<string, { cliente: string; itens: Pendencia[] }>()
     for (const pd of tarefas) {
@@ -151,6 +159,27 @@ export function PortalVM() {
           </section>
         )}
       </div>
+
+      {/* ===== TAREFAS AVULSAS (criadas pela Kelly em Atividades) ===== */}
+      {tarefasAvulsas.length > 0 && (
+        <div className="proj-card">
+          <div className="proj-card__titulo">Tarefas da Kelly para você</div>
+          <div className="vm-tarefas">
+            {tarefasAvulsas.map((a) => (
+              <div key={a.id} className="vm-tarefa vm-tarefa--pendente">
+                <div className="vm-tarefa__ponto">○</div>
+                <div className="vm-tarefa__corpo">
+                  <div className="vm-tarefa__fase">{a.titulo}</div>
+                  <div className="vm-tarefa__meta">
+                    {a.cliente_nome ? a.cliente_nome : 'Geral'}
+                    {a.data ? ` · previsto ${formatarData(a.data)}` : ''}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ===== TAREFAS DA VM (agrupadas por cliente) ===== */}
       <div className="proj-card">

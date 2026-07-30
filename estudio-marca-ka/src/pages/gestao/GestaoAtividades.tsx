@@ -4,6 +4,7 @@ import { listarClientes } from '../../lib/api'
 import type { Cliente } from '../../lib/database.types'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import { BotaoMic } from '../../components/BotaoMic'
+import { BotaoLinkVM } from '../../components/BotaoLinkVM'
 import { useToast } from '../../components/Toast'
 import { useDitado } from '../../hooks/useDitado'
 import { confirmar } from '../../lib/confirmar'
@@ -148,9 +149,11 @@ export function GestaoAtividades() {
     await criarUma()
   }
 
-  // Cliente escolhido (só quando a categoria é 'cliente').
+  // Cliente escolhido (para as categorias 'cliente' e 'vm', que podem apontar
+  // de qual cliente é a tarefa).
+  const usaCliente = novaCategoria === 'cliente' || novaCategoria === 'vm'
   function dadosCliente() {
-    if (novaCategoria !== 'cliente' || !novoClienteId) return { cliente_id: null, cliente_nome: null }
+    if (!usaCliente || !novoClienteId) return { cliente_id: null, cliente_nome: null }
     const c = clientes.find((x) => x.id === novoClienteId)
     return { cliente_id: c?.id ?? null, cliente_nome: c?.nome_marca ?? null }
   }
@@ -392,7 +395,12 @@ export function GestaoAtividades() {
             <option value="cliente">Cliente</option>
           </select>
         </label>
+        <BotaoLinkVM rotulo="Link da VM" />
       </div>
+      <p className="editor__hint" style={{ margin: '0 0 0.6rem' }}>
+        Para criar tarefa da parceira, escolha a categoria <strong>VM Rocks</strong> — ela aparece no
+        painel dela (o <strong>Link da VM</strong> acima).
+      </p>
 
       {erro && <div className="erro-msg">{erro}</div>}
 
@@ -437,9 +445,9 @@ export function GestaoAtividades() {
                 </option>
               ))}
             </select>
-            {novaCategoria === 'cliente' && (
-              <select value={novoClienteId} onChange={(e) => setNovoClienteId(e.target.value)} title="Cliente a cobrar">
-                <option value="">Cliente (p/ cobrar)…</option>
+            {usaCliente && (
+              <select value={novoClienteId} onChange={(e) => setNovoClienteId(e.target.value)} title="Cliente">
+                <option value="">{novaCategoria === 'vm' ? 'Cliente (opcional)…' : 'Cliente (p/ cobrar)…'}</option>
                 {clientes.map((c) => (
                   <option key={c.id} value={c.id}>
                     {c.nome_marca}
@@ -473,9 +481,9 @@ export function GestaoAtividades() {
                   </option>
                 ))}
               </select>
-              {novaCategoria === 'cliente' && (
-                <select value={novoClienteId} onChange={(e) => setNovoClienteId(e.target.value)} title="Cliente a cobrar">
-                  <option value="">Cliente (p/ cobrar)…</option>
+              {usaCliente && (
+                <select value={novoClienteId} onChange={(e) => setNovoClienteId(e.target.value)} title="Cliente">
+                  <option value="">{novaCategoria === 'vm' ? 'Cliente (opcional)…' : 'Cliente (p/ cobrar)…'}</option>
                   {clientes.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.nome_marca}

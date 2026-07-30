@@ -20,13 +20,15 @@ import { moverParaLixeira } from './lixeira'
 // ============================================================================
 
 // 'cliente' = tarefa que o CLIENTE precisa fazer (a KA cobra dele).
-export type CategoriaAtividade = 'trabalho' | 'cliente' | 'bia' | 'pessoal'
+// 'vm' = tarefa da parceira VM Rocks (aparece no portal dela, /vm-rocks).
+export type CategoriaAtividade = 'trabalho' | 'cliente' | 'vm' | 'bia' | 'pessoal'
 
-export const CATEGORIAS: CategoriaAtividade[] = ['trabalho', 'cliente', 'bia', 'pessoal']
+export const CATEGORIAS: CategoriaAtividade[] = ['trabalho', 'cliente', 'vm', 'bia', 'pessoal']
 
 export const ROTULO_CATEGORIA: Record<CategoriaAtividade, string> = {
   trabalho: 'Trabalho',
   cliente: 'Cliente',
+  vm: 'VM Rocks',
   bia: 'BIA',
   pessoal: 'Pessoal',
 }
@@ -40,7 +42,8 @@ export interface Atividade {
   data: string | null
   /** Ordem manual (arrastar). Menor = mais em cima. Ausente = tratado como 0. */
   ordem?: number
-  /** Só p/ categoria 'cliente': quem é o cliente a cobrar (para o WhatsApp). */
+  /** Cliente vinculado (categoria 'cliente' = quem cobrar; 'vm' = de qual
+   *  cliente é a tarefa da VM). Opcional. */
   cliente_id?: string | null
   cliente_nome?: string | null
   criado_em: string
