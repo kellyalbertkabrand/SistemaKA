@@ -1091,6 +1091,13 @@ publish `dist`, Node 20, redirect SPA `/* → /index.html 200`.
 > renovar em Netlify → User settings → Applications → New access token e
 > colar em GitHub → Settings → Secrets → Actions). Site id do app:
 > `620d408e-bb8a-49fb-a1da-ccf602320142`.
+>
+> ⚠️ **Em 30/07/2026 o deploy pelo conector Netlify (deploy-site) falhou com
+> `403 Forbidden`** na fase de upload (`zipAndBuild`). Ou seja: nem o conector
+> nem o workflow (token vencido) publicam sozinhos hoje. **Fluxo confiável
+> enquanto isso:** dar push na branch **`estudiodemarca`** (a que o site
+> publica) e a KA clicar em **Trigger deploy** no painel do Netlify. Para
+> destravar a automação, renovar o `NETLIFY_AUTH_TOKEN` (passo acima).
 
 **Variáveis de ambiente (Netlify + `.env.local`):**
 
