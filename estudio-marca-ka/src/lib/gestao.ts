@@ -140,6 +140,7 @@ export type FichaCliente = Partial<
     | 'contrato_rg'
     | 'contrato_email'
     | 'pagamentos_contrato'
+    | 'socios'
   >
 >
 

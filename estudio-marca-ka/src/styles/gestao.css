@@ -2806,6 +2806,24 @@
   font-size: 0.9rem;
   line-height: 1.6;
 }
+/* Botão de concluir (a VM marca a própria tarefa no portal dela). */
+.vm-tarefa__check {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--essencia);
+  font-size: 1.3rem;
+  line-height: 1.2;
+  padding: 0;
+  flex: 0 0 auto;
+}
+.vm-tarefa--concluida {
+  border-left-color: #7aa37a;
+  background: rgba(122, 163, 122, 0.06);
+}
+.vm-tarefa--concluida .vm-tarefa__check {
+  color: #4f7a4f;
+}
 .vm-tarefa__fase {
   font-weight: 700;
   color: var(--t-900);

@@ -12,6 +12,7 @@ import {
 } from '../../lib/formularios'
 import { autoAltura } from '../../lib/ui'
 import '../../styles/gestao.css'
+import { useTituloPagina } from '../../hooks/useTituloPagina'
 
 // Cor de destaque por seção (paleta KA) — deixa cada bloco com "cara" própria.
 const ACENTOS = ['#C47830', '#3D6B7E', '#8B5A2B', '#152535', '#C2AA8A', '#9c6b3f']
@@ -20,6 +21,7 @@ const ACENTOS = ['#C47830', '#3D6B7E', '#8B5A2B', '#152535', '#C2AA8A', '#9c6b3f
 // preenche sem login, com SALVAMENTO AUTOMÁTICO — pode parar e continuar depois
 // no mesmo link, sem perder nada.
 export function FormularioPublico() {
+  useTituloPagina('Formulário')
   const { token } = useParams<{ token: string }>()
   const [form, setForm] = useState<Formulario | null>(null)
   const [def, setDef] = useState<DefinicaoFormulario | null>(null)

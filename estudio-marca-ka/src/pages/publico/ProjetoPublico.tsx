@@ -11,6 +11,7 @@ import {
 } from '../../lib/projetos'
 import '../../styles/gestao.css'
 import '../../styles/projeto.css'
+import { useTituloPagina } from '../../hooks/useTituloPagina'
 
 const LOGO_BRANCA = '/clientes/ka/ka-branco.png'
 
@@ -36,6 +37,7 @@ const DEMO: Proj = {
 // Página que o cliente abre pelo link: linha do tempo do projeto no visual da
 // KA. Atualiza EM TEMPO REAL (onSnapshot) conforme as fases avançam.
 export function ProjetoPublico() {
+  useTituloPagina('Projeto')
   const { token: param } = useParams<{ token: string }>()
   const demo = import.meta.env.DEV && param === 'demo'
   // A URL pode vir personalizada ("boba-joy-<token>"); extraímos o token real.

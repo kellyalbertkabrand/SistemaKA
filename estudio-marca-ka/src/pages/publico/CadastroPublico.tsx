@@ -1,10 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import { cadastrarClientePublico, type FichaCliente } from '../../lib/gestao'
 import '../../styles/gestao.css'
+import { useTituloPagina } from '../../hooks/useTituloPagina'
 
 // Página pública de cadastro: o próprio cliente preenche a ficha dele e o
 // registro entra na aba Clientes da KA. Link: /cadastro
 export function CadastroPublico() {
+  useTituloPagina('Cadastro')
   const [f, setF] = useState<FichaCliente & { nome_marca: string }>({ nome_marca: '' })
   const [enviando, setEnviando] = useState(false)
   const [pronto, setPronto] = useState(false)

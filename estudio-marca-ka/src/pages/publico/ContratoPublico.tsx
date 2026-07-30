@@ -9,10 +9,12 @@ import {
 import { ContratoView } from '../../components/ContratoView'
 import { imprimirComoPdf } from '../../lib/ui'
 import '../../styles/gestao.css'
+import { useTituloPagina } from '../../hooks/useTituloPagina'
 
 // Página pública do contrato: o cliente lê e registra o aceite digital
 // (nome + CPF/CNPJ + data/hora ficam gravados no contrato).
 export function ContratoPublico() {
+  useTituloPagina('Contrato')
   const { token } = useParams<{ token: string }>()
   const [contrato, setContrato] = useState<Ctr | null>(null)
   const [carregando, setCarregando] = useState(true)

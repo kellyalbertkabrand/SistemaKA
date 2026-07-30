@@ -7,6 +7,7 @@ import {
   type FichaCuidadora,
 } from '../../lib/cuidadoras'
 import '../../styles/gestao.css'
+import { useTituloPagina } from '../../hooks/useTituloPagina'
 
 // Chave do rascunho no navegador (guarda o id do doc + os valores já digitados).
 const CHAVE = 'cuidadora-cadastro-rascunho'
@@ -33,6 +34,7 @@ function linkWhatsAppDocs(nome: string): string {
 // rascunho e vai atualizando), então nada se perde mesmo que ela não clique
 // em "Enviar".
 export function CuidadoraCadastro() {
+  useTituloPagina('Cadastro de cuidadora')
   // Recupera um rascunho começado antes (mesmo aparelho), para continuar.
   const inicial = useRef<{ id: string | null; valores: FichaCuidadora }>()
   if (!inicial.current) {

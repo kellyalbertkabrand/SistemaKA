@@ -3,9 +3,10 @@ import { listarClientes } from '../../lib/api'
 import { formatarBRL, formatarData, listarCobrancas, statusEfetivo } from '../../lib/gestao'
 import { listarProjetos, pendenciasDeProjetos, type Pendencia, type Projeto } from '../../lib/projetos'
 import { linhasFinanceiro, rotuloForma, type LinhaFinanceiro } from '../../lib/financeiro'
-import { listarAtividades, type Atividade } from '../../lib/atividades'
+import { listarAtividades, alternarAtividade, editarAtividade, type Atividade } from '../../lib/atividades'
 import type { Cliente, Cobranca } from '../../lib/database.types'
 import { somarDinheiro, arredondar } from '../../lib/ui'
+import { useTituloPagina } from '../../hooks/useTituloPagina'
 import '../../styles/gestao.css'
 import '../../styles/projeto.css'
 
@@ -25,6 +26,7 @@ export function PortalVM() {
   const [atividades, setAtividades] = useState<Atividade[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
+  useTituloPagina('Valores a receber e atividades · VM Rocks')
 
   useEffect(() => {
     Promise.all([listarProjetos(), listarClientes(), listarCobrancas(), listarAtividades()])
@@ -55,10 +57,33 @@ export function PortalVM() {
   // cliente — assim a VM vê organizado quem é quem.
   const tarefas: Pendencia[] = projetos ? pendenciasDeProjetos(projetos, 'VM') : []
   // Tarefas AVULSAS que a Kelly cria direto em Atividades com a categoria "VM
-  // Rocks" (categoria 'vm') — em aberto, mais recentes primeiro.
+  // Rocks" (categoria 'vm'). A VM pode marcar como concluída e mudar a data — as
+  // não feitas primeiro (por data), as concluídas por último.
   const tarefasAvulsas = atividades
-    .filter((a) => a.categoria === 'vm' && !a.feito)
-    .sort((a, b) => (a.data || '￿').localeCompare(b.data || '￿'))
+    .filter((a) => a.categoria === 'vm')
+    .sort(
+      (a, b) => Number(a.feito) - Number(b.feito) || (a.data || '￿').localeCompare(b.data || '￿'),
+    )
+
+  // A VM marca/desmarca a própria tarefa e ajusta a data (atualiza na hora).
+  async function alternarVM(a: Atividade) {
+    const feito = !a.feito
+    setAtividades((l) => l.map((x) => (x.id === a.id ? { ...x, feito } : x)))
+    try {
+      await alternarAtividade(a.id, feito)
+    } catch {
+      setAtividades((l) => l.map((x) => (x.id === a.id ? { ...x, feito: !feito } : x)))
+    }
+  }
+  async function mudarDataVM(a: Atividade, data: string) {
+    const nova = data || null
+    setAtividades((l) => l.map((x) => (x.id === a.id ? { ...x, data: nova } : x)))
+    try {
+      await editarAtividade(a.id, { data: nova })
+    } catch {
+      /* mantém o valor otimista; recarregar traz o certo */
+    }
+  }
   const tarefasPorCliente = (() => {
     const map = new Map<string, { cliente: string; itens: Pendencia[] }>()
     for (const pd of tarefas) {
@@ -90,12 +115,12 @@ export function PortalVM() {
   return (
     <div className="proj-pub vm-portal">
       <header className="proj-hero">
-        <div className="proj-hero__eyebrow">Portal da parceira</div>
-        <h1>VM Rocks</h1>
+        <div className="proj-hero__eyebrow">VM Rocks</div>
+        <h1>Valores a Receber e atividades</h1>
         <div className="proj-hero__meta">
-          O que você tem a receber e suas tarefas — nos projetos que você faz com a KA
+          Valores a Receber e atividades em projetos em parceria com a KA | Inteligência para Marcas
         </div>
-        <div className="proj-vivo">Somente leitura</div>
+        <div className="proj-vivo">Você conclui e ajusta a data das suas tarefas aqui</div>
       </header>
 
       {erro && <div className="erro-msg" style={{ margin: '1rem' }}>{erro}</div>}
@@ -164,15 +189,38 @@ export function PortalVM() {
       {tarefasAvulsas.length > 0 && (
         <div className="proj-card">
           <div className="proj-card__titulo">Tarefas da Kelly para você</div>
+          <p className="ativ-vazio" style={{ marginTop: 0 }}>
+            Marque a caixa quando concluir e ajuste a data se precisar — salva na hora.
+          </p>
           <div className="vm-tarefas">
             {tarefasAvulsas.map((a) => (
-              <div key={a.id} className="vm-tarefa vm-tarefa--pendente">
-                <div className="vm-tarefa__ponto">○</div>
+              <div key={a.id} className={`vm-tarefa vm-tarefa--${a.feito ? 'concluida' : 'pendente'}`}>
+                <button
+                  type="button"
+                  className="vm-tarefa__check"
+                  onClick={() => void alternarVM(a)}
+                  title={a.feito ? 'Marcar como não feita' : 'Marcar como concluída'}
+                  aria-pressed={a.feito}
+                >
+                  {a.feito ? '☑' : '☐'}
+                </button>
                 <div className="vm-tarefa__corpo">
-                  <div className="vm-tarefa__fase">{a.titulo}</div>
+                  <div
+                    className="vm-tarefa__fase"
+                    style={a.feito ? { textDecoration: 'line-through', opacity: 0.6 } : undefined}
+                  >
+                    {a.titulo}
+                  </div>
                   <div className="vm-tarefa__meta">
                     {a.cliente_nome ? a.cliente_nome : 'Geral'}
-                    {a.data ? ` · previsto ${formatarData(a.data)}` : ''}
+                    <label style={{ marginLeft: 8 }}>
+                      Data:{' '}
+                      <input
+                        type="date"
+                        value={a.data ?? ''}
+                        onChange={(e) => void mudarDataVM(a, e.target.value)}
+                      />
+                    </label>
                   </div>
                 </div>
               </div>

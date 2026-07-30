@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type { PropostaCampos } from '../../lib/database.types'
 import { formatarData } from '../../lib/gestao'
 import '../../styles/proposta.css'
+import { useTituloPagina } from '../../hooks/useTituloPagina'
 
 // ============================================================================
 // PROPOSTA COMERCIAL no layout KA, o documento que o cliente abre pelo link
@@ -44,6 +45,7 @@ export interface PropostaDocDados {
 }
 
 export function PropostaDoc({ dados }: { dados: PropostaDocDados }) {
+  useTituloPagina('Proposta')
   const p = dados.proposta
   const numDoc = formatarData(dados.criado_em).split('/').join('')
   const rodape = (

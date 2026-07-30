@@ -49,6 +49,18 @@ export interface Cliente {
   /** Pagamentos do contrato: para cada um, QUEM deve ser pago (cliente, KA, VM
    *  ou um nome personalizado), quando, em quantas parcelas e o valor de cada. */
   pagamentos_contrato?: PagamentoContrato[]
+  /** Sócios da empresa (quando houver mais de um). Os marcados `assina` entram
+   *  como signatários do contrato, além do responsável principal. */
+  socios?: Socio[]
+}
+
+/** Um sócio da empresa do cliente. `assina` = vai assinar o contrato. */
+export interface Socio {
+  nome: string
+  cpf?: string | null
+  rg?: string | null
+  email?: string | null
+  assina?: boolean
 }
 
 /** Um pagamento do contrato. `quem` é 'cliente' | 'ka' | 'vm' | 'outro'; quando

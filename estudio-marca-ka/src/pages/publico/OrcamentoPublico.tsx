@@ -10,11 +10,13 @@ import {
 } from '../../lib/gestao'
 import { PropostaDoc } from './PropostaDoc'
 import '../../styles/gestao.css'
+import { useTituloPagina } from '../../hooks/useTituloPagina'
 
 // Página que o cliente/prospect abre pelo link enviado pela KA.
 // Aprovar gera o contrato e leva direto à página do contrato (a cobrança a KA
 // lança à mão por enquanto — geração automática desligada).
 export function OrcamentoPublico() {
+  useTituloPagina('Orçamento')
   const { token } = useParams<{ token: string }>()
   const navigate = useNavigate()
   const [orc, setOrc] = useState<Orc | null>(null)
