@@ -92,6 +92,57 @@ export function GestaoClientes() {
     }
   }
 
+  // Duplica o cliente (cópia da ficha) — útil quando o cliente tem 2 marcas.
+  async function duplicar(c: Cliente) {
+    const ok = await confirmar(
+      `Duplicar "${c.nome_marca}"? Cria uma cópia da ficha (útil quando o cliente tem duas marcas). ` +
+        'Depois é só ajustar o nome da 2ª marca.',
+      { confirmar: 'Duplicar' },
+    )
+    if (!ok) return
+    const nome = `${c.nome_marca} (cópia)`
+    try {
+      const novo = await criarCliente({
+        nome_marca: nome,
+        instagram_handle: c.instagram_handle ?? null,
+        segmento: c.segmento ?? null,
+        site: c.site ?? null,
+      })
+      // Copia os dados da ficha para a cópia (o slug fica em branco — é próprio
+      // de cada marca; o id/criado_em são novos).
+      const dados: FichaCliente = {
+        nome_marca: nome,
+        slug: null,
+        status: c.status,
+        responsavel: c.responsavel,
+        email_contato: c.email_contato,
+        telefone: c.telefone,
+        endereco: c.endereco,
+        cidade: c.cidade,
+        observacoes: c.observacoes,
+        email_cobranca: c.email_cobranca,
+        documento: c.documento,
+        valor_mensalidade: c.valor_mensalidade,
+        dia_vencimento: c.dia_vencimento,
+        cobranca_ativa: c.cobranca_ativa,
+        razao_social: c.razao_social,
+        fundador_nome: c.fundador_nome,
+        fundador_cpf: c.fundador_cpf,
+        contrato_nome: c.contrato_nome,
+        contrato_documento: c.contrato_documento,
+        contrato_rg: c.contrato_rg,
+        contrato_email: c.contrato_email,
+        pagamentos_contrato: c.pagamentos_contrato,
+        socios: c.socios,
+      }
+      await salvarFichaCliente(novo.id, dados)
+      mostrar('Cliente duplicado ✓ — ajuste o nome da 2ª marca.', 'ok')
+      void recarregar()
+    } catch (e) {
+      mostrar(e instanceof Error ? e.message : String(e), 'erro')
+    }
+  }
+
   const novos = clientes.filter(ehNovo).length
 
   async function recarregar() {
@@ -216,6 +267,9 @@ export function GestaoClientes() {
                     <button className="btn-mini" onClick={() => abrir(c)}>
                       Abrir ficha
                     </button>
+                    <button className="btn-mini" onClick={() => void duplicar(c)} title="Criar uma cópia (2ª marca)">
+                      Duplicar
+                    </button>
                     <button className="btn-mini btn-mini--perigo" onClick={() => void excluir(c)}>
                       Excluir
                     </button>
@@ -313,11 +367,11 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente | null; aoVolt
           {/* Mesma ordem da ficha pública /cadastro */}
           <div className="form-grade">
             <div className="field campo-toda">
-              <label>Nome da marca</label>
+              <label>Nome da marca (fantasia)</label>
               <input value={f.nome_marca ?? ''} onChange={(e) => campo('nome_marca', e.target.value)} required />
             </div>
             <div className="field">
-              <label>Responsável (nome)</label>
+              <label>Nome (completo)</label>
               <input value={f.responsavel ?? ''} onChange={(e) => campo('responsavel', e.target.value || null)} />
             </div>
             <div className="field">

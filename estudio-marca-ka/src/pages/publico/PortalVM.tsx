@@ -3,7 +3,13 @@ import { listarClientes } from '../../lib/api'
 import { formatarBRL, formatarData, listarCobrancas, statusEfetivo } from '../../lib/gestao'
 import { listarProjetos, pendenciasDeProjetos, type Pendencia, type Projeto } from '../../lib/projetos'
 import { linhasFinanceiro, rotuloForma, type LinhaFinanceiro } from '../../lib/financeiro'
-import { listarAtividades, alternarAtividade, editarAtividade, type Atividade } from '../../lib/atividades'
+import {
+  listarAtividades,
+  alternarAtividade,
+  editarAtividade,
+  criarAtividade,
+  type Atividade,
+} from '../../lib/atividades'
 import type { Cliente, Cobranca } from '../../lib/database.types'
 import { somarDinheiro, arredondar } from '../../lib/ui'
 import { useTituloPagina } from '../../hooks/useTituloPagina'
@@ -26,6 +32,9 @@ export function PortalVM() {
   const [atividades, setAtividades] = useState<Atividade[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
+  const [novoTitulo, setNovoTitulo] = useState('')
+  const [novaData, setNovaData] = useState('')
+  const [adicionando, setAdicionando] = useState(false)
   useTituloPagina('Valores a receber e atividades · VM Rocks')
 
   useEffect(() => {
@@ -64,6 +73,32 @@ export function PortalVM() {
     .sort(
       (a, b) => Number(a.feito) - Number(b.feito) || (a.data || '￿').localeCompare(b.data || '￿'),
     )
+
+  // A VM ADICIONA uma tarefa — vira uma atividade da categoria "VM", que aparece
+  // no painel de Atividades da Kelly e aqui no portal.
+  async function adicionarTarefa(e: React.FormEvent) {
+    e.preventDefault()
+    const titulo = novoTitulo.trim()
+    if (!titulo || adicionando) return
+    setAdicionando(true)
+    try {
+      const menor = Math.min(0, ...atividades.filter((a) => a.categoria === 'vm').map((a) => a.ordem ?? 0))
+      const nova = await criarAtividade({
+        titulo,
+        categoria: 'vm',
+        data: novaData || null,
+        ordem: menor - 1,
+      })
+      setAtividades((l) => [nova, ...l])
+      setNovoTitulo('')
+      setNovaData('')
+      setErro(null)
+    } catch (err) {
+      setErro(err instanceof Error ? err.message : String(err))
+    } finally {
+      setAdicionando(false)
+    }
+  }
 
   // A VM marca/desmarca a própria tarefa e ajusta a data (atualiza na hora).
   async function alternarVM(a: Atividade) {
@@ -185,13 +220,27 @@ export function PortalVM() {
         )}
       </div>
 
-      {/* ===== TAREFAS AVULSAS (criadas pela Kelly em Atividades) ===== */}
-      {tarefasAvulsas.length > 0 && (
-        <div className="proj-card">
-          <div className="proj-card__titulo">Tarefas</div>
-          <p className="ativ-vazio" style={{ marginTop: 0 }}>
-            Marque a caixa quando concluir e ajuste a data se precisar — salva na hora.
-          </p>
+      {/* ===== TAREFAS (a VM adiciona, conclui e ajusta a data) ===== */}
+      <div className="proj-card">
+        <div className="proj-card__titulo">Tarefas</div>
+        <p className="ativ-vazio" style={{ marginTop: 0 }}>
+          Adicione suas tarefas, marque quando concluir e ajuste a data — salva na hora e aparece
+          para a Kelly no painel dela.
+        </p>
+        <form className="vm-add" onSubmit={(e) => void adicionarTarefa(e)}>
+          <input
+            value={novoTitulo}
+            onChange={(e) => setNovoTitulo(e.target.value)}
+            placeholder="Nova tarefa…"
+          />
+          <input type="date" value={novaData} onChange={(e) => setNovaData(e.target.value)} title="Data (opcional)" />
+          <button className="btn" type="submit" disabled={adicionando || !novoTitulo.trim()}>
+            + Adicionar
+          </button>
+        </form>
+        {tarefasAvulsas.length === 0 ? (
+          <p className="ativ-vazio">Nenhuma tarefa ainda — adicione a primeira acima.</p>
+        ) : (
           <div className="vm-tarefas">
             {tarefasAvulsas.map((a) => (
               <div key={a.id} className={`vm-tarefa vm-tarefa--${a.feito ? 'concluida' : 'pendente'}`}>
@@ -228,8 +277,8 @@ export function PortalVM() {
               </div>
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* ===== TAREFAS DA VM (agrupadas por cliente) ===== */}
       <div className="proj-card">

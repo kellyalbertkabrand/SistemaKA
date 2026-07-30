@@ -67,11 +67,11 @@ export function CadastroPublico() {
         <form onSubmit={(e) => void enviar(e)} style={{ marginTop: '1.2rem' }}>
           <div className="form-grade">
             <div className="field campo-toda">
-              <label>Nome da marca *</label>
+              <label>Nome da marca (fantasia) *</label>
               <input value={f.nome_marca} onChange={(e) => campo('nome_marca', e.target.value)} required />
             </div>
             <div className="field">
-              <label>Responsável (seu nome)</label>
+              <label>Nome (completo)</label>
               <input value={f.responsavel ?? ''} onChange={(e) => campo('responsavel', e.target.value || null)} />
             </div>
             <div className="field">
