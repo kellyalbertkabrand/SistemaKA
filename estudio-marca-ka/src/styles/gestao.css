@@ -1437,17 +1437,19 @@
   cursor: grabbing;
   background: rgba(184, 155, 106, 0.3);
 }
+/* Fase sendo arrastada: "levantada", seguindo o ponteiro (transform inline). */
 .fase--arrastando {
-  opacity: 0.45;
-  border-style: dashed;
+  position: relative;
+  opacity: 0.97;
   border-color: var(--dourado);
-  transform: scale(0.99);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
+  cursor: grabbing;
 }
-/* Linha de destaque FORTE onde o item vai cair */
+/* Linha de destaque onde o item vai cair */
 .fase--alvo {
   border-color: var(--dourado);
   background: rgba(184, 155, 106, 0.14);
-  box-shadow: 0 0 0 2px var(--dourado);
+  box-shadow: 0 -3px 0 0 var(--dourado) inset;
 }
 
 /* Flash bem visível no item que ACABOU de mudar de lugar (arraste ou ↑/↓) */
@@ -3022,16 +3024,23 @@
 }
 
 /* Atividades: arrastar para reordenar (usa .fase__handle) */
+/* Linha sendo arrastada: "levantada" e seguindo o ponteiro (transform vem do
+   inline translateY). Sem transição no transform para não atrasar o movimento. */
 .ativ--arrastando {
-  opacity: 0.45;
-  border-style: dashed;
+  position: relative;
+  opacity: 0.97;
   border-color: var(--dourado);
-  transform: scale(0.99);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
+  cursor: grabbing;
 }
 .ativ--alvo {
   border-color: var(--dourado);
   background: rgba(184, 155, 106, 0.14);
-  box-shadow: 0 0 0 2px var(--dourado);
+  box-shadow: 0 -3px 0 0 var(--dourado) inset;
+}
+/* As demais linhas deslizam suavemente ao se reacomodar. */
+.ativ {
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
 /* ---- Caixa de confirmação própria (confirmar.ts) ---- */

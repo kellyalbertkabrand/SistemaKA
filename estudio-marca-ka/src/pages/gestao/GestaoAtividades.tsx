@@ -71,6 +71,7 @@ export function GestaoAtividades() {
   // Arrastar para reordenar (Pointer Events — funciona no toque do iPhone)
   const [dragId, setDragId] = useState<string | null>(null)
   const [overId, setOverId] = useState<string | null>(null)
+  const [dragY, setDragY] = useState(0) // deslocamento vertical do item arrastado
   const [movidoId, setMovidoId] = useState<string | null>(null) // item que acabou de mudar (flash)
   const rowsRef = useRef<Map<string, HTMLElement>>(new Map())
   const dragRef = useRef<{ cat: CategoriaAtividade; de: string; para: string } | null>(null)
@@ -284,18 +285,29 @@ export function GestaoAtividades() {
 
   function iniciarArraste(e: React.PointerEvent, cat: CategoriaAtividade, id: string) {
     e.preventDefault()
+    const startY = e.clientY
+    // Mantém os eventos do ponteiro mesmo se o dedo/cursor sair da alça.
+    try {
+      ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+    } catch {
+      /* ignora */
+    }
     dragRef.current = { cat, de: id, para: id }
     setDragId(id)
     setOverId(id)
+    setDragY(0)
     const mover = (ev: PointerEvent) => {
       const st = dragRef.current
       if (!st) return
+      // A linha arrastada SEGUE o ponteiro (sobe/desce junto) — o movimento visível.
+      setDragY(ev.clientY - startY)
       const y = ev.clientY
       // Alvo = a tarefa cujo CENTRO está mais perto do dedo/cursor (sem "zona
       // morta" entre linhas — antes só movia se soltasse exatamente na linha).
       let alvo = st.de
       let melhor = Infinity
       for (const a of pessoaisOrdenadas(st.cat)) {
+        if (a.id === st.de) continue
         const el = rowsRef.current.get(a.id)
         if (!el) continue
         const r = el.getBoundingClientRect()
@@ -311,14 +323,17 @@ export function GestaoAtividades() {
     const soltar = () => {
       window.removeEventListener('pointermove', mover)
       window.removeEventListener('pointerup', soltar)
+      window.removeEventListener('pointercancel', soltar)
       const st = dragRef.current
       dragRef.current = null
       setDragId(null)
       setOverId(null)
+      setDragY(0)
       if (st && st.de !== st.para) void aplicarReordem(st.cat, st.de, st.para)
     }
     window.addEventListener('pointermove', mover)
     window.addEventListener('pointerup', soltar)
+    window.addEventListener('pointercancel', soltar)
   }
 
   function iniciarEdicao(a: Atividade) {
@@ -654,6 +669,7 @@ export function GestaoAtividades() {
                     className={`ativ ${a.feito ? 'ativ--feito' : ''} ${dragId === a.id ? 'ativ--arrastando' : ''} ${
                       overId === a.id && dragId && dragId !== a.id ? 'ativ--alvo' : ''
                     } ${movidoId === a.id ? 'ativ--movido' : ''}`}
+                    style={dragId === a.id ? { transform: `translateY(${dragY}px)`, zIndex: 20 } : undefined}
                   >
                     {ordenar === 'padrao' && (
                       <span

@@ -477,6 +477,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
   // o "draggable" nativo do HTML não dispara no toque do iPhone)
   const [dragIdx, setDragIdx] = useState<number | null>(null)
   const [overIdx, setOverIdx] = useState<number | null>(null)
+  const [dragY, setDragY] = useState(0) // deslocamento vertical da fase arrastada
   const [movidoIdx, setMovidoIdx] = useState<number | null>(null) // fase que acabou de mudar de lugar (flash)
   const rowsRef = useRef<(HTMLDivElement | null)[]>([])
   const dragState = useRef<{ de: number; para: number } | null>(null)
@@ -610,11 +611,19 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
   // no window até soltar — assim funciona no toque do celular.
   function iniciarArraste(e: React.PointerEvent, i: number) {
     e.preventDefault()
+    const startY = e.clientY
+    try {
+      ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+    } catch {
+      /* ignora */
+    }
     dragState.current = { de: i, para: i }
     setDragIdx(i)
     setOverIdx(i)
+    setDragY(0)
     const mover = (ev: PointerEvent) => {
       if (!dragState.current) return
+      setDragY(ev.clientY - startY)
       const y = ev.clientY
       // Alvo = a fase cujo CENTRO está mais perto do dedo/cursor. Assim não há
       // "zona morta" entre as linhas (antes só mudava se soltasse exatamente
@@ -637,14 +646,17 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     const soltar = () => {
       window.removeEventListener('pointermove', mover)
       window.removeEventListener('pointerup', soltar)
+      window.removeEventListener('pointercancel', soltar)
       const st = dragState.current
       dragState.current = null
       setDragIdx(null)
       setOverIdx(null)
+      setDragY(0)
       if (st) reordenar(st.de, st.para)
     }
     window.addEventListener('pointermove', mover)
     window.addEventListener('pointerup', soltar)
+    window.addEventListener('pointercancel', soltar)
   }
 
   async function adicionarFase() {
@@ -888,6 +900,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
               className={`fase fase--${f.status} ${dragIdx === i ? 'fase--arrastando' : ''} ${
                 overIdx === i && dragIdx !== null && dragIdx !== i ? 'fase--alvo' : ''
               } ${movidoIdx === i ? 'fase--movido' : ''}`}
+              style={dragIdx === i ? { transform: `translateY(${dragY}px)`, zIndex: 20 } : undefined}
             >
               <span
                 className="fase__handle"

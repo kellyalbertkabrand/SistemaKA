@@ -242,22 +242,31 @@
 }
 .proj-fase--andamento .proj-fase__ponto {
   background: #fff;
-  border-color: var(--essencia);
-  color: var(--essencia);
+  border-color: #e0b73a;
+  color: #9a7414;
   animation: pulso-proj 1.8s ease-in-out infinite;
 }
 @keyframes pulso-proj {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(61, 107, 126, 0.3); }
-  55% { box-shadow: 0 0 0 9px rgba(61, 107, 126, 0.06); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 183, 58, 0.4); }
+  55% { box-shadow: 0 0 0 9px rgba(224, 183, 58, 0.08); }
 }
 .proj-fase__corpo {
   flex: 1;
   min-width: 0;
   padding-top: 2px;
 }
+/* Em andamento = amarelinho bem claro (a KA/VM estão trabalhando na etapa). */
 .proj-fase--andamento .proj-fase__corpo {
-  background: linear-gradient(120deg, rgba(61, 107, 126, 0.08), rgba(61, 107, 126, 0.03));
-  border: 1px solid rgba(61, 107, 126, 0.18);
+  background: rgba(247, 210, 100, 0.18);
+  border: 1px solid rgba(224, 183, 58, 0.5);
+  border-radius: 14px;
+  padding: 0.8rem 1rem;
+  margin-top: -6px;
+}
+/* Concluída = verde clarinho. */
+.proj-fase--concluida .proj-fase__corpo {
+  background: rgba(46, 107, 69, 0.09);
+  border: 1px solid rgba(46, 107, 69, 0.24);
   border-radius: 14px;
   padding: 0.8rem 1rem;
   margin-top: -6px;
@@ -284,7 +293,7 @@
   margin-top: 0.25rem;
 }
 .proj-fase--andamento .proj-fase__meta {
-  color: var(--essencia);
+  color: #9a7414;
 }
 .proj-fase--concluida .proj-fase__meta {
   color: rgba(46, 107, 69, 0.75);
