@@ -200,6 +200,7 @@ export async function cadastrarClientePublico(
     contrato_documento: dados.contrato_documento ?? null,
     contrato_rg: dados.contrato_rg ?? null,
     contrato_email: dados.contrato_email ?? null,
+    socios: dados.socios ?? null,
     valor_mensalidade: null,
     dia_vencimento: 10,
     cobranca_ativa: false,

@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { cadastrarClientePublico, type FichaCliente } from '../../lib/gestao'
+import { SociosEditor } from '../../components/SociosEditor'
 import '../../styles/gestao.css'
 import { useTituloPagina } from '../../hooks/useTituloPagina'
 
@@ -146,6 +147,13 @@ export function CadastroPublico() {
               <input type="email" value={f.contrato_email ?? ''} onChange={(e) => campo('contrato_email', e.target.value || null)} />
             </div>
           </div>
+
+          <h3 style={{ fontSize: '1.05rem', margin: '1.4rem 0 0.3rem' }}>Sócios (se houver)</h3>
+          <p style={{ fontSize: '0.8rem', color: 'var(--t-500)', marginBottom: '0.9rem' }}>
+            <strong>Opcional.</strong> Se a empresa tiver mais de um sócio, adicione os dados de cada
+            um e marque quem vai assinar o contrato. Se não tiver, é só deixar em branco.
+          </p>
+          <SociosEditor lista={f.socios ?? []} onChange={(l) => campo('socios', l)} />
 
           <div className="pub-acoes">
             <button className="btn" type="submit" disabled={enviando || !f.nome_marca.trim()}>
