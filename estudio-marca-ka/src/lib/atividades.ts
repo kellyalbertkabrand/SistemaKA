@@ -19,16 +19,19 @@ import { moverParaLixeira } from './lixeira'
 // coleção `atividades` do Firestore (só a KA vê).
 // ============================================================================
 
-// 'cliente' = tarefa que o CLIENTE precisa fazer (a KA cobra dele).
+// 'trabalho' = trabalho da própria KA (rótulo "KA").
 // 'vm' = tarefa da parceira VM Rocks (aparece no portal dela, /vm-rocks).
+// 'cliente' = mantido no tipo por compatibilidade (dados antigos), mas fora da
+// lista exibida — as tarefas do cliente ficam em Projetos → Pendências.
 export type CategoriaAtividade = 'trabalho' | 'cliente' | 'vm' | 'bia' | 'pessoal'
 
-export const CATEGORIAS: CategoriaAtividade[] = ['trabalho', 'cliente', 'vm', 'bia', 'pessoal']
+// Categorias mostradas no painel (chips, seções e seletor): KA, VM, BIA, Pessoal.
+export const CATEGORIAS: CategoriaAtividade[] = ['trabalho', 'vm', 'bia', 'pessoal']
 
 export const ROTULO_CATEGORIA: Record<CategoriaAtividade, string> = {
-  trabalho: 'Trabalho',
+  trabalho: 'KA',
   cliente: 'Cliente',
-  vm: 'VM Rocks',
+  vm: 'VM',
   bia: 'BIA',
   pessoal: 'Pessoal',
 }

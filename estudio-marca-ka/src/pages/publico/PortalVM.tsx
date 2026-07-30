@@ -188,7 +188,7 @@ export function PortalVM() {
       {/* ===== TAREFAS AVULSAS (criadas pela Kelly em Atividades) ===== */}
       {tarefasAvulsas.length > 0 && (
         <div className="proj-card">
-          <div className="proj-card__titulo">Tarefas da Kelly para você</div>
+          <div className="proj-card__titulo">Tarefas</div>
           <p className="ativ-vazio" style={{ marginTop: 0 }}>
             Marque a caixa quando concluir e ajuste a data se precisar — salva na hora.
           </p>

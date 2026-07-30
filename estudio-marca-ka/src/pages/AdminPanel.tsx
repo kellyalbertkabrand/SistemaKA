@@ -204,7 +204,7 @@ const CABECALHOS: Record<Aba, { titulo: string; sub: string }> = {
   financeiro: { titulo: 'Financeiro 🔒', sub: 'Seu caixa: entradas e saídas, a receber e quanto é seu vs da VM Rocks.' },
   relatorios: { titulo: 'Relatórios 🔒', sub: 'Gere relatórios financeiros por período e acompanhe o desempenho do site.' },
   projetos: { titulo: 'Projetos', sub: 'Fases de cada projeto — um clique para avançar; o cliente acompanha pelo link em tempo real.' },
-  atividades: { titulo: 'Atividades 🔒', sub: 'Seu painel pessoal — pendências dos clientes (KA) junto com Trabalho, BIA e Pessoal.' },
+  atividades: { titulo: 'Atividades 🔒', sub: 'Seu painel pessoal — tarefas da KA, da VM, BIA e Pessoal.' },
   cuidadoras: { titulo: 'Cuidadoras 🔒', sub: 'Seu controle pessoal — cadastro pelo link, ficha e documentos de cada cuidadora.' },
   formularios: { titulo: 'Formulários 🔒', sub: 'Etapas do Marca com Essência© — envie o link, o cliente preenche e salva sozinho.' },
   lixeira: { titulo: 'Lixeira 🗑️', sub: 'Itens excluídos. Restaure o que apagou por engano ou esvazie de vez.' },
