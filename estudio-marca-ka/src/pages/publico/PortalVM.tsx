@@ -8,10 +8,12 @@ import {
   alternarAtividade,
   editarAtividade,
   criarAtividade,
+  excluirAtividade,
   type Atividade,
 } from '../../lib/atividades'
 import type { Cliente, Cobranca } from '../../lib/database.types'
 import { somarDinheiro, arredondar } from '../../lib/ui'
+import { confirmar } from '../../lib/confirmar'
 import { useTituloPagina } from '../../hooks/useTituloPagina'
 import '../../styles/gestao.css'
 import '../../styles/projeto.css'
@@ -147,6 +149,18 @@ export function PortalVM() {
       /* mantém o valor otimista; recarregar traz o certo */
     }
   }
+  // A VM APAGA a própria tarefa (vai para a lixeira; some do painel da Kelly).
+  async function excluirTarefa(a: Atividade) {
+    if (!(await confirmar(`Apagar a tarefa "${a.titulo}"?`, { perigo: true, confirmar: 'Apagar' }))) return
+    const antes = atividades
+    setAtividades((l) => l.filter((x) => x.id !== a.id))
+    try {
+      await excluirAtividade(a.id)
+    } catch (e) {
+      setAtividades(antes)
+      setErro(e instanceof Error ? e.message : String(e))
+    }
+  }
   // A VM muda o STATUS de uma etapa do projeto e ADICIONA novas etapas. Salvar
   // grava no projeto (Firestore) → reflete em todo o sistema e na página do
   // cliente (que escuta em tempo real).
@@ -173,6 +187,22 @@ export function PortalVM() {
     try {
       await salvarProjeto(projeto.id, { fases })
     } catch (e) {
+      setErro(e instanceof Error ? e.message : String(e))
+    }
+  }
+  // A VM APAGA uma etapa dela no projeto. Remove a fase pelo índice e salva —
+  // reflete no sistema e na página do cliente (onSnapshot).
+  async function excluirFaseVM(projeto: Projeto, idx: number) {
+    const alvo = projeto.fases[idx]
+    if (!(await confirmar(`Apagar a atividade "${alvo?.nome ?? ''}" deste projeto?`, { perigo: true, confirmar: 'Apagar' })))
+      return
+    const antes = projetos
+    const fases = projeto.fases.filter((_, i) => i !== idx)
+    setProjetos((l) => (l ?? []).map((p) => (p.id === projeto.id ? { ...p, fases } : p)))
+    try {
+      await salvarProjeto(projeto.id, { fases })
+    } catch (e) {
+      setProjetos(antes)
       setErro(e instanceof Error ? e.message : String(e))
     }
   }
@@ -338,6 +368,15 @@ export function PortalVM() {
                     </label>
                   </div>
                 </div>
+                <button
+                  type="button"
+                  className="vm-tarefa__apagar"
+                  onClick={() => void excluirTarefa(a)}
+                  title="Apagar esta tarefa"
+                  aria-label="Apagar esta tarefa"
+                >
+                  🗑️
+                </button>
               </div>
             ))}
           </div>
@@ -359,6 +398,22 @@ export function PortalVM() {
                 {projeto.nome}{' '}
                 <span className="vm-grupo__n">{nomeCliente(projeto.cliente_id) || projeto.cliente_nome}</span>
               </h3>
+              <form
+                className="vm-add"
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  void adicionarFaseVM(projeto)
+                }}
+              >
+                <input
+                  value={novaFaseTxt[projeto.id] ?? ''}
+                  onChange={(e) => setNovaFaseTxt((m) => ({ ...m, [projeto.id]: e.target.value }))}
+                  placeholder="Nova atividade neste projeto…"
+                />
+                <button className="btn" type="submit" disabled={!(novaFaseTxt[projeto.id] ?? '').trim()}>
+                  + Adicionar
+                </button>
+              </form>
               <div className="vm-tarefas">
                 {fases.map(({ f, idx }) => (
                   <div key={idx} className={`vm-tarefa vm-tarefa--${f.status}`}>
@@ -387,25 +442,18 @@ export function PortalVM() {
                         {f.data && <span className="vm-tag">previsto {formatarData(f.data)}</span>}
                       </div>
                     </div>
+                    <button
+                      type="button"
+                      className="vm-tarefa__apagar"
+                      onClick={() => void excluirFaseVM(projeto, idx)}
+                      title="Apagar esta atividade"
+                      aria-label="Apagar esta atividade"
+                    >
+                      🗑️
+                    </button>
                   </div>
                 ))}
               </div>
-              <form
-                className="vm-add"
-                onSubmit={(e) => {
-                  e.preventDefault()
-                  void adicionarFaseVM(projeto)
-                }}
-              >
-                <input
-                  value={novaFaseTxt[projeto.id] ?? ''}
-                  onChange={(e) => setNovaFaseTxt((m) => ({ ...m, [projeto.id]: e.target.value }))}
-                  placeholder="Nova atividade neste projeto…"
-                />
-                <button className="btn" type="submit" disabled={!(novaFaseTxt[projeto.id] ?? '').trim()}>
-                  + Adicionar
-                </button>
-              </form>
             </section>
           ))
         )}

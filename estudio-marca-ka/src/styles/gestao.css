@@ -2826,6 +2826,28 @@
 .vm-tarefa--concluida .vm-tarefa__check {
   color: #4f7a4f;
 }
+.vm-tarefa__corpo {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+/* Botão de apagar a tarefa/atividade (VM remove no portal dela). */
+.vm-tarefa__apagar {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  padding: 4px;
+  border-radius: 8px;
+  flex: 0 0 auto;
+  opacity: 0.55;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+.vm-tarefa__apagar:hover,
+.vm-tarefa__apagar:focus-visible {
+  opacity: 1;
+  background: rgba(190, 40, 40, 0.1);
+}
 /* Título da tarefa editável (clica → vira campo). */
 .vm-tarefa__fase--btn {
   background: none;
