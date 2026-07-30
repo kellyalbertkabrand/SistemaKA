@@ -8,13 +8,13 @@ const OPCOES_PNG = {
   style: { transform: 'none', margin: '0' },
 } as const
 
-const EH_SAFARI =
+export const EH_SAFARI =
   typeof navigator !== 'undefined' &&
   (/^((?!chrome|android).)*safari/i.test(navigator.userAgent) ||
     /iP(hone|ad|od)/i.test(navigator.userAgent))
 
 /** Espera todas as imagens do nó terminarem de decodificar. */
-async function esperarImagens(node: HTMLElement): Promise<void> {
+export async function esperarImagens(node: HTMLElement): Promise<void> {
   const imgs = Array.from(node.querySelectorAll('img'))
   await Promise.all(
     imgs.map((img) =>

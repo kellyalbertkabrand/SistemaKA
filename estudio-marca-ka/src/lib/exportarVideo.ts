@@ -1,6 +1,6 @@
 import { toPng } from 'html-to-image'
 import { assinarPngDataUrl, metaPadrao, type MetaAssinatura } from './assinatura'
-import { entregarArquivo, dataUrlParaBlob } from './exportar'
+import { entregarArquivo, dataUrlParaBlob, esperarImagens, EH_SAFARI } from './exportar'
 import { FORMAS } from '../templates/formas'
 
 // ============================================================================
@@ -290,10 +290,20 @@ async function molduraComJanela(
   node.classList.add(sobreposto ? 'moldura-video--sobreposto' : 'moldura-video')
   let molduraUrl: string
   try {
-    // Uma única rasterização, com tempo limite: o toPng do Safari às vezes
+    // A moldura TEM imagens (o logo da Shapes, a concha do CTA, o símbolo).
+    // Espera elas decodificarem antes de rasterizar — senão saem em branco.
+    await esperarImagens(node)
+    // Safari/iPhone: a PRIMEIRA rasterização costuma vir SEM as imagens (o
+    // <img> dentro do foreignObject ainda não pintou) — era o que fazia o LOGO
+    // sumir do vídeo. Fazemos uma passada de aquecimento e usamos a segunda.
+    if (EH_SAFARI) {
+      await comTimeout(toPng(node, opts), 25000, 'aquecimento', sinal).catch(() => undefined)
+      await esperar(150)
+      await esperarImagens(node)
+    }
+    // Rasterização final, com tempo limite: o toPng do Safari às vezes
     // nunca resolve, e sem o limite o botão ficava preso em "Preparando a
-    // moldura". (Não precisa de aquecimento aqui: o vídeo é excluído e não há
-    // foto na moldura.)
+    // moldura".
     molduraUrl = await comTimeout(
       toPng(node, opts),
       25000,
@@ -531,8 +541,14 @@ export async function gerarVideoBlob(
     )
   }
 
-  const blob = new Blob(chunks, { type: mime?.startsWith('video/mp4') ? 'video/mp4' : 'video/webm' })
-  const ext = mime?.startsWith('video/mp4') ? 'mp4' : 'webm'
+  // Usa o container REAL que o MediaRecorder produziu (rec.mimeType), não o que
+  // pedimos. No Safari/iPhone, quando nenhum candidato "casa" no isTypeSupported,
+  // o gravador ainda produz MP4 pelo padrão dele — se rotulássemos como webm, o
+  // iOS não reconheceria o arquivo e ele NÃO ia para o rolo de câmera.
+  const containerReal = rec.mimeType || mime || ''
+  const ehMp4 = /mp4/i.test(containerReal)
+  const blob = new Blob(chunks, { type: ehMp4 ? 'video/mp4' : 'video/webm' })
+  const ext = ehMp4 ? 'mp4' : 'webm'
   return { blob, ext }
 }
 
