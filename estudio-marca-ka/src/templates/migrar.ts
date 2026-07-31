@@ -21,15 +21,25 @@ export function migrarConteudo(
   novo: Template,
 ): ValoresPeca {
   const novoV = valoresPadrao(novo.campos)
+  // Padrões do template de ORIGEM: só migramos o que a pessoa REALMENTE mudou
+  // (diferente do padrão de origem). Senão o texto/cor-PADRÃO de um card (ex.: o
+  // depoimento do feedback, ou uma cor de fundo específica) ia sobrescrever o
+  // padrão do novo card — o CTA no carrossel abria com o texto do slide anterior
+  // no lugar de "ACESSE A LOJA". Assim, sem customização, cada template no
+  // carrossel fica IDÊNTICO ao de fora.
+  const padraoAnt = valoresPadrao(antigo.campos)
+  const mudou = (id: string) => {
+    const v = valoresAnt[id]
+    return v != null && v !== '' && v !== padraoAnt[id]
+  }
 
-  // --- Textos, na ordem ---
+  // --- Textos, na ordem (só os que a pessoa escreveu, não os padrões) ---
   const textosAnt = antigo.campos
-    .filter((c) => ehTexto(c.tipo))
-    .map((c) => valoresAnt[c.id])
-    .filter((v) => typeof v === 'string' && v.trim() !== '')
+    .filter((c) => ehTexto(c.tipo) && mudou(c.id) && String(valoresAnt[c.id]).trim() !== '')
+    .map((c) => valoresAnt[c.id] as string)
   const textosNovos = novo.campos.filter((c) => ehTexto(c.tipo))
   textosNovos.forEach((c, i) => {
-    if (i < textosAnt.length) novoV[c.id] = textosAnt[i] as string
+    if (i < textosAnt.length) novoV[c.id] = textosAnt[i]
   })
 
   // --- Imagens, na ordem (com tamanho/posição/zoom) ---
@@ -53,10 +63,12 @@ export function migrarConteudo(
   })
 
   // --- Demais campos por id idêntico (cor, paleta, select, estrelas, forma) ---
+  // Só migra se a pessoa MUDOU o valor — assim o novo card mantém o próprio
+  // padrão (cor de fundo, forma, etc.) quando nada foi customizado.
   for (const c of novo.campos) {
     if (
       (c.tipo === 'cor' || c.tipo === 'paleta' || c.tipo === 'select' || c.tipo === 'estrelas' || c.tipo === 'forma') &&
-      valoresAnt[c.id] != null
+      mudou(c.id)
     ) {
       novoV[c.id] = valoresAnt[c.id]
     }
