@@ -21,9 +21,17 @@ export const COR_BRANCO = '#FFFFFF'
 export const GRADIENTE_CONECTA =
   'radial-gradient(130% 120% at 88% 42%, #123A8C 0%, #0A245C 26%, #041A3E 58%, #021734 100%)'
 
-// Variante clara (para peças em fundo claro, se a KA quiser).
+// Teal um pouco mais fechado para títulos/detalhes sobre fundo CLARO (o ciano
+// puro fica lavado no claro). Mantém a família da marca, com mais contraste.
+export const COR_CIANO_ESCURO = '#0AA79F'
+
+// Variantes CLARAS (peças mais leves, com a identidade mantida).
+// Gradiente claro suave com um leve brilho teal (nada de branco chapado).
 export const GRADIENTE_CLARO =
-  'linear-gradient(135deg, #EAF6F5 0%, #DCEFFB 100%)'
+  'radial-gradient(130% 120% at 85% 20%, #FFFFFF 0%, #EAF7F6 45%, #D7EEF2 100%)'
+// Gelo: um azul-claro levemente mais frio.
+export const GRADIENTE_GELO =
+  'linear-gradient(160deg, #F4FBFB 0%, #E3F1F8 100%)'
 
 export interface FundoConecta {
   valor: string
@@ -33,15 +41,16 @@ export interface FundoConecta {
   gradiente?: string
 }
 
-// Fundos oferecidos no editor. O gradiente-assinatura é o padrão.
+// Fundos oferecidos no editor. Claros primeiro (mais leves), depois os escuros.
 export const FUNDOS_CONECTA: FundoConecta[] = [
+  { valor: 'claro', rotulo: 'Claro Conecta', hex: '#EAF7F6', gradiente: GRADIENTE_CLARO },
+  { valor: 'gelo', rotulo: 'Gelo (azul-claro)', hex: '#E3F1F8', gradiente: GRADIENTE_GELO },
+  { valor: 'branco', rotulo: 'Branco', hex: COR_BRANCO },
   { valor: 'gradiente', rotulo: 'Gradiente Conecta', hex: '#0A245C', gradiente: GRADIENTE_CONECTA },
   { valor: 'marinho', rotulo: 'Azul-marinho', hex: COR_MARINHO },
   { valor: 'indigo', rotulo: 'Índigo', hex: COR_INDIGO },
   { valor: 'preto', rotulo: 'Preto azulado', hex: COR_PRETO_AZUL },
   { valor: 'ciano', rotulo: 'Ciano', hex: COR_CIANO },
-  { valor: 'branco', rotulo: 'Branco', hex: COR_BRANCO },
-  { valor: 'claro', rotulo: 'Claro (degradê)', hex: '#E4F2F7', gradiente: GRADIENTE_CLARO },
 ]
 
 const MAPA = new Map(FUNDOS_CONECTA.map((f) => [f.valor, f]))
@@ -73,7 +82,7 @@ function yiq(hex: string): number {
 /** Fundo é escuro? (gradiente Conecta conta como escuro). */
 export function ehFundoEscuro(valor: string): boolean {
   if (valor === 'gradiente' || valor === 'marinho' || valor === 'indigo' || valor === 'preto') return true
-  if (valor === 'claro' || valor === 'branco') return false
+  if (valor === 'claro' || valor === 'gelo' || valor === 'branco') return false
   return yiq(hexRepresentativo(valor)) < 150
 }
 
@@ -89,12 +98,13 @@ export function corFonte(valor: string | number | undefined, fundo: string): str
   return hexRepresentativo(v)
 }
 
-/** Cor de destaque (títulos de seção, ícones): ciano — salvo em fundo ciano. */
+/** Cor de destaque (títulos de seção, ícones): ciano no escuro, teal mais
+ *  fechado no claro (melhor contraste), marinho sobre fundo ciano. */
 export function corDestaque(fundo: string): string {
   if (fundo === 'ciano' || hexRepresentativo(fundo).toUpperCase() === COR_CIANO.toUpperCase()) {
     return COR_MARINHO
   }
-  return COR_CIANO
+  return ehFundoEscuro(fundo) ? COR_CIANO : COR_CIANO_ESCURO
 }
 
 /** Amostras para o card do painel interno. */

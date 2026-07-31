@@ -33,13 +33,13 @@ function comDestaque(texto: string): ReactNode[] {
   return nos
 }
 
-// Padrão de "C" no fundo (à direita), como nos posts oficiais.
+// Padrão de "C" no fundo (à direita). Teal e forte no escuro; marinho e bem
+// sutil no claro (para o card leve não ficar "sujo").
 function ConectaPattern({ escuro }: { escuro: boolean }) {
-  if (!escuro) return null
   return (
-    <div className="conecta-pattern" aria-hidden>
+    <div className={`conecta-pattern ${escuro ? '' : 'conecta-pattern--claro'}`} aria-hidden>
       {Array.from({ length: 18 }).map((_, i) => (
-        <ConectaSimbolo key={i} escuro tamanho={120} />
+        <ConectaSimbolo key={i} escuro={escuro} tamanho={120} />
       ))}
     </div>
   )
@@ -75,7 +75,7 @@ function ConectaFrame({
       {!semLogo && (
         <div className="conecta-header">
           <ConectaLogo escuro={escuro} altura={alturaLogo} />
-          {badge && <div className="conecta-badge">{badge}</div>}
+          {badge && <div className={`conecta-badge ${escuro ? '' : 'conecta-badge--claro'}`}>{badge}</div>}
         </div>
       )}
       <div className="conecta-miolo">{children}</div>
