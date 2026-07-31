@@ -1,17 +1,18 @@
 import type { ReactNode } from 'react'
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
-import { hexFundo, corFonte, corDestaque, COR_ACENTO } from './cores'
+import { ConectaLogo, ConectaSimbolo } from './ConectaLogo'
+import { fundoCss, corFonte, corDestaque, ehFundoEscuro, COR_CIANO } from './cores'
 import './conecta.css'
 
 // ============================================================================
-// Cards d'O Conecta — marca provisória (jul/2026).
-// Padrão limpo e moderno: cabeçalho com o wordmark, miolo central e rodapé.
-// Estrutura pronta para receber a identidade oficial quando a KA passar.
+// Cards do Conecta · Núcleo de Negócios ACIGRA — sistema visual (jul/2026).
+// Anatomia fiel aos posts: logo no topo, gradiente marinho→índigo, padrão de
+// "C" à direita, título de seção em ciano e rodapé com o crédito ACIGRA.
+// Cada modelo serve para FEED, STORY, QUADRADO e APRESENTAÇÃO 16:9.
 // ============================================================================
 
-// Destaque: palavra/frase entre ASPAS ou *asteriscos* vira NEGRITO na mesma
-// cor do texto (mesma convenção da KA/Shapes).
+// Negrito por aspas ou *asteriscos* (mesma cor do texto).
 const RE_DESTAQUE = /“([^”]+)”|"([^"]+)"|\*([^*]+)\*/g
 function comDestaque(texto: string): ReactNode[] {
   const nos: ReactNode[] = []
@@ -32,106 +33,172 @@ function comDestaque(texto: string): ReactNode[] {
   return nos
 }
 
-// Moldura comum: fundo da paleta, cor de texto derivada, cabeçalho e rodapé.
-function ConectaFrame({
-  fundo,
-  corTexto,
-  classe,
-  formato,
-  children,
-}: {
-  fundo: string
-  corTexto: string
-  classe: string
-  formato: RenderProps['formato']
-  children: ReactNode
-}) {
+// Padrão de "C" no fundo (à direita), como nos posts oficiais.
+function ConectaPattern({ escuro }: { escuro: boolean }) {
+  if (!escuro) return null
   return (
-    <div
-      className={`conecta-card ${classe} fmt-${formato.formato}`}
-      style={{ width: formato.largura, height: formato.altura, background: hexFundo(fundo), color: corTexto }}
-    >
-      <div className="conecta-header">
-        <span className="ponto" style={{ background: corDestaque(fundo) }} />
-        O Conecta
-      </div>
-      <div className="conecta-miolo">{children}</div>
-      <div className="conecta-footer">Conecta</div>
+    <div className="conecta-pattern" aria-hidden>
+      {Array.from({ length: 18 }).map((_, i) => (
+        <ConectaSimbolo key={i} escuro tamanho={120} />
+      ))}
     </div>
   )
 }
 
-// 1 · Capa — título grande + subtítulo opcional.
+// Moldura comum: gradiente, padrão de C, logo, miolo e rodapé.
+function ConectaFrame({
+  fundo,
+  corTexto,
+  tipo,
+  formato,
+  badge,
+  semLogo,
+  children,
+}: {
+  fundo: string
+  corTexto: string
+  tipo: string
+  formato: RenderProps['formato']
+  badge?: string
+  semLogo?: boolean
+  children: ReactNode
+}) {
+  const escuro = ehFundoEscuro(fundo)
+  const wide = formato.largura > formato.altura
+  const alturaLogo = wide ? 84 : 90
+  return (
+    <div
+      className={`conecta-card tipo-${tipo} fmt-${formato.formato} ${wide ? 'conecta-card--wide' : ''}`}
+      style={{ width: formato.largura, height: formato.altura, background: fundoCss(fundo), color: corTexto }}
+    >
+      <ConectaPattern escuro={escuro} />
+      {!semLogo && (
+        <div className="conecta-header">
+          <ConectaLogo escuro={escuro} altura={alturaLogo} />
+          {badge && <div className="conecta-badge">{badge}</div>}
+        </div>
+      )}
+      <div className="conecta-miolo">{children}</div>
+      <div className="conecta-footer" style={{ color: corTexto }}>
+        ACIGRA · Núcleo de Negócios
+        <span className="traco" />
+        Gravataí
+      </div>
+    </div>
+  )
+}
+
+// 1 · Capa de carrossel — título grande centralizado + ícone/subtítulo.
 export function ConectaCapaCard({ valores, formato }: RenderProps) {
-  const fundo = String(valores.cor_fundo || 'azul')
+  const fundo = String(valores.cor_fundo || 'gradiente')
   const cor = corFonte(valores.cor_fonte, fundo)
   const titulo = String(valores.titulo || '')
   const sub = String(valores.subtitulo || '')
+  const icone = String(valores.icone || '')
   return (
-    <ConectaFrame fundo={fundo} corTexto={cor} classe="conecta-capa" formato={formato}>
-      {titulo && <div className="titulo">{comDestaque(titulo)}</div>}
+    <ConectaFrame fundo={fundo} corTexto={cor} tipo="capa" formato={formato} badge={String(valores.badge || '')}>
+      {titulo && <div className="titulo" style={{ color: corDestaque(fundo) }}>{comDestaque(titulo)}</div>}
+      {icone && <div className="icone-grande">{icone}</div>}
       {sub && <div className="sub">{comDestaque(sub)}</div>}
     </ConectaFrame>
   )
 }
 
-// 2 · Texto / frase — título curto (opcional) + corpo.
-export function ConectaTextoCard({ valores, formato }: RenderProps) {
-  const fundo = String(valores.cor_fundo || 'creme')
+// 2 · Tópico — rótulo de seção (ciano) + parágrafo. Slides internos.
+export function ConectaTopicoCard({ valores, formato }: RenderProps) {
+  const fundo = String(valores.cor_fundo || 'gradiente')
   const cor = corFonte(valores.cor_fonte, fundo)
-  const titulo = String(valores.titulo || '')
+  const secao = String(valores.secao || '')
+  const icone = String(valores.icone || '')
   const texto = String(valores.texto || '')
   return (
-    <ConectaFrame fundo={fundo} corTexto={cor} classe="conecta-texto" formato={formato}>
-      {titulo && (
-        <div className="titulo" style={{ color: corDestaque(fundo) }}>
-          {comDestaque(titulo)}
+    <ConectaFrame fundo={fundo} corTexto={cor} tipo="topico" formato={formato} badge={String(valores.badge || '')}>
+      {(secao || icone) && (
+        <div className="conecta-secao" style={{ color: corDestaque(fundo) }}>
+          {secao && <span className="rotulo">{secao}</span>}
+          {icone && <span className="icone">{icone}</span>}
         </div>
       )}
-      {texto && <div className="corpo">{comDestaque(texto)}</div>}
+      {texto && <div className="conecta-corpo">{comDestaque(texto)}</div>}
     </ConectaFrame>
   )
 }
 
-// 3 · Post com foto — foto de fundo, véu escuro e texto embaixo.
+// 3 · Lista — título de seção + itens (rótulo em negrito + descrição).
+export function ConectaListaCard({ valores, formato }: RenderProps) {
+  const fundo = String(valores.cor_fundo || 'gradiente')
+  const cor = corFonte(valores.cor_fonte, fundo)
+  const secao = String(valores.secao || '')
+  const icone = String(valores.icone || '')
+  const bruto = String(valores.itens || '')
+  const destaque = corDestaque(fundo)
+  // Cada linha "Rótulo: descrição" — o rótulo (antes do ":") fica em negrito.
+  const itens = bruto
+    .split('\n')
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .map((linha) => {
+      const i = linha.indexOf(':')
+      return i > 0 ? { rot: linha.slice(0, i).trim(), desc: linha.slice(i + 1).trim() } : { rot: '', desc: linha }
+    })
+  return (
+    <ConectaFrame fundo={fundo} corTexto={cor} tipo="lista" formato={formato} badge={String(valores.badge || '')}>
+      {(secao || icone) && (
+        <div className="conecta-secao" style={{ color: destaque }}>
+          {secao && <span className="rotulo">{secao}</span>}
+          {icone && <span className="icone">{icone}</span>}
+        </div>
+      )}
+      <div className="conecta-lista">
+        {itens.map((it, k) => (
+          <div className="item" key={k}>
+            <span className="bolinha" style={{ background: destaque }} />
+            <span>
+              {it.rot && <span className="rot">{it.rot}: </span>}
+              {it.desc}
+            </span>
+          </div>
+        ))}
+      </div>
+    </ConectaFrame>
+  )
+}
+
+// 4 · Post com foto — foto de fundo, véu e título embaixo.
 export function ConectaPostCard({ valores, formato }: RenderProps) {
   const foto = String(valores.foto || '')
   const rotulo = String(valores.rotulo || '')
   const titulo = String(valores.titulo || '')
-  const acento = String(valores.cor_acento || COR_ACENTO)
+  const acento = String(valores.cor_acento || COR_CIANO)
   const ehVideo = String(valores.foto_kind) === 'video' || foto.startsWith('data:video')
-
+  const wide = formato.largura > formato.altura
   return (
     <div
-      className={`conecta-card conecta-post fmt-${formato.formato}`}
-      style={{ width: formato.largura, height: formato.altura, background: '#16181D', color: '#FFFFFF' }}
+      className={`conecta-card tipo-post fmt-${formato.formato} ${wide ? 'conecta-card--wide' : ''}`}
+      style={{ width: formato.largura, height: formato.altura, background: '#05070F', color: '#FFFFFF' }}
     >
       {foto ? (
         ehVideo ? (
-          <video className="foto" src={foto} style={estiloImagem(valores, 'foto')} autoPlay muted loop playsInline />
+          <video className="conecta-post-foto" src={foto} style={estiloImagem(valores, 'foto')} autoPlay muted loop playsInline />
         ) : (
-          <img className="foto" src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+          <img className="conecta-post-foto" src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
         )
       ) : (
-        <div className="foto-ph">envie uma foto ou vídeo</div>
+        <div className="conecta-post-ph">envie uma foto ou vídeo</div>
       )}
-      <div className="veu" />
-      <div className="conteudo">
-        {rotulo && (
-          <div className="rotulo" style={{ background: acento, color: '#16181D' }}>
-            {rotulo}
-          </div>
-        )}
+      <div className="conecta-post-veu" />
+      <div className="conecta-post-conteudo">
+        {rotulo && <div className="rotulo" style={{ background: acento }}>{rotulo}</div>}
         {titulo && <div className="titulo">{comDestaque(titulo)}</div>}
-        <div className="marca">O Conecta</div>
+        <ConectaLogo escuro altura={60} />
       </div>
     </div>
   )
 }
 
-// 4 · Feedback — prova social no modelo review (box branco + estrelas).
+// 5 · Feedback — prova social (box branco, avatar, estrelas).
 export function ConectaFeedbackCard({ valores, formato }: RenderProps) {
-  const fundo = String(valores.cor_fundo || 'azul')
+  const fundo = String(valores.cor_fundo || 'gradiente')
   const cor = corFonte(valores.cor_fonte, fundo)
   const nome = String(valores.nome || '')
   const subtitulo = String(valores.subtitulo || '')
@@ -140,15 +207,10 @@ export function ConectaFeedbackCard({ valores, formato }: RenderProps) {
   const nota = Math.max(1, Math.min(5, Number(valores.nota) || 5))
   const inicial = (String(valores.inicial || '').trim() || nome.trim().slice(0, 1)).toUpperCase()
   const stars = '★'.repeat(nota) + '☆'.repeat(5 - nota)
-
   return (
-    <ConectaFrame fundo={fundo} corTexto={cor} classe="conecta-fb" formato={formato}>
-      {rotulo && (
-        <div className="rotulo" style={{ color: corDestaque(fundo) }}>
-          {rotulo}
-        </div>
-      )}
-      <div className="box">
+    <ConectaFrame fundo={fundo} corTexto={cor} tipo="fb" formato={formato}>
+      {rotulo && <div className="conecta-fb-rotulo" style={{ color: corDestaque(fundo) }}>{rotulo}</div>}
+      <div className="conecta-fb-box">
         <div className="head">
           <div className="av">{inicial}</div>
           <div>

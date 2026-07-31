@@ -5,7 +5,7 @@
 
 import { CORES_PRIMARIAS, CORES_SECUNDARIAS } from './shapes/cores'
 import { PALETA_KA, COR_MARINHO } from './ka/cores'
-import { PALETA_CONECTA, COR_AZUL } from './conecta/cores'
+import { PALETA_CONECTA, COR_MARINHO as COR_MARINHO_CONECTA } from './conecta/cores'
 
 export interface MarcaVisual {
   /** Cor principal da marca (fallback da capa e detalhes). */
@@ -38,9 +38,10 @@ const MARCAS: Record<string, MarcaVisual> = {
     tagline: 'Branding · Posicionamento · IA — os carrosséis da própria KA.',
   },
   conecta: {
-    corPrincipal: COR_AZUL,
+    corPrincipal: COR_MARINHO_CONECTA,
+    logo: '/clientes/conecta/conecta-simbolo.png',
     paleta: PALETA_CONECTA,
-    tagline: 'A rede que aproxima pessoas e oportunidades. (identidade provisória)',
+    tagline: 'Núcleo de Negócios ACIGRA — conexões que geram oportunidades.',
   },
 }
 

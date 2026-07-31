@@ -1,4 +1,4 @@
-import type { Template, Campo } from './types'
+import type { Template, Campo, FormatoDef } from './types'
 import { ShapesFeedbackCard } from './shapes/FeedbackCard'
 import { ShapesProdutoCard } from './shapes/ProdutoCard'
 import { ShapesFraseCard } from './shapes/FraseCard'
@@ -23,11 +23,12 @@ import {
 import { FUNDOS_KA } from './ka/cores'
 import {
   ConectaCapaCard,
-  ConectaTextoCard,
+  ConectaTopicoCard,
+  ConectaListaCard,
   ConectaPostCard,
   ConectaFeedbackCard,
 } from './conecta/ConectaCards'
-import { FUNDOS_CONECTA, COR_ACENTO } from './conecta/cores'
+import { FUNDOS_CONECTA, COR_CIANO } from './conecta/cores'
 
 // Paleta oficial da Shapes (primárias + gama secundária) para os fundos.
 const SWATCHES = PALETA_SHAPES
@@ -123,15 +124,24 @@ const FORMATOS = [
   { formato: 'card' as const, rotulo: 'Quadrado 1:1', largura: 1080, altura: 1080 },
 ]
 
-// ---- O Conecta (marca provisória) ----------------------------------------
-// Fundo e texto escolhem da paleta provisória; o texto pode ser "Automático".
+// ---- Conecta · Núcleo de Negócios ACIGRA ----------------------------------
+// Formatos: Feed, Story, Quadrado e Apresentação 16:9 (mesmos modelos servem
+// para redes sociais E slides de apresentação).
+const FORMATOS_CONECTA: FormatoDef[] = [
+  { formato: 'post', rotulo: 'Feed 4:5', largura: 1080, altura: 1350 },
+  { formato: 'story', rotulo: 'Story 9:16', largura: 1080, altura: 1920 },
+  { formato: 'card', rotulo: 'Quadrado 1:1', largura: 1080, altura: 1080 },
+  { formato: 'carrossel', rotulo: 'Apresentação 16:9', largura: 1920, altura: 1080 },
+]
+
+// Fundo e texto escolhem da paleta do Conecta; o texto pode ser "Automático".
 function campoFundoConecta(padrao: string): Campo {
   return {
     id: 'cor_fundo',
     label: 'Cor de fundo',
     tipo: 'paleta',
     padrao,
-    ajuda: 'Clique numa cor da paleta d’O Conecta.',
+    ajuda: 'O gradiente Conecta é o padrão. Ou escolha uma cor da marca.',
     opcoes: FUNDOS_CONECTA.map((f) => ({ valor: f.valor, rotulo: f.rotulo, cor: f.hex })),
   }
 }
@@ -147,6 +157,17 @@ function campoCorTextoConecta(): Campo {
       { valor: 'auto', rotulo: 'Automático (combina com o fundo)' },
       ...FUNDOS_CONECTA.map((f) => ({ valor: f.valor, rotulo: f.rotulo, cor: f.hex })),
     ],
+  }
+}
+
+// Campo opcional "Selo do carrossel" (ex.: 1/5).
+function campoBadgeConecta(): Campo {
+  return {
+    id: 'badge',
+    label: 'Selo (nº do carrossel, opcional)',
+    tipo: 'texto',
+    placeholder: 'Ex.: 1/5',
+    padrao: '',
   }
 }
 
@@ -817,53 +838,70 @@ export const TEMPLATES: Template[] = [
     render: KaFeedbackCard,
   },
 
-  // ==== O Conecta (marca provisória) =======================================
+  // ==== Conecta · Núcleo de Negócios ACIGRA ================================
   {
     id: 'conecta-capa',
     clienteSlug: 'conecta',
-    clienteNome: 'O Conecta',
-    nome: 'Capa (título)',
+    clienteNome: 'Conecta · Núcleo de Negócios ACIGRA',
+    nome: 'Capa de carrossel',
     descricao:
-      'Capa com título grande e subtítulo opcional, no padrão limpo e moderno ' +
-      'd’O Conecta. Fundo e texto na paleta da marca.',
-    formatos: FORMATOS,
+      'Abertura do carrossel: título grande centralizado (ex.: OBJETIVOS, ' +
+      'VALORES), ícone e subtítulo, no gradiente Conecta com o padrão de “C”.',
+    formatos: FORMATOS_CONECTA,
     campos: [
       {
         id: 'titulo',
         label: 'Título',
-        tipo: 'textarea',
+        tipo: 'texto',
         obrigatorio: true,
-        placeholder: 'Ex.: Conexões que geram *resultado.*',
-        ajuda: 'Aspas ou *asteriscos* = negrito. Quebre em linhas curtas.',
-        padrao: 'Conexões que\ngeram *resultado.*',
+        placeholder: 'Ex.: OBJETIVOS',
+        padrao: 'OBJETIVOS',
+      },
+      {
+        id: 'icone',
+        label: 'Ícone (emoji, opcional)',
+        tipo: 'texto',
+        maxLen: 4,
+        placeholder: 'Ex.: 🎯',
+        ajuda: 'Um emoji para ilustrar o tema (🎯 💡 🤝 ❤️ 📈).',
+        padrao: '🎯',
       },
       {
         id: 'subtitulo',
         label: 'Subtítulo (opcional)',
         tipo: 'textarea',
         placeholder: 'Uma linha de apoio…',
-        padrao: 'A rede que aproxima pessoas e oportunidades.',
+        padrao: '',
       },
-      campoFundoConecta('azul'),
+      campoFundoConecta('gradiente'),
       campoCorTextoConecta(),
+      campoBadgeConecta(),
     ],
     render: ConectaCapaCard,
   },
   {
-    id: 'conecta-texto',
+    id: 'conecta-topico',
     clienteSlug: 'conecta',
-    clienteNome: 'O Conecta',
-    nome: 'Texto / frase',
+    clienteNome: 'Conecta · Núcleo de Negócios ACIGRA',
+    nome: 'Tópico (título + texto)',
     descricao:
-      'Card de desenvolvimento: um rótulo curto opcional em destaque e o corpo ' +
-      'do texto, com palavras em negrito.',
-    formatos: FORMATOS,
+      'Slide interno: rótulo de seção em ciano com ícone no topo e um ' +
+      'parágrafo. Ideal para MISSÃO, VISÃO ou cada item de um carrossel.',
+    formatos: FORMATOS_CONECTA,
     campos: [
       {
-        id: 'titulo',
-        label: 'Rótulo (opcional)',
+        id: 'secao',
+        label: 'Rótulo da seção (opcional)',
         tipo: 'texto',
-        placeholder: 'Ex.: O ponto',
+        placeholder: 'Ex.: MISSÃO',
+        padrao: 'MISSÃO',
+      },
+      {
+        id: 'icone',
+        label: 'Ícone (emoji, opcional)',
+        tipo: 'texto',
+        maxLen: 4,
+        placeholder: 'Ex.: 🎯',
         padrao: '',
       },
       {
@@ -871,24 +909,72 @@ export const TEMPLATES: Template[] = [
         label: 'Texto',
         tipo: 'textarea',
         obrigatorio: true,
-        placeholder: 'O insight do card…',
         ajuda: 'Aspas ou *asteriscos* = negrito.',
-        padrao: 'Networking não é trocar cartões.\n\nÉ criar *relações* que duram.',
+        padrao:
+          'Impulsionar o crescimento profissional e empresarial dos nucleados, ' +
+          'promovendo conexões estratégicas e fortalecendo o ecossistema de ' +
+          'negócios em *Gravataí.*',
       },
-      campoFundoConecta('creme'),
+      campoFundoConecta('gradiente'),
       campoCorTextoConecta(),
+      campoBadgeConecta(),
     ],
-    render: ConectaTextoCard,
+    render: ConectaTopicoCard,
+  },
+  {
+    id: 'conecta-lista',
+    clienteSlug: 'conecta',
+    clienteNome: 'Conecta · Núcleo de Negócios ACIGRA',
+    nome: 'Lista (valores / objetivos)',
+    descricao:
+      'Slide com título de seção e uma lista de itens. Cada linha “Rótulo: ' +
+      'descrição” destaca o rótulo em negrito, como no card de VALORES.',
+    formatos: FORMATOS_CONECTA,
+    campos: [
+      {
+        id: 'secao',
+        label: 'Rótulo da seção',
+        tipo: 'texto',
+        placeholder: 'Ex.: VALORES',
+        padrao: 'VALORES',
+      },
+      {
+        id: 'icone',
+        label: 'Ícone (emoji, opcional)',
+        tipo: 'texto',
+        maxLen: 4,
+        placeholder: 'Ex.: ❤️',
+        padrao: '❤️',
+      },
+      {
+        id: 'itens',
+        label: 'Itens (um por linha)',
+        tipo: 'textarea',
+        obrigatorio: true,
+        ajuda: 'Um item por linha. Use “Rótulo: descrição” para destacar o rótulo.',
+        padrao:
+          'Conexão: aproximar empresários, criar pontes e fortalecer relações.\n' +
+          'Colaboração: compartilhar conhecimento e oportunidades para todos crescerem.\n' +
+          'Desenvolvimento: aprendizado contínuo, no profissional e no pessoal.\n' +
+          'Confiança: relações com escuta, transparência e respeito.\n' +
+          'Protagonismo: cada integrante participa e fortalece o grupo.\n' +
+          'Propósito: gerar impacto positivo na comunidade.',
+      },
+      campoFundoConecta('gradiente'),
+      campoCorTextoConecta(),
+      campoBadgeConecta(),
+    ],
+    render: ConectaListaCard,
   },
   {
     id: 'conecta-post',
     clienteSlug: 'conecta',
-    clienteNome: 'O Conecta',
+    clienteNome: 'Conecta · Núcleo de Negócios ACIGRA',
     nome: 'Post com foto',
     descricao:
-      'Foto (ou vídeo) ocupando o card todo, com um véu escuro embaixo, um ' +
-      'rótulo colorido e o título. Ótimo para chamadas e eventos.',
-    formatos: FORMATOS,
+      'Foto (ou vídeo) ocupando o card todo, com véu escuro, rótulo colorido, ' +
+      'título e a logo. Ótimo para eventos, encontros e chamadas.',
+    formatos: FORMATOS_CONECTA,
     campos: [
       {
         id: 'foto',
@@ -903,8 +989,8 @@ export const TEMPLATES: Template[] = [
         id: 'rotulo',
         label: 'Rótulo (opcional)',
         tipo: 'texto',
-        placeholder: 'Ex.: EVENTO',
-        padrao: 'CONECTA',
+        placeholder: 'Ex.: ENCONTRO',
+        padrao: 'ENCONTRO',
       },
       {
         id: 'titulo',
@@ -914,34 +1000,34 @@ export const TEMPLATES: Template[] = [
         placeholder: 'Ex.: Encontro de\nlideranças',
         padrao: 'Encontro de\nlideranças',
       },
-      { id: 'cor_acento', label: 'Cor do rótulo', tipo: 'cor', padrao: COR_ACENTO, opcoes: FUNDOS_CONECTA.map((f) => ({ valor: f.hex, rotulo: f.rotulo })) },
+      { id: 'cor_acento', label: 'Cor do rótulo', tipo: 'cor', padrao: COR_CIANO, opcoes: FUNDOS_CONECTA.map((f) => ({ valor: f.hex, rotulo: f.rotulo })) },
     ],
     render: ConectaPostCard,
   },
   {
     id: 'conecta-feedback',
     clienteSlug: 'conecta',
-    clienteNome: 'O Conecta',
+    clienteNome: 'Conecta · Núcleo de Negócios ACIGRA',
     nome: 'Card de Feedback',
     descricao:
       'Prova social no modelo de review: box branco com avatar, nome, estrelas ' +
-      'douradas e o depoimento real.',
-    formatos: FORMATOS,
+      'douradas e o depoimento real, sobre o gradiente Conecta.',
+    formatos: FORMATOS_CONECTA,
     campos: [
       {
         id: 'nome',
-        label: 'Nome do cliente',
+        label: 'Nome do nucleado',
         tipo: 'texto',
         obrigatorio: true,
-        placeholder: 'Como o cliente aparece',
-        padrao: 'Cliente Conecta',
+        placeholder: 'Como a pessoa aparece',
+        padrao: 'Fernanda Pereira',
       },
       {
         id: 'subtitulo',
         label: 'Subtítulo (opcional)',
         tipo: 'texto',
-        placeholder: 'Ex.: Empresa · Cidade',
-        padrao: '',
+        placeholder: 'Ex.: Empresa · Segmento',
+        padrao: 'Nucleada Conecta',
       },
       {
         id: 'texto',
@@ -950,7 +1036,9 @@ export const TEMPLATES: Template[] = [
         obrigatorio: true,
         placeholder: 'Cole aqui o depoimento real…',
         ajuda: 'Transcreva o depoimento REAL. Sem data.',
-        padrao: 'Fiz conexões que mudaram o rumo do meu negócio. Recomendo demais!',
+        padrao:
+          'No Conecta encontrei muito mais que networking: relações de confiança ' +
+          'que fortaleceram o meu negócio. Recomendo demais!',
       },
       { id: 'nota', label: 'Nota (estrelas)', tipo: 'estrelas', padrao: 5 },
       {
@@ -962,7 +1050,7 @@ export const TEMPLATES: Template[] = [
         padrao: '',
       },
       { id: 'rotulo', label: 'Rótulo do topo', tipo: 'texto', padrao: 'FEEDBACK' },
-      campoFundoConecta('azul'),
+      campoFundoConecta('gradiente'),
       campoCorTextoConecta(),
     ],
     render: ConectaFeedbackCard,
