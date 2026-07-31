@@ -714,14 +714,18 @@
   align-items: center;
   justify-content: center;
   min-height: 104px;
-  padding: 0 44px;
+  /* Mais respiro: o texto não pode encostar nas bordas do retângulo (ainda mais
+     quando quebra em 2 linhas). Vertical p/ não colar em cima/embaixo; o
+     text-indent compensa o letter-spacing (que sobra do lado direito). */
+  padding: 26px 68px;
   border: 2.5px solid currentColor;
   border-radius: 16px;
   font-size: 52px;
   font-weight: 500;
   letter-spacing: 4px;
+  text-indent: 4px;
   text-transform: uppercase;
-  line-height: 1;
+  line-height: 1.2;
 }
 .shapes-cta .sub {
   font-size: 40px;
