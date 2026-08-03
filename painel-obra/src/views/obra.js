@@ -227,24 +227,31 @@ export async function renderObra(container, obraId) {
       <section class="card">
         <div class="row-between">
           <h2>Projeto da obra</h2>
-          <button class="btn btn-mini btn-primary" id="abrir-projeto" style="margin:0">+ Projeto</button>
+          <div class="row-end">
+            <button class="btn btn-mini btn-primary" id="abrir-projeto" style="margin:0">+ Arquivo</button>
+            <button class="btn btn-mini" id="abrir-link" style="margin:0">+ Link</button>
+          </div>
         </div>
         <form id="form-projeto" class="foto-form" hidden>
           <label>Nome / identificação
             <input id="proj-nome" placeholder="Ex.: Planta baixa, Projeto estrutural" />
           </label>
-          <label>Enviar imagem ou arquivo (mostra miniatura quando é imagem)
-            <input type="file" id="proj-file"
-              accept="image/*,application/pdf,.pdf,.dwg,.dxf,.dwf,.skp,.rvt,.rfa,.ifc,.pln,.3ds,.max,.doc,.docx,.xlsx,.zip" />
-          </label>
-          <div id="proj-arquivo-atual" hidden></div>
-          <label>… ou colar um link (Google Drive, Dropbox, etc.)
-            <input id="proj-link" placeholder="https://…" />
-          </label>
-          <p class="muted" style="font-size:.78rem;margin:-.3rem 0 0">
-            Dica: para o link abrir sem pedir login, no Google Drive use
-            <strong>Compartilhar → Qualquer pessoa com o link</strong>.
-          </p>
+          <div id="proj-file-row">
+            <label>Enviar imagem ou arquivo (mostra miniatura quando é imagem)
+              <input type="file" id="proj-file"
+                accept="image/*,application/pdf,.pdf,.dwg,.dxf,.dwf,.skp,.rvt,.rfa,.ifc,.pln,.3ds,.max,.doc,.docx,.xlsx,.zip" />
+            </label>
+            <div id="proj-arquivo-atual" hidden></div>
+          </div>
+          <div id="proj-link-row">
+            <label><span id="proj-link-rotulo">… ou colar um link (Google Drive, Dropbox, etc.)</span>
+              <input id="proj-link" placeholder="https://…" />
+            </label>
+            <p class="muted" style="font-size:.78rem;margin:-.3rem 0 0">
+              Dica: para o link abrir sem pedir login, no Google Drive use
+              <strong>Compartilhar → Qualquer pessoa com o link</strong>.
+            </p>
+          </div>
           <div class="row-end">
             <button type="button" class="btn btn-ghost" id="cancelar-projeto">Cancelar</button>
             <button type="submit" class="btn btn-primary" id="salvar-projeto">Adicionar</button>
@@ -800,8 +807,12 @@ export async function renderObra(container, obraId) {
   // id), para não estourar o limite de 1 MB do documento quando há vários. O
   // array obra.projetos guarda só metadados (nome, link ou nome do arquivo).
   const abrirProjeto = container.querySelector('#abrir-projeto');
+  const abrirLink = container.querySelector('#abrir-link');
   const formProjeto = container.querySelector('#form-projeto');
   const listaProjEl = container.querySelector('#lista-projetos');
+  const fileRow = container.querySelector('#proj-file-row');
+  const linkRow = container.querySelector('#proj-link-row');
+  const linkRotulo = container.querySelector('#proj-link-rotulo');
   let projEditando = null; // id do projeto em edição (ou null = novo)
 
   // Migra projetos antigos com arquivo inline (dataUrl no doc da obra) para o
@@ -837,17 +848,30 @@ export async function renderObra(container, obraId) {
     }
   };
 
-  const abrirFormProjeto = (p = null) => {
+  // modo: 'arquivo' (mostra envio de arquivo + campo de link como alternativa)
+  // ou 'link' (só o campo de link). Ao editar, o modo segue o tipo do item.
+  const abrirFormProjeto = (p = null, modo = 'arquivo') => {
     projEditando = p ? p.id : null;
+    if (p) modo = (p.link && !p.temArquivo) ? 'link' : 'arquivo';
     formProjeto.hidden = false;
     container.querySelector('#proj-nome').value = p?.nome || '';
     container.querySelector('#proj-link').value = p?.link || '';
     container.querySelector('#proj-file').value = '';
+    // Em modo 'link' escondemos o envio de arquivo, deixando a ação inequívoca.
+    fileRow.hidden = modo === 'link';
+    linkRow.hidden = false;
+    if (linkRotulo) {
+      linkRotulo.textContent = modo === 'link'
+        ? 'Cole o link (Google Drive, Dropbox, etc.)'
+        : '… ou colar um link (Google Drive, Dropbox, etc.)';
+    }
     container.querySelector('#salvar-projeto').textContent = p ? 'Salvar' : 'Adicionar';
     const st = container.querySelector('#status-projeto');
     if (st) st.hidden = true;
     mostrarArquivoAtual(p);
-    container.querySelector('#proj-nome').focus();
+    (modo === 'link'
+      ? container.querySelector('#proj-link')
+      : container.querySelector('#proj-nome')).focus();
   };
 
   // Remove APENAS o arquivo anexado do projeto em edição (mantém o registro).
@@ -875,9 +899,12 @@ export async function renderObra(container, obraId) {
 
   if (abrirProjeto) {
     abrirProjeto.addEventListener('click', () => {
-      if (formProjeto.hidden) abrirFormProjeto(null);
+      if (formProjeto.hidden || projEditando) abrirFormProjeto(null, 'arquivo');
       else formProjeto.hidden = true;
     });
+    if (abrirLink) {
+      abrirLink.addEventListener('click', () => abrirFormProjeto(null, 'link'));
+    }
     container.querySelector('#cancelar-projeto').addEventListener('click', () => {
       formProjeto.hidden = true;
       projEditando = null;
