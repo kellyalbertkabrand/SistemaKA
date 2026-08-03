@@ -41,6 +41,13 @@ export function montarRelatorioReembolso({ obra, lancamentos, de, ate }) {
   const totalPago = soma(itens.filter((l) => l.status === 'pago'));
   const totalPend = soma(itens.filter((l) => l.status !== 'pago'));
 
+  // Honorário do escritório = percentual de gestão aplicado sobre os
+  // lançamentos do período. É o valor DO ESCRITÓRIO (a arquiteta ganha pela
+  // gestão); os pagamentos da obra são feitos pelo cliente.
+  const pctEsc = Number(obra?.percentualEscritorio || 0);
+  const honorario = totalGeral * pctEsc / 100;
+  const pctFmt = pctEsc.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+
   const periodo = `${de ? dataBR(de) : '…'} a ${ate ? dataBR(ate) : '…'}`;
   const emitidoEm = dataBR(new Date().toISOString());
   // URL absoluto do logo — a aba nova (about:blank) não resolve caminhos relativos.
@@ -74,11 +81,14 @@ export function montarRelatorioReembolso({ obra, lancamentos, de, ate }) {
   td.st.pago { color: #2e7d32; }
   td.st.pend { color: #b23b3b; }
   td.vazio { text-align: center; color: #8a8178; padding: 20px; }
-  .totais { margin-top: 16px; margin-left: auto; width: 320px; font-size: 13px; }
+  .totais { margin-top: 16px; margin-left: auto; width: 340px; font-size: 13px; }
   .totais .row { display: flex; justify-content: space-between; padding: 5px 0; }
   .totais .sub { color: #6b6259; }
+  .totais .base { border-top: 1px solid #cfc7ba; margin-top: 4px; padding-top: 8px; font-weight: 600; }
   .totais .geral { border-top: 2px solid #c65a2e; margin-top: 6px; padding-top: 9px;
                    font-size: 16px; font-weight: 700; color: #c65a2e; }
+  .nota-gestao { margin-top: 14px; margin-left: auto; width: 340px; font-size: 10.5px;
+                 color: #8a8178; text-align: right; }
   .rodape { margin-top: 34px; border-top: 1px solid #e7e1d7; padding-top: 12px;
             font-size: 11px; color: #6b6259; }
   .rodape .nome { font-weight: 700; color: #2a2622; letter-spacing: .4px; }
@@ -89,7 +99,7 @@ export function montarRelatorioReembolso({ obra, lancamentos, de, ate }) {
     <img src="${esc(logoUrl)}" alt="${esc(ESCRITORIO_NOME)}" />
     <div class="tit">
       <h1>Relatório de Reembolso</h1>
-      <div class="sub">Valores a reembolsar ao escritório</div>
+      <div class="sub">Lançamentos do período e honorário de gestão</div>
     </div>
   </div>
 
@@ -110,8 +120,14 @@ export function montarRelatorioReembolso({ obra, lancamentos, de, ate }) {
   <div class="totais">
     <div class="row sub"><span>Pago no período</span><span>${esc(moeda(totalPago))}</span></div>
     <div class="row sub"><span>Pendente no período</span><span>${esc(moeda(totalPend))}</span></div>
-    <div class="row geral"><span>Total a reembolsar</span><span>${esc(moeda(totalGeral))}</span></div>
+    <div class="row base"><span>Total dos lançamentos no período</span><span>${esc(moeda(totalGeral))}</span></div>
+    ${pctEsc > 0
+      ? `<div class="row geral"><span>Valor do escritório — gestão (${esc(pctFmt)}%)</span><span>${esc(moeda(honorario))}</span></div>`
+      : ''}
   </div>
+  ${pctEsc > 0
+    ? `<p class="nota-gestao">O valor do escritório é o honorário de gestão (${esc(pctFmt)}% sobre os lançamentos do período). Os pagamentos da obra são feitos diretamente pelo cliente.</p>`
+    : ''}
 
   <div class="rodape">
     <p class="nome">${esc(ESCRITORIO_NOME)}</p>

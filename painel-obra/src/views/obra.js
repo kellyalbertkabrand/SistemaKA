@@ -96,6 +96,9 @@ export async function renderObra(container, obraId) {
           <label>Orçamento total (R$)
             <input id="ed-orcamento" type="number" min="0" step="0.01" value="${Number(obra.orcamento || 0)}" />
           </label>
+          <label>Percentual do escritório — gestão (%)
+            <input id="ed-percentual" type="number" min="0" max="100" step="0.1" value="${Number(obra.percentualEscritorio || 0)}" placeholder="Ex.: 10" />
+          </label>
         </div>
         <p class="muted" style="font-size:.8rem;margin:.2rem 0 0">
           Ao mudar o orçamento total, o saldo é recalculado automaticamente.
@@ -425,11 +428,12 @@ export async function renderObra(container, obraId) {
     const nome = container.querySelector('#ed-nome').value.trim();
     const cliente = container.querySelector('#ed-cliente').value.trim() || null;
     const orcamento = Number(container.querySelector('#ed-orcamento').value || 0);
+    const percentualEscritorio = Number(container.querySelector('#ed-percentual').value || 0);
     if (!nome) { edErro.textContent = 'Dê um nome à obra.'; edErro.hidden = false; return; }
     const btn = formEditar.querySelector('button[type="submit"]');
     btn.disabled = true; btn.textContent = 'Salvando…';
     try {
-      await atualizarObra(obra.id, { nome, cliente, orcamento });
+      await atualizarObra(obra.id, { nome, cliente, orcamento, percentualEscritorio });
     } catch (error) {
       btn.disabled = false; btn.textContent = 'Salvar alterações';
       edErro.textContent = error?.message || 'Erro ao salvar.'; edErro.hidden = false;

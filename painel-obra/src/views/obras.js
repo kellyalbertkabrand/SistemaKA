@@ -57,6 +57,9 @@ export async function renderObras(container) {
           <label>Orçamento total (R$)
             <input id="o-orcamento" type="number" min="0" step="0.01" value="0" />
           </label>
+          <label>Percentual do escritório — gestão (%)
+            <input id="o-percentual" type="number" min="0" max="100" step="0.1" value="0" placeholder="Ex.: 10" />
+          </label>
 
           <div class="etapas-novas full">
             <div class="row-between">
@@ -327,6 +330,7 @@ function configurarFormNovaObra(container) {
       cliente: container.querySelector('#o-cliente').value.trim() || null,
       slug: (slug.value.trim() || slugify(nome.value)),
       orcamento: Number(container.querySelector('#o-orcamento').value || 0),
+      percentualEscritorio: Number(container.querySelector('#o-percentual').value || 0),
       publicado: true,
     };
     if (!payload.nome) { mostrarErro(erro, 'Dê um nome à obra.'); return; }

@@ -71,12 +71,13 @@ export async function slugExiste(slug) {
   return d.exists();
 }
 
-export async function criarObra({ nome, cliente, slug, orcamento, publicado }) {
+export async function criarObra({ nome, cliente, slug, orcamento, percentualEscritorio, publicado }) {
   await setDoc(doc(db, 'obras', slug), {
     nome,
     cliente: cliente ?? null,
     slug,
     orcamento: Number(orcamento || 0),
+    percentualEscritorio: Number(percentualEscritorio || 0),
     publicado: Boolean(publicado),
     ownerId: uid(),
     criadoEm: Date.now(),
