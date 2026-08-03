@@ -55,6 +55,9 @@ export async function renderFornecedores(container) {
           <label>CNPJ
             <input id="fo-cnpj" />
           </label>
+          <label class="full">Endereço
+            <input id="fo-endereco" />
+          </label>
           <label>Observações
             <input id="fo-obs" />
           </label>
@@ -113,6 +116,7 @@ export async function renderFornecedores(container) {
   const inTelefone = container.querySelector('#fo-telefone');
   const inEmail = container.querySelector('#fo-email');
   const inCnpj = container.querySelector('#fo-cnpj');
+  const inEndereco = container.querySelector('#fo-endereco');
   const inObs = container.querySelector('#fo-obs');
 
   // null = cadastrando um novo; id = editando aquele fornecedor.
@@ -126,6 +130,7 @@ export async function renderFornecedores(container) {
     inTelefone.value = f?.telefone || '';
     inEmail.value = f?.email || '';
     inCnpj.value = f?.cnpj || '';
+    inEndereco.value = f?.endereco || '';
     inObs.value = f?.observacoes || '';
     btnSalvar.textContent = f ? 'Salvar alterações' : 'Salvar fornecedor';
     form.hidden = false;
@@ -153,6 +158,7 @@ export async function renderFornecedores(container) {
       telefone: inTelefone.value.trim() || null,
       email: inEmail.value.trim() || null,
       cnpj: inCnpj.value.trim() || null,
+      endereco: inEndereco.value.trim() || null,
       observacoes: inObs.value.trim() || null,
     };
     btnSalvar.disabled = true;
@@ -202,6 +208,7 @@ function listaForn(fornecedores) {
         ${f.email ? `· ✉️ ${esc(f.email)} ` : ''}
         ${f.cnpj ? `· ${esc(f.cnpj)}` : ''}
       </div>
+      ${f.endereco ? `<div class="muted cliente-dados">📍 ${esc(f.endereco)}</div>` : ''}
       ${f.observacoes ? `<div class="muted cliente-dados">${esc(f.observacoes)}</div>` : ''}
     </div>`).join('');
 }

@@ -48,6 +48,9 @@ export async function renderCadastroFornecedor(container, token) {
           <label>CNPJ
             <input id="f-cnpj" />
           </label>
+          <label class="full">Endereço
+            <input id="f-endereco" />
+          </label>
           <label class="full">Observações
             <input id="f-observacoes" placeholder="Algo que o escritório deva saber" />
           </label>
@@ -81,6 +84,7 @@ export async function renderCadastroFornecedor(container, token) {
       telefone: container.querySelector('#f-telefone').value.trim() || null,
       email: container.querySelector('#f-email').value.trim() || null,
       cnpj: container.querySelector('#f-cnpj').value.trim() || null,
+      endereco: container.querySelector('#f-endereco').value.trim() || null,
       observacoes: container.querySelector('#f-observacoes').value.trim() || null,
     };
 
