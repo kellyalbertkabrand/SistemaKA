@@ -10,6 +10,16 @@ const ESCRITORIO_NOME = 'SCHRAMM ARQUITETURA E ENGENHARIA';
 const ESCRITORIO_ENDERECO =
   'Rua Dr. Luiz Bastos do Prado, 2093 - 504 - Centro, Gravataí - RS, 94010-021';
 
+// Dados bancários para o pagamento do honorário de gestão.
+const PAGAMENTO = {
+  banco: 'Banco do Brasil',
+  titular: 'Schramm Eng e Proj Ltda',
+  agencia: '0883-4',
+  conta: '34852-x',
+  pixTipo: 'CNPJ',
+  pix: '08940235000175',
+};
+
 // Filtra os lançamentos cujo dia (YYYY-MM-DD) está dentro do intervalo [de, ate].
 export function lancamentosNoPeriodo(lancamentos, de, ate) {
   return (lancamentos || [])
@@ -89,6 +99,12 @@ export function montarRelatorioReembolso({ obra, lancamentos, de, ate }) {
                    font-size: 16px; font-weight: 700; color: #c65a2e; }
   .nota-gestao { margin-top: 14px; margin-left: auto; width: 340px; font-size: 10.5px;
                  color: #8a8178; text-align: right; }
+  .pagamento { margin-top: 22px; border: 1px solid #e0d8cc; border-left: 4px solid #c65a2e;
+               border-radius: 6px; padding: 12px 14px; background: #faf7f2; font-size: 12.5px; }
+  .pagamento h2 { margin: 0 0 6px; font-size: 13px; color: #c65a2e; }
+  .pagamento .grade { display: flex; flex-wrap: wrap; gap: 3px 26px; }
+  .pagamento .item b { color: #6b6259; font-weight: 600; }
+  .pagamento .pix { margin-top: 4px; font-weight: 700; }
   .rodape { margin-top: 34px; border-top: 1px solid #e7e1d7; padding-top: 12px;
             font-size: 11px; color: #6b6259; }
   .rodape .nome { font-weight: 700; color: #2a2622; letter-spacing: .4px; }
@@ -128,6 +144,17 @@ export function montarRelatorioReembolso({ obra, lancamentos, de, ate }) {
   ${pctEsc > 0
     ? `<p class="nota-gestao">O valor do escritório é o honorário de gestão (${esc(pctFmt)}% sobre os lançamentos do período). Os pagamentos da obra são feitos diretamente pelo cliente.</p>`
     : ''}
+
+  <div class="pagamento">
+    <h2>Dados para pagamento</h2>
+    <div class="grade">
+      <span class="item"><b>Banco:</b> ${esc(PAGAMENTO.banco)}</span>
+      <span class="item"><b>Titular:</b> ${esc(PAGAMENTO.titular)}</span>
+      <span class="item"><b>Agência:</b> ${esc(PAGAMENTO.agencia)}</span>
+      <span class="item"><b>Conta corrente:</b> ${esc(PAGAMENTO.conta)}</span>
+    </div>
+    <div class="pix">Pix (${esc(PAGAMENTO.pixTipo)}): ${esc(PAGAMENTO.pix)}</div>
+  </div>
 
   <div class="rodape">
     <p class="nome">${esc(ESCRITORIO_NOME)}</p>
