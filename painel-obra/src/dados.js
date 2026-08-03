@@ -210,11 +210,12 @@ export async function excluirLancamento(id) {
 // Convites + Clientes (link de autopreenchimento)
 // ---------------------------------------------------------------------------
 // Gera um convite com um token único (docId = token) e devolve o token.
-export async function criarConvite({ rotulo, obraId }) {
+export async function criarConvite({ rotulo, obraId, tipo }) {
   const token = crypto.randomUUID();
   await setDoc(doc(db, 'convites', token), {
     rotulo: rotulo ?? null,
     obraId: obraId ?? null,
+    tipo: tipo ?? 'cliente', // 'cliente' | 'fornecedor'
     ownerId: uid(),
     criadoEm: Date.now(),
   });
@@ -275,6 +276,17 @@ export async function criarFornecedor(campos) {
   await addDoc(collection(db, 'fornecedores'), {
     ...campos,
     ownerId: uid(),
+    criadoEm: Date.now(),
+  });
+}
+
+// Envio público do cadastro do fornecedor. O ownerId vem do convite (validado
+// nas Regras), igual ao autopreenchimento do cliente.
+export async function criarFornecedorPublico({ token, ownerId, ...campos }) {
+  await addDoc(collection(db, 'fornecedores'), {
+    token,
+    ownerId,
+    ...campos,
     criadoEm: Date.now(),
   });
 }

@@ -8,6 +8,7 @@ import { renderObra } from './views/obra.js';
 import { renderPublica } from './views/publica.js';
 import { renderClientes } from './views/clientes.js';
 import { renderCadastroCliente } from './views/cadastroCliente.js';
+import { renderCadastroFornecedor } from './views/cadastroFornecedor.js';
 import { renderFornecedores } from './views/fornecedores.js';
 
 const app = document.getElementById('app');
@@ -40,6 +41,11 @@ function rotear() {
   const mPublica = path.match(/^\/obra\/([^/]+)\/?$/);
   if (mPublica) {
     return renderPublica(app, decodeURIComponent(mPublica[1]));
+  }
+  //    /cadastro-fornecedor/{token} — autopreenchimento do fornecedor
+  const mCadForn = path.match(/^\/cadastro-fornecedor\/([^/]+)\/?$/);
+  if (mCadForn) {
+    return renderCadastroFornecedor(app, decodeURIComponent(mCadForn[1]));
   }
   //    /cadastro/{token} — autopreenchimento do cliente
   const mCadastro = path.match(/^\/cadastro\/([^/]+)\/?$/);

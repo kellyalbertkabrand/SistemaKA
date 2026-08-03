@@ -53,7 +53,11 @@ service cloud.firestore {
             && exists(/databases/$(database)/documents/convites/$(request.resource.data.token)));
     }
     match /fornecedores/{id} {
-      allow read, write: if logado();
+      allow read, update, delete: if logado();
+      // Autocadastro público do fornecedor: cria com token de convite válido.
+      allow create: if logado()
+        || (request.resource.data.token != null
+            && exists(/databases/$(database)/documents/convites/$(request.resource.data.token)));
     }
   }
 }

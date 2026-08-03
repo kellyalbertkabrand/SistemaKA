@@ -1,4 +1,4 @@
-import { listarFornecedores, criarFornecedor, atualizarFornecedor, excluirFornecedor, sair } from '../dados.js';
+import { listarFornecedores, criarFornecedor, atualizarFornecedor, excluirFornecedor, criarConvite, sair } from '../dados.js';
 import { esc } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
 
@@ -26,6 +26,16 @@ export async function renderFornecedores(container) {
     ${navBar('fornecedores')}
     <div class="app">
       <div class="pagina-topo"><h1>Fornecedores</h1></div>
+
+      <section class="card">
+        <h2>Gerar link de cadastro</h2>
+        <p class="muted">Crie um link, envie ao fornecedor, e ele mesmo preenche os dados — que caem direto aqui.</p>
+        <div class="form-inline">
+          <input id="fo-rotulo" placeholder="Identificação (ex.: Marmoraria Carvalho)" />
+          <button class="btn btn-primary btn-mini" id="gerar-link-forn">Gerar link</button>
+        </div>
+        <div id="link-forn-gerado"></div>
+      </section>
 
       <section class="card">
         <button class="btn btn-primary" id="abrir-novo">+ Novo fornecedor</button>
@@ -64,6 +74,34 @@ export async function renderFornecedores(container) {
 
   container.querySelector('#sair').addEventListener('click', async () => {
     await sair();
+  });
+
+  // ---- Gerar convite → link de autocadastro do fornecedor ----
+  container.querySelector('#gerar-link-forn').addEventListener('click', async () => {
+    const rotulo = container.querySelector('#fo-rotulo').value.trim() || null;
+    const alvo = container.querySelector('#link-forn-gerado');
+    alvo.innerHTML = `<p class="muted">Gerando…</p>`;
+    let token;
+    try {
+      token = await criarConvite({ rotulo, tipo: 'fornecedor' });
+    } catch (error) {
+      alvo.innerHTML = `<p class="erro" style="display:block">${esc(error?.message || error)}</p>`;
+      return;
+    }
+    const link = `${window.location.origin}/cadastro-fornecedor/${token}`;
+    alvo.innerHTML = `
+      <div class="preview-card">
+        <p class="muted">Link do cadastro${rotulo ? ' — ' + esc(rotulo) : ''}:</p>
+        <p class="mono">${esc(link)}</p>
+        <div class="row-end">
+          <button class="btn btn-mini" id="copiar-forn-link">Copiar link</button>
+          <a class="btn btn-mini" href="/cadastro-fornecedor/${esc(token)}" target="_blank" rel="noopener">Abrir</a>
+        </div>
+      </div>`;
+    alvo.querySelector('#copiar-forn-link').addEventListener('click', async (e) => {
+      try { await navigator.clipboard.writeText(link); e.target.textContent = 'Copiado!'; }
+      catch { e.target.textContent = 'Copie manualmente'; }
+    });
   });
 
   const abrir = container.querySelector('#abrir-novo');
