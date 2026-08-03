@@ -283,6 +283,17 @@ export function GestaoAtividades() {
     }
   }
 
+  // Botões ↑/↓ — reordenar SEM arrastar (o arraste falha em alguns aparelhos/
+  // toques; os botões funcionam em qualquer lugar). Move dentro do mesmo grupo
+  // (não-feitas / feitas), trocando com o vizinho.
+  function moverAtividade(cat: CategoriaAtividade, a: Atividade, dir: -1 | 1) {
+    const arr = pessoaisOrdenadas(cat).filter((x) => x.feito === a.feito)
+    const i = arr.findIndex((x) => x.id === a.id)
+    const j = i + dir
+    if (i < 0 || j < 0 || j >= arr.length) return
+    void aplicarReordem(cat, a.id, arr[j].id)
+  }
+
   function iniciarArraste(e: React.PointerEvent, cat: CategoriaAtividade, id: string) {
     e.preventDefault()
     const startY = e.clientY
@@ -532,8 +543,8 @@ export function GestaoAtividades() {
 
       {!carregando && ordenar === 'padrao' && atividades.length > 0 && (
         <p className="dica-voz" style={{ marginTop: 0 }}>
-          Segure a alça <span aria-hidden>⠿</span> e arraste para reordenar suas tarefas. O item que
-          muda de lugar pisca em dourado.
+          Use as setas <span aria-hidden>▲▼</span> para mover suas tarefas, ou segure a alça{' '}
+          <span aria-hidden>⠿</span> e arraste. O item que muda de lugar pisca em dourado.
         </p>
       )}
 
@@ -622,6 +633,12 @@ export function GestaoAtividades() {
                   </div>
                 ) : (() => {
                   const a = it.a
+                  // Posição entre as pessoais do MESMO grupo (feito/não-feito),
+                  // para habilitar/desabilitar as setas ↑/↓ nas pontas.
+                  const grupo = pessoaisOrdenadas(cat).filter((x) => x.feito === a.feito)
+                  const posGrupo = grupo.findIndex((x) => x.id === a.id)
+                  const podeSubir = posGrupo > 0
+                  const podeDescer = posGrupo >= 0 && posGrupo < grupo.length - 1
                   return editId === a.id ? (
                   <div key={a.id} className="ativ ativ--edit">
                     <textarea
@@ -672,13 +689,37 @@ export function GestaoAtividades() {
                     style={dragId === a.id ? { transform: `translateY(${dragY}px)`, zIndex: 20 } : undefined}
                   >
                     {ordenar === 'padrao' && (
-                      <span
-                        className="fase__handle"
-                        title="Segure e arraste para reordenar"
-                        onPointerDown={(e) => iniciarArraste(e, cat, a.id)}
-                      >
-                        ⠿
-                      </span>
+                      <div className="ativ__reordenar">
+                        <span
+                          className="fase__handle"
+                          title="Segure e arraste para reordenar"
+                          onPointerDown={(e) => iniciarArraste(e, cat, a.id)}
+                        >
+                          ⠿
+                        </span>
+                        <div className="ativ__setas">
+                          <button
+                            type="button"
+                            className="ativ__seta"
+                            disabled={!podeSubir}
+                            title="Mover para cima"
+                            aria-label="Mover para cima"
+                            onClick={() => moverAtividade(cat, a, -1)}
+                          >
+                            ▲
+                          </button>
+                          <button
+                            type="button"
+                            className="ativ__seta"
+                            disabled={!podeDescer}
+                            title="Mover para baixo"
+                            aria-label="Mover para baixo"
+                            onClick={() => moverAtividade(cat, a, 1)}
+                          >
+                            ▼
+                          </button>
+                        </div>
+                      </div>
                     )}
                     <button
                       className="ativ__check"
