@@ -16,7 +16,7 @@ const PAGAMENTO = {
   titular: 'Schramm Eng e Proj Ltda',
   agencia: '0883-4',
   conta: '34852-x',
-  pixTipo: 'CNPJ',
+  pixTipo: 'CPF',
   pix: '08940235000175',
 };
 
