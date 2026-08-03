@@ -185,13 +185,16 @@ export async function totaisPorObra() {
   return t;
 }
 
-export async function criarLancamento({ obraId, etapa, descricao, valor, status }) {
+export async function criarLancamento({ obraId, etapa, descricao, valor, status, pagoPor }) {
   await addDoc(collection(db, 'lancamentos'), {
     obraId,
     etapa,
     descricao: descricao ?? null,
     valor: Number(valor || 0),
     status,
+    // Quem pagou o fornecedor: 'escritorio' (padrão, o cliente reembolsa) ou
+    // 'cliente' (pago direto pelo cliente — não entra no reembolso).
+    pagoPor: pagoPor === 'cliente' ? 'cliente' : 'escritorio',
     data: new Date().toISOString(),
     ownerId: uid(),
     criadoEm: Date.now(),

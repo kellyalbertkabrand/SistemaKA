@@ -20,6 +20,37 @@ const PAGAMENTO = {
   pix: '08940235000175',
 };
 
+// Cálculo central do reembolso/honorário — usado no PDF, na mensagem de
+// WhatsApp e no painel do cliente, para todos baterem.
+//
+// Modelo: o escritório paga os fornecedores; o cliente reembolsa o escritório
+// (valor dos fornecedores) + o honorário de gestão (percentual). Itens pagos
+// DIRETO pelo cliente (pagoPor='cliente') não entram no reembolso nem no
+// honorário — aparecem só como informação.
+export function calcularReembolso(lancamentos, obra, { de, ate } = {}) {
+  const itens = lancamentosNoPeriodo(lancamentos, de, ate);
+  const ehCliente = (l) => l.pagoPor === 'cliente';
+  const escritorioItens = itens.filter((l) => !ehCliente(l));
+  const clienteItens = itens.filter(ehCliente);
+  const soma = (arr) => arr.reduce((t, l) => t + Number(l.valor || 0), 0);
+
+  const reembolso = soma(escritorioItens);                                  // base
+  const pago = soma(escritorioItens.filter((l) => l.status === 'pago'));
+  const pendente = soma(escritorioItens.filter((l) => l.status !== 'pago'));
+  const pagoDireto = soma(clienteItens);
+
+  const pctEsc = Number(obra?.percentualEscritorio || 0);
+  const honorario = reembolso * pctEsc / 100;
+  const totalEscritorio = reembolso + honorario;
+  const pctFmt = pctEsc.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+
+  return {
+    itens, escritorioItens, clienteItens,
+    reembolso, pago, pendente, pagoDireto,
+    pctEsc, pctFmt, honorario, totalEscritorio,
+  };
+}
+
 // Filtra os lançamentos cujo dia (YYYY-MM-DD) está dentro do intervalo [de, ate].
 export function lancamentosNoPeriodo(lancamentos, de, ate) {
   return (lancamentos || [])
@@ -34,10 +65,12 @@ export function lancamentosNoPeriodo(lancamentos, de, ate) {
 }
 
 function linhaLanc(l) {
+  const cliente = l.pagoPor === 'cliente';
   return `<tr>
     <td>${esc(dataBR(l.data))}</td>
     <td>${esc(l.etapa || '')}</td>
     <td>${esc(l.descricao || '')}</td>
+    <td>${cliente ? 'Cliente (direto)' : 'Escritório'}</td>
     <td class="st ${l.status === 'pago' ? 'pago' : 'pend'}">${esc(l.status || '')}</td>
     <td class="num">${esc(moeda(l.valor))}</td>
   </tr>`;
@@ -45,18 +78,8 @@ function linhaLanc(l) {
 
 // Monta o HTML completo (com CSS de impressão embutido) do relatório.
 export function montarRelatorioReembolso({ obra, lancamentos, de, ate }) {
-  const itens = lancamentosNoPeriodo(lancamentos, de, ate);
-  const soma = (arr) => arr.reduce((t, l) => t + Number(l.valor || 0), 0);
-  const totalGeral = soma(itens);
-  const totalPago = soma(itens.filter((l) => l.status === 'pago'));
-  const totalPend = soma(itens.filter((l) => l.status !== 'pago'));
-
-  // Honorário do escritório = percentual de gestão aplicado sobre os
-  // lançamentos do período. É o valor DO ESCRITÓRIO (a arquiteta ganha pela
-  // gestão); os pagamentos da obra são feitos pelo cliente.
-  const pctEsc = Number(obra?.percentualEscritorio || 0);
-  const honorario = totalGeral * pctEsc / 100;
-  const pctFmt = pctEsc.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
+  const c = calcularReembolso(lancamentos, obra, { de, ate });
+  const { itens, reembolso, honorario, totalEscritorio, pagoDireto, pctEsc, pctFmt } = c;
 
   const periodo = `${de ? dataBR(de) : '…'} a ${ate ? dataBR(ate) : '…'}`;
   const emitidoEm = dataBR(new Date().toISOString());
@@ -66,7 +89,7 @@ export function montarRelatorioReembolso({ obra, lancamentos, de, ate }) {
 
   const corpo = itens.length
     ? itens.map(linhaLanc).join('')
-    : `<tr><td colspan="5" class="vazio">Nenhum lançamento neste período.</td></tr>`;
+    : `<tr><td colspan="6" class="vazio">Nenhum lançamento neste período.</td></tr>`;
 
   return `<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8">
@@ -128,22 +151,22 @@ export function montarRelatorioReembolso({ obra, lancamentos, de, ate }) {
 
   <table>
     <thead>
-      <tr><th>Data</th><th>Etapa</th><th>Descrição</th><th>Status</th><th class="num">Valor</th></tr>
+      <tr><th>Data</th><th>Etapa</th><th>Descrição</th><th>Pago por</th><th>Status</th><th class="num">Valor</th></tr>
     </thead>
     <tbody>${corpo}</tbody>
   </table>
 
   <div class="totais">
-    <div class="row sub"><span>Pago no período</span><span>${esc(moeda(totalPago))}</span></div>
-    <div class="row sub"><span>Pendente no período</span><span>${esc(moeda(totalPend))}</span></div>
-    <div class="row base"><span>Total dos lançamentos no período</span><span>${esc(moeda(totalGeral))}</span></div>
+    <div class="row sub"><span>Reembolso — fornecedores pagos pelo escritório</span><span>${esc(moeda(reembolso))}</span></div>
     ${pctEsc > 0
-      ? `<div class="row geral"><span>Valor do escritório — gestão (${esc(pctFmt)}%)</span><span>${esc(moeda(honorario))}</span></div>`
+      ? `<div class="row sub"><span>Honorário de gestão (${esc(pctFmt)}%)</span><span>${esc(moeda(honorario))}</span></div>`
+      : ''}
+    <div class="row geral"><span>Total a pagar ao escritório</span><span>${esc(moeda(totalEscritorio))}</span></div>
+    ${pagoDireto > 0
+      ? `<div class="row base"><span>Pago direto pelo cliente (não entra no reembolso)</span><span>${esc(moeda(pagoDireto))}</span></div>`
       : ''}
   </div>
-  ${pctEsc > 0
-    ? `<p class="nota-gestao">O valor do escritório é o honorário de gestão (${esc(pctFmt)}% sobre os lançamentos do período). Os pagamentos da obra são feitos diretamente pelo cliente.</p>`
-    : ''}
+  <p class="nota-gestao">O escritório adianta o pagamento dos fornecedores; o cliente reembolsa esse valor${pctEsc > 0 ? ` mais o honorário de gestão (${esc(pctFmt)}%)` : ''}. Itens pagos direto pelo cliente não entram no reembolso.</p>
 
   <div class="pagamento">
     <h2>Dados para pagamento</h2>
@@ -179,4 +202,32 @@ export function gerarPdfReembolso(dados) {
   win.document.write(html);
   win.document.close();
   return true;
+}
+
+// Texto pronto para o WhatsApp: resumo do que o cliente paga ao escritório
+// no período + os dados de pagamento. Sem markdown pesado — só o *negrito* do
+// WhatsApp (asteriscos).
+export function montarMensagemWhatsApp({ obra, lancamentos, de, ate }) {
+  const c = calcularReembolso(lancamentos, obra, { de, ate });
+  const periodo = `${de ? dataBR(de) : '…'} a ${ate ? dataBR(ate) : '…'}`;
+  const linhas = [
+    `*${obra?.nome || 'Obra'}*`,
+    `Período: ${periodo}`,
+    '',
+    `Reembolso de fornecedores: ${moeda(c.reembolso)}`,
+  ];
+  if (c.pctEsc > 0) linhas.push(`Honorário de gestão (${c.pctFmt}%): ${moeda(c.honorario)}`);
+  linhas.push(`*Total a pagar ao escritório: ${moeda(c.totalEscritorio)}*`);
+  if (c.pagoDireto > 0) {
+    linhas.push('', `Itens pagos direto por você (não entram): ${moeda(c.pagoDireto)}`);
+  }
+  linhas.push(
+    '',
+    '*Dados para pagamento*',
+    PAGAMENTO.banco,
+    PAGAMENTO.titular,
+    `Ag ${PAGAMENTO.agencia} · CC ${PAGAMENTO.conta}`,
+    `Pix (${PAGAMENTO.pixTipo}): ${PAGAMENTO.pix}`,
+  );
+  return linhas.join('\n');
 }

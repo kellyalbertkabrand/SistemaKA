@@ -2,6 +2,7 @@ import { configurado } from '../firebase.js';
 import { obterObraPublicaPorSlug, listarEtapas, listarLancamentos, listarFotos, obterRecibo, obterFotoBin, aoMudarAuth } from '../dados.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
+import { calcularReembolso } from '../lib/reembolso.js';
 import { caixaLogo } from '../lib/marca.js';
 import { abrirLightbox, abrirAnexo } from '../lib/lightbox.js';
 
@@ -44,10 +45,12 @@ export async function renderPublica(container, slug) {
 
   const soma = (arr) => arr.reduce((t, l) => t + Number(l.valor || 0), 0);
   const executado = soma(lancamentos);
-  const pago = soma(lancamentos.filter((l) => l.status === 'pago'));
-  const pendente = soma(lancamentos.filter((l) => l.status === 'pendente'));
-  const saldo = Number(obra.orcamento || 0) - executado; // desconta pago + pendente
   const andamento = pct(executado, obra.orcamento);
+
+  // Valores no modelo "escritório adianta / cliente reembolsa + honorário".
+  // pago/pendente aqui são só dos itens pagos pelo escritório (reembolsáveis);
+  // o que o cliente pagou direto não entra no total a pagar ao escritório.
+  const r = calcularReembolso(lancamentos, obra);
 
   // Realizado por etapa
   const realizado = {};
@@ -80,10 +83,12 @@ export async function renderPublica(container, slug) {
         </div>
         <div class="pub-numeros">
           ${num('Orçamento', moeda(obra.orcamento), 'val-orcado')}
-          ${num('Pago', moeda(pago), 'val-ok')}
-          ${num('Pendente', moeda(pendente), 'val-pend')}
-          ${num('Saldo disponível', moeda(saldo), saldo < 0 ? 'neg' : 'val-saldo')}
-          <p class="pub-nota">O saldo já desconta o que está pago e o que está pendente.</p>
+          ${num('Já pago pelo escritório', moeda(r.pago), 'val-ok')}
+          ${num('A pagar pelo escritório', moeda(r.pendente), 'val-pend')}
+          ${r.pctEsc > 0 ? num(`Honorário de gestão (${r.pctFmt}%)`, moeda(r.honorario)) : ''}
+          ${num('Total a pagar ao escritório', moeda(r.totalEscritorio), 'val-saldo')}
+          ${r.pagoDireto > 0 ? num('Pago direto por você', moeda(r.pagoDireto), 'val-orcado') : ''}
+          <p class="pub-nota">O escritório adianta os fornecedores; você reembolsa esse valor${r.pctEsc > 0 ? ` + o honorário de gestão (${r.pctFmt}%)` : ''}. O que você paga direto não entra nesse total.</p>
         </div>
       </section>
 
@@ -254,7 +259,9 @@ function listaTimeline(lancamentos) {
         </div>
         <div class="tl-base">
           <span>${esc(l.descricao || '')}${temNF ? ` <button class="nf-link" data-ver-nf="${esc(l.id)}">📎 Nota fiscal</button>` : ''}</span>
-          <span class="tl-status">${dataBR(l.data)} ${pillStatus(l.status)}</span>
+          <span class="tl-status">${dataBR(l.data)} ${l.pagoPor === 'cliente'
+            ? '<span class="pill pill-pago"><span class="dot"></span>pago por você</span>'
+            : pillStatus(l.status)}</span>
         </div>
       </li>`;
     }).join('')}

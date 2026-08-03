@@ -9,7 +9,7 @@ import { reconhecimentoDisponivel, ouvir, parar } from '../lib/voice.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
 import { baixarBlob, montarExcelHTML, numBR } from '../lib/exportar.js';
-import { gerarPdfReembolso } from '../lib/reembolso.js';
+import { gerarPdfReembolso, montarMensagemWhatsApp } from '../lib/reembolso.js';
 import { comprimirParaDataURL, arquivoParaDataURL, dataURLBytes, dataURLParaBytes, dataURLParaBlob } from '../lib/imagem.js';
 import { criarZip } from '../lib/zip.js';
 import { abrirLightbox, baixarImagem, abrirAnexo } from '../lib/lightbox.js';
@@ -154,8 +154,10 @@ export async function renderObra(container, obraId) {
             <input type="date" id="reemb-ate" />
           </label>
           <button class="btn btn-mini btn-primary" type="submit">Gerar PDF</button>
+          <button type="button" class="btn btn-mini" id="reemb-whats">💬 Mensagem WhatsApp</button>
         </form>
         <p class="erro" id="reemb-erro" hidden></p>
+        <div id="reemb-whats-saida"></div>
       </section>
 
       <section class="card lancar">
@@ -397,6 +399,34 @@ export async function renderObra(container, obraId) {
     }
   });
 
+  // Mensagem pronta para o WhatsApp (mesmo período) — abre o WhatsApp com o
+  // texto e deixa uma cópia na tela com botão de copiar.
+  const reembWhatsSaida = container.querySelector('#reemb-whats-saida');
+  container.querySelector('#reemb-whats').addEventListener('click', () => {
+    reembErro.hidden = true;
+    const de = reembDe.value;
+    const ate = reembAte.value;
+    if (!de || !ate) {
+      reembErro.textContent = 'Escolha a data inicial e a final.'; reembErro.hidden = false; return;
+    }
+    if (de > ate) {
+      reembErro.textContent = 'A data inicial não pode ser depois da final.'; reembErro.hidden = false; return;
+    }
+    const msg = montarMensagemWhatsApp({ obra, lancamentos, de, ate });
+    window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+    reembWhatsSaida.innerHTML = `
+      <div class="preview-card">
+        <p class="muted">Mensagem gerada — abri o WhatsApp para você escolher o contato. Se preferir, copie:</p>
+        <textarea class="texto-livre" rows="8" readonly id="reemb-whats-txt"></textarea>
+        <div class="row-end"><button class="btn btn-mini" id="reemb-whats-copiar">Copiar mensagem</button></div>
+      </div>`;
+    reembWhatsSaida.querySelector('#reemb-whats-txt').value = msg;
+    reembWhatsSaida.querySelector('#reemb-whats-copiar').addEventListener('click', async (ev) => {
+      try { await navigator.clipboard.writeText(msg); ev.target.textContent = 'Copiado!'; }
+      catch { ev.target.textContent = 'Copie manualmente'; }
+    });
+  });
+
   // ---- Editar obra (nome, cliente, orçamento total) ----
   const abrirEditar = container.querySelector('#abrir-editar');
   const formEditar = container.querySelector('#form-editar');
@@ -597,6 +627,10 @@ export async function renderObra(container, obraId) {
           <option value="pago">pago</option>
           <option value="pendente">pendente</option>
         </select>
+        <select class="ed-l-pagopor" title="Quem pagou">
+          <option value="escritorio">Escritório</option>
+          <option value="cliente">Cliente (direto)</option>
+        </select>
       </td>
       <td class="muted">—</td>
       <td class="acoes" style="white-space:nowrap">
@@ -604,6 +638,7 @@ export async function renderObra(container, obraId) {
         <button class="btn btn-mini ed-l-cancelar">Cancelar</button>
       </td>`;
     tr.querySelector('.ed-l-status').value = l.status === 'pendente' ? 'pendente' : 'pago';
+    tr.querySelector('.ed-l-pagopor').value = l.pagoPor === 'cliente' ? 'cliente' : 'escritorio';
     tr.querySelector('.ed-l-etapa').focus();
     tr.querySelector('.ed-l-cancelar').addEventListener('click', recarregar);
     tr.querySelector('.ed-l-salvar').addEventListener('click', async () => {
@@ -612,6 +647,7 @@ export async function renderObra(container, obraId) {
         descricao: tr.querySelector('.ed-l-desc').value.trim() || null,
         valor: Number(tr.querySelector('.ed-l-valor').value || 0),
         status: tr.querySelector('.ed-l-status').value === 'pendente' ? 'pendente' : 'pago',
+        pagoPor: tr.querySelector('.ed-l-pagopor').value === 'cliente' ? 'cliente' : 'escritorio',
       };
       const btn = tr.querySelector('.ed-l-salvar');
       btn.disabled = true; btn.textContent = 'Salvando…';
@@ -1083,6 +1119,12 @@ function configurarLancamento(container, obra, etapas, recarregar) {
               <option value="pendente" ${l.status === 'pendente' ? 'selected' : ''}>Pendente</option>
             </select>
           </label>
+          <label>Quem pagou
+            <select id="p-pagopor">
+              <option value="escritorio">Escritório (cliente reembolsa)</option>
+              <option value="cliente">Cliente (pago direto)</option>
+            </select>
+          </label>
         </div>
         <div class="row-end">
           <button class="btn btn-ghost" id="p-cancelar">Descartar</button>
@@ -1100,6 +1142,7 @@ function configurarLancamento(container, obra, etapas, recarregar) {
         descricao: preview.querySelector('#p-descricao').value.trim() || null,
         valor: Number(preview.querySelector('#p-valor').value || 0),
         status: preview.querySelector('#p-status').value,
+        pagoPor: preview.querySelector('#p-pagopor').value,
       };
       const btn = preview.querySelector('#p-salvar');
       btn.disabled = true; btn.textContent = 'Salvando…';
@@ -1360,7 +1403,7 @@ function tabelaLancamentos(lancamentos) {
             <td>${esc(l.etapa)}</td>
             <td>${esc(l.descricao || '')}</td>
             <td class="num">${moeda(l.valor)}</td>
-            <td>${pillStatus(l.status)}</td>
+            <td>${pillStatus(l.status)}${l.pagoPor === 'cliente' ? ' <span class="tag tag-off">pago direto</span>' : ''}</td>
             <td>${temNF
               ? `<span class="nf-cel">
                    <button class="nf-ok" data-ver-recibo="${esc(l.id)}" title="${esc(l.reciboNome || 'nota fiscal')}">📎 NF anexada</button>
