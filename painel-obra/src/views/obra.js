@@ -9,6 +9,7 @@ import { reconhecimentoDisponivel, ouvir, parar } from '../lib/voice.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
 import { baixarBlob, montarExcelHTML, numBR } from '../lib/exportar.js';
+import { gerarPdfReembolso } from '../lib/reembolso.js';
 import { comprimirParaDataURL, arquivoParaDataURL, dataURLBytes, dataURLParaBytes, dataURLParaBlob } from '../lib/imagem.js';
 import { criarZip } from '../lib/zip.js';
 import { abrirLightbox, baixarImagem, abrirAnexo } from '../lib/lightbox.js';
@@ -134,6 +135,26 @@ export async function renderObra(container, obraId) {
         </div>
       </section>
 
+      <section class="card">
+        <div class="row-between">
+          <div>
+            <strong>Relatório de reembolso (PDF)</strong>
+            <p class="muted" style="margin:.15rem 0 0">Escolha o período e gere o PDF com o valor que o cliente precisa reembolsar.</p>
+          </div>
+          <button class="btn btn-mini" id="abrir-reembolso">📄 Gerar PDF</button>
+        </div>
+        <form id="form-reembolso" class="reembolso-form" hidden>
+          <label>De
+            <input type="date" id="reemb-de" />
+          </label>
+          <label>Até
+            <input type="date" id="reemb-ate" />
+          </label>
+          <button class="btn btn-mini btn-primary" type="submit">Gerar PDF</button>
+        </form>
+        <p class="erro" id="reemb-erro" hidden></p>
+      </section>
+
       <section class="card lancar">
         <h2>Lançar custo</h2>
         <p class="muted">Fale ou escreva — a IA organiza etapa, valor e status.</p>
@@ -216,6 +237,7 @@ export async function renderObra(container, obraId) {
             <input type="file" id="proj-file"
               accept="image/*,application/pdf,.pdf,.dwg,.dxf,.dwf,.skp,.rvt,.rfa,.ifc,.pln,.3ds,.max,.doc,.docx,.xlsx,.zip" />
           </label>
+          <div id="proj-arquivo-atual" hidden></div>
           <label>… ou colar um link (Google Drive, Dropbox, etc.)
             <input id="proj-link" placeholder="https://…" />
           </label>
@@ -329,6 +351,39 @@ export async function renderObra(container, obraId) {
       alert('Não foi possível exportar: ' + (err?.message || err));
     } finally {
       btnExp.disabled = false; btnExp.textContent = rotulo;
+    }
+  });
+
+  // ---- Relatório de reembolso (PDF por período) ----
+  const abrirReembolso = container.querySelector('#abrir-reembolso');
+  const formReembolso = container.querySelector('#form-reembolso');
+  const reembErro = container.querySelector('#reemb-erro');
+  const reembDe = container.querySelector('#reemb-de');
+  const reembAte = container.querySelector('#reemb-ate');
+  // Padrão: últimos 7 dias (relatório semanal).
+  const hojeISO = new Date().toISOString().slice(0, 10);
+  const seteDiasAtras = new Date(Date.now() - 6 * 864e5).toISOString().slice(0, 10);
+  if (reembDe) reembDe.value = seteDiasAtras;
+  if (reembAte) reembAte.value = hojeISO;
+  abrirReembolso.addEventListener('click', () => {
+    formReembolso.hidden = !formReembolso.hidden;
+    reembErro.hidden = true;
+  });
+  formReembolso.addEventListener('submit', (e) => {
+    e.preventDefault();
+    reembErro.hidden = true;
+    const de = reembDe.value;
+    const ate = reembAte.value;
+    if (!de || !ate) {
+      reembErro.textContent = 'Escolha a data inicial e a final.'; reembErro.hidden = false; return;
+    }
+    if (de > ate) {
+      reembErro.textContent = 'A data inicial não pode ser depois da final.'; reembErro.hidden = false; return;
+    }
+    const ok = gerarPdfReembolso({ obra, lancamentos, de, ate });
+    if (!ok) {
+      reembErro.textContent = 'O navegador bloqueou a nova aba. Libere pop-ups para este site e tente de novo.';
+      reembErro.hidden = false;
     }
   });
 
@@ -766,6 +821,22 @@ export async function renderObra(container, obraId) {
     }
   };
 
+  const arquivoAtualEl = container.querySelector('#proj-arquivo-atual');
+
+  // Mostra o arquivo já anexado (na edição) com a opção de remover só ele,
+  // mantendo o projeto (vira link ou fica sem arquivo, sem apagar o registro).
+  const mostrarArquivoAtual = (p) => {
+    if (p && p.temArquivo) {
+      arquivoAtualEl.hidden = false;
+      arquivoAtualEl.innerHTML = `
+        <span class="proj-arquivo-atual-nome">📎 ${esc(p.arquivo || 'arquivo anexado')}</span>
+        <button type="button" class="btn btn-x" id="remover-arquivo-proj" title="Remover arquivo anexado">× remover arquivo</button>`;
+    } else {
+      arquivoAtualEl.hidden = true;
+      arquivoAtualEl.innerHTML = '';
+    }
+  };
+
   const abrirFormProjeto = (p = null) => {
     projEditando = p ? p.id : null;
     formProjeto.hidden = false;
@@ -775,8 +846,32 @@ export async function renderObra(container, obraId) {
     container.querySelector('#salvar-projeto').textContent = p ? 'Salvar' : 'Adicionar';
     const st = container.querySelector('#status-projeto');
     if (st) st.hidden = true;
+    mostrarArquivoAtual(p);
     container.querySelector('#proj-nome').focus();
   };
+
+  // Remove APENAS o arquivo anexado do projeto em edição (mantém o registro).
+  arquivoAtualEl.addEventListener('click', async (e) => {
+    if (!e.target.closest('#remover-arquivo-proj')) return;
+    if (!projEditando) return;
+    if (!confirm('Remover o arquivo anexado deste projeto? O projeto continua na lista.')) return;
+    const p = (obra.projetos || []).find((x) => x.id === projEditando);
+    if (!p) return;
+    const atualizado = {
+      ...p,
+      temArquivo: false,
+      arquivo: null,
+      ehImagem: false,
+      thumbUrl: null,
+    };
+    delete atualizado.dataUrl; // arquivo antigo inline: some do documento
+    const novos = (obra.projetos || []).map((x) => (x.id === p.id ? atualizado : x));
+    await atualizarObra(obra.id, { projetos: novos });
+    await excluirBin(p.id).catch(() => {});
+    obra.projetos = novos;
+    listaProjEl.innerHTML = listaProjetos(obra.projetos);
+    mostrarArquivoAtual(atualizado);
+  });
 
   if (abrirProjeto) {
     abrirProjeto.addEventListener('click', () => {

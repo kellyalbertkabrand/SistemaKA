@@ -278,6 +278,10 @@ export async function criarFornecedor(campos) {
   });
 }
 
+export async function atualizarFornecedor(id, campos) {
+  await updateDoc(doc(db, 'fornecedores', id), campos);
+}
+
 export async function excluirFornecedor(id) {
   await deleteDoc(doc(db, 'fornecedores', id));
 }

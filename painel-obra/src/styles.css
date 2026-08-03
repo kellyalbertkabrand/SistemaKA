@@ -278,6 +278,15 @@ input:focus, select:focus, textarea:focus {
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin-top: 1rem; }
 .form-inline { display: flex; gap: .6rem; margin: .8rem 0; flex-wrap: wrap; }
 .form-inline input { flex: 1; min-width: 140px; }
+
+/* Relatório de reembolso: período (de/até) + botão numa linha só. */
+.reembolso-form { display: flex; gap: .8rem; align-items: flex-end; flex-wrap: wrap; margin-top: .7rem; }
+.reembolso-form label { display: flex; flex-direction: column; gap: .2rem; font-size: .82rem; color: var(--muted); }
+
+/* Arquivo já anexado ao projeto, na edição, com a opção de remover só ele. */
+#proj-arquivo-atual { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
+  margin: -.3rem 0 .2rem; font-size: .85rem; }
+.proj-arquivo-atual-nome { color: var(--muted); }
 .etapas-novas { border-top: 1px dashed var(--linha); padding-top: .8rem; }
 .etapa-linha { display: flex; gap: .5rem; margin-top: .5rem; }
 .etapa-linha .et-nome { flex: 2; }
