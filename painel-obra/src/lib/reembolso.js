@@ -34,20 +34,26 @@ export function calcularReembolso(lancamentos, obra, { de, ate } = {}) {
   const clienteItens = itens.filter(ehCliente);
   const soma = (arr) => arr.reduce((t, l) => t + Number(l.valor || 0), 0);
 
-  const reembolso = soma(escritorioItens);                                  // base
+  const reembolso = soma(escritorioItens);                                  // o cliente devolve
   const pago = soma(escritorioItens.filter((l) => l.status === 'pago'));
   const pendente = soma(escritorioItens.filter((l) => l.status !== 'pago'));
-  const pagoDireto = soma(clienteItens);
+  const pagoDireto = soma(clienteItens);                                    // o cliente já pagou
 
   const pctEsc = Number(obra?.percentualEscritorio || 0);
-  const honorario = reembolso * pctEsc / 100;
+  // O honorário de gestão incide sobre TODA a obra: fornecedores pagos pelo
+  // escritório + os pagos direto pelo cliente. (Quando o cliente paga direto,
+  // ele não reembolsa, mas paga o percentual sobre esse valor também.)
+  const honorarioBase = reembolso + pagoDireto;
+  const honorario = honorarioBase * pctEsc / 100;
+  // O que o cliente paga ao escritório = reembolso dos fornecedores adiantados
+  // + o honorário total (inclusive a parte sobre o que ele pagou direto).
   const totalEscritorio = reembolso + honorario;
   const pctFmt = pctEsc.toLocaleString('pt-BR', { maximumFractionDigits: 2 });
 
   return {
     itens, escritorioItens, clienteItens,
     reembolso, pago, pendente, pagoDireto,
-    pctEsc, pctFmt, honorario, totalEscritorio,
+    pctEsc, pctFmt, honorarioBase, honorario, totalEscritorio,
   };
 }
 
@@ -79,7 +85,7 @@ function linhaLanc(l) {
 // Monta o HTML completo (com CSS de impressão embutido) do relatório.
 export function montarRelatorioReembolso({ obra, lancamentos, de, ate }) {
   const c = calcularReembolso(lancamentos, obra, { de, ate });
-  const { itens, reembolso, honorario, totalEscritorio, pagoDireto, pctEsc, pctFmt } = c;
+  const { itens, reembolso, honorario, honorarioBase, totalEscritorio, pagoDireto, pctEsc, pctFmt } = c;
 
   const periodo = `${de ? dataBR(de) : '…'} a ${ate ? dataBR(ate) : '…'}`;
   const emitidoEm = dataBR(new Date().toISOString());
@@ -159,14 +165,14 @@ export function montarRelatorioReembolso({ obra, lancamentos, de, ate }) {
   <div class="totais">
     <div class="row sub"><span>Reembolso — fornecedores pagos pelo escritório</span><span>${esc(moeda(reembolso))}</span></div>
     ${pctEsc > 0
-      ? `<div class="row sub"><span>Honorário de gestão (${esc(pctFmt)}%)</span><span>${esc(moeda(honorario))}</span></div>`
+      ? `<div class="row sub"><span>Honorário de gestão (${esc(pctFmt)}% sobre ${esc(moeda(honorarioBase))})</span><span>${esc(moeda(honorario))}</span></div>`
       : ''}
     <div class="row geral"><span>Total a pagar ao escritório</span><span>${esc(moeda(totalEscritorio))}</span></div>
     ${pagoDireto > 0
-      ? `<div class="row base"><span>Pago direto pelo cliente (não entra no reembolso)</span><span>${esc(moeda(pagoDireto))}</span></div>`
+      ? `<div class="row base"><span>Pago direto pelo cliente (não reembolsa)</span><span>${esc(moeda(pagoDireto))}</span></div>`
       : ''}
   </div>
-  <p class="nota-gestao">O escritório adianta o pagamento dos fornecedores; o cliente reembolsa esse valor${pctEsc > 0 ? ` mais o honorário de gestão (${esc(pctFmt)}%)` : ''}. Itens pagos direto pelo cliente não entram no reembolso.</p>
+  <p class="nota-gestao">O escritório adianta o pagamento dos fornecedores; o cliente reembolsa esse valor.${pctEsc > 0 ? ` O honorário de gestão (${esc(pctFmt)}%) incide sobre toda a obra — inclusive os fornecedores pagos direto pelo cliente.` : ''} O que o cliente paga direto não entra no reembolso${pctEsc > 0 ? ', mas gera honorário' : ''}.</p>
 
   <div class="pagamento">
     <h2>Dados para pagamento</h2>
@@ -216,10 +222,10 @@ export function montarMensagemWhatsApp({ obra, lancamentos, de, ate }) {
     '',
     `Reembolso de fornecedores: ${moeda(c.reembolso)}`,
   ];
-  if (c.pctEsc > 0) linhas.push(`Honorário de gestão (${c.pctFmt}%): ${moeda(c.honorario)}`);
+  if (c.pctEsc > 0) linhas.push(`Honorário de gestão (${c.pctFmt}% sobre ${moeda(c.honorarioBase)}): ${moeda(c.honorario)}`);
   linhas.push(`*Total a pagar ao escritório: ${moeda(c.totalEscritorio)}*`);
   if (c.pagoDireto > 0) {
-    linhas.push('', `Itens pagos direto por você (não entram): ${moeda(c.pagoDireto)}`);
+    linhas.push('', `Você pagou direto aos fornecedores: ${moeda(c.pagoDireto)} (não reembolsa${c.pctEsc > 0 ? '; o honorário já inclui o % sobre esse valor' : ''})`);
   }
   linhas.push(
     '',

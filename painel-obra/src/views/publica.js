@@ -88,7 +88,7 @@ export async function renderPublica(container, slug) {
           ${r.pctEsc > 0 ? num(`Honorário de gestão (${r.pctFmt}%)`, moeda(r.honorario)) : ''}
           ${num('Total a pagar ao escritório', moeda(r.totalEscritorio), 'val-saldo')}
           ${r.pagoDireto > 0 ? num('Pago direto por você', moeda(r.pagoDireto), 'val-orcado') : ''}
-          <p class="pub-nota">O escritório adianta os fornecedores; você reembolsa esse valor${r.pctEsc > 0 ? ` + o honorário de gestão (${r.pctFmt}%)` : ''}. O que você paga direto não entra nesse total.</p>
+          <p class="pub-nota">O escritório adianta os fornecedores; você reembolsa esse valor.${r.pctEsc > 0 ? ` O honorário de gestão (${r.pctFmt}%) incide sobre toda a obra, inclusive o que você paga direto.` : ''} O valor pago direto não é reembolsado${r.pctEsc > 0 ? ', mas gera honorário' : ''}.</p>
         </div>
       </section>
 
