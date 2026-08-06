@@ -87,34 +87,34 @@ export async function renderPublica(container, slug) {
         </div>
         <div class="pub-numeros">
           ${num('Orçamento', moeda(obra.orcamento), 'val-orcado')}
-          ${num('Já pago pelo escritório', moeda(r.pago), 'val-ok')}
-          ${num('A pagar pelo escritório', moeda(r.pendente), 'val-pend')}
-          ${r.pctEsc > 0 ? num(`Honorário de gestão (${r.pctFmt}%)`, moeda(r.honorario)) : ''}
-          ${num('Total a pagar ao escritório', moeda(r.totalEscritorio))}
-          ${r.pagoDireto > 0 ? num('Pago direto por você', moeda(r.pagoDireto), 'val-orcado') : ''}
-          ${recebido > 0 ? num('Já pago por você', moeda(recebido), 'val-ok') : ''}
           ${num('Saldo em aberto', moeda(saldoCliente), saldoCliente > 0.005 ? 'neg' : 'val-saldo')}
-          <p class="pub-nota">O escritório adianta os fornecedores; você reembolsa esse valor.${r.pctEsc > 0 ? ` O honorário de gestão (${r.pctFmt}%) incide sobre toda a obra, inclusive o que você paga direto.` : ''} O saldo em aberto já desconta o que você pagou ao escritório.</p>
+          <p class="pub-nota">Detalhes no <strong>controle de pagamentos</strong> abaixo.</p>
         </div>
       </section>
 
-      ${pagamentos.length ? `
       <section class="pub-bloco">
-        ${tituloSecao('💰', 'Seus pagamentos ao escritório')}
-        <ul class="pub-timeline">
-          ${pagamentos.map((p) => `
-            <li>
-              <div class="tl-topo">
-                <span class="tl-etapa">${esc(p.forma || 'Pagamento')}</span>
-                <span class="tl-valor">${moeda(p.valor)}</span>
-              </div>
-              <div class="tl-base">
-                <span>${esc(p.observacao || '')}</span>
-                <span class="tl-status">${dataBR(p.data)}</span>
-              </div>
-            </li>`).join('')}
-        </ul>
-      </section>` : ''}
+        ${tituloSecao('💳', 'Controle de pagamentos')}
+        <div class="pub-numeros pub-numeros-3">
+          ${num('Total a pagar ao escritório', moeda(r.totalEscritorio))}
+          ${num('Já pago por você', moeda(recebido), 'val-ok')}
+          ${num('Saldo em aberto', moeda(saldoCliente), saldoCliente > 0.005 ? 'neg' : 'val-saldo')}
+        </div>
+        <p class="pub-nota">O total é o reembolso dos fornecedores${r.pctEsc > 0 ? ` + o honorário de gestão (${r.pctFmt}%)` : ''}. O saldo já desconta o que você pagou.</p>
+        ${pagamentos.length ? `
+          <ul class="pub-timeline">
+            ${pagamentos.map((p) => `
+              <li>
+                <div class="tl-topo">
+                  <span class="tl-etapa">${esc(p.forma || 'Pagamento')}</span>
+                  <span class="tl-valor">${moeda(p.valor)}</span>
+                </div>
+                <div class="tl-base">
+                  <span>${esc(p.observacao || '')}</span>
+                  <span class="tl-status">${dataBR(p.data)}</span>
+                </div>
+              </li>`).join('')}
+          </ul>` : `<p class="muted">Nenhum pagamento registrado ainda.</p>`}
+      </section>
 
       <section class="pub-bloco pub-bloco-fases">
         ${etapas.length === 0 && extras.length === 0
