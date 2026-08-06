@@ -42,9 +42,11 @@ function escHtml(s) {
 }
 
 function celula(c, tag = 'td') {
+  // Nas células de dados forçamos formato TEXTO (mso-number-format:'\@') para o
+  // Excel NÃO transformar CNPJ/telefone/números longos em notação científica.
   const estilo = tag === 'th'
     ? ' style="background:#2a2622;color:#fff;text-align:left;font-family:Arial;font-size:11px"'
-    : ' style="font-family:Arial;font-size:11px"';
+    : ` style="mso-number-format:'\\@';font-family:Arial;font-size:11px"`;
   if (c && typeof c === 'object' && c.link) {
     return `<${tag}${estilo}><a href="${escHtml(c.link)}">${escHtml(c.texto || 'abrir')}</a></${tag}>`;
   }
