@@ -286,7 +286,9 @@ input:focus, select:focus, textarea:focus {
 
 /* Financeiro: lista de pagamentos por obra. */
 .fin-pag-lista { margin-top: .6rem; display: flex; flex-direction: column; gap: .2rem; }
-.fin-pag-item { padding: .3rem 0; border-top: 1px solid #e7ddd0; font-size: .9rem; }
+.fin-pag-item { padding: .35rem 0; border-top: 1px solid #e7ddd0; font-size: .9rem; }
+.fin-pag-valor { color: var(--ok); font-size: 1.02rem; padding: .05rem .4rem;
+  border-radius: 6px; background: rgba(46, 125, 50, .1); }
 
 /* Botão "WhatsApp" nas listas de clientes/fornecedores. */
 .btn-whats { background: #25d366; color: #0b3d1f; border-color: #25d366; }
