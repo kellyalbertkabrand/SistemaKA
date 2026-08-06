@@ -11,7 +11,9 @@
     "netlify": "netlify dev"
   },
   "dependencies": {
-    "firebase": "^11.3.0"
+    "firebase": "^11.3.0",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8"
   },
   "devDependencies": {
     "vite": "^5.4.8"

@@ -3,6 +3,8 @@
 // (A4, com a marca do escritório) e abrimos numa nova aba chamando window.print()
 // — o próprio navegador salva como PDF. Funciona 100% offline, sem dependência.
 
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { moeda, dataBR, esc } from './format.js';
 import { logoSchramm } from './marca.js';
 
@@ -208,6 +210,138 @@ export function gerarPdfReembolso(dados) {
   win.document.write(html);
   win.document.close();
   return true;
+}
+
+// ---------------------------------------------------------------------------
+// PDF de verdade (vetorial) para BAIXAR — evita o "imprimir página do celular",
+// que em alguns aparelhos saía espelhado. Gera um arquivo .pdf com jsPDF.
+// ---------------------------------------------------------------------------
+function carregarImagem(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+export async function baixarPdfReembolso({ obra, lancamentos, de, ate }) {
+  const c = calcularReembolso(lancamentos, obra, { de, ate });
+  const periodo = `${de ? dataBR(de) : '…'} a ${ate ? dataBR(ate) : '…'}`;
+  const emitidoEm = dataBR(new Date().toISOString());
+
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const M = 40;
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+  const TERRA = [198, 90, 46];
+  const ESCURO = [42, 38, 34];
+  const MUTED = [107, 98, 89];
+  const TEXTO = [60, 55, 50];
+
+  let y = M;
+
+  // Logo (esquerda), preservando proporção.
+  let logoUrl = logoSchramm;
+  try { logoUrl = new URL(logoSchramm, window.location.href).href; } catch { /* mantém */ }
+  const logo = await carregarImagem(logoUrl);
+  if (logo && logo.width && logo.height) {
+    const escala = Math.min(170 / logo.width, 44 / logo.height);
+    try { doc.addImage(logo, 'PNG', M, y, logo.width * escala, logo.height * escala); } catch { /* segue sem logo */ }
+  }
+
+  // Título (direita).
+  doc.setTextColor(...TERRA); doc.setFont('helvetica', 'bold'); doc.setFontSize(16);
+  doc.text('Relatório de Reembolso', W - M, y + 16, { align: 'right' });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...MUTED);
+  doc.text('Lançamentos do período e honorário de gestão', W - M, y + 30, { align: 'right' });
+
+  y += 54;
+  doc.setDrawColor(...TERRA); doc.setLineWidth(2); doc.line(M, y, W - M, y);
+  y += 18;
+
+  // Meta.
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(...TEXTO);
+  doc.text(`Obra: ${obra?.nome || ''}     Cliente: ${obra?.cliente || '—'}`, M, y);
+  y += 13;
+  doc.text(`Período: ${periodo}     Emitido em: ${emitidoEm}`, M, y);
+
+  // Tabela.
+  const body = c.itens.length
+    ? c.itens.map((l) => [
+        dataBR(l.data), l.etapa || '', l.descricao || '',
+        l.pagoPor === 'cliente' ? 'Cliente (direto)' : 'Escritório',
+        l.status || '', moeda(l.valor),
+      ])
+    : [[{ content: 'Nenhum lançamento neste período.', colSpan: 6, styles: { halign: 'center', textColor: MUTED } }]];
+  autoTable(doc, {
+    startY: y + 12,
+    margin: { left: M, right: M },
+    head: [['Data', 'Etapa', 'Descrição', 'Pago por', 'Status', 'Valor']],
+    body,
+    styles: { fontSize: 8.5, cellPadding: 4, textColor: ESCURO },
+    headStyles: { fillColor: ESCURO, textColor: 255, fontStyle: 'bold' },
+    columnStyles: { 5: { halign: 'right' } },
+    theme: 'grid',
+  });
+  y = doc.lastAutoTable.finalY + 22;
+
+  // Totais (bloco à direita).
+  const bx = W - M - 330;
+  const linha = (rot, val, o = {}) => {
+    doc.setFont('helvetica', o.bold ? 'bold' : 'normal');
+    doc.setFontSize(o.size || 10);
+    doc.setTextColor(...(o.cor || TEXTO));
+    doc.text(rot, bx, y);
+    doc.text(val, W - M, y, { align: 'right' });
+    y += o.gap || 15;
+  };
+  linha('Reembolso — fornecedores pagos pelo escritório', moeda(c.reembolso), { size: 9.5, cor: MUTED });
+  if (c.pctEsc > 0) {
+    linha(`Honorário de gestão (${c.pctFmt}% sobre ${moeda(c.honorarioBase)})`, moeda(c.honorario), { size: 9.5, cor: MUTED });
+  }
+  doc.setDrawColor(...TERRA); doc.setLineWidth(1.2); doc.line(bx, y - 5, W - M, y - 5);
+  y += 4;
+  linha('Total a pagar ao escritório', moeda(c.totalEscritorio), { bold: true, size: 12.5, cor: TERRA, gap: 18 });
+  if (c.pagoDireto > 0) {
+    linha('Pago direto pelo cliente (não reembolsa)', moeda(c.pagoDireto), { size: 9, cor: MUTED });
+  }
+
+  // Nota da regra (largura total).
+  y += 4;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...MUTED);
+  const nota = `O escritório adianta o pagamento dos fornecedores; o cliente reembolsa esse valor.`
+    + (c.pctEsc > 0 ? ` O honorário de gestão (${c.pctFmt}%) incide sobre toda a obra — inclusive os fornecedores pagos direto pelo cliente.` : '')
+    + ` O que o cliente paga direto não entra no reembolso${c.pctEsc > 0 ? ', mas gera honorário' : ''}.`;
+  const notaLines = doc.splitTextToSize(nota, W - 2 * M);
+  doc.text(notaLines, M, y);
+  y += notaLines.length * 11 + 16;
+
+  // Se faltar espaço para a caixa de pagamento + rodapé, nova página.
+  if (y > H - 150) { doc.addPage(); y = M; }
+
+  // Caixa "Dados para pagamento".
+  const boxH = 78;
+  doc.setFillColor(250, 247, 242); doc.setDrawColor(224, 216, 204); doc.setLineWidth(1);
+  doc.roundedRect(M, y, W - 2 * M, boxH, 4, 4, 'FD');
+  doc.setFillColor(...TERRA); doc.rect(M, y, 4, boxH, 'F');
+  doc.setTextColor(...TERRA); doc.setFont('helvetica', 'bold'); doc.setFontSize(11);
+  doc.text('Dados para pagamento', M + 14, y + 18);
+  doc.setTextColor(...TEXTO); doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+  doc.text(`Banco: ${PAGAMENTO.banco}      Titular: ${PAGAMENTO.titular}`, M + 14, y + 37);
+  doc.text(`Agência: ${PAGAMENTO.agencia}      Conta corrente: ${PAGAMENTO.conta}`, M + 14, y + 53);
+  doc.setFont('helvetica', 'bold');
+  doc.text(`Pix (${PAGAMENTO.pixTipo}): ${PAGAMENTO.pix}`, M + 14, y + 69);
+
+  // Rodapé (na base da página atual).
+  doc.setDrawColor(224, 216, 204); doc.setLineWidth(0.8); doc.line(M, H - 56, W - M, H - 56);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(...ESCURO);
+  doc.text(ESCRITORIO_NOME, M, H - 42);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...MUTED);
+  doc.text(ESCRITORIO_ENDERECO, M, H - 30);
+
+  const nomeArq = `reembolso-${obra?.slug || 'obra'}-${de || ''}_a_${ate || ''}.pdf`;
+  doc.save(nomeArq);
 }
 
 // Texto pronto para o WhatsApp: resumo do que o cliente paga ao escritório
