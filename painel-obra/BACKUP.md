@@ -84,3 +84,11 @@ Vale rodar de tempos em tempos e guardar no Drive/computador.
 > O backup **automático do Firestore** (seção 2) continua sendo o mecanismo
 > principal de recuperação, com fidelidade total. O export manual é uma cópia
 > extra, legível e portátil.
+
+### Restaurar a partir do arquivo (Importar backup)
+No **Painel de Obras**, o botão **"⬆ Importar backup"** lê o **`backup.json`** (o que
+vem dentro do ZIP) e regrava os dados pelo seu login: **obras, etapas, lançamentos,
+pagamentos, clientes e fornecedores** (upsert por id — reimportar não duplica).
+
+> As **imagens** (fotos, notas fiscais, arquivos de projeto) **não** voltam pelo
+> JSON — para recuperá-las use o **restore nativo do Firestore** (seção 2).

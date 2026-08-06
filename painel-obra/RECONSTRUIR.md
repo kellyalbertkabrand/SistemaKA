@@ -265,12 +265,12 @@ No Netlify (Site settings → Environment variables) e em `.env` local:
   (com `obra.xls`, `fotos/`, `notas-fiscais/`, `projeto/`) e **`backup.json`**
   (dados estruturados de todas as coleções; binários vão como arquivos).
 
-**Para reconstruir os DADOS a partir do `backup.json`:** recriar cada documento nas
-coleções correspondentes (mesmos campos da seção 8) e reanexar os binários
-(fotos → `fotos_bin`, NFs → `recibos`, arquivos de projeto → `fotos_bin` pelo id do
-projeto). Um importador dedicado pode ser criado (ler o JSON e gravar via SDK
-logada). O caminho mais fiel para dados perdidos continua sendo o **restore nativo
-do Firestore**.
+**Restaurar os DADOS a partir do `backup.json`:** já existe o botão
+**"⬆ Importar backup"** no Painel de Obras (`obras.js` → `importarBackup()` em
+`dados.js`). Ele regrava obras, etapas, lançamentos, pagamentos, clientes e
+fornecedores (upsert por id, idempotente). Os **binários** (fotos, NFs, arquivos de
+projeto) **não** voltam pelo JSON — para eles, use o **restore nativo do Firestore**
+(PITR/backup programado), que é o caminho mais fiel para dados perdidos.
 
 ---
 

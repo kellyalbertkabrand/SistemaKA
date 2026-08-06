@@ -249,6 +249,47 @@ export async function listarPagamentosDoEscritorio() {
 }
 
 // ---------------------------------------------------------------------------
+// Importar backup (restauração a partir do backup.json do ZIP).
+// Regrava (upsert por id) as coleções de texto: obras, etapas, lançamentos,
+// pagamentos, clientes e fornecedores. É idempotente (reimportar não duplica).
+// NÃO restaura binários (fotos/NFs/arquivos de projeto) — esses não vêm no JSON;
+// para isso, use o restore nativo do Firestore (PITR/backup programado).
+// ---------------------------------------------------------------------------
+export async function importarBackup(backup, onLog = () => {}) {
+  if (!backup || typeof backup !== 'object') throw new Error('Arquivo de backup inválido.');
+  const owner = uid();
+  const limpar = (obj) => {
+    const c = {};
+    for (const [k, v] of Object.entries(obj)) {
+      if (k === 'id' || v === undefined) continue;
+      c[k] = v;
+    }
+    if (c.ownerId == null) c.ownerId = owner;
+    return c;
+  };
+  const gravar = async (colecao, docs) => {
+    const arr = Array.isArray(docs) ? docs : [];
+    let n = 0;
+    for (const d of arr) {
+      if (!d || d.id == null) continue;
+      await setDoc(doc(db, colecao, String(d.id)), limpar(d));
+      n++;
+      if (n % 15 === 0) onLog(`${colecao}: ${n}/${arr.length}…`);
+    }
+    onLog(`${colecao}: ${n} restaurado(s)`);
+    return n;
+  };
+  const total = {};
+  total.obras = await gravar('obras', backup.obras);
+  total.etapas = await gravar('etapas', backup.etapas);
+  total.lancamentos = await gravar('lancamentos', backup.lancamentos);
+  total.pagamentos = await gravar('pagamentos', backup.pagamentos);
+  total.clientes = await gravar('clientes', backup.clientes);
+  total.fornecedores = await gravar('fornecedores', backup.fornecedores);
+  return total;
+}
+
+// ---------------------------------------------------------------------------
 // Convites + Clientes (link de autopreenchimento)
 // ---------------------------------------------------------------------------
 // Gera um convite com um token único (docId = token) e devolve o token.

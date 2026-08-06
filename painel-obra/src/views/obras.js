@@ -1,4 +1,4 @@
-import { listarObras, totaisPorObra, listarLancamentosDoEscritorio, listarFotosDoEscritorio, listarEtapasDoEscritorio, listarClientes, listarFornecedores, listarPagamentosDoEscritorio, criarObra, criarEtapas, slugExiste, sair, salvarFotoBin, definirThumbFoto, anexarRecibo, obterRecibo, obterFotoBin } from '../dados.js';
+import { listarObras, totaisPorObra, listarLancamentosDoEscritorio, listarFotosDoEscritorio, listarEtapasDoEscritorio, listarClientes, listarFornecedores, listarPagamentosDoEscritorio, importarBackup, criarObra, criarEtapas, slugExiste, sair, salvarFotoBin, definirThumbFoto, anexarRecibo, obterRecibo, obterFotoBin } from '../dados.js';
 import { navegar } from '../main.js';
 import { moeda, pct, slugify, esc, dataBR } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
@@ -36,10 +36,12 @@ export async function renderObras(container) {
     <div class="app">
       <div class="pagina-topo">
         <h1>Painel de Obras</h1>
-        ${(obras || []).length ? `<div class="row-end">
-          <button class="btn btn-mini" id="otimizar-dados" title="Deixa o sistema mais rápido: separa as imagens/notas já enviadas">⚙ Otimizar imagens</button>
-          <button class="btn btn-mini" id="exportar-tudo">⬇ Exportar tudo (backup completo)</button>
-        </div>` : ''}
+        <div class="row-end">
+          ${(obras || []).length ? `
+            <button class="btn btn-mini" id="otimizar-dados" title="Deixa o sistema mais rápido: separa as imagens/notas já enviadas">⚙ Otimizar imagens</button>
+            <button class="btn btn-mini" id="exportar-tudo">⬇ Exportar tudo (backup completo)</button>` : ''}
+          <button class="btn btn-mini" id="importar-backup" title="Restaurar dados a partir do backup.json">⬆ Importar backup</button>
+        </div>
       </div>
 
       <section class="card">
@@ -333,6 +335,49 @@ export async function renderObras(container) {
         btnExp.disabled = false;
         btnExp.textContent = original;
       }
+    });
+  }
+
+  // Importar backup (restaurar a partir do backup.json do ZIP)
+  const btnImp = container.querySelector('#importar-backup');
+  if (btnImp) {
+    btnImp.addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.json,application/json';
+      input.addEventListener('change', async () => {
+        const file = input.files && input.files[0];
+        if (!file) return;
+        let backup;
+        try {
+          backup = JSON.parse(await file.text());
+        } catch {
+          alert('Não consegui ler o arquivo. Escolha o "backup.json" que vem dentro do ZIP de backup.');
+          return;
+        }
+        if (!backup || !(backup.obras || backup.clientes || backup.fornecedores || backup.lancamentos)) {
+          alert('Este arquivo não parece um backup.json válido do sistema.');
+          return;
+        }
+        const cont = (arr) => (Array.isArray(arr) ? arr.length : 0);
+        const resumo = `Obras: ${cont(backup.obras)}   Etapas: ${cont(backup.etapas)}   Lançamentos: ${cont(backup.lancamentos)}\nPagamentos: ${cont(backup.pagamentos)}   Clientes: ${cont(backup.clientes)}   Fornecedores: ${cont(backup.fornecedores)}`;
+        const quando = backup.geradoEm ? ' (gerado em ' + new Date(backup.geradoEm).toLocaleString('pt-BR') + ')' : '';
+        if (!confirm(`Importar este backup${quando}?\n\n${resumo}\n\nDocumentos com o mesmo id serão SOBRESCRITOS pelos do arquivo. Fotos e notas fiscais (imagens) NÃO são restauradas por aqui — para isso use o restore do Firebase.`)) return;
+
+        btnImp.disabled = true;
+        const rot = btnImp.textContent;
+        btnImp.textContent = 'Importando…';
+        try {
+          const total = await importarBackup(backup, (msg) => { btnImp.textContent = 'Importando ' + msg; });
+          alert(`Backup importado!\n\nObras: ${total.obras}\nEtapas: ${total.etapas}\nLançamentos: ${total.lancamentos}\nPagamentos: ${total.pagamentos}\nClientes: ${total.clientes}\nFornecedores: ${total.fornecedores}`);
+          renderObras(container);
+        } catch (err) {
+          btnImp.disabled = false;
+          btnImp.textContent = rot;
+          alert('Não foi possível importar: ' + (err?.message || err));
+        }
+      });
+      input.click();
     });
   }
 
