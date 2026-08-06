@@ -200,7 +200,7 @@ function listaClientes(clientes) {
       <div class="row-between">
         <strong>${esc(c.nome)}</strong>
         <span class="row-end">
-          ${c.telefone && linkWhatsApp(c.telefone) ? `<a class="btn btn-mini btn-whats" href="${esc(linkWhatsApp(c.telefone))}" target="_blank" rel="noopener" title="Chamar no WhatsApp">💬 WhatsApp</a>` : ''}
+          ${c.telefone && linkWhatsApp(c.telefone) ? `<a class="btn btn-mini btn-whats" href="${esc(linkWhatsApp(c.telefone, c.nome ? `Olá, ${c.nome}!` : ''))}" target="_blank" rel="noopener" title="Chamar no WhatsApp">💬 WhatsApp</a>` : ''}
           <button class="btn btn-x" data-del-cli="${esc(c.id)}" title="Excluir">×</button>
         </span>
       </div>
