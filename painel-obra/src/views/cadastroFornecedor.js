@@ -2,7 +2,7 @@ import { configurado } from '../firebase.js';
 import { obterConvite, criarFornecedorPublico } from '../dados.js';
 import { esc } from '../lib/format.js';
 import { caixaLogo } from '../lib/marca.js';
-import { ligarMascara, ligarEmail, formatarCNPJ, formatarTelefone, validarEmail } from '../lib/mascaras.js';
+import { ligarMascara, ligarEmail, formatarCpfCnpj, formatarTelefone, validarEmail } from '../lib/mascaras.js';
 
 // Formulário público de autopreenchimento do FORNECEDOR, acessado por
 // /cadastro-fornecedor/{token}. Valida o token do convite; se válido, o
@@ -47,7 +47,7 @@ export async function renderCadastroFornecedor(container, token) {
             <input id="f-email" type="email" />
             <p class="dica-campo" id="f-email-dica" hidden></p>
           </label>
-          <label>CNPJ
+          <label>CPF / CNPJ
             <input id="f-cnpj" />
           </label>
           <label class="full">Endereço
@@ -74,7 +74,7 @@ export async function renderCadastroFornecedor(container, token) {
   const inEmail = container.querySelector('#f-email');
 
   ligarMascara(container.querySelector('#f-telefone'), formatarTelefone);
-  ligarMascara(container.querySelector('#f-cnpj'), formatarCNPJ);
+  ligarMascara(container.querySelector('#f-cnpj'), formatarCpfCnpj);
   ligarEmail(inEmail, container.querySelector('#f-email-dica'));
 
   form.addEventListener('submit', async (e) => {

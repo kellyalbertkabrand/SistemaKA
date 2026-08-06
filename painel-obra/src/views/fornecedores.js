@@ -1,7 +1,7 @@
 import { listarFornecedores, criarFornecedor, atualizarFornecedor, excluirFornecedor, criarConvite, sair } from '../dados.js';
 import { esc } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
-import { ligarMascara, ligarEmail, formatarCNPJ, formatarTelefone, validarEmail } from '../lib/mascaras.js';
+import { ligarMascara, ligarEmail, formatarCpfCnpj, formatarTelefone, validarEmail } from '../lib/mascaras.js';
 
 // Tela interna: cadastro, edição e lista de fornecedores.
 export async function renderFornecedores(container) {
@@ -54,7 +54,7 @@ export async function renderFornecedores(container) {
             <input id="fo-email" type="email" />
             <p class="dica-campo" id="fo-email-dica" hidden></p>
           </label>
-          <label>CNPJ
+          <label>CPF / CNPJ
             <input id="fo-cnpj" />
           </label>
           <label class="full">Endereço
@@ -123,7 +123,7 @@ export async function renderFornecedores(container) {
 
   // Máscaras + verificação de e-mail.
   ligarMascara(inTelefone, formatarTelefone);
-  ligarMascara(inCnpj, formatarCNPJ);
+  ligarMascara(inCnpj, formatarCpfCnpj);
   ligarEmail(inEmail, container.querySelector('#fo-email-dica'));
 
   // null = cadastrando um novo; id = editando aquele fornecedor.
@@ -136,7 +136,7 @@ export async function renderFornecedores(container) {
     inCategoria.value = f?.categoria || '';
     inTelefone.value = formatarTelefone(f?.telefone || '');
     inEmail.value = f?.email || '';
-    inCnpj.value = formatarCNPJ(f?.cnpj || '');
+    inCnpj.value = formatarCpfCnpj(f?.cnpj || '');
     inEndereco.value = f?.endereco || '';
     inObs.value = f?.observacoes || '';
     btnSalvar.textContent = f ? 'Salvar alterações' : 'Salvar fornecedor';
