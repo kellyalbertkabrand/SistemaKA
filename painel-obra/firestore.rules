@@ -42,6 +42,12 @@ service cloud.firestore {
       allow read: if logado() || obraPublicada(resource.data.obraId);
       allow write: if logado();
     }
+    // Pagamentos do cliente ao escritório (recebimentos). O cliente (link
+    // público da obra publicada) pode LER para ver o saldo; só o escritório grava.
+    match /pagamentos/{id} {
+      allow read: if logado() || obraPublicada(resource.data.obraId);
+      allow write: if logado();
+    }
     match /convites/{token} {
       allow read: if true;
       allow write: if logado();

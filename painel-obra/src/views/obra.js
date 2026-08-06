@@ -2,6 +2,7 @@ import {
   obterObra, listarEtapas, listarLancamentos, atualizarObra, excluirObra, definirPublicado,
   criarEtapa, atualizarEtapa, excluirEtapa, criarLancamento, atualizarLancamento, excluirLancamento, sair,
   anexarRecibo, removerRecibo, obterRecibo, enviarFoto, listarFotos, excluirFoto, atualizarFoto, obterFotoBin, salvarFotoBin, excluirBin,
+  criarPagamento, listarPagamentos, excluirPagamento,
 } from '../dados.js';
 import { navegar } from '../main.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
@@ -9,7 +10,7 @@ import { reconhecimentoDisponivel, ouvir, parar } from '../lib/voice.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
 import { baixarBlob, montarExcelHTML, numBR } from '../lib/exportar.js';
-import { baixarPdfReembolso, montarMensagemWhatsApp } from '../lib/reembolso.js';
+import { baixarPdfReembolso, montarMensagemWhatsApp, calcularReembolso } from '../lib/reembolso.js';
 import { comprimirParaDataURL, arquivoParaDataURL, dataURLBytes, dataURLParaBytes, dataURLParaBlob } from '../lib/imagem.js';
 import { criarZip } from '../lib/zip.js';
 import { abrirLightbox, baixarImagem, abrirAnexo } from '../lib/lightbox.js';
@@ -58,9 +59,10 @@ export async function renderObra(container, obraId) {
   // Etapas e lançamentos entram no caminho crítico (os KPIs e as tabelas
   // dependem deles). As FOTOS são as mais pesadas (imagens em base64), então
   // NÃO seguram a abertura da tela: carregam em segundo plano logo abaixo.
-  const [etapas, lancamentos] = await Promise.all([
+  const [etapas, lancamentos, pagamentos] = await Promise.all([
     listarEtapas(obraId).catch(() => []),
     listarLancamentos(obraId).catch(() => []),
+    listarPagamentos(obraId).catch(() => []),
   ]);
   let fotos = []; // preenchido em segundo plano após o primeiro render
 
@@ -68,6 +70,12 @@ export async function renderObra(container, obraId) {
   const pago = soma(lancamentos.filter((l) => l.status === 'pago'));
   const pendente = soma(lancamentos.filter((l) => l.status === 'pendente'));
   const saldo = Number(obra.orcamento || 0) - executado;
+
+  // Conta do cliente (acumulado da obra): total a pagar ao escritório = reembolso
+  // (fornecedores do escritório) + honorário; menos o que o cliente já pagou.
+  const conta = calcularReembolso(lancamentos, obra);
+  const recebidoCliente = soma(pagamentos);
+  const saldoCliente = conta.totalEscritorio - recebidoCliente;
 
   const linkPublico = `${window.location.origin}/obra/${obra.slug}`;
 
@@ -158,6 +166,37 @@ export async function renderObra(container, obraId) {
         </form>
         <p class="erro" id="reemb-erro" hidden></p>
         <div id="reemb-whats-saida"></div>
+      </section>
+
+      <section class="card">
+        <div class="row-between">
+          <h2>Pagamentos do cliente</h2>
+          <button class="btn btn-mini btn-primary" id="abrir-pagamento" style="margin:0">+ Registrar pagamento</button>
+        </div>
+        <p class="muted" style="margin:.15rem 0 .6rem">O que o cliente já pagou ao escritório (reembolso + honorário).</p>
+        <div class="kpis">
+          ${kpi('Total a pagar ao escritório', moeda(conta.totalEscritorio))}
+          ${kpi('Recebido do cliente', moeda(recebidoCliente), 'val-ok')}
+          ${kpi('Saldo em aberto', moeda(saldoCliente), saldoCliente > 0.005 ? 'neg' : 'val-saldo')}
+        </div>
+        <form id="form-pagamento" class="reembolso-form" hidden>
+          <label>Data<input type="date" id="pg-data" /></label>
+          <label>Valor (R$)<input type="number" min="0" step="0.01" id="pg-valor" /></label>
+          <label>Forma
+            <select id="pg-forma">
+              <option value="Pix">Pix</option>
+              <option value="Transferência">Transferência</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Cartão">Cartão</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </label>
+          <label>Observação<input id="pg-obs" placeholder="Opcional" /></label>
+          <button class="btn btn-mini btn-primary" type="submit">Salvar</button>
+          <button type="button" class="btn btn-mini btn-ghost" id="pg-cancelar">Cancelar</button>
+        </form>
+        <p class="erro" id="pg-erro" hidden></p>
+        <div id="lista-pagamentos">${listaPagamentos(pagamentos)}</div>
       </section>
 
       <section class="card lancar">
@@ -430,6 +469,51 @@ export async function renderObra(container, obraId) {
       try { await navigator.clipboard.writeText(msg); ev.target.textContent = 'Copiado!'; }
       catch { ev.target.textContent = 'Copie manualmente'; }
     });
+  });
+
+  // ---- Pagamentos do cliente (recebimentos) ----
+  const abrirPagamento = container.querySelector('#abrir-pagamento');
+  const formPagamento = container.querySelector('#form-pagamento');
+  const pgErro = container.querySelector('#pg-erro');
+  const pgData = container.querySelector('#pg-data');
+  if (pgData) pgData.value = new Date().toISOString().slice(0, 10);
+  abrirPagamento.addEventListener('click', () => {
+    formPagamento.hidden = !formPagamento.hidden;
+    pgErro.hidden = true;
+    if (!formPagamento.hidden) container.querySelector('#pg-valor').focus();
+  });
+  container.querySelector('#pg-cancelar').addEventListener('click', () => {
+    formPagamento.hidden = true;
+  });
+  formPagamento.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    pgErro.hidden = true;
+    const valor = Number(container.querySelector('#pg-valor').value || 0);
+    if (!(valor > 0)) { pgErro.textContent = 'Informe o valor recebido.'; pgErro.hidden = false; return; }
+    const registro = {
+      obraId: obra.id,
+      valor,
+      data: pgData.value || new Date().toISOString().slice(0, 10),
+      forma: container.querySelector('#pg-forma').value || null,
+      observacao: container.querySelector('#pg-obs').value.trim() || null,
+    };
+    const btn = formPagamento.querySelector('button[type="submit"]');
+    btn.disabled = true; btn.textContent = 'Salvando…';
+    try {
+      await criarPagamento(registro);
+    } catch (err) {
+      btn.disabled = false; btn.textContent = 'Salvar';
+      pgErro.textContent = 'Não foi possível salvar: ' + (err?.message || err); pgErro.hidden = false;
+      return;
+    }
+    recarregar();
+  });
+  container.querySelector('#lista-pagamentos').addEventListener('click', async (e) => {
+    const del = e.target.closest('[data-del-pagamento]');
+    if (!del) return;
+    if (!confirm('Remover este pagamento do cliente?')) return;
+    await excluirPagamento(del.getAttribute('data-del-pagamento'));
+    recarregar();
   });
 
   // ---- Editar obra (nome, cliente, orçamento total) ----
@@ -1421,6 +1505,27 @@ function tabelaLancamentos(lancamentos) {
             </td>
           </tr>`;
         }).join('')}
+      </tbody>
+    </table>`;
+}
+
+// Lista dos pagamentos do cliente ao escritório (recebimentos).
+function listaPagamentos(pagamentos) {
+  if (!pagamentos.length) return `<p class="muted">Nenhum pagamento do cliente registrado ainda.</p>`;
+  return `
+    <table class="tabela">
+      <thead>
+        <tr><th>Data</th><th>Forma</th><th>Observação</th><th class="num">Valor</th><th></th></tr>
+      </thead>
+      <tbody>
+        ${pagamentos.map((p) => `
+          <tr>
+            <td>${dataBR(p.data)}</td>
+            <td>${esc(p.forma || '')}</td>
+            <td>${esc(p.observacao || '')}</td>
+            <td class="num">${moeda(p.valor)}</td>
+            <td class="acoes"><button class="btn btn-x" data-del-pagamento="${esc(p.id)}" title="Remover">×</button></td>
+          </tr>`).join('')}
       </tbody>
     </table>`;
 }

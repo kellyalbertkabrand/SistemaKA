@@ -1,5 +1,5 @@
 import { configurado } from '../firebase.js';
-import { obterObraPublicaPorSlug, listarEtapas, listarLancamentos, listarFotos, obterRecibo, obterFotoBin, aoMudarAuth } from '../dados.js';
+import { obterObraPublicaPorSlug, listarEtapas, listarLancamentos, listarPagamentos, listarFotos, obterRecibo, obterFotoBin, aoMudarAuth } from '../dados.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { calcularReembolso } from '../lib/reembolso.js';
@@ -16,7 +16,7 @@ export async function renderPublica(container, slug) {
     return;
   }
 
-  let obra, etapas, lancamentos;
+  let obra, etapas, lancamentos, pagamentos;
   let fotos = []; // as fotos (pesadas) carregam em segundo plano após o render
   try {
     obra = await comTimeout(obterObraPublicaPorSlug(slug));
@@ -29,12 +29,14 @@ export async function renderPublica(container, slug) {
       return;
     }
 
-    [etapas, lancamentos] = await Promise.all([
+    [etapas, lancamentos, pagamentos] = await Promise.all([
       comTimeout(listarEtapas(obra.id)),
       comTimeout(listarLancamentos(obra.id)),
+      comTimeout(listarPagamentos(obra.id)).catch(() => []),
     ]);
     etapas = etapas || [];
     lancamentos = lancamentos || [];
+    pagamentos = pagamentos || [];
   } catch (e) {
     container.innerHTML = telaSimples(
       'Não foi possível carregar',
@@ -51,6 +53,8 @@ export async function renderPublica(container, slug) {
   // pago/pendente aqui são só dos itens pagos pelo escritório (reembolsáveis);
   // o que o cliente pagou direto não entra no total a pagar ao escritório.
   const r = calcularReembolso(lancamentos, obra);
+  const recebido = soma(pagamentos);
+  const saldoCliente = r.totalEscritorio - recebido;
 
   // Realizado por etapa
   const realizado = {};
@@ -86,11 +90,31 @@ export async function renderPublica(container, slug) {
           ${num('Já pago pelo escritório', moeda(r.pago), 'val-ok')}
           ${num('A pagar pelo escritório', moeda(r.pendente), 'val-pend')}
           ${r.pctEsc > 0 ? num(`Honorário de gestão (${r.pctFmt}%)`, moeda(r.honorario)) : ''}
-          ${num('Total a pagar ao escritório', moeda(r.totalEscritorio), 'val-saldo')}
+          ${num('Total a pagar ao escritório', moeda(r.totalEscritorio))}
           ${r.pagoDireto > 0 ? num('Pago direto por você', moeda(r.pagoDireto), 'val-orcado') : ''}
-          <p class="pub-nota">O escritório adianta os fornecedores; você reembolsa esse valor.${r.pctEsc > 0 ? ` O honorário de gestão (${r.pctFmt}%) incide sobre toda a obra, inclusive o que você paga direto.` : ''} O valor pago direto não é reembolsado${r.pctEsc > 0 ? ', mas gera honorário' : ''}.</p>
+          ${recebido > 0 ? num('Já pago por você', moeda(recebido), 'val-ok') : ''}
+          ${num('Saldo em aberto', moeda(saldoCliente), saldoCliente > 0.005 ? 'neg' : 'val-saldo')}
+          <p class="pub-nota">O escritório adianta os fornecedores; você reembolsa esse valor.${r.pctEsc > 0 ? ` O honorário de gestão (${r.pctFmt}%) incide sobre toda a obra, inclusive o que você paga direto.` : ''} O saldo em aberto já desconta o que você pagou ao escritório.</p>
         </div>
       </section>
+
+      ${pagamentos.length ? `
+      <section class="pub-bloco">
+        ${tituloSecao('💰', 'Seus pagamentos ao escritório')}
+        <ul class="pub-timeline">
+          ${pagamentos.map((p) => `
+            <li>
+              <div class="tl-topo">
+                <span class="tl-etapa">${esc(p.forma || 'Pagamento')}</span>
+                <span class="tl-valor">${moeda(p.valor)}</span>
+              </div>
+              <div class="tl-base">
+                <span>${esc(p.observacao || '')}</span>
+                <span class="tl-status">${dataBR(p.data)}</span>
+              </div>
+            </li>`).join('')}
+        </ul>
+      </section>` : ''}
 
       <section class="pub-bloco pub-bloco-fases">
         ${etapas.length === 0 && extras.length === 0

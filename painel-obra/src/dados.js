@@ -111,6 +111,7 @@ export async function excluirObra(id) {
     apagarPorObra('fotos'),
     apagarPorObra('fotos_bin').catch(() => {}),
     apagarPorObra('recibos').catch(() => {}),
+    apagarPorObra('pagamentos').catch(() => {}),
   ]);
   await deleteDoc(doc(db, 'obras', id));
 }
@@ -207,6 +208,34 @@ export async function atualizarLancamento(id, dados) {
 
 export async function excluirLancamento(id) {
   await deleteDoc(doc(db, 'lancamentos', id));
+}
+
+// ---------------------------------------------------------------------------
+// Pagamentos do CLIENTE ao ESCRITÓRIO (recebimentos). Registro do que o cliente
+// já pagou (reembolso + honorário), para constar e apurar o saldo em aberto.
+//   pagamentos/{id} -> obraId, valor, data(YYYY-MM-DD), forma, observacao, ownerId, criadoEm
+// ---------------------------------------------------------------------------
+export async function criarPagamento({ obraId, valor, data, forma, observacao }) {
+  await addDoc(collection(db, 'pagamentos'), {
+    obraId,
+    valor: Number(valor || 0),
+    data: data || new Date().toISOString().slice(0, 10),
+    forma: forma ?? null,
+    observacao: observacao ?? null,
+    ownerId: uid(),
+    criadoEm: Date.now(),
+  });
+}
+
+export async function listarPagamentos(obraId) {
+  const snap = await getDocs(query(collection(db, 'pagamentos'), where('obraId', '==', obraId)));
+  const ps = docsComId(snap);
+  ps.sort((a, b) => String(b.data).localeCompare(String(a.data))); // mais recente primeiro
+  return ps;
+}
+
+export async function excluirPagamento(id) {
+  await deleteDoc(doc(db, 'pagamentos', id));
 }
 
 // ---------------------------------------------------------------------------
