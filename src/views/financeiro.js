@@ -106,12 +106,15 @@ export async function renderFinanceiro(container) {
     ${navBar('financeiro')}
     <div class="app">
       <div class="pagina-topo"><h1>Financeiro</h1></div>
-      <p class="muted">Total a pagar, recebido e saldo de cada obra. Gere o relatório do cliente e registre os pagamentos aqui.</p>
-      <section class="kpis">
-        ${kpi('Total a pagar (geral)', moeda(totalGeral))}
-        ${kpi('Recebido (geral)', moeda(recebidoGeral), 'val-ok')}
-        ${kpi('Saldo em aberto (geral)', moeda(saldoGeral), saldoGeral > 0.005 ? 'neg' : 'val-saldo')}
+      <section class="card fin-geral">
+        <h2 class="fin-geral-titulo">Resumo geral · soma de todos os clientes</h2>
+        <div class="kpis">
+          ${kpi('Total a pagar', moeda(totalGeral))}
+          ${kpi('Recebido', moeda(recebidoGeral), 'val-ok')}
+          ${kpi('Saldo em aberto', moeda(saldoGeral), saldoGeral > 0.005 ? 'neg' : 'val-saldo')}
+        </div>
       </section>
+      <p class="muted" style="margin:.2rem 0 .2rem">Abaixo, cada obra/cliente separadamente — gere o relatório e registre os pagamentos.</p>
       ${linhas.length ? linhas.map(cardFin).join('') : '<p class="muted center">Nenhuma obra cadastrada ainda.</p>'}
     </div>`;
 

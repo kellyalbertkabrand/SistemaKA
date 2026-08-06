@@ -1,6 +1,7 @@
 import { sair } from '../dados.js';
 import { navegar } from '../main.js';
 import { logoImg } from '../lib/marca.js';
+import { VERSAO } from '../lib/changelog.js';
 
 // Tela inicial (home) do sistema: um menu-lançador com os botões grandes
 // Painel de Obras, Clientes e Fornecedores. É a primeira tela após o login.
@@ -34,6 +35,7 @@ export function renderHome(container) {
         </nav>
 
         <button class="home-sair" id="sair">Sair</button>
+        <a class="home-versao" data-link href="/atualizacoes">Versão ${VERSAO} · ver atualizações</a>
       </main>
     </div>`;
 

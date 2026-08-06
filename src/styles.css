@@ -279,6 +279,23 @@ input:focus, select:focus, textarea:focus {
 .form-inline { display: flex; gap: .6rem; margin: .8rem 0; flex-wrap: wrap; }
 .form-inline input { flex: 1; min-width: 140px; }
 
+/* Home: link de versão / atualizações. */
+.home-versao { display: inline-block; margin-top: 1rem; font-size: .82rem; color: var(--muted); text-decoration: none; }
+.home-versao:hover { color: #c65a2e; text-decoration: underline; }
+
+/* Página de Atualizações (changelog). */
+.atu-bloco { border-top: 1px solid var(--linha); padding: .9rem 0; }
+.atu-bloco:first-of-type { border-top: 0; }
+.atu-cab { display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; margin-bottom: .4rem; }
+.atu-data { font-weight: 700; color: #c65a2e; }
+.atu-titulo { color: var(--muted); font-size: .9rem; }
+.atu-lista { margin: 0; padding-left: 1.1rem; display: flex; flex-direction: column; gap: .3rem; }
+.atu-lista li { line-height: 1.4; }
+
+/* Financeiro: resumo geral (soma de todos os clientes) — destacado do restante. */
+.fin-geral { background: #faf3ee; border: 1px solid #ecd9cc; border-left: 5px solid #c65a2e; }
+.fin-geral-titulo { margin: 0 0 .5rem; font-size: 1rem; color: #c65a2e; }
+
 /* Financeiro: bloco "Controle de pagamentos" destacado (tons de verde). */
 .fin-controle { margin-top: .9rem; padding: .8rem .9rem; border: 1px solid #cfe3d5;
   border-left: 4px solid var(--ok); border-radius: 10px; background: #f1f7f2; }
