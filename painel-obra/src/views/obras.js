@@ -1,4 +1,4 @@
-import { listarObras, totaisPorObra, listarLancamentosDoEscritorio, listarFotosDoEscritorio, criarObra, criarEtapas, slugExiste, sair, salvarFotoBin, definirThumbFoto, anexarRecibo, obterRecibo, obterFotoBin } from '../dados.js';
+import { listarObras, totaisPorObra, listarLancamentosDoEscritorio, listarFotosDoEscritorio, listarClientes, listarFornecedores, listarPagamentosDoEscritorio, criarObra, criarEtapas, slugExiste, sair, salvarFotoBin, definirThumbFoto, anexarRecibo, obterRecibo, obterFotoBin } from '../dados.js';
 import { navegar } from '../main.js';
 import { moeda, pct, slugify, esc, dataBR } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
@@ -165,9 +165,12 @@ export async function renderObras(container) {
       const original = btnExp.textContent;
       btnExp.textContent = 'Gerando…';
       try {
-        const [todos, todasFotos] = await Promise.all([
+        const [todos, todasFotos, clientes, fornecedores, pagamentos] = await Promise.all([
           listarLancamentosDoEscritorio(),
           listarFotosDoEscritorio().catch(() => []),
+          listarClientes().catch(() => []),
+          listarFornecedores().catch(() => []),
+          listarPagamentosDoEscritorio().catch(() => []),
         ]);
 
         const nomeSeg = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -239,6 +242,18 @@ export async function renderObras(container) {
               nomePorId[f.obraId] || '',
               f.dataVisita ? dataBR(f.dataVisita) : (f.criadoEm ? dataBR(new Date(f.criadoEm).toISOString()) : ''),
               f.texto || '', fNome.get(f.id) || '',
+            ]) },
+          { titulo: 'Pagamentos do cliente (todas as obras)', cabecalho: ['Obra', 'Data', 'Forma', 'Valor (R$)', 'Observação'],
+            linhas: [...pagamentos].sort((a, b) => String(b.data).localeCompare(String(a.data))).map((p) => [
+              nomePorId[p.obraId] || '', dataBR(p.data), p.forma || '', numBR(p.valor), p.observacao || '',
+            ]) },
+          { titulo: 'Clientes', cabecalho: ['Nome', 'E-mail', 'Telefone', 'CPF/CNPJ', 'Cidade', 'Endereço', 'Observações'],
+            linhas: (clientes || []).map((c) => [
+              c.nome || '', c.email || '', c.telefone || '', c.documento || '', c.cidade || '', c.endereco || '', c.observacoes || '',
+            ]) },
+          { titulo: 'Fornecedores', cabecalho: ['Nome', 'Categoria', 'Telefone', 'E-mail', 'CNPJ', 'Endereço', 'Observações'],
+            linhas: (fornecedores || []).map((f) => [
+              f.nome || '', f.categoria || '', f.telefone || '', f.email || '', f.cnpj || '', f.endereco || '', f.observacoes || '',
             ]) },
         ];
         arquivos.unshift({ nome: 'obras.xls', dados: new TextEncoder().encode('﻿' + montarExcelHTML(secoes)) });

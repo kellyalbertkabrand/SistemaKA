@@ -238,6 +238,11 @@ export async function excluirPagamento(id) {
   await deleteDoc(doc(db, 'pagamentos', id));
 }
 
+// Todos os pagamentos do escritório (para a exportação geral / backup).
+export async function listarPagamentosDoEscritorio() {
+  return docsComId(await getDocs(collection(db, 'pagamentos')));
+}
+
 // ---------------------------------------------------------------------------
 // Convites + Clientes (link de autopreenchimento)
 // ---------------------------------------------------------------------------
