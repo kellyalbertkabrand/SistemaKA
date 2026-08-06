@@ -279,9 +279,14 @@ input:focus, select:focus, textarea:focus {
 .form-inline { display: flex; gap: .6rem; margin: .8rem 0; flex-wrap: wrap; }
 .form-inline input { flex: 1; min-width: 140px; }
 
+/* Financeiro: bloco "Controle de pagamentos" destacado dentro do card. */
+.fin-controle { margin-top: .9rem; padding: .8rem .9rem; border: 1px solid #e7ddd0;
+  border-left: 4px solid #c65a2e; border-radius: 10px; background: #faf5ef; }
+.fin-controle-titulo { margin: 0; font-size: 1rem; color: #c65a2e; }
+
 /* Financeiro: lista de pagamentos por obra. */
 .fin-pag-lista { margin-top: .6rem; display: flex; flex-direction: column; gap: .2rem; }
-.fin-pag-item { padding: .3rem 0; border-top: 1px solid var(--linha); font-size: .9rem; }
+.fin-pag-item { padding: .3rem 0; border-top: 1px solid #e7ddd0; font-size: .9rem; }
 
 /* Botão "WhatsApp" nas listas de clientes/fornecedores. */
 .btn-whats { background: #25d366; color: #0b3d1f; border-color: #25d366; }

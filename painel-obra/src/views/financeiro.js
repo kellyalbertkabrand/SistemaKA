@@ -56,7 +56,6 @@ export async function renderFinanceiro(container) {
         </div>
         <div class="row-end">
           <a class="btn btn-mini" data-link href="/painel/${esc(o.slug)}">Abrir obra</a>
-          <button class="btn btn-mini btn-primary" data-add-pag="${esc(o.id)}">+ Pagamento</button>
         </div>
       </div>
       <div class="kpis">
@@ -72,25 +71,32 @@ export async function renderFinanceiro(container) {
         <button class="btn btn-mini" data-whats="${esc(o.id)}">💬 WhatsApp</button>
         <span class="muted" style="font-size:.78rem;align-self:center">Em branco = toda a obra</span>
       </div>
-      <form class="reembolso-form" data-form-pag="${esc(o.id)}" hidden>
-        <label>Data<input type="date" class="pg-data" /></label>
-        <label>Valor (R$)<input type="number" min="0" step="0.01" class="pg-valor" /></label>
-        <label>Forma
-          <select class="pg-forma">
-            <option>Pix</option><option>Transferência</option><option>Dinheiro</option><option>Cartão</option><option>Outro</option>
-          </select>
-        </label>
-        <label>Observação<input class="pg-obs" placeholder="Opcional" /></label>
-        <button class="btn btn-mini btn-primary" type="submit">Salvar</button>
-        <button type="button" class="btn btn-mini btn-ghost" data-cancel-pag>Cancelar</button>
-        <p class="erro pg-erro" hidden></p>
-      </form>
-      ${pgs.length ? `<div class="fin-pag-lista">${pgs.map((p) => `
-        <div class="row-between fin-pag-item">
-          <span class="muted">${dataBR(p.data)} · ${esc(p.forma || '')}${p.observacao ? ' · ' + esc(p.observacao) : ''}</span>
-          <span class="row-end"><strong>${moeda(p.valor)}</strong>
-            <button class="btn btn-x" data-del-pag="${esc(p.id)}" title="Remover">×</button></span>
-        </div>`).join('')}</div>` : ''}
+
+      <div class="fin-controle">
+        <div class="row-between">
+          <h3 class="fin-controle-titulo">Controle de pagamentos</h3>
+          <button class="btn btn-mini btn-primary" data-add-pag="${esc(o.id)}">+ Registrar pagamento</button>
+        </div>
+        <form class="reembolso-form" data-form-pag="${esc(o.id)}" hidden>
+          <label>Data<input type="date" class="pg-data" /></label>
+          <label>Valor (R$)<input type="number" min="0" step="0.01" class="pg-valor" /></label>
+          <label>Forma
+            <select class="pg-forma">
+              <option>Pix</option><option>Transferência</option><option>Dinheiro</option><option>Cartão</option><option>Outro</option>
+            </select>
+          </label>
+          <label>Observação<input class="pg-obs" placeholder="Opcional" /></label>
+          <button class="btn btn-mini btn-primary" type="submit">Salvar</button>
+          <button type="button" class="btn btn-mini btn-ghost" data-cancel-pag>Cancelar</button>
+          <p class="erro pg-erro" hidden></p>
+        </form>
+        ${pgs.length ? `<div class="fin-pag-lista">${pgs.map((p) => `
+          <div class="row-between fin-pag-item">
+            <span class="muted">${dataBR(p.data)} · ${esc(p.forma || '')}${p.observacao ? ' · ' + esc(p.observacao) : ''}</span>
+            <span class="row-end"><strong>${moeda(p.valor)}</strong>
+              <button class="btn btn-x" data-del-pag="${esc(p.id)}" title="Remover">×</button></span>
+          </div>`).join('')}</div>` : `<p class="muted" style="margin:.4rem 0 0">Nenhum pagamento registrado ainda.</p>`}
+      </div>
     </section>`;
   };
 
