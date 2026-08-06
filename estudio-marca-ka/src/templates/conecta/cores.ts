@@ -98,13 +98,13 @@ export function corFonte(valor: string | number | undefined, fundo: string): str
   return hexRepresentativo(v)
 }
 
-/** Cor de destaque (títulos de seção, ícones): ciano no escuro, teal mais
- *  fechado no claro (melhor contraste), marinho sobre fundo ciano. */
+/** Cor de destaque (logo, títulos de seção, ícones, detalhes): SEMPRE o teal
+ *  da marca, para tudo casar com o logo. Sobre fundo ciano, vira marinho. */
 export function corDestaque(fundo: string): string {
   if (fundo === 'ciano' || hexRepresentativo(fundo).toUpperCase() === COR_CIANO.toUpperCase()) {
     return COR_MARINHO
   }
-  return ehFundoEscuro(fundo) ? COR_CIANO : COR_CIANO_ESCURO
+  return COR_CIANO
 }
 
 /** Amostras para o card do painel interno. */

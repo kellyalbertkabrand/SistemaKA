@@ -171,6 +171,34 @@ function campoBadgeConecta(): Campo {
   }
 }
 
+// Ícone de LINHA da marca (no lugar de emoji) — elegante, no teal do Conecta.
+function campoIconeConecta(padrao: string): Campo {
+  return {
+    id: 'icone',
+    label: 'Ícone',
+    tipo: 'select',
+    chips: true,
+    padrao,
+    ajuda: 'Ícone de linha da marca (opcional).',
+    opcoes: [
+      { valor: 'nenhum', rotulo: 'Nenhum' },
+      { valor: 'alvo', rotulo: 'Alvo' },
+      { valor: 'coracao', rotulo: 'Coração' },
+      { valor: 'maos', rotulo: 'Mãos + coração' },
+      { valor: 'foguete', rotulo: 'Foguete' },
+      { valor: 'pessoas', rotulo: 'Pessoas' },
+      { valor: 'lampada', rotulo: 'Ideia' },
+      { valor: 'crescimento', rotulo: 'Crescimento' },
+      { valor: 'estrela', rotulo: 'Estrela' },
+      { valor: 'medalha', rotulo: 'Medalha' },
+      { valor: 'elo', rotulo: 'Conexão (elo)' },
+      { valor: 'aperto', rotulo: 'Aperto de mãos' },
+      { valor: 'calendario', rotulo: 'Calendário' },
+      { valor: 'check', rotulo: 'Confirmado' },
+    ],
+  }
+}
+
 // ============================================================================
 // Registro de templates validados pela KA.
 //
@@ -857,15 +885,7 @@ export const TEMPLATES: Template[] = [
         placeholder: 'Ex.: OBJETIVOS',
         padrao: 'OBJETIVOS',
       },
-      {
-        id: 'icone',
-        label: 'Ícone (emoji, opcional)',
-        tipo: 'texto',
-        maxLen: 4,
-        placeholder: 'Ex.: 🎯',
-        ajuda: 'Um emoji para ilustrar o tema (🎯 💡 🤝 ❤️ 📈).',
-        padrao: '🎯',
-      },
+      campoIconeConecta('alvo'),
       {
         id: 'subtitulo',
         label: 'Subtítulo (opcional)',
@@ -896,14 +916,7 @@ export const TEMPLATES: Template[] = [
         placeholder: 'Ex.: MISSÃO',
         padrao: 'MISSÃO',
       },
-      {
-        id: 'icone',
-        label: 'Ícone (emoji, opcional)',
-        tipo: 'texto',
-        maxLen: 4,
-        placeholder: 'Ex.: 🎯',
-        padrao: '',
-      },
+      campoIconeConecta('foguete'),
       {
         id: 'texto',
         label: 'Texto',
@@ -938,14 +951,7 @@ export const TEMPLATES: Template[] = [
         placeholder: 'Ex.: VALORES',
         padrao: 'VALORES',
       },
-      {
-        id: 'icone',
-        label: 'Ícone (emoji, opcional)',
-        tipo: 'texto',
-        maxLen: 4,
-        placeholder: 'Ex.: ❤️',
-        padrao: '❤️',
-      },
+      campoIconeConecta('coracao'),
       {
         id: 'itens',
         label: 'Itens (um por linha)',

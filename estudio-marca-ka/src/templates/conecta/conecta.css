@@ -94,91 +94,113 @@
   gap: 34px;
 }
 
-/* Título de seção (VALORES, MISSÃO, OBJETIVOS…) */
+/* Cabeçalho de seção elegante: ícone + rótulo + filete de destaque */
+.conecta-secao-bloco {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
 .conecta-secao {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 30px;
 }
 
 .conecta-secao .rotulo {
-  font-size: 84px;
+  font-size: 76px;
   font-weight: 800;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.005em;
   text-transform: uppercase;
   line-height: 1;
 }
 
-.conecta-secao .icone {
-  font-size: 96px;
-  line-height: 1;
+/* Filete de destaque (curto) sob o título/seção */
+.conecta-rule {
+  display: block;
+  width: 132px;
+  height: 6px;
+  border-radius: 3px;
+}
+
+.conecta-rule--centro {
+  align-self: center;
+  width: 96px;
+}
+
+/* Ícone em círculo (capa) */
+.conecta-icone-circulo {
+  align-self: center;
+  width: 208px;
+  height: 208px;
+  border-radius: 50%;
+  border: 3px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Corpo de texto / parágrafo */
 .conecta-corpo {
   font-size: 52px;
-  line-height: 1.34;
-  font-weight: 500;
+  line-height: 1.36;
+  font-weight: 400;
   white-space: pre-line;
 }
 
 .conecta-destaque {
-  font-weight: 800;
+  font-weight: 700;
 }
 
-/* Lista com marcadores (rótulo em negrito + descrição) */
+/* Lista com marcadores em anel (rótulo em destaque + descrição) */
 .conecta-lista {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 34px;
   font-size: 38px;
-  line-height: 1.3;
-  font-weight: 500;
+  line-height: 1.32;
+  font-weight: 400;
 }
 
 .conecta-lista .item {
   display: flex;
-  gap: 20px;
+  gap: 26px;
 }
 
-.conecta-lista .bolinha {
+.conecta-lista .marca {
   flex: none;
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  margin-top: 16px;
+  border: 4px solid;
+  margin-top: 14px;
 }
 
 .conecta-lista .rot {
-  font-weight: 800;
+  font-weight: 700;
 }
 
-/* ---- Capa (título grande centralizado) --------------------------------- */
+/* ---- Capa (ícone em círculo + título grande centralizado) -------------- */
 .conecta-card.tipo-capa .conecta-miolo {
   align-items: center;
   text-align: center;
-  gap: 44px;
+  gap: 40px;
 }
 
 .conecta-card.tipo-capa .titulo {
-  font-size: 118px;
+  font-size: 116px;
   font-weight: 800;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.005em;
   text-transform: uppercase;
   line-height: 1.02;
 }
 
 .conecta-card.tipo-capa .sub {
   font-size: 40px;
-  font-weight: 500;
-  opacity: 0.92;
+  font-weight: 400;
+  opacity: 0.9;
   max-width: 80%;
   white-space: pre-line;
-}
-
-.conecta-card.tipo-capa .icone-grande {
-  font-size: 160px;
-  line-height: 1;
 }
 
 /* ---- Rodapé ------------------------------------------------------------- */

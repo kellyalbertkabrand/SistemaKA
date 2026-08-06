@@ -2,8 +2,23 @@ import type { ReactNode } from 'react'
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
 import { ConectaLogo, ConectaSimbolo } from './ConectaLogo'
+import { ConectaIcone } from './ConectaIcones'
 import { fundoCss, corFonte, corDestaque, ehFundoEscuro, COR_CIANO } from './cores'
 import './conecta.css'
+
+// Cabeçalho de seção elegante: ícone de linha + rótulo + filete de destaque.
+function SecaoHeader({ secao, icone, destaque }: { secao: string; icone: string; destaque: string }) {
+  if (!secao && (!icone || icone === 'nenhum')) return null
+  return (
+    <div className="conecta-secao-bloco">
+      <div className="conecta-secao">
+        {icone && icone !== 'nenhum' && <ConectaIcone nome={icone} tamanho={78} cor={destaque} />}
+        {secao && <span className="rotulo" style={{ color: destaque }}>{secao}</span>}
+      </div>
+      <span className="conecta-rule" style={{ background: destaque }} />
+    </div>
+  )
+}
 
 // ============================================================================
 // Cards do Conecta · Núcleo de Negócios ACIGRA — sistema visual (jul/2026).
@@ -88,50 +103,52 @@ function ConectaFrame({
   )
 }
 
-// 1 · Capa de carrossel — título grande centralizado + ícone/subtítulo.
+// 1 · Capa de carrossel — ícone em círculo, título grande e filete centrado.
 export function ConectaCapaCard({ valores, formato }: RenderProps) {
   const fundo = String(valores.cor_fundo || 'gradiente')
   const cor = corFonte(valores.cor_fonte, fundo)
+  const destaque = corDestaque(fundo)
   const titulo = String(valores.titulo || '')
   const sub = String(valores.subtitulo || '')
   const icone = String(valores.icone || '')
   return (
     <ConectaFrame fundo={fundo} corTexto={cor} tipo="capa" formato={formato} badge={String(valores.badge || '')}>
-      {titulo && <div className="titulo" style={{ color: corDestaque(fundo) }}>{comDestaque(titulo)}</div>}
-      {icone && <div className="icone-grande">{icone}</div>}
+      {icone && icone !== 'nenhum' && (
+        <div className="conecta-icone-circulo" style={{ borderColor: destaque }}>
+          <ConectaIcone nome={icone} tamanho={124} cor={destaque} traco={1.5} />
+        </div>
+      )}
+      {titulo && <div className="titulo" style={{ color: destaque }}>{comDestaque(titulo)}</div>}
+      <span className="conecta-rule conecta-rule--centro" style={{ background: destaque }} />
       {sub && <div className="sub">{comDestaque(sub)}</div>}
     </ConectaFrame>
   )
 }
 
-// 2 · Tópico — rótulo de seção (ciano) + parágrafo. Slides internos.
+// 2 · Tópico — cabeçalho de seção (ícone + rótulo + filete) + parágrafo.
 export function ConectaTopicoCard({ valores, formato }: RenderProps) {
   const fundo = String(valores.cor_fundo || 'gradiente')
   const cor = corFonte(valores.cor_fonte, fundo)
+  const destaque = corDestaque(fundo)
   const secao = String(valores.secao || '')
   const icone = String(valores.icone || '')
   const texto = String(valores.texto || '')
   return (
     <ConectaFrame fundo={fundo} corTexto={cor} tipo="topico" formato={formato} badge={String(valores.badge || '')}>
-      {(secao || icone) && (
-        <div className="conecta-secao" style={{ color: corDestaque(fundo) }}>
-          {secao && <span className="rotulo">{secao}</span>}
-          {icone && <span className="icone">{icone}</span>}
-        </div>
-      )}
+      <SecaoHeader secao={secao} icone={icone} destaque={destaque} />
       {texto && <div className="conecta-corpo">{comDestaque(texto)}</div>}
     </ConectaFrame>
   )
 }
 
-// 3 · Lista — título de seção + itens (rótulo em negrito + descrição).
+// 3 · Lista — cabeçalho de seção + itens (rótulo em negrito + descrição).
 export function ConectaListaCard({ valores, formato }: RenderProps) {
   const fundo = String(valores.cor_fundo || 'gradiente')
   const cor = corFonte(valores.cor_fonte, fundo)
+  const destaque = corDestaque(fundo)
   const secao = String(valores.secao || '')
   const icone = String(valores.icone || '')
   const bruto = String(valores.itens || '')
-  const destaque = corDestaque(fundo)
   // Cada linha "Rótulo: descrição" — o rótulo (antes do ":") fica em negrito.
   const itens = bruto
     .split('\n')
@@ -143,18 +160,13 @@ export function ConectaListaCard({ valores, formato }: RenderProps) {
     })
   return (
     <ConectaFrame fundo={fundo} corTexto={cor} tipo="lista" formato={formato} badge={String(valores.badge || '')}>
-      {(secao || icone) && (
-        <div className="conecta-secao" style={{ color: destaque }}>
-          {secao && <span className="rotulo">{secao}</span>}
-          {icone && <span className="icone">{icone}</span>}
-        </div>
-      )}
+      <SecaoHeader secao={secao} icone={icone} destaque={destaque} />
       <div className="conecta-lista">
         {itens.map((it, k) => (
           <div className="item" key={k}>
-            <span className="bolinha" style={{ background: destaque }} />
+            <span className="marca" style={{ borderColor: destaque }} />
             <span>
-              {it.rot && <span className="rot">{it.rot}: </span>}
+              {it.rot && <span className="rot" style={{ color: destaque }}>{it.rot}: </span>}
               {it.desc}
             </span>
           </div>

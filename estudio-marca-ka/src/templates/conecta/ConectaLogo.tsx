@@ -22,12 +22,14 @@ export function ConectaSimbolo({ escuro = true, tamanho = 96 }: { escuro?: boole
   )
 }
 
-/** Lockup horizontal: símbolo + CONECTA + tagline (arte oficial). */
+/** Lockup horizontal: símbolo + CONECTA + tagline (arte oficial).
+ *  O símbolo e o wordmark ficam SEMPRE no teal da marca (coerência de cor);
+ *  só a tagline muda de tom conforme o fundo. */
 export function ConectaLogo({ escuro = true, altura = 96 }: { escuro?: boolean; altura?: number }) {
   const hWord = altura * 0.46
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: altura * 0.16 }}>
-      <ConectaSimbolo escuro={escuro} tamanho={altura} />
+      <ConectaSimbolo escuro tamanho={altura} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: altura * 0.08 }}>
         <img
           src={WORDMARK}
@@ -37,7 +39,7 @@ export function ConectaLogo({ escuro = true, altura = 96 }: { escuro?: boolean; 
         />
         <span
           style={{
-            color: escuro ? '#FFFFFF' : '#021734',
+            color: escuro ? 'rgba(255,255,255,0.9)' : 'rgba(2,23,52,0.68)',
             fontWeight: 600,
             fontSize: altura * 0.148,
             letterSpacing: '0.12em',
