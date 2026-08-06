@@ -139,6 +139,11 @@ export async function listarEtapas(obraId) {
   return etapas;
 }
 
+// Todas as etapas do escritório (para a exportação geral / backup).
+export async function listarEtapasDoEscritorio() {
+  return docsComId(await getDocs(collection(db, 'etapas')));
+}
+
 export async function criarEtapa({ obraId, nome, orcado }) {
   await addDoc(collection(db, 'etapas'), {
     obraId,

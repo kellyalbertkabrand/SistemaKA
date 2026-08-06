@@ -62,11 +62,25 @@ e-mail aos administradores da conta quando o custo se aproxima/passa desse valor
 
 ---
 
-## 5. Backup manual (secundário, sem custo)
+## 5. Backup manual completo (secundário, sem custo)
 
-Dentro do sistema (logada), no **Painel de Obras**, o botão **"⬇ Exportar tudo"**
-gera um ZIP com uma planilha geral + pastas por obra (notas fiscais e fotos). Serve
-como cópia "na mão" — vale rodar de tempos em tempos e guardar no Drive/computador.
+Dentro do sistema (logada), no **Painel de Obras**, o botão
+**"⬇ Exportar tudo (backup completo)"** gera um ZIP **datado**
+(`backup-painel-obra-DD-MM-AAAA.zip`) com:
 
-> Observação: o export manual foca em obras/lançamentos/NF/fotos. O backup completo
-> e confiável é o **automático do Firestore** (seção 2), que cobre todas as coleções.
+- `clientes.xls` — todos os clientes, **todos os campos**;
+- `fornecedores.xls` — todos os fornecedores, **todos os campos**;
+- `pagamentos.xls` — todos os pagamentos do cliente (todas as obras);
+- `obras/<obra>/` — uma pasta por obra, contendo:
+  - `obra.xls` (dados da obra, etapas, lançamentos e pagamentos daquela obra),
+  - `fotos/` (imagens das visitas),
+  - `notas-fiscais/` (NFs anexadas),
+  - `projeto/` (arquivos de projeto anexados);
+- `backup.json` — **backup técnico estruturado** de todas as coleções (para
+  eventual restauração/importação; os binários pesados vão como arquivos no ZIP).
+
+Vale rodar de tempos em tempos e guardar no Drive/computador.
+
+> O backup **automático do Firestore** (seção 2) continua sendo o mecanismo
+> principal de recuperação, com fidelidade total. O export manual é uma cópia
+> extra, legível e portátil.

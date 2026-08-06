@@ -1,4 +1,4 @@
-import { listarObras, totaisPorObra, listarLancamentosDoEscritorio, listarFotosDoEscritorio, listarClientes, listarFornecedores, listarPagamentosDoEscritorio, criarObra, criarEtapas, slugExiste, sair, salvarFotoBin, definirThumbFoto, anexarRecibo, obterRecibo, obterFotoBin } from '../dados.js';
+import { listarObras, totaisPorObra, listarLancamentosDoEscritorio, listarFotosDoEscritorio, listarEtapasDoEscritorio, listarClientes, listarFornecedores, listarPagamentosDoEscritorio, criarObra, criarEtapas, slugExiste, sair, salvarFotoBin, definirThumbFoto, anexarRecibo, obterRecibo, obterFotoBin } from '../dados.js';
 import { navegar } from '../main.js';
 import { moeda, pct, slugify, esc, dataBR } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
@@ -38,7 +38,7 @@ export async function renderObras(container) {
         <h1>Painel de Obras</h1>
         ${(obras || []).length ? `<div class="row-end">
           <button class="btn btn-mini" id="otimizar-dados" title="Deixa o sistema mais rápido: separa as imagens/notas já enviadas">⚙ Otimizar imagens</button>
-          <button class="btn btn-mini" id="exportar-tudo">⬇ Exportar tudo</button>
+          <button class="btn btn-mini" id="exportar-tudo">⬇ Exportar tudo (backup completo)</button>
         </div>` : ''}
       </div>
 
@@ -156,8 +156,9 @@ export async function renderObras(container) {
     });
   }
 
-  // Exportar tudo: um ZIP com a planilha geral + uma pasta por obra
-  // (notas fiscais e fotos).
+  // Exportar tudo (backup completo): um ZIP datado com planilhas de clientes,
+  // fornecedores e pagamentos; uma pasta por obra (detalhes + fotos + notas
+  // fiscais + projeto); e um backup.json técnico (para restauração).
   const btnExp = container.querySelector('#exportar-tudo');
   if (btnExp) {
     btnExp.addEventListener('click', async () => {
@@ -165,14 +166,17 @@ export async function renderObras(container) {
       const original = btnExp.textContent;
       btnExp.textContent = 'Gerando…';
       try {
-        const [todos, todasFotos, clientes, fornecedores, pagamentos] = await Promise.all([
+        const [todos, todasFotos, todasEtapas, clientes, fornecedores, pagamentos] = await Promise.all([
           listarLancamentosDoEscritorio(),
           listarFotosDoEscritorio().catch(() => []),
+          listarEtapasDoEscritorio().catch(() => []),
           listarClientes().catch(() => []),
           listarFornecedores().catch(() => []),
           listarPagamentosDoEscritorio().catch(() => []),
         ]);
 
+        const enc = (txt) => new TextEncoder().encode('﻿' + txt);
+        const xls = (secoes) => enc(montarExcelHTML(secoes));
         const nomeSeg = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '')
           .replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'item';
         const extDe = (dado) => {
@@ -182,83 +186,147 @@ export async function renderObras(container) {
           if (t.includes('webp')) return 'webp';
           return 'jpg';
         };
+        const dataHora = (ms) => (ms ? dataBR(new Date(ms).toISOString()) : '');
+        // Planilha "todos os campos": colunas = união de todas as chaves.
+        const secaoTodosCampos = (titulo, docs, ordem = []) => {
+          const arr = docs || [];
+          const chaves = []; const vistas = new Set();
+          [...ordem, ...arr.flatMap((d) => Object.keys(d))].forEach((k) => {
+            if (!vistas.has(k)) { vistas.add(k); chaves.push(k); }
+          });
+          const val = (d, k) => {
+            const v = d[k];
+            if (v == null) return '';
+            if (k === 'criadoEm' || k === 'reciboEm') return dataHora(v);
+            if (typeof v === 'object') return JSON.stringify(v);
+            return String(v);
+          };
+          return { titulo, cabecalho: chaves, linhas: arr.map((d) => chaves.map((k) => val(d, k))) };
+        };
 
-        // Totais a partir dos lançamentos já baixados (não depende do preenchimento
-        // em segundo plano lá de cima).
-        const execExport = {};
-        for (const l of todos) execExport[l.obraId] = (execExport[l.obraId] || 0) + Number(l.valor || 0);
+        const obrasArr = obras || [];
+        const nomePorId = Object.fromEntries(obrasArr.map((o) => [o.id, o.nome]));
+        const usados = new Set();
+        const pastaObra = (o) => {
+          let base = `obras/${nomeSeg(o.slug || o.nome || o.id)}`;
+          let nome = base, i = 2;
+          while (usados.has(nome)) { nome = `${base}-${i++}`; }
+          usados.add(nome); return nome;
+        };
+        const pastaPorId = {};
+        obrasArr.forEach((o) => { pastaPorId[o.id] = pastaObra(o); });
 
-        const nomePorId = Object.fromEntries((obras || []).map((o) => [o.id, o.nome]));
-        const slugPorId = Object.fromEntries((obras || []).map((o) => [o.id, o.slug || nomeSeg(o.nome)]));
-        const pastaObra = (obraId) => slugPorId[obraId] || nomeSeg(obraId || 'sem-obra');
+        // Agrupa por obra.
+        const porObra = (arr) => {
+          const m = {}; (arr || []).forEach((x) => { (m[x.obraId] ||= []).push(x); }); return m;
+        };
+        const lancPorObra = porObra(todos);
+        const etapasPorObra = porObra(todasEtapas);
+        const fotosPorObra = porObra(todasFotos);
+        const pagPorObra = porObra(pagamentos);
 
         const arquivos = [];
-        const lancOrd = [...todos].sort((a, b) => String(b.data).localeCompare(String(a.data)));
-        const fotosOrd = [...todasFotos].sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+        const nfNome = new Map();   // lancId -> caminho do arquivo
+        const fNome = new Map();    // fotoId -> caminho do arquivo
 
-        // Notas fiscais -> <obra>/notas-fiscais/
-        const nfNome = new Map();
-        const contNF = {};
-        for (const l of lancOrd) {
-          let dado = l.reciboDataUrl || l.reciboUrl;
-          if (!dado && (l.temRecibo || l.reciboNome)) dado = (await obterRecibo(l.id))?.dataUrl;
-          if (dado && String(dado).startsWith('data:')) {
-            const p = pastaObra(l.obraId);
-            contNF[p] = (contNF[p] || 0) + 1;
-            const nome = `${p}/notas-fiscais/${String(contNF[p]).padStart(2, '0')}-${nomeSeg((l.data || '').slice(0, 10) + '-' + (l.etapa || ''))}.${extDe(dado)}`;
-            arquivos.push({ nome, dados: dataURLParaBytes(dado) });
-            nfNome.set(l.id, nome);
+        // ---- Uma pasta por obra: detalhes + fotos + notas fiscais + projeto ----
+        for (const o of obrasArr) {
+          const pasta = pastaPorId[o.id];
+          const lancs = (lancPorObra[o.id] || []).slice().sort((a, b) => String(b.data).localeCompare(String(a.data)));
+          const etps = (etapasPorObra[o.id] || []).slice().sort((a, b) => (a.criadoEm || 0) - (b.criadoEm || 0));
+          const fts = (fotosPorObra[o.id] || []).slice().sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+          const pgs = (pagPorObra[o.id] || []).slice().sort((a, b) => String(b.data).localeCompare(String(a.data)));
+          const exec = lancs.reduce((t, l) => t + Number(l.valor || 0), 0);
+
+          // Notas fiscais da obra.
+          let cNF = 0;
+          for (const l of lancs) {
+            let dado = l.reciboDataUrl || l.reciboUrl;
+            if (!dado && (l.temRecibo || l.reciboNome)) dado = (await obterRecibo(l.id))?.dataUrl;
+            if (dado && String(dado).startsWith('data:')) {
+              const nome = `${pasta}/notas-fiscais/${String(++cNF).padStart(2, '0')}-${nomeSeg((l.data || '').slice(0, 10) + '-' + (l.etapa || ''))}.${extDe(dado)}`;
+              arquivos.push({ nome, dados: dataURLParaBytes(dado) });
+              nfNome.set(l.id, nome);
+            }
           }
-        }
-        // Fotos -> <obra>/fotos/
-        const fNome = new Map();
-        const contF = {};
-        for (const f of fotosOrd) {
-          let dado = f.dataUrl || f.url;
-          if (!dado) dado = await obterFotoBin(f.id);
-          if (dado && String(dado).startsWith('data:')) {
-            const p = pastaObra(f.obraId);
-            contF[p] = (contF[p] || 0) + 1;
-            const d = f.dataVisita || (f.criadoEm ? new Date(f.criadoEm).toISOString().slice(0, 10) : '') || 'foto';
-            const nome = `${p}/fotos/${String(contF[p]).padStart(2, '0')}-${nomeSeg(d)}.jpg`;
-            arquivos.push({ nome, dados: dataURLParaBytes(dado) });
-            fNome.set(f.id, nome);
+          // Fotos da obra.
+          let cF = 0;
+          for (const f of fts) {
+            let dado = f.dataUrl || f.url;
+            if (!dado) dado = await obterFotoBin(f.id);
+            if (dado && String(dado).startsWith('data:')) {
+              const d = f.dataVisita || (f.criadoEm ? new Date(f.criadoEm).toISOString().slice(0, 10) : '') || 'foto';
+              const nome = `${pasta}/fotos/${String(++cF).padStart(2, '0')}-${nomeSeg(d)}.${extDe(dado)}`;
+              arquivos.push({ nome, dados: dataURLParaBytes(dado) });
+              fNome.set(f.id, nome);
+            }
           }
+          // Arquivos de projeto (quando anexados como arquivo).
+          let cP = 0;
+          for (const p of (o.projetos || [])) {
+            let dado = p.dataUrl;
+            if (!dado && p.temArquivo) dado = await obterFotoBin(p.id);
+            if (dado && String(dado).startsWith('data:')) {
+              const nome = `${pasta}/projeto/${String(++cP).padStart(2, '0')}-${nomeSeg(p.arquivo || p.nome || 'projeto')}`;
+              const jaTemExt = /\.[a-z0-9]{2,5}$/i.test(nome);
+              arquivos.push({ nome: jaTemExt ? nome : `${nome}.${extDe(dado)}`, dados: dataURLParaBytes(dado) });
+            }
+          }
+
+          // Planilha de detalhes da obra.
+          const secoesObra = [
+            { titulo: `Obra: ${o.nome || ''}`, cabecalho: ['Campo', 'Valor'], linhas: [
+              ['Nome', o.nome || ''], ['Cliente', o.cliente || ''], ['Slug (link)', o.slug || ''],
+              ['Orçamento (R$)', numBR(o.orcamento)], ['Percentual do escritório (%)', String(o.percentualEscritorio || 0)],
+              ['Executado (R$)', numBR(exec)], ['Saldo (R$)', numBR(Number(o.orcamento || 0) - exec)],
+              ['Publicado', o.publicado ? 'sim' : 'não'], ['Criada em', dataHora(o.criadoEm)],
+            ] },
+            { titulo: 'Etapas', cabecalho: ['Etapa', 'Orçado (R$)'],
+              linhas: etps.map((e) => [e.nome || '', numBR(e.orcado)]) },
+            { titulo: 'Lançamentos', cabecalho: ['Data', 'Etapa', 'Descrição', 'Pago por', 'Status', 'Valor (R$)', 'Nota fiscal'],
+              linhas: lancs.map((l) => [
+                dataBR(l.data), l.etapa || '', l.descricao || '',
+                l.pagoPor === 'cliente' ? 'Cliente (direto)' : 'Escritório', l.status || '', numBR(l.valor),
+                nfNome.has(l.id) ? nfNome.get(l.id).split('/').pop() : ((l.temRecibo || l.reciboNome) ? 'anexada' : '—'),
+              ]) },
+            { titulo: 'Pagamentos do cliente', cabecalho: ['Data', 'Forma', 'Valor (R$)', 'Observação'],
+              linhas: pgs.map((p) => [dataBR(p.data), p.forma || '', numBR(p.valor), p.observacao || '']) },
+          ];
+          arquivos.push({ nome: `${pasta}/obra.xls`, dados: xls(secoesObra) });
         }
 
-        const secoes = [
-          { titulo: 'Obras', cabecalho: ['Obra', 'Cliente', 'Orçamento (R$)', 'Executado (R$)', 'Saldo (R$)'],
-            linhas: (obras || []).map((o) => {
-              const exec = execExport[o.id] || 0;
-              return [o.nome, o.cliente || '', numBR(o.orcamento), numBR(exec), numBR(Number(o.orcamento || 0) - exec)];
-            }) },
-          { titulo: 'Lançamentos (todas as obras)', cabecalho: ['Obra', 'Data', 'Etapa', 'Descrição', 'Valor (R$)', 'Status', 'Nota fiscal (arquivo)'],
-            linhas: lancOrd.map((l) => [
-              nomePorId[l.obraId] || '', dataBR(l.data), l.etapa, l.descricao || '', numBR(l.valor), l.status,
-              nfNome.get(l.id) || ((l.reciboDataUrl || l.reciboUrl || l.temRecibo || l.reciboNome) ? 'anexada' : '—'),
-            ]) },
-          { titulo: 'Fotos (todas as obras)', cabecalho: ['Obra', 'Data da visita', 'Descrição', 'Arquivo'],
-            linhas: fotosOrd.map((f) => [
-              nomePorId[f.obraId] || '',
-              f.dataVisita ? dataBR(f.dataVisita) : (f.criadoEm ? dataBR(new Date(f.criadoEm).toISOString()) : ''),
-              f.texto || '', fNome.get(f.id) || '',
-            ]) },
+        // ---- Planilhas gerais na raiz do ZIP ----
+        arquivos.push({ nome: 'clientes.xls', dados: xls([secaoTodosCampos('Clientes', clientes, ['nome', 'email', 'telefone', 'documento', 'cidade', 'endereco', 'observacoes'])]) });
+        arquivos.push({ nome: 'fornecedores.xls', dados: xls([secaoTodosCampos('Fornecedores', fornecedores, ['nome', 'categoria', 'telefone', 'email', 'cnpj', 'endereco', 'observacoes'])]) });
+        arquivos.push({ nome: 'pagamentos.xls', dados: xls([
           { titulo: 'Pagamentos do cliente (todas as obras)', cabecalho: ['Obra', 'Data', 'Forma', 'Valor (R$)', 'Observação'],
             linhas: [...pagamentos].sort((a, b) => String(b.data).localeCompare(String(a.data))).map((p) => [
               nomePorId[p.obraId] || '', dataBR(p.data), p.forma || '', numBR(p.valor), p.observacao || '',
             ]) },
-          { titulo: 'Clientes', cabecalho: ['Nome', 'E-mail', 'Telefone', 'CPF/CNPJ', 'Cidade', 'Endereço', 'Observações'],
-            linhas: (clientes || []).map((c) => [
-              c.nome || '', c.email || '', c.telefone || '', c.documento || '', c.cidade || '', c.endereco || '', c.observacoes || '',
-            ]) },
-          { titulo: 'Fornecedores', cabecalho: ['Nome', 'Categoria', 'Telefone', 'E-mail', 'CNPJ', 'Endereço', 'Observações'],
-            linhas: (fornecedores || []).map((f) => [
-              f.nome || '', f.categoria || '', f.telefone || '', f.email || '', f.cnpj || '', f.endereco || '', f.observacoes || '',
-            ]) },
-        ];
-        arquivos.unshift({ nome: 'obras.xls', dados: new TextEncoder().encode('﻿' + montarExcelHTML(secoes)) });
+        ]) });
 
-        baixarBlob('painel-obras.zip', criarZip(arquivos));
+        // ---- backup.json (técnico, para restauração) ----
+        // Remove os binários pesados (base64) — eles já vão como arquivos no ZIP.
+        const semBin = (obj, chaves) => { const c = { ...obj }; chaves.forEach((k) => delete c[k]); return c; };
+        const backup = {
+          geradoEm: new Date().toISOString(),
+          versao: 1,
+          obras: obrasArr,
+          etapas: todasEtapas,
+          lancamentos: todos.map((l) => semBin(l, ['reciboDataUrl', 'reciboUrl'])),
+          pagamentos,
+          clientes,
+          fornecedores,
+          fotos: todasFotos.map((f) => ({ ...semBin(f, ['dataUrl', 'thumbUrl', 'url']), arquivo: fNome.get(f.id) || null })),
+        };
+        arquivos.push({ nome: 'backup.json', dados: new TextEncoder().encode(JSON.stringify(backup, null, 2)) });
+
+        // ---- Nome do ZIP com a data (dia-mês-ano) ----
+        const hoje = new Date();
+        const dd = String(hoje.getDate()).padStart(2, '0');
+        const mm = String(hoje.getMonth() + 1).padStart(2, '0');
+        const aaaa = hoje.getFullYear();
+        baixarBlob(`backup-painel-obra-${dd}-${mm}-${aaaa}.zip`, criarZip(arquivos));
       } catch (err) {
         alert('Não foi possível exportar: ' + (err?.message || err));
       } finally {
