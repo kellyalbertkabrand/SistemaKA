@@ -1,0 +1,15 @@
+{
+  "name": "Painel de Obras — Schramm",
+  "short_name": "Obras Schramm",
+  "description": "Acompanhamento de obras — Schramm Arquitetura e Engenharia.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f2ec",
+  "theme_color": "#c65a2e",
+  "icons": [
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}

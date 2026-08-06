@@ -1,0 +1,21 @@
+{
+  "name": "painel-obra-piloto",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Plataforma de gestão e acompanhamento de obra para escritório de arquitetura (piloto).",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "netlify": "netlify dev"
+  },
+  "dependencies": {
+    "firebase": "^11.3.0",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8"
+  },
+  "devDependencies": {
+    "vite": "^5.4.8"
+  }
+}

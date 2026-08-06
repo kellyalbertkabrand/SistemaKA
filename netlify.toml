@@ -1,0 +1,31 @@
+# Configuração do Netlify para o Painel de Obra (piloto).
+# IMPORTANTE: ao criar o site no Netlify, defina o "Base directory" como
+# "painel-obra" (este projeto vive numa subpasta do repositório).
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# SPA: qualquer rota cai no index.html para o roteador do front cuidar.
+# As chamadas a /.netlify/functions/* são tratadas antes deste redirect.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Cache: o index.html NUNCA fica em cache (sempre revalida), para toda nova
+# publicação aparecer na hora. Os assets do Vite têm hash no nome, então podem
+# ser cacheados "para sempre". Isso evita ter que dar Ctrl+F5 após cada deploy.
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
