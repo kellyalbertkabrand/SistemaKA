@@ -11,6 +11,7 @@ import { renderCadastroCliente } from './views/cadastroCliente.js';
 import { renderCadastroFornecedor } from './views/cadastroFornecedor.js';
 import { renderFornecedores } from './views/fornecedores.js';
 import { renderFinanceiro } from './views/financeiro.js';
+import { renderAtualizacoes } from './views/atualizacoes.js';
 
 const app = document.getElementById('app');
 
@@ -42,6 +43,10 @@ function rotear() {
   const mPublica = path.match(/^\/obra\/([^/]+)\/?$/);
   if (mPublica) {
     return renderPublica(app, decodeURIComponent(mPublica[1]));
+  }
+  //    /atualizacoes — histórico de melhorias (público, para enviar ao cliente)
+  if (path === '/atualizacoes' || path === '/atualizacoes/') {
+    return renderAtualizacoes(app);
   }
   //    /cadastro-fornecedor/{token} — autopreenchimento do fornecedor
   const mCadForn = path.match(/^\/cadastro-fornecedor\/([^/]+)\/?$/);

@@ -21,6 +21,7 @@ export function navBar(ativo = '') {
       ${item('/financeiro', 'Financeiro', 'financeiro')}
       ${item('/clientes', 'Clientes', 'clientes')}
       ${item('/fornecedores', 'Fornecedores', 'fornecedores')}
+      ${item('/atualizacoes', 'Atualizações', 'atualizacoes')}
       <button class="nav-sair" id="sair">Sair</button>
     </div>
   </nav>`;
