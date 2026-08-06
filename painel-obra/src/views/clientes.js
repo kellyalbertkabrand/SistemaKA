@@ -1,7 +1,7 @@
 import { listarClientes, listarObras, criarConvite, criarClienteEscritorio, excluirCliente, sair } from '../dados.js';
 import { esc, dataBR } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
-import { ligarMascara, ligarEmail, formatarCpfCnpj, formatarTelefone, validarEmail } from '../lib/mascaras.js';
+import { ligarMascara, ligarEmail, formatarCpfCnpj, formatarTelefone, validarEmail, linkWhatsApp } from '../lib/mascaras.js';
 
 // Tela interna: cadastrar cliente pelo escritório, gerar link de autopreenchimento
 // e listar os cadastrados.
@@ -199,7 +199,10 @@ function listaClientes(clientes) {
     <div class="cliente-item">
       <div class="row-between">
         <strong>${esc(c.nome)}</strong>
-        <button class="btn btn-x" data-del-cli="${esc(c.id)}" title="Excluir">×</button>
+        <span class="row-end">
+          ${c.telefone && linkWhatsApp(c.telefone) ? `<a class="btn btn-mini btn-whats" href="${esc(linkWhatsApp(c.telefone))}" target="_blank" rel="noopener" title="Chamar no WhatsApp">💬 WhatsApp</a>` : ''}
+          <button class="btn btn-x" data-del-cli="${esc(c.id)}" title="Excluir">×</button>
+        </span>
       </div>
       <div class="cliente-dados muted">
         ${c.email ? `✉️ ${esc(c.email)} ` : ''}

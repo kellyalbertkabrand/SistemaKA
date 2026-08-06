@@ -1,7 +1,7 @@
 import { listarFornecedores, criarFornecedor, atualizarFornecedor, excluirFornecedor, criarConvite, sair } from '../dados.js';
 import { esc } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
-import { ligarMascara, ligarEmail, formatarCpfCnpj, formatarTelefone, validarEmail } from '../lib/mascaras.js';
+import { ligarMascara, ligarEmail, formatarCpfCnpj, formatarTelefone, validarEmail, linkWhatsApp } from '../lib/mascaras.js';
 
 // Tela interna: cadastro, edição e lista de fornecedores.
 export async function renderFornecedores(container) {
@@ -208,6 +208,7 @@ function listaForn(fornecedores) {
       <div class="row-between">
         <strong>${esc(f.nome)}${f.categoria ? ` <span class="tag tag-off">${esc(f.categoria)}</span>` : ''}</strong>
         <span class="row-end">
+          ${f.telefone && linkWhatsApp(f.telefone) ? `<a class="btn btn-mini btn-whats" href="${esc(linkWhatsApp(f.telefone))}" target="_blank" rel="noopener" title="Chamar no WhatsApp">💬 WhatsApp</a>` : ''}
           <button class="btn btn-x" data-edit-forn="${esc(f.id)}" title="Editar">✎</button>
           <button class="btn btn-x" data-del-forn="${esc(f.id)}" title="Excluir">×</button>
         </span>
