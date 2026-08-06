@@ -2,6 +2,7 @@ import { configurado } from '../firebase.js';
 import { obterConvite, criarClientePublico } from '../dados.js';
 import { esc } from '../lib/format.js';
 import { caixaLogo } from '../lib/marca.js';
+import { ligarMascara, ligarEmail, formatarCpfCnpj, formatarTelefone, validarEmail } from '../lib/mascaras.js';
 
 // Formulário público de autopreenchimento do cliente, acessado por
 // /cadastro/{token}. Valida o token do convite; se válido, o cliente preenche
@@ -37,6 +38,7 @@ export async function renderCadastroCliente(container, token) {
           </label>
           <label>E-mail
             <input id="f-email" type="email" />
+            <p class="dica-campo" id="f-email-dica" hidden></p>
           </label>
           <label>Telefone / WhatsApp
             <input id="f-telefone" />
@@ -68,12 +70,19 @@ export async function renderCadastroCliente(container, token) {
 
   const form = container.querySelector('#form-cad');
   const erro = container.querySelector('#cad-erro');
+  const inEmail = container.querySelector('#f-email');
+
+  ligarMascara(container.querySelector('#f-telefone'), formatarTelefone);
+  ligarMascara(container.querySelector('#f-documento'), formatarCpfCnpj);
+  ligarEmail(inEmail, container.querySelector('#f-email-dica'));
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     erro.hidden = true;
     const nome = container.querySelector('#f-nome').value.trim();
     if (!nome) { erro.textContent = 'Informe o seu nome.'; erro.hidden = false; return; }
+    const emailCheck = validarEmail(inEmail.value);
+    if (!emailCheck.ok) { erro.textContent = emailCheck.erro; erro.hidden = false; inEmail.focus(); return; }
 
     const registro = {
       token,

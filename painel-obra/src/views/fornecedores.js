@@ -1,6 +1,7 @@
 import { listarFornecedores, criarFornecedor, atualizarFornecedor, excluirFornecedor, criarConvite, sair } from '../dados.js';
 import { esc } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
+import { ligarMascara, ligarEmail, formatarCNPJ, formatarTelefone, validarEmail } from '../lib/mascaras.js';
 
 // Tela interna: cadastro, edição e lista de fornecedores.
 export async function renderFornecedores(container) {
@@ -51,6 +52,7 @@ export async function renderFornecedores(container) {
           </label>
           <label>E-mail
             <input id="fo-email" type="email" />
+            <p class="dica-campo" id="fo-email-dica" hidden></p>
           </label>
           <label>CNPJ
             <input id="fo-cnpj" />
@@ -119,6 +121,11 @@ export async function renderFornecedores(container) {
   const inEndereco = container.querySelector('#fo-endereco');
   const inObs = container.querySelector('#fo-obs');
 
+  // Máscaras + verificação de e-mail.
+  ligarMascara(inTelefone, formatarTelefone);
+  ligarMascara(inCnpj, formatarCNPJ);
+  ligarEmail(inEmail, container.querySelector('#fo-email-dica'));
+
   // null = cadastrando um novo; id = editando aquele fornecedor.
   let editandoId = null;
 
@@ -127,9 +134,9 @@ export async function renderFornecedores(container) {
     erro.hidden = true;
     inNome.value = f?.nome || '';
     inCategoria.value = f?.categoria || '';
-    inTelefone.value = f?.telefone || '';
+    inTelefone.value = formatarTelefone(f?.telefone || '');
     inEmail.value = f?.email || '';
-    inCnpj.value = f?.cnpj || '';
+    inCnpj.value = formatarCNPJ(f?.cnpj || '');
     inEndereco.value = f?.endereco || '';
     inObs.value = f?.observacoes || '';
     btnSalvar.textContent = f ? 'Salvar alterações' : 'Salvar fornecedor';
@@ -152,6 +159,8 @@ export async function renderFornecedores(container) {
     erro.hidden = true;
     const nome = inNome.value.trim();
     if (!nome) { erro.textContent = 'Informe o nome do fornecedor.'; erro.hidden = false; return; }
+    const emailCheck = validarEmail(inEmail.value);
+    if (!emailCheck.ok) { erro.textContent = emailCheck.erro; erro.hidden = false; inEmail.focus(); return; }
     const registro = {
       nome,
       categoria: inCategoria.value.trim() || null,

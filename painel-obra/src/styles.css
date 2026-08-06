@@ -279,6 +279,10 @@ input:focus, select:focus, textarea:focus {
 .form-inline { display: flex; gap: .6rem; margin: .8rem 0; flex-wrap: wrap; }
 .form-inline input { flex: 1; min-width: 140px; }
 
+/* Dica de campo (ex.: sugestão de correção de e-mail). */
+.dica-campo { font-size: .8rem; color: #b06a2e; margin: .2rem 0 0; }
+.dica-campo a { color: #b06a2e; font-weight: 600; }
+
 /* Relatório de reembolso: período (de/até) + botão numa linha só. */
 .reembolso-form { display: flex; gap: .8rem; align-items: flex-end; flex-wrap: wrap; margin-top: .7rem; }
 .reembolso-form label { display: flex; flex-direction: column; gap: .2rem; font-size: .82rem; color: var(--muted); }

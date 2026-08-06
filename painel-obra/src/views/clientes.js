@@ -1,6 +1,7 @@
 import { listarClientes, listarObras, criarConvite, criarClienteEscritorio, excluirCliente, sair } from '../dados.js';
 import { esc, dataBR } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
+import { ligarMascara, ligarEmail, formatarCpfCnpj, formatarTelefone, validarEmail } from '../lib/mascaras.js';
 
 // Tela interna: cadastrar cliente pelo escritório, gerar link de autopreenchimento
 // e listar os cadastrados.
@@ -53,7 +54,7 @@ export async function renderClientes(container) {
           <label class="full">Nome / identificação *
             <input id="e-nome" required />
           </label>
-          <label>E-mail<input id="e-email" type="email" /></label>
+          <label>E-mail<input id="e-email" type="email" /><p class="dica-campo" id="e-email-dica" hidden></p></label>
           <label>Telefone / WhatsApp<input id="e-telefone" /></label>
           <label>CPF / CNPJ<input id="e-documento" /></label>
           <label>Cidade<input id="e-cidade" /></label>
@@ -94,6 +95,12 @@ export async function renderClientes(container) {
   const abrirCad = container.querySelector('#abrir-cad');
   const formCli = container.querySelector('#form-cli');
   const erroCli = container.querySelector('#erro-cli');
+
+  // Máscaras (telefone e CPF/CNPJ) + verificação de e-mail.
+  ligarMascara(container.querySelector('#e-telefone'), formatarTelefone);
+  ligarMascara(container.querySelector('#e-documento'), formatarCpfCnpj);
+  ligarMascara(container.querySelector('#c-doc'), formatarCpfCnpj);
+  ligarEmail(container.querySelector('#e-email'), container.querySelector('#e-email-dica'));
   abrirCad.addEventListener('click', () => {
     formCli.hidden = false; abrirCad.hidden = true;
     container.querySelector('#e-nome').focus();
@@ -116,6 +123,8 @@ export async function renderClientes(container) {
     const val = (id) => container.querySelector(id).value.trim() || null;
     const nome = val('#e-nome');
     if (!nome) { erroCli.textContent = 'Informe o nome do cliente.'; erroCli.hidden = false; return; }
+    const emailCheck = validarEmail(container.querySelector('#e-email').value);
+    if (!emailCheck.ok) { erroCli.textContent = emailCheck.erro; erroCli.hidden = false; container.querySelector('#e-email').focus(); return; }
 
     const registro = {
       nome,
