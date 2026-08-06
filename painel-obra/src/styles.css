@@ -279,6 +279,10 @@ input:focus, select:focus, textarea:focus {
 .form-inline { display: flex; gap: .6rem; margin: .8rem 0; flex-wrap: wrap; }
 .form-inline input { flex: 1; min-width: 140px; }
 
+/* Financeiro: lista de pagamentos por obra. */
+.fin-pag-lista { margin-top: .6rem; display: flex; flex-direction: column; gap: .2rem; }
+.fin-pag-item { padding: .3rem 0; border-top: 1px solid var(--linha); font-size: .9rem; }
+
 /* Botão "WhatsApp" nas listas de clientes/fornecedores. */
 .btn-whats { background: #25d366; color: #0b3d1f; border-color: #25d366; }
 .btn-whats:hover { background: #1fb457; border-color: #1fb457; }

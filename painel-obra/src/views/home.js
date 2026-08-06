@@ -7,6 +7,7 @@ import { logoImg } from '../lib/marca.js';
 export function renderHome(container) {
   const botoes = [
     { href: '/obras', icone: '🏗️', titulo: 'Painel de Obras', desc: 'Obras, KPIs, etapas e lançamentos' },
+    { href: '/financeiro', icone: '💳', titulo: 'Financeiro', desc: 'Total a pagar, recebido e saldo por obra' },
     { href: '/clientes', icone: '👥', titulo: 'Clientes', desc: 'Cadastro e dados para contrato' },
     { href: '/fornecedores', icone: '🏢', titulo: 'Fornecedores', desc: 'Sua lista de fornecedores' },
   ];

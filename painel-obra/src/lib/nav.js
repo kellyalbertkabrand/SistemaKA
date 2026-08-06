@@ -18,6 +18,7 @@ export function navBar(ativo = '') {
     <label for="nav-toggle" class="nav-burger" aria-label="Menu">☰</label>
     <div class="nav-links">
       ${item('/obras', 'Painel', 'painel')}
+      ${item('/financeiro', 'Financeiro', 'financeiro')}
       ${item('/clientes', 'Clientes', 'clientes')}
       ${item('/fornecedores', 'Fornecedores', 'fornecedores')}
       <button class="nav-sair" id="sair">Sair</button>

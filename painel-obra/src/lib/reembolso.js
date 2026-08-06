@@ -89,7 +89,7 @@ export function montarRelatorioReembolso({ obra, lancamentos, de, ate }) {
   const c = calcularReembolso(lancamentos, obra, { de, ate });
   const { itens, reembolso, honorario, honorarioBase, totalEscritorio, pagoDireto, pctEsc, pctFmt } = c;
 
-  const periodo = `${de ? dataBR(de) : '…'} a ${ate ? dataBR(ate) : '…'}`;
+  const periodo = (de || ate) ? `${de ? dataBR(de) : '…'} a ${ate ? dataBR(ate) : '…'}` : 'Toda a obra';
   const emitidoEm = dataBR(new Date().toISOString());
   // URL absoluto do logo — a aba nova (about:blank) não resolve caminhos relativos.
   let logoUrl = logoSchramm;
@@ -227,7 +227,7 @@ function carregarImagem(src) {
 
 export async function baixarPdfReembolso({ obra, lancamentos, de, ate }) {
   const c = calcularReembolso(lancamentos, obra, { de, ate });
-  const periodo = `${de ? dataBR(de) : '…'} a ${ate ? dataBR(ate) : '…'}`;
+  const periodo = (de || ate) ? `${de ? dataBR(de) : '…'} a ${ate ? dataBR(ate) : '…'}` : 'Toda a obra';
   const emitidoEm = dataBR(new Date().toISOString());
 
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
@@ -340,7 +340,7 @@ export async function baixarPdfReembolso({ obra, lancamentos, de, ate }) {
   doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...MUTED);
   doc.text(ESCRITORIO_ENDERECO, M, H - 30);
 
-  const nomeArq = `reembolso-${obra?.slug || 'obra'}-${de || ''}_a_${ate || ''}.pdf`;
+  const nomeArq = `reembolso-${obra?.slug || 'obra'}-${(de && ate) ? de + '_a_' + ate : 'completo'}.pdf`;
   doc.save(nomeArq);
 }
 
@@ -349,7 +349,7 @@ export async function baixarPdfReembolso({ obra, lancamentos, de, ate }) {
 // WhatsApp (asteriscos).
 export function montarMensagemWhatsApp({ obra, lancamentos, de, ate }) {
   const c = calcularReembolso(lancamentos, obra, { de, ate });
-  const periodo = `${de ? dataBR(de) : '…'} a ${ate ? dataBR(ate) : '…'}`;
+  const periodo = (de || ate) ? `${de ? dataBR(de) : '…'} a ${ate ? dataBR(ate) : '…'}` : 'Toda a obra';
   const linhas = [
     `*${obra?.nome || 'Obra'}*`,
     `Período: ${periodo}`,

@@ -10,6 +10,7 @@ import { renderClientes } from './views/clientes.js';
 import { renderCadastroCliente } from './views/cadastroCliente.js';
 import { renderCadastroFornecedor } from './views/cadastroFornecedor.js';
 import { renderFornecedores } from './views/fornecedores.js';
+import { renderFinanceiro } from './views/financeiro.js';
 
 const app = document.getElementById('app');
 
@@ -84,6 +85,10 @@ function rotear() {
 
   if (path === '/fornecedores' || path === '/fornecedores/') {
     return renderFornecedores(app);
+  }
+
+  if (path === '/financeiro' || path === '/financeiro/') {
+    return renderFinanceiro(app);
   }
 
   // Padrão (home): menu-lançador com os botões.
