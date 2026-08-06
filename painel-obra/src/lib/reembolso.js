@@ -6,6 +6,7 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { moeda, dataBR, esc } from './format.js';
+import { baixarExcel, numBR } from './exportar.js';
 import { logoSchramm } from './marca.js';
 
 const ESCRITORIO_NOME = 'SCHRAMM ARQUITETURA E ENGENHARIA';
@@ -342,6 +343,37 @@ export async function baixarPdfReembolso({ obra, lancamentos, de, ate }) {
 
   const nomeArq = `reembolso-${obra?.slug || 'obra'}-${(de && ate) ? de + '_a_' + ate : 'completo'}.pdf`;
   doc.save(nomeArq);
+}
+
+// Reembolso em EXCEL (.xls) — mesmo conteúdo do PDF, em planilha.
+export function baixarExcelReembolso({ obra, lancamentos, de, ate }) {
+  const c = calcularReembolso(lancamentos, obra, { de, ate });
+  const periodo = (de || ate) ? `${de ? dataBR(de) : '…'} a ${ate ? dataBR(ate) : '…'}` : 'Toda a obra';
+  const totais = [
+    ['Reembolso — fornecedores pagos pelo escritório', numBR(c.reembolso)],
+  ];
+  if (c.pctEsc > 0) totais.push([`Honorário de gestão (${c.pctFmt}%)`, numBR(c.honorario)]);
+  totais.push(['Total a pagar ao escritório', numBR(c.totalEscritorio)]);
+  if (c.pagoDireto > 0) totais.push(['Pago direto pelo cliente (não reembolsa)', numBR(c.pagoDireto)]);
+
+  const secoes = [
+    { titulo: `Relatório de Reembolso — ${obra?.nome || ''}`, cabecalho: ['Campo', 'Valor'], linhas: [
+      ['Cliente', obra?.cliente || '—'],
+      ['Período', periodo],
+      ['Emitido em', dataBR(new Date().toISOString())],
+    ] },
+    { titulo: 'Lançamentos', cabecalho: ['Data', 'Etapa', 'Descrição', 'Pago por', 'Status', 'Valor (R$)'],
+      linhas: c.itens.map((l) => [
+        dataBR(l.data), l.etapa || '', l.descricao || '',
+        l.pagoPor === 'cliente' ? 'Cliente (direto)' : 'Escritório', l.status || '', numBR(l.valor),
+      ]) },
+    { titulo: 'Totais', cabecalho: ['Descrição', 'Valor (R$)'], linhas: totais },
+    { titulo: 'Dados para pagamento', cabecalho: ['Campo', 'Valor'], linhas: [
+      ['Banco', PAGAMENTO.banco], ['Titular', PAGAMENTO.titular], ['Agência', PAGAMENTO.agencia],
+      ['Conta corrente', PAGAMENTO.conta], [`Pix (${PAGAMENTO.pixTipo})`, PAGAMENTO.pix],
+    ] },
+  ];
+  baixarExcel(`reembolso-${obra?.slug || 'obra'}-${(de && ate) ? de + '_a_' + ate : 'completo'}.xls`, secoes);
 }
 
 // Texto pronto para o WhatsApp: resumo do que o cliente paga ao escritório

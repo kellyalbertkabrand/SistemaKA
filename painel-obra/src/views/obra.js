@@ -10,7 +10,7 @@ import { reconhecimentoDisponivel, ouvir, parar } from '../lib/voice.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
 import { baixarBlob, montarExcelHTML, numBR } from '../lib/exportar.js';
-import { baixarPdfReembolso, montarMensagemWhatsApp, calcularReembolso } from '../lib/reembolso.js';
+import { baixarPdfReembolso, baixarExcelReembolso, montarMensagemWhatsApp, calcularReembolso } from '../lib/reembolso.js';
 import { comprimirParaDataURL, arquivoParaDataURL, dataURLBytes, dataURLParaBytes, dataURLParaBlob } from '../lib/imagem.js';
 import { criarZip } from '../lib/zip.js';
 import { abrirLightbox, baixarImagem, abrirAnexo } from '../lib/lightbox.js';
@@ -162,6 +162,7 @@ export async function renderObra(container, obraId) {
             <input type="date" id="reemb-ate" />
           </label>
           <button class="btn btn-mini btn-primary" type="submit">⬇ Baixar PDF</button>
+          <button type="button" class="btn btn-mini" id="reemb-excel">⬇ Excel</button>
           <button type="button" class="btn btn-mini" id="reemb-whats">💬 Mensagem WhatsApp</button>
         </form>
         <p class="erro" id="reemb-erro" hidden></p>
@@ -441,6 +442,17 @@ export async function renderObra(container, obraId) {
     } finally {
       btn.disabled = false; btn.textContent = rot;
     }
+  });
+
+  // Excel do reembolso (mesmo período do PDF).
+  container.querySelector('#reemb-excel').addEventListener('click', () => {
+    reembErro.hidden = true;
+    const de = reembDe.value;
+    const ate = reembAte.value;
+    if (!de || !ate) { reembErro.textContent = 'Escolha a data inicial e a final.'; reembErro.hidden = false; return; }
+    if (de > ate) { reembErro.textContent = 'A data inicial não pode ser depois da final.'; reembErro.hidden = false; return; }
+    try { baixarExcelReembolso({ obra, lancamentos, de, ate }); }
+    catch (err) { reembErro.textContent = 'Não foi possível gerar o Excel: ' + (err?.message || err); reembErro.hidden = false; }
   });
 
   // Mensagem pronta para o WhatsApp (mesmo período) — abre o WhatsApp com o

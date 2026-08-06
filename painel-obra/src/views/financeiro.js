@@ -4,7 +4,7 @@ import {
 } from '../dados.js';
 import { moeda, dataBR, esc } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
-import { calcularReembolso, baixarPdfReembolso, montarMensagemWhatsApp } from '../lib/reembolso.js';
+import { calcularReembolso, baixarPdfReembolso, baixarExcelReembolso, montarMensagemWhatsApp } from '../lib/reembolso.js';
 
 // Financeiro: uma tela só, por obra, com Total a pagar / Recebido / Saldo em
 // aberto; gera o relatório do cliente (PDF/WhatsApp) e controla os pagamentos ali.
@@ -56,8 +56,6 @@ export async function renderFinanceiro(container) {
         </div>
         <div class="row-end">
           <a class="btn btn-mini" data-link href="/painel/${esc(o.slug)}">Abrir obra</a>
-          <button class="btn btn-mini" data-pdf="${esc(o.id)}">⬇ PDF</button>
-          <button class="btn btn-mini" data-whats="${esc(o.id)}">💬 WhatsApp</button>
           <button class="btn btn-mini btn-primary" data-add-pag="${esc(o.id)}">+ Pagamento</button>
         </div>
       </div>
@@ -65,6 +63,14 @@ export async function renderFinanceiro(container) {
         ${kpi('Total a pagar', moeda(l.total))}
         ${kpi('Recebido', moeda(l.recebido), 'val-ok')}
         ${kpi('Saldo em aberto', moeda(l.saldo), l.saldo > 0.005 ? 'neg' : 'val-saldo')}
+      </div>
+      <div class="reembolso-form fin-relatorio">
+        <label>De<input type="date" class="fin-de" /></label>
+        <label>Até<input type="date" class="fin-ate" /></label>
+        <button class="btn btn-mini btn-primary" data-pdf="${esc(o.id)}">⬇ PDF</button>
+        <button class="btn btn-mini" data-excel="${esc(o.id)}">⬇ Excel</button>
+        <button class="btn btn-mini" data-whats="${esc(o.id)}">💬 WhatsApp</button>
+        <span class="muted" style="font-size:.78rem;align-self:center">Em branco = toda a obra</span>
       </div>
       <form class="reembolso-form" data-form-pag="${esc(o.id)}" hidden>
         <label>Data<input type="date" class="pg-data" /></label>
@@ -104,19 +110,38 @@ export async function renderFinanceiro(container) {
   container.querySelector('#sair').addEventListener('click', async () => { await sair(); });
 
   container.addEventListener('click', async (e) => {
+    // Período escolhido no card (em branco = toda a obra).
+    const periodoDoCard = (el) => {
+      const card = el.closest('.card');
+      const de = card?.querySelector('.fin-de')?.value || '';
+      const ate = card?.querySelector('.fin-ate')?.value || '';
+      if (de && ate && de > ate) { alert('A data inicial não pode ser depois da final.'); return null; }
+      return { de, ate };
+    };
+
     const pdf = e.target.closest('[data-pdf]');
     if (pdf) {
+      const per = periodoDoCard(pdf); if (!per) return;
       const o = obras.find((x) => x.id === pdf.getAttribute('data-pdf'));
       pdf.disabled = true; const r = pdf.textContent; pdf.textContent = 'Gerando…';
-      try { await baixarPdfReembolso({ obra: o, lancamentos: lancPorObra[o.id] || [], de: '', ate: '' }); }
+      try { await baixarPdfReembolso({ obra: o, lancamentos: lancPorObra[o.id] || [], ...per }); }
       catch (err) { alert('Não foi possível gerar o PDF: ' + (err?.message || err)); }
       finally { pdf.disabled = false; pdf.textContent = r; }
       return;
     }
+    const excel = e.target.closest('[data-excel]');
+    if (excel) {
+      const per = periodoDoCard(excel); if (!per) return;
+      const o = obras.find((x) => x.id === excel.getAttribute('data-excel'));
+      try { baixarExcelReembolso({ obra: o, lancamentos: lancPorObra[o.id] || [], ...per }); }
+      catch (err) { alert('Não foi possível gerar o Excel: ' + (err?.message || err)); }
+      return;
+    }
     const wa = e.target.closest('[data-whats]');
     if (wa) {
+      const per = periodoDoCard(wa); if (!per) return;
       const o = obras.find((x) => x.id === wa.getAttribute('data-whats'));
-      const msg = montarMensagemWhatsApp({ obra: o, lancamentos: lancPorObra[o.id] || [], de: '', ate: '' });
+      const msg = montarMensagemWhatsApp({ obra: o, lancamentos: lancPorObra[o.id] || [], ...per });
       window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank', 'noopener');
       return;
     }
