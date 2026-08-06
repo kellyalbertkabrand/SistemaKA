@@ -47,15 +47,17 @@ export function ligarMascara(input, formatar) {
   input.addEventListener('input', aplicar);
 }
 
-// Link do WhatsApp (wa.me) a partir de um telefone brasileiro. Sem texto —
-// apenas abre a conversa. Devolve '' se o número for curto/inválido.
-export function linkWhatsApp(tel) {
+// Link do WhatsApp (wa.me) a partir de um telefone brasileiro. Abre a conversa;
+// se `texto` for informado, já deixa a mensagem pronta. Devolve '' se o número
+// for curto/inválido.
+export function linkWhatsApp(tel, texto) {
   const d = soDigitos(tel);
   let full;
   if (d.length === 12 || d.length === 13) full = d;          // já tem o 55 (país)
   else if (d.length === 10 || d.length === 11) full = '55' + d; // DDD + número
   else return '';
-  return 'https://wa.me/' + full;
+  const base = 'https://wa.me/' + full;
+  return texto ? base + '?text=' + encodeURIComponent(texto) : base;
 }
 
 // ---------------------------------------------------------------------------

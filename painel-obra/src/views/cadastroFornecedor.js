@@ -40,6 +40,9 @@ export async function renderCadastroFornecedor(container, token) {
           <label>Categoria
             <input id="f-categoria" placeholder="Ex.: Material, Elétrica, Mão de obra" />
           </label>
+          <label>Vendedor (contato)
+            <input id="f-vendedor" placeholder="Nome de quem atende" />
+          </label>
           <label>Telefone / WhatsApp
             <input id="f-telefone" />
           </label>
@@ -90,6 +93,7 @@ export async function renderCadastroFornecedor(container, token) {
       ownerId: convite.ownerId,
       nome,
       categoria: container.querySelector('#f-categoria').value.trim() || null,
+      vendedor: container.querySelector('#f-vendedor').value.trim() || null,
       telefone: container.querySelector('#f-telefone').value.trim() || null,
       email: container.querySelector('#f-email').value.trim() || null,
       cnpj: container.querySelector('#f-cnpj').value.trim() || null,

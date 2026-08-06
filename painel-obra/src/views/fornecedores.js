@@ -47,6 +47,9 @@ export async function renderFornecedores(container) {
           <label>Categoria
             <input id="fo-categoria" placeholder="Ex.: Material, Elétrica, Mão de obra" />
           </label>
+          <label>Vendedor (contato)
+            <input id="fo-vendedor" placeholder="Nome de quem atende" />
+          </label>
           <label>Telefone / WhatsApp
             <input id="fo-telefone" />
           </label>
@@ -115,6 +118,7 @@ export async function renderFornecedores(container) {
   const btnSalvar = container.querySelector('#salvar-forn');
   const inNome = container.querySelector('#fo-nome');
   const inCategoria = container.querySelector('#fo-categoria');
+  const inVendedor = container.querySelector('#fo-vendedor');
   const inTelefone = container.querySelector('#fo-telefone');
   const inEmail = container.querySelector('#fo-email');
   const inCnpj = container.querySelector('#fo-cnpj');
@@ -134,6 +138,7 @@ export async function renderFornecedores(container) {
     erro.hidden = true;
     inNome.value = f?.nome || '';
     inCategoria.value = f?.categoria || '';
+    inVendedor.value = f?.vendedor || '';
     inTelefone.value = formatarTelefone(f?.telefone || '');
     inEmail.value = f?.email || '';
     inCnpj.value = formatarCpfCnpj(f?.cnpj || '');
@@ -164,6 +169,7 @@ export async function renderFornecedores(container) {
     const registro = {
       nome,
       categoria: inCategoria.value.trim() || null,
+      vendedor: inVendedor.value.trim() || null,
       telefone: inTelefone.value.trim() || null,
       email: inEmail.value.trim() || null,
       cnpj: inCnpj.value.trim() || null,
@@ -208,13 +214,14 @@ function listaForn(fornecedores) {
       <div class="row-between">
         <strong>${esc(f.nome)}${f.categoria ? ` <span class="tag tag-off">${esc(f.categoria)}</span>` : ''}</strong>
         <span class="row-end">
-          ${f.telefone && linkWhatsApp(f.telefone) ? `<a class="btn btn-mini btn-whats" href="${esc(linkWhatsApp(f.telefone))}" target="_blank" rel="noopener" title="Chamar no WhatsApp">💬 WhatsApp</a>` : ''}
+          ${f.telefone && linkWhatsApp(f.telefone) ? `<a class="btn btn-mini btn-whats" href="${esc(linkWhatsApp(f.telefone, f.vendedor ? `Olá, ${f.vendedor}!` : ''))}" target="_blank" rel="noopener" title="Chamar no WhatsApp">💬 WhatsApp</a>` : ''}
           <button class="btn btn-x" data-edit-forn="${esc(f.id)}" title="Editar">✎</button>
           <button class="btn btn-x" data-del-forn="${esc(f.id)}" title="Excluir">×</button>
         </span>
       </div>
       <div class="cliente-dados muted">
-        ${f.telefone ? `📞 ${esc(f.telefone)} ` : ''}
+        ${f.vendedor ? `👤 ${esc(f.vendedor)} ` : ''}
+        ${f.telefone ? `${f.vendedor ? '· ' : ''}📞 ${esc(f.telefone)} ` : ''}
         ${f.email ? `· ✉️ ${esc(f.email)} ` : ''}
         ${f.cnpj ? `· ${esc(f.cnpj)}` : ''}
       </div>
