@@ -279,16 +279,20 @@ input:focus, select:focus, textarea:focus {
 .form-inline { display: flex; gap: .6rem; margin: .8rem 0; flex-wrap: wrap; }
 .form-inline input { flex: 1; min-width: 140px; }
 
-/* Financeiro: bloco "Controle de pagamentos" destacado dentro do card. */
-.fin-controle { margin-top: .9rem; padding: .8rem .9rem; border: 1px solid #e7ddd0;
-  border-left: 4px solid #c65a2e; border-radius: 10px; background: #faf5ef; }
-.fin-controle-titulo { margin: 0; font-size: 1rem; color: #c65a2e; }
+/* Financeiro: bloco "Controle de pagamentos" destacado (tons de verde). */
+.fin-controle { margin-top: .9rem; padding: .8rem .9rem; border: 1px solid #cfe3d5;
+  border-left: 4px solid var(--ok); border-radius: 10px; background: #f1f7f2; }
+.fin-controle-titulo { margin: 0; font-size: 1rem; color: var(--ok); }
+.fin-controle .btn-primary { background: var(--ok); border-color: var(--ok); }
+.fin-controle .btn-primary:hover { background: #336b47; border-color: #336b47; }
 
 /* Financeiro: lista de pagamentos por obra. */
 .fin-pag-lista { margin-top: .6rem; display: flex; flex-direction: column; gap: .2rem; }
-.fin-pag-item { padding: .35rem 0; border-top: 1px solid #e7ddd0; font-size: .9rem; }
+.fin-pag-item { padding: .35rem 0; border-top: 1px solid #cfe3d5; font-size: .9rem; }
 .fin-pag-valor { color: var(--ok); font-size: 1.02rem; padding: .05rem .4rem;
   border-radius: 6px; background: rgba(46, 125, 50, .1); }
+.tag-pago { font-size: .72rem; color: var(--ok); background: rgba(46, 125, 50, .12);
+  padding: .1rem .5rem; border-radius: 999px; font-weight: 600; white-space: nowrap; }
 
 /* Botão "WhatsApp" nas listas de clientes/fornecedores. */
 .btn-whats { background: #25d366; color: #0b3d1f; border-color: #25d366; }

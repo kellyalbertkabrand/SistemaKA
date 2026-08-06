@@ -93,7 +93,9 @@ export async function renderFinanceiro(container) {
         ${pgs.length ? `<div class="fin-pag-lista">${pgs.map((p) => `
           <div class="row-between fin-pag-item">
             <span class="muted">${dataBR(p.data)} · ${esc(p.forma || '')}${p.observacao ? ' · ' + esc(p.observacao) : ''}</span>
-            <span class="row-end"><strong class="val-ok fin-pag-valor">${moeda(p.valor)}</strong>
+            <span class="row-end">
+              <span class="tag-pago">✓ Pagamento realizado</span>
+              <strong class="val-ok fin-pag-valor">${moeda(p.valor)}</strong>
               <button class="btn btn-x" data-del-pag="${esc(p.id)}" title="Remover">×</button></span>
           </div>`).join('')}</div>` : `<p class="muted" style="margin:.4rem 0 0">Nenhum pagamento registrado ainda.</p>`}
       </div>
