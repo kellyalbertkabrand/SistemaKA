@@ -280,6 +280,28 @@ export function mensagemDadosCuidadora(c: Cuidadora): string {
   return linhas.join('\n')
 }
 
+/**
+ * Mensagem de WhatsApp SÓ com os dados de PAGAMENTO da cuidadora
+ * (nome, PIX — chave/tipo/banco — e CPF, útil ao pagador). Para a KA
+ * enviar rapidamente a quem faz o pagamento.
+ */
+export function mensagemPagamentoCuidadora(c: Cuidadora): string {
+  const linhas: string[] = [`*Pagamento — ${c.nome}*`, '']
+  const add = (rot: string, val?: string | null) => {
+    if (val && String(val).trim()) linhas.push(`${rot}: ${String(val).trim()}`)
+  }
+  add('Nome', c.nome)
+  add('CPF', c.cpf)
+  linhas.push('', '*PIX*')
+  add('Chave', c.pix_chave)
+  add('Tipo', rotuloPixTipo(c.pix_tipo))
+  add('Banco', c.pix_banco)
+  if (!c.pix_chave && !c.pix_banco) {
+    linhas.push('(sem dados de PIX cadastrados — preencha na ficha)')
+  }
+  return linhas.join('\n')
+}
+
 // ---- Exportar dados (TXT / planilha CSV) -------------------------------------
 
 /** Texto simples com os dados da cuidadora (sem os *asteriscos* do WhatsApp). */
