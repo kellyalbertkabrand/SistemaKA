@@ -235,6 +235,7 @@ input:focus, select:focus, textarea:focus {
 .nav-titulo:hover { color: var(--acento); }
 .nav-toggle { display: none; }
 .nav-burger { display: none; grid-column: 3; justify-self: end; font-size: 1.8rem; line-height: 1; cursor: pointer; padding: .1rem .5rem; color: var(--tinta); user-select: none; }
+.nav-fechar { display: none; }
 .nav-links { display: flex; align-items: center; gap: .5rem; }
 /* Itens do menu com cara de botão: borda, fundo e estado ativo bem marcados. */
 .nav-item {
@@ -257,15 +258,36 @@ input:focus, select:focus, textarea:focus {
 .pagina-topo h1 { font-size: 1.75rem; }
 
 @media (max-width: 720px) {
-  /* Mesmo layout de site: título à esquerda, logo no centro, hambúrguer à
-     direita. O menu (botões) abre em largura total logo abaixo. */
+  /* Layout de site: título à esquerda, logo no centro, hambúrguer à direita.
+     O menu abre em TELA CHEIA (overlay), com um ✕ para fechar. */
   .nav { row-gap: .4rem; gap: .5rem; padding: .7rem 1rem; }
   .nav-titulo { font-size: .74rem; letter-spacing: .03em; line-height: 1.15; }
   .logo-schramm-nav { height: 40px; }
   .nav-burger { display: block; }
-  .nav-links { grid-column: 1 / -1; justify-self: stretch; display: none; flex-direction: column; align-items: stretch; width: 100%; gap: .3rem; margin-top: .3rem; }
+
+  .nav-links {
+    position: fixed; inset: 0; z-index: 60;
+    display: none; /* aparece só quando aberto */
+    flex-direction: column; align-items: stretch; justify-content: flex-start;
+    gap: .55rem; width: 100%; margin: 0;
+    padding: 4.6rem 1.3rem 2rem;
+    background: var(--bg); overflow-y: auto;
+  }
   .nav-toggle:checked ~ .nav-links { display: flex; }
-  .nav-item, .nav-sair { width: 100%; text-align: left; margin-left: 0; }
+  body:has(.nav-toggle:checked) { overflow: hidden; }
+
+  .nav-fechar {
+    display: flex; align-items: center; justify-content: center;
+    position: absolute; top: 1.1rem; right: 1.2rem;
+    width: 2.6rem; height: 2.6rem; font-size: 1.6rem; line-height: 1;
+    color: var(--tinta); cursor: pointer; border-radius: 999px; background: #fff;
+    border: 1px solid var(--linha);
+  }
+  .nav-item, .nav-sair {
+    width: 100%; text-align: left; margin-left: 0;
+    font-size: 1.1rem; padding: 1rem 1.1rem; border-radius: 14px;
+  }
+  .nav-sair { margin-top: .4rem; }
 }
 
 /* ---- Topo ---- */
@@ -316,16 +338,18 @@ input:focus, select:focus, textarea:focus {
   padding: .1rem .5rem; border-radius: 999px; font-weight: 600; white-space: nowrap; }
 
 /* Botão "WhatsApp" nas listas de clientes/fornecedores. */
-.btn-whats { background: #25d366; color: #0b3d1f; border-color: #25d366; }
-.btn-whats:hover { background: #1fb457; border-color: #1fb457; }
+.btn-whats { background: #25d366; color: #fff; border-color: #25d366; font-weight: 600; }
+.btn-whats:hover { background: #1fb457; border-color: #1fb457; color: #fff; }
 
 /* Dica de campo (ex.: sugestão de correção de e-mail). */
 .dica-campo { font-size: .8rem; color: #b06a2e; margin: .2rem 0 0; }
 .dica-campo a { color: #b06a2e; font-weight: 600; }
 
 /* Relatório de reembolso: período (de/até) + botão numa linha só. */
-.reembolso-form { display: flex; gap: .8rem; align-items: flex-end; flex-wrap: wrap; margin-top: .7rem; }
+.reembolso-form { display: flex; gap: .6rem; align-items: flex-end; flex-wrap: wrap; margin-top: .7rem; }
 .reembolso-form label { display: flex; flex-direction: column; gap: .2rem; font-size: .82rem; color: var(--muted); }
+.reembolso-form .btn { min-height: 40px; }
+.fin-hint { font-size: .78rem; align-self: center; }
 
 /* Arquivo já anexado ao projeto, na edição, com a opção de remover só ele. */
 #proj-arquivo-atual { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
@@ -611,4 +635,27 @@ input:focus, select:focus, textarea:focus {
   .lancar-controles .texto-livre { min-width: 0; }
   .form-inline input { min-width: 0; }
   .etapa-linha { flex-wrap: wrap; }
+
+  /* ---- Harmonia mobile: caixas e textos menores, botões alinhados ---- */
+  h1, .pagina-topo h1 { font-size: 1.45rem; }
+  .home-titulo { font-size: 2rem; }
+  h2 { font-size: 1.08rem; }
+
+  .card { padding: 1rem 1rem; }
+
+  /* KPIs mais compactos (evita caixas gigantes) */
+  .kpis { gap: .5rem; }
+  .kpi { padding: .6rem .7rem; }
+  .kpi small { font-size: .62rem; }
+  .kpi strong { font-size: 1rem; }
+  .num, .kpi strong, .mini-kpis strong, .anel-centro strong, .pub-num strong, .tl-valor { font-size: 1rem; }
+
+  /* Resumo geral / controle: um pouco mais de respiro sem exagero */
+  .fin-geral-titulo, .fin-controle-titulo { font-size: .95rem; }
+
+  /* Períodos + botões de relatório: campos 50% e botões preenchendo a linha */
+  .reembolso-form { align-items: stretch; gap: .5rem; }
+  .reembolso-form label { flex: 1 1 calc(50% - .25rem); }
+  .reembolso-form .btn { flex: 1 1 auto; justify-content: center; }
+  .fin-hint { flex-basis: 100%; align-self: flex-start; }
 }

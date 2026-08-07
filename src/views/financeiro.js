@@ -69,7 +69,7 @@ export async function renderFinanceiro(container) {
         <button class="btn btn-mini btn-primary" data-pdf="${esc(o.id)}">⬇ PDF</button>
         <button class="btn btn-mini" data-excel="${esc(o.id)}">⬇ Excel</button>
         <button class="btn btn-mini" data-whats="${esc(o.id)}">💬 WhatsApp</button>
-        <span class="muted" style="font-size:.78rem;align-self:center">Em branco = toda a obra</span>
+        <span class="muted fin-hint">Em branco = toda a obra</span>
       </div>
 
       <div class="fin-controle">

@@ -12,6 +12,7 @@ export const CHANGELOG = [
     itens: [
       'Página de Atualizações do sistema (esta), para acompanhar as melhorias contínuas.',
       'Botão de voltar ao início na versão web e no celular.',
+      'Versão para celular mais harmônica: menu em tela cheia, caixas e textos ajustados, botões alinhados e botão de WhatsApp na cor oficial.',
     ],
   },
   {
