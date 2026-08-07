@@ -341,8 +341,9 @@ input:focus, select:focus, textarea:focus {
   padding: .1rem .5rem; border-radius: 999px; font-weight: 600; white-space: nowrap; }
 
 /* Botão "WhatsApp" nas listas de clientes/fornecedores. */
-.btn-whats { background: #25d366; color: #fff; border-color: #25d366; font-weight: 600; }
-.btn-whats:hover { background: #1fb457; border-color: #1fb457; color: #fff; }
+/* WhatsApp: cor oficial (#25d366, verde claro) -> texto escuro para legibilidade. */
+.btn-whats { background: #25d366; color: var(--tinta); border-color: #25d366; font-weight: 600; }
+.btn-whats:hover { background: #1fbb59; border-color: #1fbb59; color: var(--tinta); }
 
 /* Dica de campo (ex.: sugestão de correção de e-mail). */
 .dica-campo { font-size: .8rem; color: #b06a2e; margin: .2rem 0 0; }
@@ -656,9 +657,10 @@ input:focus, select:focus, textarea:focus {
   /* Resumo geral / controle: um pouco mais de respiro sem exagero */
   .fin-geral-titulo, .fin-controle-titulo { font-size: .95rem; }
 
-  /* Períodos + botões de relatório: campos 50% e botões preenchendo a linha */
-  .reembolso-form { align-items: stretch; gap: .5rem; }
-  .reembolso-form label { flex: 1 1 calc(50% - .25rem); }
-  .reembolso-form .btn { flex: 1 1 auto; justify-content: center; }
+  /* Períodos em linhas próprias e botões numa linha só, todos do mesmo tamanho
+     (align-items: flex-end evita que o botão estique junto do campo de data). */
+  .reembolso-form { align-items: flex-end; gap: .5rem; }
+  .reembolso-form label { flex: 1 1 100%; }
+  .reembolso-form .btn { flex: 1 1 0; justify-content: center; }
   .fin-hint { flex-basis: 100%; align-self: flex-start; }
 }

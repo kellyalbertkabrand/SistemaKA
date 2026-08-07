@@ -66,9 +66,9 @@ export async function renderFinanceiro(container) {
       <div class="reembolso-form fin-relatorio">
         <label>De<input type="date" class="fin-de" /></label>
         <label>Até<input type="date" class="fin-ate" /></label>
-        <button class="btn btn-mini btn-primary" data-pdf="${esc(o.id)}">⬇ PDF</button>
+        <button class="btn btn-mini" data-pdf="${esc(o.id)}">⬇ PDF</button>
         <button class="btn btn-mini" data-excel="${esc(o.id)}">⬇ Excel</button>
-        <button class="btn btn-mini" data-whats="${esc(o.id)}">💬 WhatsApp</button>
+        <button class="btn btn-mini btn-whats" data-whats="${esc(o.id)}">💬 WhatsApp</button>
         <span class="muted fin-hint">Em branco = toda a obra</span>
       </div>
 
