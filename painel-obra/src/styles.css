@@ -281,6 +281,7 @@ input:focus, select:focus, textarea:focus {
 
 /* Página pública: barra superior com botão de voltar ao início. */
 .pub-nav-topo { padding-top: 1rem; }
+.pub-voltar-btn { font-size: 1rem; padding: .7rem 1.2rem; }
 
 /* Home: link de versão / atualizações. */
 .home-versao { display: inline-block; margin-top: 1rem; font-size: .82rem; color: var(--muted); text-decoration: none; }
