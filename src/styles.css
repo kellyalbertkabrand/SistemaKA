@@ -260,7 +260,10 @@ input:focus, select:focus, textarea:focus {
 @media (max-width: 720px) {
   /* Layout de site: título à esquerda, logo no centro, hambúrguer à direita.
      O menu abre em TELA CHEIA (overlay), com um ✕ para fechar. */
-  .nav { row-gap: .4rem; gap: .5rem; padding: .7rem 1rem; }
+  /* Sem backdrop-filter no mobile: ele "prende" o position:fixed do menu dentro
+     da barra (cria containing block). Sem ele, o overlay cobre a tela toda. */
+  .nav { row-gap: .4rem; gap: .5rem; padding: .7rem 1rem;
+    backdrop-filter: none; -webkit-backdrop-filter: none; background: #fff; }
   .nav-titulo { font-size: .74rem; letter-spacing: .03em; line-height: 1.15; }
   .logo-schramm-nav { height: 40px; }
   .nav-burger { display: block; }
