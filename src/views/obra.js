@@ -155,7 +155,7 @@ export async function renderObra(container, obraId) {
           </label>
           <button class="btn btn-mini btn-primary" type="submit">⬇ Baixar PDF</button>
           <button type="button" class="btn btn-mini" id="reemb-excel">⬇ Excel</button>
-          <button type="button" class="btn btn-mini" id="reemb-whats">💬 Mensagem WhatsApp</button>
+          <button type="button" class="btn btn-mini btn-whats" id="reemb-whats">💬 Mensagem WhatsApp</button>
         </form>
         <p class="erro" id="reemb-erro" hidden></p>
         <div id="reemb-whats-saida"></div>
