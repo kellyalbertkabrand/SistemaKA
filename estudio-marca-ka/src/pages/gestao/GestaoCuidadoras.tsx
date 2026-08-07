@@ -12,6 +12,7 @@ import {
   listarDocumentos,
   marcarCuidadoraRevisada,
   mensagemDadosCuidadora,
+  mensagemPagamentoCuidadora,
   nomeArquivoCuidadora,
   prepararArquivo,
   removerDocumento,
@@ -378,12 +379,25 @@ function FichaCuidadoraView({ cuidadora, aoVoltar }: { cuidadora: Cuidadora; aoV
               onClick={() =>
                 abrirWhatsApp(
                   null,
+                  mensagemPagamentoCuidadora({ ...cuidadora, ...f } as Cuidadora),
+                  cuidadora.nome,
+                )
+              }
+            >
+              Enviar pagamento (PIX) no WhatsApp
+            </button>
+            <button
+              type="button"
+              className="btn--voltar btn--voltar-whats"
+              onClick={() =>
+                abrirWhatsApp(
+                  null,
                   mensagemDadosCuidadora({ ...cuidadora, ...f } as Cuidadora),
                   cuidadora.nome,
                 )
               }
             >
-              Enviar dados no WhatsApp
+              Enviar todos os dados no WhatsApp
             </button>
             <button
               type="button"
