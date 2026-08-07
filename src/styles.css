@@ -279,6 +279,9 @@ input:focus, select:focus, textarea:focus {
 .form-inline { display: flex; gap: .6rem; margin: .8rem 0; flex-wrap: wrap; }
 .form-inline input { flex: 1; min-width: 140px; }
 
+/* Página pública: barra superior com botão de voltar ao início. */
+.pub-nav-topo { padding-top: 1rem; }
+
 /* Home: link de versão / atualizações. */
 .home-versao { display: inline-block; margin-top: 1rem; font-size: .82rem; color: var(--muted); text-decoration: none; }
 .home-versao:hover { color: #c65a2e; text-decoration: underline; }
