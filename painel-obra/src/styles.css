@@ -341,9 +341,9 @@ input:focus, select:focus, textarea:focus {
   padding: .1rem .5rem; border-radius: 999px; font-weight: 600; white-space: nowrap; }
 
 /* Botão "WhatsApp" nas listas de clientes/fornecedores. */
-/* WhatsApp: cor oficial (#25d366, verde claro) -> texto escuro para legibilidade. */
-.btn-whats { background: #25d366; color: var(--tinta); border-color: #25d366; font-weight: 600; }
-.btn-whats:hover { background: #1fbb59; border-color: #1fbb59; color: var(--tinta); }
+/* WhatsApp: cor oficial (#25d366) com texto branco, padronizado em todo o sistema. */
+.btn-whats { background: #25d366; color: #fff; border-color: #25d366; font-weight: 600; }
+.btn-whats:hover { background: #1fbb59; border-color: #1fbb59; color: #fff; }
 
 /* Dica de campo (ex.: sugestão de correção de e-mail). */
 .dica-campo { font-size: .8rem; color: #b06a2e; margin: .2rem 0 0; }
@@ -661,6 +661,7 @@ input:focus, select:focus, textarea:focus {
      (align-items: flex-end evita que o botão estique junto do campo de data). */
   .reembolso-form { align-items: flex-end; gap: .5rem; }
   .reembolso-form label { flex: 1 1 100%; }
-  .reembolso-form .btn { flex: 1 1 0; justify-content: center; }
+  /* Botões: largura conforme o texto (1 linha), mesma altura para todos. */
+  .reembolso-form .btn { flex: 0 1 auto; justify-content: center; white-space: nowrap; }
   .fin-hint { flex-basis: 100%; align-self: flex-start; }
 }
