@@ -9,7 +9,7 @@ export function renderAtualizacoes(container) {
   container.innerHTML = `
     <div class="publica">
       <div class="pub-nav-topo">
-        <a class="btn btn-ghost btn-mini" data-link href="/">← Início</a>
+        <a class="btn btn-primary pub-voltar-btn" data-link href="/">← Voltar ao início</a>
       </div>
       <header class="pub-logo-header">${caixaLogo('caixa-logo-cliente')}</header>
 
