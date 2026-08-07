@@ -18,6 +18,7 @@ export const CHANGELOG = [
       'Máscaras automáticas de CPF/CNPJ e telefone, e verificação de e-mail com sugestão de correção.',
       'Backup completo (planilhas + fotos + notas fiscais + arquivo técnico) e opção de importar; backup automático no banco de dados.',
       'Painel do cliente mais enxuto, com o controle de pagamentos espelhado.',
+      'Esta página de Atualizações do sistema, para acompanhar as melhorias contínuas.',
     ],
   },
   {
