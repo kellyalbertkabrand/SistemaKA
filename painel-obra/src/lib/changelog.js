@@ -3,16 +3,17 @@
 // sucinta e clara para o cliente — e atualize a VERSAO (data da publicação).
 // É exibido na página pública /atualizacoes, que pode ser enviada ao cliente.
 
-export const VERSAO = '07/08/2026';
+export const VERSAO = '08/08/2026';
 
 export const CHANGELOG = [
   {
-    data: '07/08/2026',
-    titulo: 'Navegação e acompanhamento',
+    data: '08/08/2026',
+    titulo: 'Visual, celular e navegação',
     itens: [
-      'Página de Atualizações do sistema (esta), para acompanhar as melhorias contínuas.',
-      'Botão de voltar ao início na versão web e no celular.',
-      'Versão para celular mais harmônica: menu em tela cheia, caixas e textos ajustados, botões alinhados e botão de WhatsApp na cor oficial.',
+      'Versão para celular revisada: menu em tela cheia (estilo app) com botão de fechar, e caixas e textos mais compactos e harmônicos.',
+      'Botões padronizados: mesma altura em toda a linha e botão de WhatsApp na cor oficial (verde) com texto branco, em todo o sistema.',
+      'Financeiro: resumo geral destacado (soma de todos os clientes) e bloco "Controle de pagamentos" em verde, com o selo "Pagamento realizado".',
+      'Página de Atualizações do sistema (esta) e botão de voltar ao início nas páginas.',
     ],
   },
   {
