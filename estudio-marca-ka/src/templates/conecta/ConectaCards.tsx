@@ -1,156 +1,106 @@
 import type { ReactNode } from 'react'
 import type { RenderProps } from '../types'
 import { estiloImagem } from '../imagem'
-import { ConectaLogo, ConectaSimbolo } from './ConectaLogo'
-import { ConectaIcone } from './ConectaIcones'
-import { fundoCss, corFonte, corDestaque, ehFundoEscuro, COR_CIANO } from './cores'
+import { ConectaLogo, ConectaIconeAssinatura } from './ConectaLogo'
+import { fundoCss, corTitulo, corApoio, ehFundoEscuro, COR_NAVY } from './cores'
 import './conecta.css'
 
-// Cabeçalho de seção elegante: ícone de linha + rótulo + filete de destaque.
-function SecaoHeader({ secao, icone, destaque }: { secao: string; icone: string; destaque: string }) {
-  if (!secao && (!icone || icone === 'nenhum')) return null
-  return (
-    <div className="conecta-secao-bloco">
-      <div className="conecta-secao">
-        {icone && icone !== 'nenhum' && <ConectaIcone nome={icone} tamanho={78} cor={destaque} />}
-        {secao && <span className="rotulo" style={{ color: destaque }}>{secao}</span>}
-      </div>
-      <span className="conecta-rule" style={{ background: destaque }} />
-    </div>
-  )
-}
-
 // ============================================================================
-// Cards do Conecta · Núcleo de Negócios ACIGRA — sistema visual (jul/2026).
-// Anatomia fiel aos posts: logo no topo, gradiente marinho→índigo, padrão de
-// "C" à direita, título de seção em ciano e rodapé com o crédito ACIGRA.
-// Cada modelo serve para FEED, STORY, QUADRADO e APRESENTAÇÃO 16:9.
+// Cards do Conecta — Design System oficial para Instagram (ago/2026).
+// Sora · Navy + Turquesa · tipografia light+bold · tag/linha/número editoriais.
 // ============================================================================
 
-// Negrito por aspas ou *asteriscos* (mesma cor do texto).
-const RE_DESTAQUE = /“([^”]+)”|"([^"]+)"|\*([^*]+)\*/g
-function comDestaque(texto: string): ReactNode[] {
+// A keyword (entre aspas ou *asteriscos*) vira 700 turquesa — a assinatura do
+// sistema (título light + keyword bold).
+const RE = /“([^”]+)”|"([^"]+)"|\*([^*]+)\*/g
+function comKw(texto: string): ReactNode[] {
   const nos: ReactNode[] = []
   let ultimo = 0
   let k = 0
   let m: RegExpExecArray | null
-  RE_DESTAQUE.lastIndex = 0
-  while ((m = RE_DESTAQUE.exec(texto))) {
+  RE.lastIndex = 0
+  while ((m = RE.exec(texto))) {
     if (m.index > ultimo) nos.push(<span key={k++}>{texto.slice(ultimo, m.index)}</span>)
-    nos.push(
-      <strong key={k++} className="conecta-destaque">
-        {m[1] ?? m[2] ?? m[3]}
-      </strong>,
-    )
-    ultimo = RE_DESTAQUE.lastIndex
+    nos.push(<strong key={k++} className="conecta-kw">{m[1] ?? m[2] ?? m[3]}</strong>)
+    ultimo = RE.lastIndex
   }
   if (ultimo < texto.length) nos.push(<span key={k++}>{texto.slice(ultimo)}</span>)
   return nos
 }
 
-// Padrão de "C" no fundo (à direita). Teal e forte no escuro; marinho e bem
-// sutil no claro (para o card leve não ficar "sujo").
-function ConectaPattern({ escuro }: { escuro: boolean }) {
+function classeCard(classe: string, formato: RenderProps['formato'], claro: boolean) {
+  const wide = formato.largura > formato.altura
+  return `conecta-card ${classe} fmt-${formato.formato} ${wide ? 'conecta-card--wide' : ''} ${claro ? 'claro' : ''}`
+}
+
+function RodapeIcone({ escuro }: { escuro: boolean }) {
   return (
-    <div className={`conecta-pattern ${escuro ? '' : 'conecta-pattern--claro'}`} aria-hidden>
-      {Array.from({ length: 18 }).map((_, i) => (
-        <ConectaSimbolo key={i} escuro={escuro} tamanho={120} />
-      ))}
+    <div className="c-rodape">
+      <ConectaIconeAssinatura escuro={escuro} tamanho={54} />
     </div>
   )
 }
 
-// Moldura comum: gradiente, padrão de C, logo, miolo e rodapé.
-function ConectaFrame({
-  fundo,
-  corTexto,
-  tipo,
-  formato,
-  badge,
-  semLogo,
-  children,
-}: {
-  fundo: string
-  corTexto: string
-  tipo: string
-  formato: RenderProps['formato']
-  badge?: string
-  semLogo?: boolean
-  children: ReactNode
-}) {
+// 1 · CAPA — logo centralizado, tag, título light, linha, subtítulo, deslize.
+export function ConectaCapaCard({ valores, formato }: RenderProps) {
+  const fundo = String(valores.cor_fundo || 'navy')
   const escuro = ehFundoEscuro(fundo)
-  const wide = formato.largura > formato.altura
-  const alturaLogo = wide ? 84 : 90
+  const titulo = String(valores.titulo || '')
+  const sub = String(valores.subtitulo || '')
+  const tag = String(valores.tag || '')
+  const deslize = String(valores.deslize || '')
   return (
-    <div
-      className={`conecta-card tipo-${tipo} fmt-${formato.formato} ${wide ? 'conecta-card--wide' : ''}`}
-      style={{ width: formato.largura, height: formato.altura, background: fundoCss(fundo), color: corTexto }}
-    >
-      <ConectaPattern escuro={escuro} />
-      {!semLogo && (
-        <div className="conecta-header">
-          <ConectaLogo escuro={escuro} altura={alturaLogo} />
-          {badge && <div className={`conecta-badge ${escuro ? '' : 'conecta-badge--claro'}`}>{badge}</div>}
-        </div>
-      )}
-      <div className="conecta-miolo">{children}</div>
-      <div className="conecta-footer" style={{ color: corTexto }}>
-        ACIGRA · Núcleo de Negócios
-        <span className="traco" />
-        Gravataí
+    <div className={classeCard('conecta-capa', formato, !escuro)} style={{ width: formato.largura, height: formato.altura, background: fundoCss(fundo), color: corTitulo(fundo) }}>
+      {!escuro && <div className="c-barra-topo" />}
+      <div className="c-topo c-topo--centro">
+        <ConectaLogo escuro={escuro} altura={escuro ? 104 : 108} />
+      </div>
+      <div className="c-miolo">
+        {tag && <div className="c-tag">{tag}</div>}
+        {titulo && <div className="c-titulo">{comKw(titulo)}</div>}
+        <div className="c-linha" style={{ alignSelf: 'center' }} />
+        {sub && <div className="c-apoio" style={{ color: corApoio(fundo) }}>{comKw(sub)}</div>}
+      </div>
+      <div className="c-rodape">
+        {deslize && <span className="c-deslize" style={{ color: corApoio(fundo) }}>{deslize}</span>}
       </div>
     </div>
   )
 }
 
-// 1 · Capa de carrossel — ícone em círculo, título grande e filete centrado.
-export function ConectaCapaCard({ valores, formato }: RenderProps) {
-  const fundo = String(valores.cor_fundo || 'gradiente')
-  const cor = corFonte(valores.cor_fonte, fundo)
-  const destaque = corDestaque(fundo)
+// 2 · CONTEÚDO (slide interno) — logo + número, tag, título light, linha, apoio.
+export function ConectaConteudoCard({ valores, formato }: RenderProps) {
+  const fundo = String(valores.cor_fundo || 'navy')
+  const escuro = ehFundoEscuro(fundo)
+  const numero = String(valores.numero || '')
+  const tag = String(valores.tag || '')
   const titulo = String(valores.titulo || '')
-  const sub = String(valores.subtitulo || '')
-  const icone = String(valores.icone || '')
-  return (
-    <ConectaFrame fundo={fundo} corTexto={cor} tipo="capa" formato={formato} badge={String(valores.badge || '')}>
-      {icone && icone !== 'nenhum' && (
-        <div className="conecta-icone-circulo" style={{ borderColor: destaque }}>
-          <ConectaIcone nome={icone} tamanho={124} cor={destaque} traco={1.5} />
-        </div>
-      )}
-      {titulo && <div className="titulo" style={{ color: destaque }}>{comDestaque(titulo)}</div>}
-      <span className="conecta-rule conecta-rule--centro" style={{ background: destaque }} />
-      {sub && <div className="sub">{comDestaque(sub)}</div>}
-    </ConectaFrame>
-  )
-}
-
-// 2 · Tópico — cabeçalho de seção (ícone + rótulo + filete) + parágrafo.
-export function ConectaTopicoCard({ valores, formato }: RenderProps) {
-  const fundo = String(valores.cor_fundo || 'gradiente')
-  const cor = corFonte(valores.cor_fonte, fundo)
-  const destaque = corDestaque(fundo)
-  const secao = String(valores.secao || '')
-  const icone = String(valores.icone || '')
   const texto = String(valores.texto || '')
   return (
-    <ConectaFrame fundo={fundo} corTexto={cor} tipo="topico" formato={formato} badge={String(valores.badge || '')}>
-      <SecaoHeader secao={secao} icone={icone} destaque={destaque} />
-      {texto && <div className="conecta-corpo">{comDestaque(texto)}</div>}
-    </ConectaFrame>
+    <div className={classeCard('conecta-conteudo', formato, !escuro)} style={{ width: formato.largura, height: formato.altura, background: fundoCss(fundo), color: corTitulo(fundo) }}>
+      {!escuro && <div className="c-barra-topo" />}
+      <div className="c-topo">
+        <ConectaLogo escuro={escuro} altura={escuro ? 88 : 92} />
+        {numero && <div className="c-num">{numero}</div>}
+      </div>
+      <div className="c-miolo">
+        {tag && <div className="c-tag">{tag}</div>}
+        {titulo && <div className="c-titulo">{comKw(titulo)}</div>}
+        <div className="c-linha" />
+        {texto && <div className="c-apoio" style={{ color: corApoio(fundo) }}>{comKw(texto)}</div>}
+      </div>
+      <RodapeIcone escuro={escuro} />
+    </div>
   )
 }
 
-// 3 · Lista — cabeçalho de seção + itens (rótulo em negrito + descrição).
+// 3 · LISTA (valores / objetivos) — tag + título + itens "Rótulo: descrição".
 export function ConectaListaCard({ valores, formato }: RenderProps) {
-  const fundo = String(valores.cor_fundo || 'gradiente')
-  const cor = corFonte(valores.cor_fonte, fundo)
-  const destaque = corDestaque(fundo)
-  const secao = String(valores.secao || '')
-  const icone = String(valores.icone || '')
-  const bruto = String(valores.itens || '')
-  // Cada linha "Rótulo: descrição" — o rótulo (antes do ":") fica em negrito.
-  const itens = bruto
+  const fundo = String(valores.cor_fundo || 'navy')
+  const escuro = ehFundoEscuro(fundo)
+  const tag = String(valores.tag || '')
+  const titulo = String(valores.titulo || '')
+  const itens = String(valores.itens || '')
     .split('\n')
     .map((l) => l.trim())
     .filter(Boolean)
@@ -159,80 +109,147 @@ export function ConectaListaCard({ valores, formato }: RenderProps) {
       return i > 0 ? { rot: linha.slice(0, i).trim(), desc: linha.slice(i + 1).trim() } : { rot: '', desc: linha }
     })
   return (
-    <ConectaFrame fundo={fundo} corTexto={cor} tipo="lista" formato={formato} badge={String(valores.badge || '')}>
-      <SecaoHeader secao={secao} icone={icone} destaque={destaque} />
-      <div className="conecta-lista">
-        {itens.map((it, k) => (
-          <div className="item" key={k}>
-            <span className="marca" style={{ borderColor: destaque }} />
-            <span>
-              {it.rot && <span className="rot" style={{ color: destaque }}>{it.rot}: </span>}
-              {it.desc}
-            </span>
-          </div>
-        ))}
+    <div className={classeCard('conecta-lista', formato, !escuro)} style={{ width: formato.largura, height: formato.altura, background: fundoCss(fundo), color: corTitulo(fundo) }}>
+      {!escuro && <div className="c-barra-topo" />}
+      <div className="c-topo">
+        <ConectaLogo escuro={escuro} altura={escuro ? 88 : 92} />
       </div>
-    </ConectaFrame>
+      <div className="c-miolo">
+        {tag && <div className="c-tag">{tag}</div>}
+        {titulo && <div className="c-titulo" style={{ marginBottom: 10 }}>{comKw(titulo)}</div>}
+        <div className="c-linha" />
+        <div className="conecta-lista-itens" style={{ color: corApoio(fundo) }}>
+          {itens.map((it, k) => (
+            <div className="item" key={k}>
+              {it.rot && <span className="rot">{it.rot}: </span>}
+              {it.desc}
+            </div>
+          ))}
+        </div>
+      </div>
+      <RodapeIcone escuro={escuro} />
+    </div>
   )
 }
 
-// 4 · Post com foto — foto de fundo, véu e título embaixo.
-export function ConectaPostCard({ valores, formato }: RenderProps) {
+// 4 · CARD COM FOTO — foto full-bleed (escuro) OU emoldurada (claro/warm).
+export function ConectaFotoCard({ valores, formato }: RenderProps) {
+  const fundo = String(valores.cor_fundo || 'navy')
+  const claro = !ehFundoEscuro(fundo)
   const foto = String(valores.foto || '')
-  const rotulo = String(valores.rotulo || '')
+  const tag = String(valores.tag || '')
   const titulo = String(valores.titulo || '')
-  const acento = String(valores.cor_acento || COR_CIANO)
+  const apoio = String(valores.apoio || '')
   const ehVideo = String(valores.foto_kind) === 'video' || foto.startsWith('data:video')
-  const wide = formato.largura > formato.altura
+
+  const midia = foto ? (
+    ehVideo ? (
+      <video className="foto-full" src={foto} style={estiloImagem(valores, 'foto')} autoPlay muted loop playsInline />
+    ) : (
+      <img className="foto-full" src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+    )
+  ) : (
+    <div className="foto-ph">envie uma foto ou vídeo</div>
+  )
+
   return (
-    <div
-      className={`conecta-card tipo-post fmt-${formato.formato} ${wide ? 'conecta-card--wide' : ''}`}
-      style={{ width: formato.largura, height: formato.altura, background: '#05070F', color: '#FFFFFF' }}
-    >
-      {foto ? (
-        ehVideo ? (
-          <video className="conecta-post-foto" src={foto} style={estiloImagem(valores, 'foto')} autoPlay muted loop playsInline />
-        ) : (
-          <img className="conecta-post-foto" src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
-        )
+    <div className={classeCard('conecta-foto', formato, claro)} style={{ width: formato.largura, height: formato.altura, background: claro ? '#FAF9F7' : '#0a1222' }}>
+      {claro && <div className="c-barra-topo" />}
+      {claro ? (
+        <div className="foto-moldura">{midia}</div>
       ) : (
-        <div className="conecta-post-ph">envie uma foto ou vídeo</div>
+        <>
+          {midia}
+          <div className="veu" />
+          <div className="veu-base" />
+        </>
       )}
-      <div className="conecta-post-veu" />
-      <div className="conecta-post-conteudo">
-        {rotulo && <div className="rotulo" style={{ background: acento }}>{rotulo}</div>}
-        {titulo && <div className="titulo">{comDestaque(titulo)}</div>}
-        <ConectaLogo escuro altura={60} />
+      <div className="foto-topo" style={claro ? { position: 'absolute', top: 52, left: 52, right: 52 } : undefined}>
+        <ConectaLogo escuro altura={92} />
+      </div>
+      <div className="foto-conteudo">
+        {tag && <div className="c-tag">{tag}</div>}
+        {titulo && <div className="c-titulo">{comKw(titulo)}</div>}
+        <div className="c-linha" />
+        {apoio && <div className="c-apoio">{apoio}</div>}
       </div>
     </div>
   )
 }
 
-// 5 · Feedback — prova social (box branco, avatar, estrelas).
+// 5 · FRASE DE VIRADA — aspas decorativas + frase centralizada (keyword bold).
+export function ConectaFraseCard({ valores, formato }: RenderProps) {
+  const fundo = String(valores.cor_fundo || 'navy')
+  const escuro = ehFundoEscuro(fundo)
+  const frase = String(valores.frase || '')
+  const corAspas = escuro ? '#00CEC9' : COR_NAVY
+  return (
+    <div className={classeCard('conecta-frase', formato, !escuro)} style={{ width: formato.largura, height: formato.altura, background: fundoCss(fundo), color: corTitulo(fundo) }}>
+      {!escuro && <div className="c-barra-topo" />}
+      <div className="c-aspas" style={{ color: corAspas }}>“</div>
+      <div className="c-miolo">
+        {frase && <div className="frase">{comKw(frase)}</div>}
+      </div>
+      <RodapeIcone escuro={escuro} />
+    </div>
+  )
+}
+
+// 6 · CTA FINAL — logo grande, tag, frase conceitual, tom de exclusividade.
+export function ConectaCtaCard({ valores, formato }: RenderProps) {
+  const fundo = String(valores.cor_fundo || 'cta')
+  const escuro = ehFundoEscuro(fundo)
+  const tag = String(valores.tag || '')
+  const frase = String(valores.frase || '')
+  const exclusivo = String(valores.exclusivo || '')
+  return (
+    <div className={classeCard('conecta-cta', formato, !escuro)} style={{ width: formato.largura, height: formato.altura, background: fundoCss(fundo), color: corTitulo(fundo) }}>
+      {!escuro && <div className="c-barra-topo" />}
+      <div className="c-topo c-topo--centro">
+        <ConectaLogo escuro={escuro} altura={escuro ? 116 : 120} />
+      </div>
+      <div className="c-miolo">
+        {tag && <div className="c-tag" style={{ marginBottom: 26 }}>{tag}</div>}
+        {frase && <div className="frase">{comKw(frase)}</div>}
+        {exclusivo && <div className="exclusivo" style={{ color: corApoio(fundo) }}>{exclusivo}</div>}
+      </div>
+      <div className="c-rodape" />
+    </div>
+  )
+}
+
+// 7 · FEEDBACK — prova social (box branco, avatar, estrelas).
 export function ConectaFeedbackCard({ valores, formato }: RenderProps) {
-  const fundo = String(valores.cor_fundo || 'gradiente')
-  const cor = corFonte(valores.cor_fonte, fundo)
+  const fundo = String(valores.cor_fundo || 'navy')
+  const escuro = ehFundoEscuro(fundo)
   const nome = String(valores.nome || '')
   const subtitulo = String(valores.subtitulo || '')
   const texto = String(valores.texto || '')
-  const rotulo = String(valores.rotulo || '')
+  const tag = String(valores.rotulo || 'FEEDBACK')
   const nota = Math.max(1, Math.min(5, Number(valores.nota) || 5))
   const inicial = (String(valores.inicial || '').trim() || nome.trim().slice(0, 1)).toUpperCase()
   const stars = '★'.repeat(nota) + '☆'.repeat(5 - nota)
   return (
-    <ConectaFrame fundo={fundo} corTexto={cor} tipo="fb" formato={formato}>
-      {rotulo && <div className="conecta-fb-rotulo" style={{ color: corDestaque(fundo) }}>{rotulo}</div>}
-      <div className="conecta-fb-box">
-        <div className="head">
-          <div className="av">{inicial}</div>
-          <div>
-            {nome && <div className="nm">{nome}</div>}
-            {subtitulo && <div className="rl">{subtitulo}</div>}
-          </div>
-        </div>
-        <div className="stars">{stars}</div>
-        {texto && <div className="depo">{texto}</div>}
+    <div className={classeCard('conecta-fb', formato, !escuro)} style={{ width: formato.largura, height: formato.altura, background: fundoCss(fundo), color: corTitulo(fundo) }}>
+      {!escuro && <div className="c-barra-topo" />}
+      <div className="c-topo c-topo--centro">
+        <ConectaLogo escuro={escuro} altura={escuro ? 88 : 92} />
       </div>
-    </ConectaFrame>
+      <div className="c-miolo">
+        {tag && <div className="c-tag">{tag}</div>}
+        <div className="conecta-fb-box">
+          <div className="head">
+            <div className="av">{inicial}</div>
+            <div>
+              {nome && <div className="nm">{nome}</div>}
+              {subtitulo && <div className="rl">{subtitulo}</div>}
+            </div>
+          </div>
+          <div className="stars">{stars}</div>
+          {texto && <div className="depo">{texto}</div>}
+        </div>
+      </div>
+      <div className="c-rodape" />
+    </div>
   )
 }

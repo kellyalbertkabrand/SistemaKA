@@ -1,15 +1,15 @@
 /* ==========================================================================
-   Conecta · Núcleo de Negócios ACIGRA — sistema visual (jul/2026).
-   Identidade real: ciano vibrante + gradiente marinho→índigo + branco.
-   Fonte Montserrat (auto-hospedada). Layout fiel aos posts oficiais.
+   Conecta — Design System para Instagram (ago/2026).
+   Fonte Sora · Navy + Turquesa (#00CEC9) · fundo warm · tipografia light+bold.
+   Renderizado em tamanho REAL (1080px); valores ~2,84× os do doc (preview 380).
    ========================================================================== */
 
 @font-face {
-  font-family: 'Montserrat Conecta';
+  font-family: 'Sora Conecta';
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
-  src: url('/clientes/conecta/fonts/montserrat-var.woff2') format('woff2');
+  src: url('/clientes/conecta/fonts/sora-var.woff2') format('woff2');
 }
 
 .conecta-card {
@@ -18,72 +18,86 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  font-family: 'Montserrat Conecta', system-ui, -apple-system, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
-  padding: 88px 84px;
-  color: #ffffff;
+  font-family: 'Sora Conecta', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  padding: 90px;
   -webkit-font-smoothing: antialiased;
 }
-
 .conecta-card * {
   box-sizing: border-box;
 }
 
-/* ---- Padrão de "C" no fundo (à direita, como nos posts) ---------------- */
-.conecta-pattern {
-  position: absolute;
-  top: 0;
-  right: -40px;
-  bottom: 0;
-  width: 46%;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  align-content: center;
-  gap: 26px 18px;
-  padding: 40px 0;
-  opacity: 0.5;
-  pointer-events: none;
-  -webkit-mask-image: linear-gradient(to left, #000 55%, transparent 100%);
-  mask-image: linear-gradient(to left, #000 55%, transparent 100%);
+/* ---- Peças comuns ------------------------------------------------------- */
+
+/* Tag de categoria (texto solto, sem box) */
+.c-tag {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: #00cec9;
+  margin-bottom: 18px;
 }
 
-.conecta-pattern img {
-  width: 100%;
-  height: auto;
-  opacity: 0.5;
+/* Título light — a keyword (aspas/*asteriscos*) vira 700 turquesa */
+.c-titulo {
+  font-size: 62px;
+  font-weight: 300;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  white-space: pre-line;
+}
+.conecta-kw {
+  font-weight: 700;
+  color: #00cec9;
 }
 
-/* No fundo CLARO o padrão vira uma marca-d'água bem discreta (marinho). */
-.conecta-pattern--claro {
-  opacity: 0.1;
+/* Linha separadora turquesa (fina) */
+.c-linha {
+  width: 100px;
+  height: 2px;
+  background: #00cec9;
+  opacity: 0.4;
+  margin: 28px 0;
 }
 
-/* ---- Cabeçalho: logo ---------------------------------------------------- */
-.conecta-header {
+/* Texto de apoio */
+.c-apoio {
+  font-size: 32px;
+  font-weight: 300;
+  line-height: 1.45;
+  white-space: pre-line;
+}
+
+/* Número decorativo (canto superior direito) */
+.c-num {
+  font-size: 150px;
+  font-weight: 800;
+  color: #00cec9;
+  opacity: 0.13;
+  line-height: 1;
+}
+
+/* "Deslize →" */
+.c-deslize {
+  font-size: 26px;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+}
+
+/* Cabeçalho (logo em cima) */
+.c-topo {
   position: relative;
   z-index: 2;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
 }
-
-/* Selo de número do carrossel (ex.: 1/5) */
-.conecta-badge {
-  font-size: 30px;
-  font-weight: 700;
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.14);
-  border-radius: 999px;
-  padding: 12px 26px;
+.c-topo--centro {
+  justify-content: center;
 }
 
-.conecta-badge--claro {
-  color: #021734;
-  background: rgba(2, 23, 52, 0.08);
-}
-
-/* ---- Miolo -------------------------------------------------------------- */
-.conecta-miolo {
+/* Miolo */
+.c-miolo {
   position: relative;
   z-index: 2;
   flex: 1;
@@ -91,235 +105,221 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 34px;
 }
 
-/* Cabeçalho de seção elegante: ícone + rótulo + filete de destaque */
-.conecta-secao-bloco {
-  display: flex;
-  flex-direction: column;
-  gap: 26px;
-}
-
-.conecta-secao {
-  display: flex;
-  align-items: center;
-  gap: 30px;
-}
-
-.conecta-secao .rotulo {
-  font-size: 76px;
-  font-weight: 800;
-  letter-spacing: 0.005em;
-  text-transform: uppercase;
-  line-height: 1;
-}
-
-/* Filete de destaque (curto) sob o título/seção */
-.conecta-rule {
-  display: block;
-  width: 132px;
-  height: 6px;
-  border-radius: 3px;
-}
-
-.conecta-rule--centro {
-  align-self: center;
-  width: 96px;
-}
-
-/* Ícone em círculo (capa) */
-.conecta-icone-circulo {
-  align-self: center;
-  width: 208px;
-  height: 208px;
-  border-radius: 50%;
-  border: 3px solid;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Corpo de texto / parágrafo */
-.conecta-corpo {
-  font-size: 52px;
-  line-height: 1.36;
-  font-weight: 400;
-  white-space: pre-line;
-}
-
-.conecta-destaque {
-  font-weight: 700;
-}
-
-/* Lista com marcadores em anel (rótulo em destaque + descrição) */
-.conecta-lista {
-  display: flex;
-  flex-direction: column;
-  gap: 34px;
-  font-size: 38px;
-  line-height: 1.32;
-  font-weight: 400;
-}
-
-.conecta-lista .item {
-  display: flex;
-  gap: 26px;
-}
-
-.conecta-lista .marca {
-  flex: none;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 4px solid;
-  margin-top: 14px;
-}
-
-.conecta-lista .rot {
-  font-weight: 700;
-}
-
-/* ---- Capa (ícone em círculo + título grande centralizado) -------------- */
-.conecta-card.tipo-capa .conecta-miolo {
-  align-items: center;
-  text-align: center;
-  gap: 40px;
-}
-
-.conecta-card.tipo-capa .titulo {
-  font-size: 116px;
-  font-weight: 800;
-  letter-spacing: 0.005em;
-  text-transform: uppercase;
-  line-height: 1.02;
-}
-
-.conecta-card.tipo-capa .sub {
-  font-size: 40px;
-  font-weight: 400;
-  opacity: 0.9;
-  max-width: 80%;
-  white-space: pre-line;
-}
-
-/* ---- Rodapé ------------------------------------------------------------- */
-.conecta-footer {
+/* Rodapé com o ícone-assinatura centralizado */
+.c-rodape {
   position: relative;
   z-index: 2;
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 18px;
-  font-size: 22px;
+}
+
+/* ---- Capa --------------------------------------------------------------- */
+.conecta-capa .c-miolo {
+  align-items: center;
+  text-align: center;
+}
+.conecta-capa .c-tag {
+  margin-bottom: 22px;
+}
+.conecta-capa .c-titulo {
+  font-size: 84px;
+  font-weight: 200;
+  line-height: 1.16;
+}
+.conecta-capa .c-linha {
+  margin: 34px 0;
+}
+.conecta-capa .c-apoio {
+  max-width: 82%;
+}
+
+/* Barra turquesa no topo (cards claros) */
+.c-barra-topo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: #00cec9;
+  z-index: 3;
+}
+
+/* Aspas decorativas (frase de virada) */
+.c-aspas {
+  position: absolute;
+  top: 6%;
+  left: 6%;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 460px;
+  line-height: 1;
+  opacity: 0.04;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ---- Frase de virada ---------------------------------------------------- */
+.conecta-frase .c-miolo {
+  align-items: center;
+  text-align: center;
+}
+.conecta-frase .frase {
+  font-size: 72px;
+  font-weight: 300;
+  line-height: 1.24;
+  letter-spacing: -0.01em;
+  white-space: pre-line;
+  max-width: 92%;
+}
+
+/* ---- CTA final ---------------------------------------------------------- */
+.conecta-cta .c-miolo {
+  align-items: center;
+  text-align: center;
+}
+.conecta-cta .frase {
+  font-size: 62px;
+  font-weight: 200;
+  line-height: 1.24;
+  white-space: pre-line;
+  max-width: 90%;
+  margin-bottom: 30px;
+}
+.conecta-cta .exclusivo {
+  font-size: 30px;
+  font-weight: 300;
+}
+
+/* ---- Lista (valores / objetivos) --------------------------------------- */
+.conecta-lista-itens {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-top: 6px;
+}
+.conecta-lista-itens .item {
+  font-size: 38px;
+  font-weight: 300;
+  line-height: 1.3;
+}
+.conecta-lista-itens .rot {
   font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  opacity: 0.72;
+  color: #00cec9;
 }
 
-.conecta-footer .traco {
-  flex: 1;
-  height: 2px;
-  background: currentColor;
-  opacity: 0.4;
-}
-
-/* ---- Post com foto ------------------------------------------------------ */
-.conecta-card.tipo-post {
+/* ---- Card com foto ------------------------------------------------------ */
+.conecta-foto {
   padding: 0;
-  justify-content: flex-end;
 }
-
-.conecta-post-foto {
+.conecta-foto .foto-full {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  z-index: 0;
 }
-
-.conecta-post-veu {
+.conecta-foto .veu {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(5, 7, 15, 0.9) 0%,
-    rgba(11, 17, 64, 0.5) 40%,
-    rgba(5, 7, 15, 0) 70%
-  );
+  background: rgba(10, 18, 34, 0.12);
+  z-index: 1;
 }
-
-.conecta-post-conteudo {
+.conecta-foto .veu-base {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 46%;
+  background: linear-gradient(to top, rgba(10, 18, 34, 0.94) 0%, rgba(10, 18, 34, 0.55) 50%, transparent 100%);
+  z-index: 1;
+}
+.conecta-foto .foto-topo {
   position: relative;
   z-index: 2;
   padding: 84px;
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  justify-content: center;
 }
-
-.conecta-post-conteudo .rotulo {
-  align-self: flex-start;
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  padding: 12px 26px;
-  border-radius: 999px;
-  color: #05070f;
+.conecta-foto .foto-conteudo {
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+  padding: 84px;
 }
-
-.conecta-post-conteudo .titulo {
-  font-size: 78px;
-  line-height: 1.06;
-  font-weight: 800;
-  white-space: pre-line;
+.conecta-foto .c-titulo {
+  color: #ffffff;
 }
-
-.conecta-post-ph {
+.conecta-foto .c-apoio {
+  color: #c8d6e5;
+  opacity: 0.85;
+}
+.conecta-foto .foto-ph {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 30px;
-  font-weight: 600;
-  color: #ffffff;
-  background: radial-gradient(135% 125% at 90% 52%, #4a3cf0 0%, #0d1240 60%, #05060f 100%);
+  color: #c8d6e5;
+  background: linear-gradient(170deg, #0a1222, #0f1b33 40%, #1b2a4a);
+  z-index: 0;
+}
+
+/* Card com foto — versão CLARA (foto emoldurada) */
+.conecta-foto.claro {
+  padding: 0;
+  background: #faf9f7;
+}
+.conecta-foto.claro .foto-moldura {
+  position: absolute;
+  top: 52px;
+  left: 52px;
+  right: 52px;
+  height: 52%;
+  border-radius: 24px;
+  overflow: hidden;
+  z-index: 0;
+}
+.conecta-foto.claro .foto-full {
+  position: absolute;
+}
+.conecta-foto.claro .foto-conteudo {
+  color: #1b2a4a;
+}
+.conecta-foto.claro .c-titulo {
+  color: #1b2a4a;
+}
+.conecta-foto.claro .c-apoio {
+  color: #636e72;
+  opacity: 1;
 }
 
 /* ---- Feedback ----------------------------------------------------------- */
-.conecta-card.tipo-fb .conecta-miolo {
+.conecta-fb .c-miolo {
   justify-content: center;
-  gap: 30px;
 }
-
-.conecta-fb-rotulo {
+.conecta-fb .c-tag {
   align-self: center;
-  font-size: 34px;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
 }
-
 .conecta-fb-box {
   background: #ffffff;
-  border-radius: 40px;
+  border-radius: 30px;
   padding: 60px 58px;
   display: flex;
   flex-direction: column;
   gap: 26px;
-  border: 1px solid rgba(2, 23, 52, 0.06);
-  box-shadow: 0 30px 90px rgba(2, 23, 52, 0.22);
-  color: #10131a;
+  border: 1px solid rgba(27, 42, 74, 0.06);
+  box-shadow: 0 30px 90px rgba(10, 18, 34, 0.28);
+  color: #1b2a4a;
 }
-
 .conecta-fb-box .head {
   display: flex;
   align-items: center;
   gap: 26px;
 }
-
 .conecta-fb-box .av {
   width: 100px;
   height: 100px;
@@ -329,64 +329,46 @@
   align-items: center;
   justify-content: center;
   font-size: 46px;
-  font-weight: 800;
-  color: #05070f;
-  background: linear-gradient(135deg, #2be3d4 0%, #3a2ee6 100%);
+  font-weight: 700;
+  color: #0f1b33;
+  background: linear-gradient(135deg, #00cec9 0%, #1b2a4a 100%);
 }
-
 .conecta-fb-box .nm {
-  font-size: 42px;
-  font-weight: 800;
+  font-size: 40px;
+  font-weight: 600;
 }
-
 .conecta-fb-box .rl {
   font-size: 26px;
-  font-weight: 500;
-  color: #5f6368;
+  font-weight: 300;
+  color: #636e72;
   margin-top: 4px;
 }
-
 .conecta-fb-box .stars {
-  font-size: 48px;
+  font-size: 46px;
   letter-spacing: 0.08em;
-  color: #fbbc04;
+  color: #f5b301;
 }
-
 .conecta-fb-box .depo {
   font-size: 34px;
+  font-weight: 300;
   line-height: 1.45;
-  color: #3c4043;
+  color: #2d3a4d;
   white-space: pre-line;
 }
 
-/* ---- Story / Reels (9:16): mais respiro vertical ----------------------- */
+/* ---- Story / Reels (9:16): mais respiro ------------------------------- */
 .conecta-card.fmt-story,
 .conecta-card.fmt-reels {
-  padding: 120px 84px;
+  padding: 120px 90px;
 }
 
-/* ---- Apresentação 16:9 (largura > altura): layout horizontal ----------- */
+/* ---- Apresentação 16:9 (largura > altura) ----------------------------- */
 .conecta-card--wide {
-  padding: 70px 88px;
+  padding: 72px 96px;
 }
-.conecta-card--wide .conecta-pattern {
-  width: 38%;
+.conecta-card--wide.conecta-capa .c-titulo {
+  font-size: 96px;
 }
-.conecta-card--wide.tipo-capa .conecta-miolo {
-  align-items: flex-start;
-  text-align: left;
-}
-.conecta-card--wide.tipo-capa .titulo {
-  font-size: 132px;
-}
-.conecta-card--wide .conecta-secao .rotulo {
-  font-size: 76px;
-}
-.conecta-card--wide .conecta-corpo {
-  font-size: 46px;
-  max-width: 62%;
-}
-.conecta-card--wide .conecta-lista {
-  max-width: 66%;
-  font-size: 34px;
+.conecta-card--wide .c-titulo {
+  font-size: 58px;
 }

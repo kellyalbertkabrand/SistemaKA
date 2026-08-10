@@ -1,48 +1,75 @@
 // ============================================================================
-// Logo do Conecta — arte OFICIAL (extraída do guia de marca do Canva):
-// símbolo "C" espiral + wordmark "CONECTA" + tagline. Assets transparentes em
-// public/clientes/conecta/. Cores oficiais: ciano #0CD9D2, marinho #021734.
+// Logo do Conecta — arte OFICIAL, nas variantes do Design System:
+//  • branco  → cards escuros/foto (com drop-shadow)
+//  • full    → cards claros (turquesa + navy)
+//  • ícone   → assinatura discreta no rodapé (só o símbolo)
+// Assets em public/clientes/conecta/. Nunca SVG aproximado.
 // ============================================================================
 
-const SIMBOLO = '/clientes/conecta/conecta-simbolo.png'
-const SIMBOLO_MARINHO = '/clientes/conecta/conecta-simbolo-marinho.png'
-const WORDMARK = '/clientes/conecta/conecta-wordmark.png'
-
+const SIMBOLO = {
+  turquesa: '/clientes/conecta/conecta-simbolo.png',
+  branco: '/clientes/conecta/conecta-simbolo-branco.png',
+  navy: '/clientes/conecta/conecta-simbolo-marinho.png',
+}
+const WORDMARK = {
+  turquesa: '/clientes/conecta/conecta-wordmark.png',
+  branco: '/clientes/conecta/conecta-wordmark-branco.png',
+  navy: '/clientes/conecta/conecta-wordmark-marinho.png',
+}
 const RATIO_WORDMARK = 2517 / 400 // largura/altura do PNG do wordmark
 
-/** Só o símbolo (para cabeçalhos compactos, avatar e o padrão de fundo). */
-export function ConectaSimbolo({ escuro = true, tamanho = 96 }: { escuro?: boolean; tamanho?: number }) {
+/** Só o ícone (assinatura no rodapé dos slides internos). */
+export function ConectaIconeAssinatura({
+  escuro = true,
+  tamanho = 20,
+  opacidade = escuro ? 0.3 : 0.15,
+}: {
+  escuro?: boolean
+  tamanho?: number
+  opacidade?: number
+}) {
   return (
     <img
-      src={escuro ? SIMBOLO : SIMBOLO_MARINHO}
+      src={escuro ? SIMBOLO.branco : SIMBOLO.navy}
       alt="Conecta"
       crossOrigin="anonymous"
-      style={{ width: tamanho, height: tamanho, display: 'block', flex: 'none', objectFit: 'contain' }}
+      style={{ height: tamanho, width: tamanho, objectFit: 'contain', opacity: opacidade, display: 'block' }}
     />
   )
 }
 
-/** Lockup horizontal: símbolo + CONECTA + tagline (arte oficial).
- *  O símbolo e o wordmark ficam SEMPRE no teal da marca (coerência de cor);
- *  só a tagline muda de tom conforme o fundo. */
-export function ConectaLogo({ escuro = true, altura = 96 }: { escuro?: boolean; altura?: number }) {
-  const hWord = altura * 0.46
+/**
+ * Lockup: símbolo + CONECTA + tagline. Em fundo escuro usa a variante BRANCA
+ * (com drop-shadow); em fundo claro, turquesa + tagline navy.
+ */
+export function ConectaLogo({ escuro = true, altura = 64 }: { escuro?: boolean; altura?: number }) {
+  const corSimbolo = escuro ? 'branco' : 'turquesa'
+  const corWord = escuro ? 'branco' : 'turquesa'
+  const corTag = escuro ? '#FFFFFF' : '#1B2A4A'
+  const hWord = altura * 0.44
+  const sombra = escuro ? 'drop-shadow(0 2px 10px rgba(0,0,0,0.5))' : 'none'
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: altura * 0.16 }}>
-      <ConectaSimbolo escuro tamanho={altura} />
+    <div style={{ display: 'flex', alignItems: 'center', gap: altura * 0.16, filter: sombra }}>
+      <img
+        src={SIMBOLO[corSimbolo]}
+        alt="Conecta"
+        crossOrigin="anonymous"
+        style={{ height: altura, width: altura, objectFit: 'contain', display: 'block', flex: 'none' }}
+      />
       <div style={{ display: 'flex', flexDirection: 'column', gap: altura * 0.08 }}>
         <img
-          src={WORDMARK}
+          src={WORDMARK[corWord]}
           alt="CONECTA"
           crossOrigin="anonymous"
-          style={{ height: hWord, width: hWord * RATIO_WORDMARK, display: 'block', objectFit: 'contain' }}
+          style={{ height: hWord, width: hWord * RATIO_WORDMARK, objectFit: 'contain', display: 'block' }}
         />
         <span
           style={{
-            color: escuro ? 'rgba(255,255,255,0.9)' : 'rgba(2,23,52,0.68)',
-            fontWeight: 600,
-            fontSize: altura * 0.148,
-            letterSpacing: '0.12em',
+            color: corTag,
+            opacity: escuro ? 0.92 : 0.7,
+            fontWeight: 500,
+            fontSize: altura * 0.135,
+            letterSpacing: '0.14em',
             whiteSpace: 'nowrap',
           }}
         >
