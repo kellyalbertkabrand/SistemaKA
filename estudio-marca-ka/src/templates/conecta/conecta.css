@@ -356,6 +356,120 @@
   white-space: pre-line;
 }
 
+/* Sobretítulo do card com foto (ex.: "Convidados especiais") */
+.conecta-foto .sobre {
+  font-size: 30px;
+  font-weight: 300;
+  opacity: 0.62;
+  margin-bottom: 10px;
+}
+
+/* ---- Encontro 1:1 (foto + badge, sem texto) --------------------------- */
+.conecta-1a1 {
+  padding: 0;
+}
+.conecta-1a1 .veu08 {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 18, 34, 0.08);
+  z-index: 1;
+}
+.conecta-1a1 .um-topo {
+  position: relative;
+  z-index: 2;
+  padding: 84px;
+  display: flex;
+  justify-content: center;
+}
+.conecta-1a1 .um-base {
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+  padding-bottom: 96px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+.conecta-1a1-badge {
+  background: rgba(0, 206, 201, 0.92);
+  color: #0f1b33;
+  font-weight: 800;
+  font-size: 40px;
+  letter-spacing: 0.12em;
+  padding: 28px 78px;
+  border-radius: 22px;
+}
+.conecta-1a1.claro {
+  background: #faf9f7;
+}
+.conecta-1a1.claro .foto-moldura {
+  position: absolute;
+  top: 52px;
+  left: 52px;
+  right: 52px;
+  height: 58%;
+  border-radius: 24px;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* ---- Calendário -------------------------------------------------------- */
+.conecta-cal .c-miolo {
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+.conecta-cal .mes {
+  font-size: 152px;
+  font-weight: 200;
+  line-height: 1;
+}
+.conecta-cal .ano {
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: #00cec9;
+  margin-top: 10px;
+}
+.conecta-cal .rod {
+  font-size: 28px;
+  font-weight: 300;
+  margin-top: 4px;
+}
+.conecta-cal .cal-num {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -10%;
+  text-align: center;
+  font-size: 560px;
+  font-weight: 800;
+  line-height: 1;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ---- Conteúdo Educativo (aspas + título + deslize) -------------------- */
+.conecta-edu .edu-quote {
+  position: absolute;
+  top: 5%;
+  left: 6%;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 500px;
+  line-height: 1;
+  z-index: 1;
+  pointer-events: none;
+}
+.conecta-edu.claro .edu-quote {
+  left: auto;
+  right: 6%;
+}
+.conecta-edu .c-titulo {
+  font-size: 66px;
+  font-weight: 200;
+}
+
 /* ---- Story / Reels (9:16): mais respiro ------------------------------- */
 .conecta-card.fmt-story,
 .conecta-card.fmt-reels {

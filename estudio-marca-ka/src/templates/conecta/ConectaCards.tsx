@@ -138,6 +138,7 @@ export function ConectaFotoCard({ valores, formato }: RenderProps) {
   const claro = !ehFundoEscuro(fundo)
   const foto = String(valores.foto || '')
   const tag = String(valores.tag || '')
+  const sobre = String(valores.sobre || '')
   const titulo = String(valores.titulo || '')
   const apoio = String(valores.apoio || '')
   const ehVideo = String(valores.foto_kind) === 'video' || foto.startsWith('data:video')
@@ -169,9 +170,101 @@ export function ConectaFotoCard({ valores, formato }: RenderProps) {
       </div>
       <div className="foto-conteudo">
         {tag && <div className="c-tag">{tag}</div>}
+        {sobre && <div className="sobre">{sobre}</div>}
         {titulo && <div className="c-titulo">{comKw(titulo)}</div>}
         <div className="c-linha" />
         {apoio && <div className="c-apoio">{apoio}</div>}
+      </div>
+    </div>
+  )
+}
+
+// 4b · ENCONTRO 1:1 — foto + badge "CONECTA 1:1" (sem título, sem nomes).
+export function ConectaUmAUmCard({ valores, formato }: RenderProps) {
+  const fundo = String(valores.cor_fundo || 'navy')
+  const claro = !ehFundoEscuro(fundo)
+  const foto = String(valores.foto || '')
+  const badge = String(valores.badge || 'CONECTA 1:1')
+  const ehVideo = String(valores.foto_kind) === 'video' || foto.startsWith('data:video')
+  const midia = foto ? (
+    ehVideo ? (
+      <video className="foto-full" src={foto} style={estiloImagem(valores, 'foto')} autoPlay muted loop playsInline />
+    ) : (
+      <img className="foto-full" src={foto} alt="" style={estiloImagem(valores, 'foto')} crossOrigin="anonymous" />
+    )
+  ) : (
+    <div className="foto-ph">envie uma foto ou vídeo</div>
+  )
+  return (
+    <div className={classeCard('conecta-1a1', formato, claro)} style={{ width: formato.largura, height: formato.altura, background: claro ? '#FAF9F7' : '#0a1222' }}>
+      {claro && <div className="c-barra-topo" />}
+      {claro ? <div className="foto-moldura">{midia}</div> : (<>{midia}<div className="veu08" /></>)}
+      <div className="um-topo" style={claro ? { position: 'absolute', top: 52, left: 52, right: 52 } : undefined}>
+        <ConectaLogo escuro altura={92} />
+      </div>
+      <div className="um-base">
+        <div className="conecta-1a1-badge">{badge}</div>
+        {claro && <ConectaIconeAssinatura escuro={false} tamanho={48} />}
+      </div>
+    </div>
+  )
+}
+
+// 4c · CALENDÁRIO — mês grande, ano turquesa, número gigante ao fundo.
+export function ConectaCalendarioCard({ valores, formato }: RenderProps) {
+  const fundo = String(valores.cor_fundo || 'navy')
+  const escuro = ehFundoEscuro(fundo)
+  const tag = String(valores.tag || 'CALENDÁRIO')
+  const mes = String(valores.mes || '')
+  const ano = String(valores.ano || '')
+  const rod = String(valores.rodape || '')
+  const numero = String(valores.numero || '')
+  const corNum = escuro ? '#00CEC9' : COR_NAVY
+  const opNum = escuro ? 0.05 : 0.03
+  return (
+    <div className={classeCard('conecta-cal', formato, !escuro)} style={{ width: formato.largura, height: formato.altura, background: fundoCss(fundo), color: corTitulo(fundo) }}>
+      {!escuro && <div className="c-barra-topo" />}
+      <div className="c-topo c-topo--centro">
+        <ConectaLogo escuro={escuro} altura={escuro ? 96 : 100} />
+      </div>
+      <div className="c-miolo">
+        {numero && <div className="cal-num" style={{ color: corNum, opacity: opNum }}>{numero}</div>}
+        {tag && <div className="c-tag">{tag}</div>}
+        {mes && <div className="mes">{mes}</div>}
+        {ano && <div className="ano">{ano}</div>}
+        <div className="c-linha" style={{ alignSelf: 'center' }} />
+        {rod && <div className="rod" style={{ color: corApoio(fundo) }}>{rod}</div>}
+      </div>
+      <div className="c-rodape" />
+    </div>
+  )
+}
+
+// 4d · CONTEÚDO EDUCATIVO — aspas decorativas + título light + "Deslize →".
+export function ConectaEducativoCard({ valores, formato }: RenderProps) {
+  const fundo = String(valores.cor_fundo || 'navy')
+  const escuro = ehFundoEscuro(fundo)
+  const tag = String(valores.tag || '')
+  const titulo = String(valores.titulo || '')
+  const texto = String(valores.texto || '')
+  const deslize = String(valores.deslize || '')
+  const corAspas = escuro ? '#00CEC9' : COR_NAVY
+  const opAspas = escuro ? 0.03 : 0.025
+  return (
+    <div className={classeCard('conecta-edu', formato, !escuro)} style={{ width: formato.largura, height: formato.altura, background: fundoCss(fundo), color: corTitulo(fundo) }}>
+      {!escuro && <div className="c-barra-topo" />}
+      <div className="edu-quote" style={{ color: corAspas, opacity: opAspas }}>“</div>
+      <div className="c-topo c-topo--centro">
+        <ConectaLogo escuro={escuro} altura={escuro ? 84 : 88} />
+      </div>
+      <div className="c-miolo">
+        {tag && <div className="c-tag">{tag}</div>}
+        {titulo && <div className="c-titulo">{comKw(titulo)}</div>}
+        <div className="c-linha" />
+        {texto && <div className="c-apoio" style={{ color: corApoio(fundo) }}>{comKw(texto)}</div>}
+      </div>
+      <div className="c-rodape">
+        {deslize && <span className="c-deslize" style={{ color: corApoio(fundo) }}>{deslize}</span>}
       </div>
     </div>
   )

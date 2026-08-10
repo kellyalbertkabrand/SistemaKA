@@ -26,6 +26,9 @@ import {
   ConectaConteudoCard,
   ConectaListaCard,
   ConectaFotoCard,
+  ConectaUmAUmCard,
+  ConectaCalendarioCard,
+  ConectaEducativoCard,
   ConectaFraseCard,
   ConectaCtaCard,
   ConectaFeedbackCard,
@@ -930,10 +933,11 @@ export const TEMPLATES: Template[] = [
     id: 'conecta-foto',
     clienteSlug: 'conecta',
     clienteNome: 'Conecta · Núcleo de Negócios ACIGRA',
-    nome: 'Card com foto',
+    nome: 'Card com foto (evento)',
     descricao:
-      'Foto full-bleed com overlay (Navy) ou foto emoldurada (Warm). Logo ' +
-      'branco no topo, tag, título light, linha e data/local.',
+      'Foto full-bleed com overlay (Navy) ou emoldurada (Warm). Logo branco, ' +
+      'tag, título light e data/local. Serve Reunião Quinzenal e Palestra ' +
+      '(use o sobretítulo "Convidados especiais").',
     formatos: FORMATOS_CONECTA,
     campos: [
       {
@@ -946,18 +950,92 @@ export const TEMPLATES: Template[] = [
         ajuda: 'Use Posição e Zoom para enquadrar. Aceita vídeo.',
       },
       campoTagConecta('REUNIÃO QUINZENAL'),
+      { id: 'sobre', label: 'Sobretítulo (opcional, ex.: Convidados especiais)', tipo: 'texto', padrao: '' },
       {
         id: 'titulo',
         label: 'Título',
         tipo: 'textarea',
         obrigatorio: true,
         ajuda: AJUDA_KW,
-        padrao: 'Encontro de\n"lideranças"',
+        padrao: 'Conexões, aprendizado\ne troca de "experiências"',
       },
-      { id: 'apoio', label: 'Data — Hora · Local', tipo: 'texto', padrao: '12 de agosto — 19h · ACIGRA' },
+      { id: 'apoio', label: 'Data — Hora · Local', tipo: 'texto', padrao: '25 Mar 2025 — 19h · ACIGRA' },
       campoFundoConecta('navy'),
     ],
     render: ConectaFotoCard,
+  },
+  {
+    id: 'conecta-1a1',
+    clienteSlug: 'conecta',
+    clienteNome: 'Conecta · Núcleo de Negócios ACIGRA',
+    nome: 'Encontro 1:1',
+    descricao:
+      'Foto em destaque com o selo "CONECTA 1:1". Sem título nem nomes — a ' +
+      'foto é a protagonista. Navy (full-bleed) ou Warm (emoldurada).',
+    formatos: FORMATOS_CONECTA,
+    campos: [
+      {
+        id: 'foto',
+        label: 'Foto ou vídeo',
+        tipo: 'imagem',
+        obrigatorio: true,
+        aceitaVideo: true,
+        areaPadrao: 100,
+        ajuda: 'A foto é o protagonista. Use Posição e Zoom para enquadrar.',
+      },
+      { id: 'badge', label: 'Selo', tipo: 'texto', padrao: 'CONECTA 1:1' },
+      campoFundoConecta('navy'),
+    ],
+    render: ConectaUmAUmCard,
+  },
+  {
+    id: 'conecta-calendario',
+    clienteSlug: 'conecta',
+    clienteNome: 'Conecta · Núcleo de Negócios ACIGRA',
+    nome: 'Calendário do mês',
+    descricao:
+      'Mês em destaque (peso ultrafino) + ano em turquesa, com o número do ' +
+      'mês gigante ao fundo. Para anunciar os eventos do mês.',
+    formatos: FORMATOS_CONECTA,
+    campos: [
+      campoTagConecta('CALENDÁRIO'),
+      { id: 'mes', label: 'Mês', tipo: 'texto', obrigatorio: true, padrao: 'Abril' },
+      { id: 'ano', label: 'Ano', tipo: 'texto', padrao: '2025' },
+      { id: 'rodape', label: 'Rodapé', tipo: 'texto', padrao: 'Eventos do mês →' },
+      { id: 'numero', label: 'Número do mês (fundo)', tipo: 'texto', maxLen: 2, padrao: '04' },
+      campoFundoConecta('navy'),
+    ],
+    render: ConectaCalendarioCard,
+  },
+  {
+    id: 'conecta-educativo',
+    clienteSlug: 'conecta',
+    clienteNome: 'Conecta · Núcleo de Negócios ACIGRA',
+    nome: 'Conteúdo educativo',
+    descricao:
+      'Capa de conteúdo: aspas decorativas, tag, título light com palavra-' +
+      'chave em turquesa, texto de apoio e "Deslize →".',
+    formatos: FORMATOS_CONECTA,
+    campos: [
+      campoTagConecta('DICA CONECTA'),
+      {
+        id: 'titulo',
+        label: 'Título',
+        tipo: 'textarea',
+        obrigatorio: true,
+        ajuda: AJUDA_KW,
+        padrao: '5 perguntas que todo\nempresário deveria\n"se fazer"',
+      },
+      {
+        id: 'texto',
+        label: 'Texto de apoio',
+        tipo: 'textarea',
+        padrao: 'Antes de pensar em crescer, pare e reflita.',
+      },
+      { id: 'deslize', label: 'Rodapé (ex.: Deslize →)', tipo: 'texto', padrao: 'Deslize →' },
+      campoFundoConecta('navy'),
+    ],
+    render: ConectaEducativoCard,
   },
   {
     id: 'conecta-frase',
