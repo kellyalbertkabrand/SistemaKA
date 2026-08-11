@@ -1039,8 +1039,9 @@ export const TEMPLATES: Template[] = [
     clienteNome: 'Conecta · Núcleo de Negócios ACIGRA',
     nome: 'Encontro 1:1',
     descricao:
-      'Foto em destaque com o selo "CONECTA 1:1". Sem título nem nomes — a ' +
-      'foto é a protagonista. Navy (full-bleed) ou Warm (emoldurada).',
+      'Foto em destaque com o selo "CONECTA 1:1" e, acima dele, os dois ' +
+      'participantes (nome em CAIXA ALTA + empresa) à esquerda e à direita. ' +
+      'Navy (full-bleed) ou Warm (emoldurada).',
     formatos: FORMATOS_CONECTA,
     campos: [
       {
@@ -1052,7 +1053,15 @@ export const TEMPLATES: Template[] = [
         areaPadrao: 100,
         ajuda: 'A foto é o protagonista. Use Posição e Zoom para enquadrar.',
       },
+      { id: 'nome_esq', label: 'Nome — esquerda (CAIXA ALTA)', tipo: 'texto', placeholder: 'Ex.: JOÃO SILVA', padrao: '' },
+      { id: 'empresa_esq', label: 'Empresa — esquerda', tipo: 'texto', placeholder: 'Ex.: Silva Consultoria', padrao: '' },
+      { id: 'nome_dir', label: 'Nome — direita (CAIXA ALTA)', tipo: 'texto', placeholder: 'Ex.: MARIA SOUZA', padrao: '' },
+      { id: 'empresa_dir', label: 'Empresa — direita', tipo: 'texto', placeholder: 'Ex.: Souza & Cia', padrao: '' },
       { id: 'badge', label: 'Selo', tipo: 'texto', padrao: 'CONECTA 1:1' },
+      campoTam('pessoaEsq', 'Tamanho — participante esquerda'),
+      campoCor('pessoaEsq', 'Cor — participante esquerda'),
+      campoTam('pessoaDir', 'Tamanho — participante direita'),
+      campoCor('pessoaDir', 'Cor — participante direita'),
       campoCorLogoConecta(),
       campoFundoConecta('navy'),
     ],

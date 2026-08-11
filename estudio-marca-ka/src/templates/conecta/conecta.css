@@ -400,10 +400,15 @@
   display: flex;
   justify-content: center;
 }
-.conecta-1a1 .um-base {
+/* Bloco inferior (nomes + selo) ancorado no rodapé do card. */
+.conecta-1a1 .um-fim {
   position: relative;
   z-index: 2;
   margin-top: auto;
+}
+.conecta-1a1 .um-base {
+  position: relative;
+  z-index: 2;
   padding-bottom: 96px;
   display: flex;
   flex-direction: column;
@@ -418,6 +423,51 @@
   letter-spacing: 0.12em;
   padding: 28px 78px;
   border-radius: 22px;
+}
+/* Véu na base para os nomes ficarem legíveis sobre a foto (só no escuro). */
+.conecta-1a1 .veu-fim {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 46%;
+  background: linear-gradient(to top, rgba(10, 18, 34, 0.88) 0%, rgba(10, 18, 34, 0.32) 55%, transparent 100%);
+  z-index: 1;
+}
+/* Linha com os dois participantes (esquerda e direita), acima do selo. */
+.conecta-1a1 .um-nomes {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 40px;
+  padding: 0 84px 26px;
+}
+.conecta-1a1 .pessoa {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 47%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.conecta-1a1 .pessoa.dir {
+  text-align: right;
+  align-items: flex-end;
+}
+.conecta-1a1 .p-nome {
+  font-size: calc(40px * var(--t, 1));
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  line-height: 1.12;
+}
+.conecta-1a1 .p-empresa {
+  font-size: calc(27px * var(--t, 1));
+  font-weight: 300;
+  line-height: 1.2;
+  opacity: 0.82;
 }
 .conecta-1a1.claro {
   background: #faf9f7;
