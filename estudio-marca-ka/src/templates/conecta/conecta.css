@@ -469,11 +469,11 @@
   line-height: 1.16;
 }
 .conecta-1a1 .p-empresa {
-  font-size: calc(40px * var(--t, 1));
-  font-weight: 700;
+  font-size: calc(30px * var(--t, 1));
+  font-weight: 400;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  line-height: 1.16;
+  line-height: 1.2;
 }
 .conecta-1a1.claro {
   background: #faf9f7;
