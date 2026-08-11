@@ -203,7 +203,6 @@ export async function renderObra(container, obraId) {
           ${lancamentos.length ? seletorOrdem('ord-lanc', 'data') : ''}
         </div>
         <datalist id="lista-etapas-edit">${etapas.map((e) => `<option value="${esc(e.nome)}"></option>`).join('')}</datalist>
-        <datalist id="lista-fornecedores">${fornecedores.map((f) => `<option value="${esc(f.nome)}"></option>`).join('')}</datalist>
         <div id="tabela-lancamentos">${tabelaLancamentos(ordenarLancamentos(lancamentos, 'data'))}</div>
       </section>
 
@@ -640,7 +639,7 @@ export async function renderObra(container, obraId) {
     tr.innerHTML = `
       <td>${dataBR(l.data)}</td>
       <td><input class="ed-l-etapa" list="lista-etapas-edit" value="${esc(l.etapa || '')}" /></td>
-      <td><input class="ed-l-fornecedor" list="lista-fornecedores" value="${esc(l.fornecedor || '')}" placeholder="Fornecedor" /></td>
+      <td>${campoFornecedor(l.fornecedor, fornecedores)}</td>
       <td><input class="ed-l-desc" value="${esc(l.descricao || '')}" /></td>
       <td class="num"><input class="ed-l-valor" type="number" min="0" step="0.01" value="${esc(String(Number(l.valor || 0)))}" /></td>
       <td>
@@ -660,12 +659,13 @@ export async function renderObra(container, obraId) {
       </td>`;
     tr.querySelector('.ed-l-status').value = l.status === 'pendente' ? 'pendente' : 'pago';
     tr.querySelector('.ed-l-pagopor').value = l.pagoPor === 'cliente' ? 'cliente' : 'escritorio';
+    ligarFornecedor(tr);
     tr.querySelector('.ed-l-etapa').focus();
     tr.querySelector('.ed-l-cancelar').addEventListener('click', recarregar);
     tr.querySelector('.ed-l-salvar').addEventListener('click', async () => {
       const dados = {
         etapa: tr.querySelector('.ed-l-etapa').value.trim() || 'Geral',
-        fornecedor: tr.querySelector('.ed-l-fornecedor').value.trim() || null,
+        fornecedor: lerFornecedor(tr),
         descricao: tr.querySelector('.ed-l-desc').value.trim() || null,
         valor: Number(tr.querySelector('.ed-l-valor').value || 0),
         status: tr.querySelector('.ed-l-status').value === 'pendente' ? 'pendente' : 'pago',
@@ -1133,7 +1133,7 @@ function configurarLancamento(container, obra, etapas, fornecedores, recarregar)
         <p class="muted">Confira e ajuste antes de salvar:</p>
         <div class="form-grid">
           <label>Etapa<input id="p-etapa" value="${esc(l.etapa || '')}" /></label>
-          <label>Fornecedor<input id="p-fornecedor" list="lista-fornecedores" value="${esc(l.fornecedor || '')}" placeholder="Escolha ou escreva" /></label>
+          <label>Fornecedor${campoFornecedor(l.fornecedor, fornecedores)}</label>
           <label>Descrição<input id="p-descricao" value="${esc(l.descricao || '')}" /></label>
           <label>Valor (R$)<input id="p-valor" type="number" min="0" step="0.01" value="${Number(l.valor || 0)}" /></label>
           <label>Status
@@ -1155,6 +1155,7 @@ function configurarLancamento(container, obra, etapas, fornecedores, recarregar)
         </div>
       </div>`;
 
+    ligarFornecedor(preview);
     preview.querySelector('#p-cancelar').addEventListener('click', () => {
       preview.innerHTML = '';
     });
@@ -1162,7 +1163,7 @@ function configurarLancamento(container, obra, etapas, fornecedores, recarregar)
       const novo = {
         obraId: obra.id,
         etapa: preview.querySelector('#p-etapa').value.trim() || 'Geral',
-        fornecedor: preview.querySelector('#p-fornecedor').value.trim() || null,
+        fornecedor: lerFornecedor(preview),
         descricao: preview.querySelector('#p-descricao').value.trim() || null,
         valor: Number(preview.querySelector('#p-valor').value || 0),
         status: preview.querySelector('#p-status').value,
@@ -1443,6 +1444,44 @@ function tabelaLancamentos(lancamentos) {
         }).join('')}
       </tbody>
     </table>`;
+}
+
+// ---------------------------------------------------------------------------
+// Campo Fornecedor: um <select> nativo com a lista de fornecedores cadastrados
+// (confiável no celular, ao contrário do <datalist>) + a opção "Outro" que
+// revela um campo de texto para escrever um novo na hora.
+// ---------------------------------------------------------------------------
+function campoFornecedor(valorAtual, fornecedores) {
+  const nomes = [...new Set((fornecedores || []).map((f) => f && f.nome).filter(Boolean))];
+  const atual = (valorAtual || '').trim();
+  const naLista = atual && nomes.includes(atual);
+  const opcoes = ['<option value="">— Fornecedor —</option>']
+    .concat(nomes.map((n) => `<option value="${esc(n)}"${n === atual ? ' selected' : ''}>${esc(n)}</option>`))
+    .concat([`<option value="__novo__"${atual && !naLista ? ' selected' : ''}>➕ Outro (escrever)</option>`])
+    .join('');
+  const mostraInput = atual && !naLista;
+  return `<span class="forn-campo" data-forn>
+    <select class="forn-sel">${opcoes}</select>
+    <input class="forn-input" placeholder="Nome do fornecedor" value="${mostraInput ? esc(atual) : ''}"${mostraInput ? '' : ' hidden'} />
+  </span>`;
+}
+function ligarFornecedor(scope) {
+  const campo = scope.querySelector('[data-forn]');
+  if (!campo) return;
+  const sel = campo.querySelector('.forn-sel');
+  const inp = campo.querySelector('.forn-input');
+  sel.addEventListener('change', () => {
+    if (sel.value === '__novo__') { inp.hidden = false; inp.value = ''; inp.focus(); }
+    else { inp.hidden = true; inp.value = ''; }
+  });
+}
+function lerFornecedor(scope) {
+  const campo = scope.querySelector('[data-forn]');
+  if (!campo) return null;
+  const sel = campo.querySelector('.forn-sel');
+  const inp = campo.querySelector('.forn-input');
+  if (sel.value === '__novo__') return inp.value.trim() || null;
+  return sel.value.trim() || null;
 }
 
 // ---------------------------------------------------------------------------
