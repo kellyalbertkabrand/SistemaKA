@@ -18,18 +18,16 @@ export interface Novidade {
 export const NOVIDADES: Novidade[] = [
   {
     data: '11/08/2026',
-    titulo: 'Vídeos e carrossel',
+    titulo: 'Vídeos, carrossel e organização',
     itens: [
       'O logo voltou a aparecer nos vídeos exportados (capa e CTA).',
       'O vídeo agora salva direto no rolo de câmera no iPhone e no Android.',
-      'Os modelos dentro do carrossel ficaram idênticos aos de fora (o CTA volta a abrir com “ACESSE A LOJA”).',
+      'No carrossel, os modelos ficaram idênticos aos de fora (o CTA volta a abrir com “ACESSE A LOJA”).',
       'Mais respiro no texto do botão “acesse a loja”.',
+      'Portal da VM Rocks: dá para apagar tarefas e atividades, e o campo de adicionar subiu para cima da lista.',
+      'Atividades: botões ↑/↓ para reordenar as tarefas (além de arrastar).',
+      'Este bloco de “Novidades” no painel, para acompanhar o que muda no sistema.',
     ],
-  },
-  {
-    data: '08/2026',
-    titulo: 'Organização das tarefas',
-    itens: ['Botões ↑/↓ para reordenar tarefas, além de arrastar.'],
   },
   {
     data: '29/07/2026',
