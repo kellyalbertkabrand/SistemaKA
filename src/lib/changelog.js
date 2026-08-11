@@ -8,10 +8,12 @@ export const VERSAO = '11/08/2026';
 export const CHANGELOG = [
   {
     data: '11/08/2026',
-    titulo: 'Fornecedor no lançamento',
+    titulo: 'Lançamentos mais fáceis no celular',
     itens: [
       'Cada lançamento (custo) da obra passa a ter o campo Fornecedor: dá para escolher da lista de fornecedores cadastrados ou escrever um novo na hora.',
-      'O fornecedor aparece na tabela de lançamentos e também na planilha exportada.',
+      'Lista de lançamentos em cartões, sem aquela rolagem para os lados no celular: toque em um lançamento e abre um popup com todas as informações.',
+      'Edição do lançamento no popup, com campos grandes — dá para ver o que está digitando.',
+      'O fornecedor também aparece na planilha exportada.',
     ],
   },
   {

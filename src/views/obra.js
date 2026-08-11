@@ -203,7 +203,8 @@ export async function renderObra(container, obraId) {
           ${lancamentos.length ? seletorOrdem('ord-lanc', 'data') : ''}
         </div>
         <datalist id="lista-etapas-edit">${etapas.map((e) => `<option value="${esc(e.nome)}"></option>`).join('')}</datalist>
-        <div id="tabela-lancamentos">${tabelaLancamentos(ordenarLancamentos(lancamentos, 'data'))}</div>
+        <p class="muted" style="font-size:.8rem;margin:.2rem 0 .4rem">Toque em um lançamento para ver todos os detalhes e editar.</p>
+        <div id="tabela-lancamentos">${listaLancamentos(ordenarLancamentos(lancamentos, 'data'))}</div>
       </section>
 
       <section class="card">
@@ -590,33 +591,145 @@ export async function renderObra(container, obraId) {
     });
   });
 
-  // ---- Lançamentos: ordenar + excluir ----
+  // ---- Lançamentos: ordenar + abrir o popup de detalhes ----
   const tabelaLancEl = container.querySelector('#tabela-lancamentos');
   const selOrd = container.querySelector('#ord-lanc');
   if (selOrd) {
     selOrd.addEventListener('change', () => {
-      tabelaLancEl.innerHTML = tabelaLancamentos(ordenarLancamentos(lancamentos, selOrd.value));
+      tabelaLancEl.innerHTML = listaLancamentos(ordenarLancamentos(lancamentos, selOrd.value));
     });
   }
-  // Delegação: sobrevive à re-renderização da tabela ao reordenar.
-  tabelaLancEl.addEventListener('click', async (e) => {
-    const editar = e.target.closest('[data-edit-lanc]');
-    if (editar) { editarLancamentoLinha(editar); return; }
-    const del = e.target.closest('[data-del-lanc]');
-    if (del) { await excluirLancamento(del.getAttribute('data-del-lanc')); recarregar(); return; }
-    const ver = e.target.closest('[data-ver-recibo]');
-    if (ver) { abrirAnexoEmAba(lancamentos.find((l) => l.id === ver.getAttribute('data-ver-recibo'))); return; }
-    const remover = e.target.closest('[data-remover-recibo]');
-    if (remover) {
-      if (confirm('Remover a nota fiscal deste lançamento?')) {
-        await removerRecibo(remover.getAttribute('data-remover-recibo'));
-        recarregar();
-      }
-      return;
-    }
-    const anexar = e.target.closest('[data-anexar-recibo]');
-    if (anexar) abrirAnexoRecibo(anexar, anexar.getAttribute('data-anexar-recibo'));
+  // Tocar num lançamento abre o popup com todas as informações.
+  tabelaLancEl.addEventListener('click', (e) => {
+    const card = e.target.closest('[data-abrir-lanc]');
+    if (card) mostrarDetalheLanc(card.getAttribute('data-abrir-lanc'));
   });
+
+  // ---- Popup (modal) de um lançamento: ver tudo + editar com campos grandes ----
+  let modalEl = null;
+  function abrirModal(html) {
+    if (!modalEl) {
+      modalEl = document.createElement('div');
+      modalEl.className = 'modal-overlay';
+      modalEl.addEventListener('click', onModalClick);
+      container.appendChild(modalEl);
+    }
+    modalEl.innerHTML = `<div class="modal-card">${html}</div>`;
+    modalEl.classList.add('aberto');
+    document.body.classList.add('modal-aberto');
+  }
+  function fecharModal() {
+    if (modalEl) { modalEl.classList.remove('aberto'); modalEl.innerHTML = ''; }
+    document.body.classList.remove('modal-aberto');
+  }
+  function mostrarDetalheLanc(id) {
+    const l = lancamentos.find((x) => x.id === id);
+    if (!l) return;
+    abrirModal(detalheLancHTML(l));
+  }
+  function mostrarEdicaoLanc(id) {
+    const l = lancamentos.find((x) => x.id === id);
+    if (!l) return;
+    abrirModal(edicaoLancHTML(l));
+    ligarFornecedor(modalEl);
+    modalEl.querySelector('.m-status').value = l.status === 'pendente' ? 'pendente' : 'pago';
+    modalEl.querySelector('.m-pagopor').value = l.pagoPor === 'cliente' ? 'cliente' : 'escritorio';
+    modalEl.querySelector('.m-etapa').focus();
+  }
+  async function onModalClick(e) {
+    if (e.target === modalEl || e.target.closest('[data-fechar-modal]')) { fecharModal(); return; }
+    const editar = e.target.closest('[data-editar-lanc-modal]');
+    if (editar) { mostrarEdicaoLanc(editar.getAttribute('data-editar-lanc-modal')); return; }
+    const cancelar = e.target.closest('[data-cancelar-edicao]');
+    if (cancelar) { mostrarDetalheLanc(cancelar.getAttribute('data-cancelar-edicao')); return; }
+    const salvar = e.target.closest('[data-salvar-lanc]');
+    if (salvar) { await salvarEdicaoLanc(salvar.getAttribute('data-salvar-lanc'), salvar); return; }
+    const excluir = e.target.closest('[data-excluir-lanc-modal]');
+    if (excluir) {
+      if (!confirm('Excluir este lançamento?')) return;
+      await excluirLancamento(excluir.getAttribute('data-excluir-lanc-modal'));
+      fecharModal(); recarregar(); return;
+    }
+    const ver = e.target.closest('[data-ver-recibo-modal]');
+    if (ver) { abrirAnexoEmAba(lancamentos.find((l) => l.id === ver.getAttribute('data-ver-recibo-modal'))); return; }
+    const remover = e.target.closest('[data-remover-recibo-modal]');
+    if (remover) {
+      if (!confirm('Remover a nota fiscal deste lançamento?')) return;
+      await removerRecibo(remover.getAttribute('data-remover-recibo-modal'));
+      fecharModal(); recarregar(); return;
+    }
+    const anexar = e.target.closest('[data-anexar-recibo-modal]');
+    if (anexar) abrirAnexoRecibo(anexar, anexar.getAttribute('data-anexar-recibo-modal'));
+  }
+  async function salvarEdicaoLanc(id, botao) {
+    const dados = {
+      etapa: modalEl.querySelector('.m-etapa').value.trim() || 'Geral',
+      fornecedor: lerFornecedor(modalEl),
+      descricao: modalEl.querySelector('.m-desc').value.trim() || null,
+      valor: Number(modalEl.querySelector('.m-valor').value || 0),
+      status: modalEl.querySelector('.m-status').value === 'pendente' ? 'pendente' : 'pago',
+      pagoPor: modalEl.querySelector('.m-pagopor').value === 'cliente' ? 'cliente' : 'escritorio',
+    };
+    botao.disabled = true; botao.textContent = 'Salvando…';
+    try {
+      await atualizarLancamento(id, dados);
+      fecharModal(); recarregar();
+    } catch (err) {
+      botao.disabled = false; botao.textContent = 'Salvar';
+      const erro = modalEl.querySelector('[data-m-erro]');
+      if (erro) { erro.textContent = 'Erro ao salvar: ' + (err?.message || err); erro.hidden = false; }
+    }
+  }
+  function detalheLancHTML(l) {
+    const temNF = Boolean(l.reciboDataUrl || l.reciboUrl || l.temRecibo || l.reciboNome);
+    const linha = (rot, val) => `<div class="det-linha"><dt>${rot}</dt><dd>${val}</dd></div>`;
+    return `
+      <div class="modal-cab">
+        <h3>Lançamento</h3>
+        <button class="btn btn-x" data-fechar-modal title="Fechar">×</button>
+      </div>
+      <dl class="lanc-detalhe">
+        ${linha('Data', dataBR(l.data))}
+        ${linha('Etapa', esc(l.etapa || '—'))}
+        ${linha('Fornecedor', l.fornecedor ? esc(l.fornecedor) : '—')}
+        ${linha('Descrição', l.descricao ? esc(l.descricao) : '—')}
+        ${linha('Valor', `<strong>${moeda(l.valor)}</strong>`)}
+        ${linha('Status', `${pillStatus(l.status)}${l.pagoPor === 'cliente' ? ' <span class="tag tag-off">pago direto</span>' : ''}`)}
+        ${linha('Nota fiscal', temNF ? `📎 ${esc(l.reciboNome || 'anexada')}` : '—')}
+      </dl>
+      <div class="modal-acoes">
+        ${temNF
+          ? `<button class="btn btn-mini" data-ver-recibo-modal="${esc(l.id)}">📎 Ver NF</button>
+             <button class="btn btn-mini" data-remover-recibo-modal="${esc(l.id)}">Remover NF</button>`
+          : `<button class="btn btn-mini" data-anexar-recibo-modal="${esc(l.id)}">+ anexar NF</button>`}
+        <button class="btn btn-mini btn-primary" data-editar-lanc-modal="${esc(l.id)}">✎ Editar</button>
+        <button class="btn btn-mini btn-perigo" data-excluir-lanc-modal="${esc(l.id)}">🗑 Excluir</button>
+      </div>`;
+  }
+  function edicaoLancHTML(l) {
+    return `
+      <div class="modal-cab">
+        <h3>Editar lançamento</h3>
+        <button class="btn btn-x" data-fechar-modal title="Fechar">×</button>
+      </div>
+      <div class="modal-form">
+        <label>Etapa<input class="m-etapa" list="lista-etapas-edit" value="${esc(l.etapa || '')}" /></label>
+        <label>Fornecedor${campoFornecedor(l.fornecedor, fornecedores)}</label>
+        <label>Descrição<input class="m-desc" value="${esc(l.descricao || '')}" placeholder="O que foi comprado/pago" /></label>
+        <label>Valor (R$)<input class="m-valor" type="number" min="0" step="0.01" value="${esc(String(Number(l.valor || 0)))}" /></label>
+        <label>Status
+          <select class="m-status"><option value="pago">Pago</option><option value="pendente">Pendente</option></select>
+        </label>
+        <label>Quem pagou
+          <select class="m-pagopor"><option value="escritorio">Escritório (cliente reembolsa)</option><option value="cliente">Cliente (pago direto)</option></select>
+        </label>
+      </div>
+      <p class="erro" data-m-erro hidden></p>
+      <div class="modal-acoes">
+        <button class="btn btn-ghost" data-cancelar-edicao="${esc(l.id)}">Cancelar</button>
+        <button class="btn btn-primary" data-salvar-lanc="${esc(l.id)}">Salvar</button>
+      </div>`;
+  }
 
   // Abre a NF (imagem ou PDF) grande na própria tela, com botão de baixar.
   // Antigas têm o arquivo inline; novas ficam em "recibos" e buscamos na hora.
@@ -628,59 +741,6 @@ export async function renderObra(container, obraId) {
       dado = r?.dataUrl;
     }
     if (dado) abrirAnexo(dado, lanc.reciboNome);
-  }
-
-  // Editar um lançamento inline (etapa, descrição, valor e status).
-  function editarLancamentoLinha(botao) {
-    const id = botao.getAttribute('data-edit-lanc');
-    const l = lancamentos.find((x) => x.id === id);
-    if (!l) return;
-    const tr = botao.closest('tr');
-    tr.innerHTML = `
-      <td>${dataBR(l.data)}</td>
-      <td><input class="ed-l-etapa" list="lista-etapas-edit" value="${esc(l.etapa || '')}" /></td>
-      <td>${campoFornecedor(l.fornecedor, fornecedores)}</td>
-      <td><input class="ed-l-desc" value="${esc(l.descricao || '')}" /></td>
-      <td class="num"><input class="ed-l-valor" type="number" min="0" step="0.01" value="${esc(String(Number(l.valor || 0)))}" /></td>
-      <td>
-        <select class="ed-l-status">
-          <option value="pago">pago</option>
-          <option value="pendente">pendente</option>
-        </select>
-        <select class="ed-l-pagopor" title="Quem pagou">
-          <option value="escritorio">Escritório</option>
-          <option value="cliente">Cliente (direto)</option>
-        </select>
-      </td>
-      <td class="muted">—</td>
-      <td class="acoes" style="white-space:nowrap">
-        <button class="btn btn-mini btn-primary ed-l-salvar">Salvar</button>
-        <button class="btn btn-mini ed-l-cancelar">Cancelar</button>
-      </td>`;
-    tr.querySelector('.ed-l-status').value = l.status === 'pendente' ? 'pendente' : 'pago';
-    tr.querySelector('.ed-l-pagopor').value = l.pagoPor === 'cliente' ? 'cliente' : 'escritorio';
-    ligarFornecedor(tr);
-    tr.querySelector('.ed-l-etapa').focus();
-    tr.querySelector('.ed-l-cancelar').addEventListener('click', recarregar);
-    tr.querySelector('.ed-l-salvar').addEventListener('click', async () => {
-      const dados = {
-        etapa: tr.querySelector('.ed-l-etapa').value.trim() || 'Geral',
-        fornecedor: lerFornecedor(tr),
-        descricao: tr.querySelector('.ed-l-desc').value.trim() || null,
-        valor: Number(tr.querySelector('.ed-l-valor').value || 0),
-        status: tr.querySelector('.ed-l-status').value === 'pendente' ? 'pendente' : 'pago',
-        pagoPor: tr.querySelector('.ed-l-pagopor').value === 'cliente' ? 'cliente' : 'escritorio',
-      };
-      const btn = tr.querySelector('.ed-l-salvar');
-      btn.disabled = true; btn.textContent = 'Salvando…';
-      try {
-        await atualizarLancamento(id, dados);
-        recarregar();
-      } catch (err) {
-        btn.disabled = false; btn.textContent = 'Salvar';
-        alert('Erro ao salvar: ' + (err?.message || err));
-      }
-    });
   }
 
   // Anexar recibo/NF (imagem ou PDF) a um lançamento — otimiza e salva no banco.
@@ -1412,38 +1472,33 @@ function gridFotos(fotos) {
   }).join('');
 }
 
-function tabelaLancamentos(lancamentos) {
+// Lista de lançamentos em CARTÕES (sem rolagem lateral no celular). Cada cartão
+// é um resumo tocável (data, status, etapa, fornecedor/descrição e valor) que
+// abre o popup com todos os detalhes e a edição.
+function listaLancamentos(lancamentos) {
   if (lancamentos.length === 0) return `<p class="muted">Nenhum lançamento ainda.</p>`;
-  return `
-    <table class="tabela">
-      <thead>
-        <tr><th>Data</th><th>Etapa</th><th>Fornecedor</th><th>Descrição</th><th class="num">Valor</th><th>Status</th><th>Nota fiscal</th><th></th></tr>
-      </thead>
-      <tbody>
-        ${lancamentos.map((l) => {
-          const temNF = Boolean(l.reciboDataUrl || l.reciboUrl || l.temRecibo || l.reciboNome);
-          return `
-          <tr>
-            <td>${dataBR(l.data)}</td>
-            <td>${esc(l.etapa)}</td>
-            <td>${l.fornecedor ? esc(l.fornecedor) : '<span class="muted">—</span>'}</td>
-            <td>${esc(l.descricao || '')}</td>
-            <td class="num">${moeda(l.valor)}</td>
-            <td>${pillStatus(l.status)}${l.pagoPor === 'cliente' ? ' <span class="tag tag-off">pago direto</span>' : ''}</td>
-            <td>${temNF
-              ? `<span class="nf-cel">
-                   <button class="nf-ok" data-ver-recibo="${esc(l.id)}" title="${esc(l.reciboNome || 'nota fiscal')}">📎 NF anexada</button>
-                   <button class="btn btn-x" data-remover-recibo="${esc(l.id)}" title="Remover nota">×</button>
-                 </span>`
-              : `<button class="btn btn-mini nf-add" data-anexar-recibo="${esc(l.id)}">+ anexar NF</button>`}</td>
-            <td class="acoes" style="white-space:nowrap">
-              <button class="btn btn-x" data-edit-lanc="${esc(l.id)}" title="Editar">✎</button>
-              <button class="btn btn-x" data-del-lanc="${esc(l.id)}" title="Excluir">×</button>
-            </td>
-          </tr>`;
-        }).join('')}
-      </tbody>
-    </table>`;
+  return `<div class="lanc-lista">
+    ${lancamentos.map((l) => {
+      const temNF = Boolean(l.reciboDataUrl || l.reciboUrl || l.temRecibo || l.reciboNome);
+      const sub = [l.fornecedor, l.descricao].filter(Boolean).map(esc).join(' · ');
+      return `
+      <button type="button" class="lanc-card" data-abrir-lanc="${esc(l.id)}">
+        <span class="lanc-card-info">
+          <span class="lanc-card-topo">
+            <span class="lanc-card-data">${dataBR(l.data)}</span>
+            ${pillStatus(l.status)}${l.pagoPor === 'cliente' ? '<span class="tag tag-off">pago direto</span>' : ''}
+            ${temNF ? '<span class="lanc-card-nf" title="Nota fiscal anexada">📎</span>' : ''}
+          </span>
+          <span class="lanc-card-etapa">${esc(l.etapa || '')}</span>
+          ${sub ? `<span class="lanc-card-sub">${sub}</span>` : ''}
+        </span>
+        <span class="lanc-card-lado">
+          <strong class="lanc-card-valor">${moeda(l.valor)}</strong>
+          <span class="lanc-card-chev">›</span>
+        </span>
+      </button>`;
+    }).join('')}
+  </div>`;
 }
 
 // ---------------------------------------------------------------------------

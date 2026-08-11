@@ -359,6 +359,54 @@ input:focus, select:focus, textarea:focus {
 .forn-campo { display: flex; flex-direction: column; gap: .3rem; }
 .forn-campo .forn-sel, .forn-campo .forn-input { width: 100%; }
 
+/* Lançamentos em cartões (sem rolagem lateral). Toque abre o popup. */
+.lanc-lista { display: flex; flex-direction: column; gap: .5rem; margin-top: .3rem; }
+.lanc-card {
+  display: flex; align-items: center; justify-content: space-between; gap: .7rem;
+  width: 100%; text-align: left; font: inherit; color: var(--tinta);
+  background: var(--card); border: 1px solid var(--linha); border-radius: var(--raio-sm);
+  padding: .7rem .85rem; cursor: pointer; box-shadow: none;
+}
+.lanc-card:hover, .lanc-card:focus-visible { border-color: var(--acento); }
+.lanc-card-info { display: flex; flex-direction: column; gap: .2rem; min-width: 0; }
+.lanc-card-topo { display: flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+.lanc-card-data { font-size: .8rem; color: var(--muted); }
+.lanc-card-etapa { font-weight: 600; line-height: 1.25; }
+.lanc-card-sub { font-size: .82rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 60vw; }
+.lanc-card-lado { display: flex; align-items: center; gap: .35rem; flex-shrink: 0; }
+.lanc-card-valor { white-space: nowrap; }
+.lanc-card-chev { color: var(--muted); font-size: 1.4rem; line-height: 1; }
+.lanc-card-nf { font-size: .85rem; }
+
+/* Popup (modal) de detalhes/edição de um lançamento. */
+body.modal-aberto { overflow: hidden; }
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 80; display: none;
+  background: rgba(20, 14, 8, .5); align-items: flex-end; justify-content: center;
+}
+.modal-overlay.aberto { display: flex; }
+.modal-card {
+  background: var(--card); width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto;
+  border-radius: var(--raio) var(--raio) 0 0; padding: 1rem 1.1rem 1.4rem;
+  box-shadow: 0 -10px 34px rgba(0, 0, 0, .22);
+}
+@media (min-width: 640px) {
+  .modal-overlay { align-items: center; }
+  .modal-card { border-radius: var(--raio); }
+}
+.modal-cab { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-bottom: .7rem; }
+.modal-cab h3 { margin: 0; font-size: 1.1rem; }
+.lanc-detalhe { margin: 0 0 1rem; }
+.det-linha { display: flex; justify-content: space-between; gap: 1rem; padding: .55rem 0; border-bottom: 1px solid var(--linha); }
+.det-linha:last-child { border-bottom: 0; }
+.det-linha dt { color: var(--muted); font-size: .85rem; flex-shrink: 0; }
+.det-linha dd { margin: 0; text-align: right; word-break: break-word; }
+.modal-form { display: flex; flex-direction: column; gap: .7rem; margin-bottom: .5rem; }
+.modal-form label { display: flex; flex-direction: column; gap: .25rem; font-size: .82rem; color: var(--muted); }
+.modal-form input, .modal-form select, .modal-form .forn-sel, .modal-form .forn-input { font-size: 1rem; }
+.modal-acoes { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: flex-end; margin-top: .3rem; }
+.modal-acoes .btn { min-height: 42px; }
+
 /* Arquivo já anexado ao projeto, na edição, com a opção de remover só ele. */
 #proj-arquivo-atual { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap;
   margin: -.3rem 0 .2rem; font-size: .85rem; }
