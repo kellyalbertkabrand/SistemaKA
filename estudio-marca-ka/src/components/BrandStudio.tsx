@@ -4,6 +4,7 @@ import type { Template } from '../templates/types'
 import { EditorPeca } from './EditorPeca'
 import { Carrossel } from './Carrossel'
 import { MiniPreview } from './MiniPreview'
+import { Novidades } from './Novidades'
 import '../styles/painel.css'
 
 type Selecao = Template | 'carrossel' | null
@@ -104,6 +105,8 @@ export function BrandStudio({ slug }: { slug: string }) {
           </button>
         ))}
       </div>
+
+      {slug === 'shapes' && <Novidades />}
     </>
   )
 }
