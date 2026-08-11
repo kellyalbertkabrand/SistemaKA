@@ -191,11 +191,12 @@ export async function totaisPorObra() {
   return t;
 }
 
-export async function criarLancamento({ obraId, etapa, descricao, valor, status, pagoPor }) {
+export async function criarLancamento({ obraId, etapa, descricao, valor, status, pagoPor, fornecedor }) {
   await addDoc(collection(db, 'lancamentos'), {
     obraId,
     etapa,
     descricao: descricao ?? null,
+    fornecedor: fornecedor ?? null,
     valor: Number(valor || 0),
     status,
     // Quem pagou o fornecedor: 'escritorio' (padrão, o cliente reembolsa) ou
