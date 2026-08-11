@@ -35,21 +35,16 @@ export interface FundoConecta {
 // Fundos oferecidos no editor. Famílias do sistema: escuro (navy / CTA /
 // sólidos) e claro (warm / branco). Turquesa NUNCA é fundo inteiro.
 
-// Paleta estendida da marca (12 cores) — pedida pela KA para usar tanto em
-// FUNDO quanto em TEXTO em todos os cards.
+// Paleta da marca — só as cores da 2ª imagem + branco. Usada em FUNDO e TEXTO.
 export const PALETA_EXT: { valor: string; rotulo: string; hex: string }[] = [
-  { valor: 'teal', rotulo: 'Verde-azulado', hex: '#1C9E8E' },
+  { valor: 'branco', rotulo: 'Branco', hex: '#FFFFFF' },
+  { valor: 'teal', rotulo: 'Verde-azulado', hex: '#1C9E8C' },
   { valor: 'turquesaVivo', rotulo: 'Turquesa vivo', hex: '#2FE0D2' },
-  { valor: 'azulClaro', rotulo: 'Azul-cinza claro', hex: '#C5D2DE' },
-  { valor: 'aco', rotulo: 'Azul-aço claro', hex: '#ABBDCF' },
-  { valor: 'acoMedio', rotulo: 'Azul-aço médio', hex: '#8BA0B8' },
-  { valor: 'acoEscuro', rotulo: 'Azul-aço escuro', hex: '#6A839F' },
-  { valor: 'cinzaAzul', rotulo: 'Cinza-azulado', hex: '#93A6BC' },
-  { valor: 'marinhoMedio', rotulo: 'Marinho médio', hex: '#1E3A5E' },
-  { valor: 'ardosia', rotulo: 'Ardósia', hex: '#566A86' },
-  { valor: 'gelo', rotulo: 'Azul-gelo', hex: '#DAE3EB' },
-  { valor: 'quaseBranco', rotulo: 'Quase branco', hex: '#EDF1F6' },
-  { valor: 'marinhoProfundo', rotulo: 'Marinho profundo', hex: '#12233F' },
+  { valor: 'aco', rotulo: 'Azul-aço', hex: '#73839E' },
+  { valor: 'marinhoProfundo', rotulo: 'Marinho profundo', hex: '#16294A' },
+  { valor: 'ardosia', rotulo: 'Ardósia', hex: '#52627E' },
+  { valor: 'gelo', rotulo: 'Azul-gelo', hex: '#DBE4EC' },
+  { valor: 'quaseBranco', rotulo: 'Quase branco', hex: '#EDF1F7' },
 ]
 
 // Fundos: gradientes-assinatura + warm + as 12 cores da paleta (sólidas).
@@ -62,13 +57,8 @@ export const FUNDOS_CONECTA: FundoConecta[] = [
 
 const MAPA = new Map(FUNDOS_CONECTA.map((f) => [f.valor, f]))
 
-// Cores escolhíveis para TEXTO e LOGO (além de "Automático"): base + as 12.
-export const COLORS_CONECTA: { valor: string; rotulo: string; hex: string }[] = [
-  { valor: 'branco', rotulo: 'Branco', hex: '#FFFFFF' },
-  { valor: 'navy', rotulo: 'Navy', hex: COR_NAVY },
-  { valor: 'turquesa', rotulo: 'Turquesa', hex: COR_TURQUESA },
-  ...PALETA_EXT,
-]
+// Cores escolhíveis para TEXTO e LOGO (além de "Automático") = a mesma paleta.
+export const COLORS_CONECTA = PALETA_EXT
 const MAPA_COR = new Map(COLORS_CONECTA.map((c) => [c.valor, c.hex]))
 
 /** Luminância YIQ (0–255) de um hex. */
