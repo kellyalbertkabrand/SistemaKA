@@ -186,24 +186,19 @@ export function ConectaFotoCard({ valores, formato }: RenderProps) {
 
 // 4b · ENCONTRO 1:1 — foto + selo, com os dois participantes (nome + empresa).
 export function ConectaUmAUmCard({ valores, formato }: RenderProps) {
-  const fundo = String(valores.cor_fundo || 'navy')
-  const claro = !ehFundoEscuro(fundo)
   const badge = String(valores.badge || 'CONECTA 1:1')
   const nomeEsq = String(valores.nome_esq || '')
   const empresaEsq = String(valores.empresa_esq || '')
   const nomeDir = String(valores.nome_dir || '')
   const empresaDir = String(valores.empresa_dir || '')
   const temNomes = !!(nomeEsq || empresaEsq || nomeDir || empresaDir)
-  const corBase = claro ? COR_NAVY : '#FFFFFF'
+  const corBase = '#FFFFFF'
   const pos = Number(valores.pos) || 0 // px para SUBIR o bloco de nomes+selo
   return (
-    <div className={classeCard('conecta-1a1', formato, claro)} style={{ width: formato.largura, height: formato.altura, background: claro ? '#FAF9F7' : '#0a1222' }}>
-      {claro && <div className="c-barra-topo" />}
-      {claro ? <div className="foto-moldura"><Midia valores={valores} /></div> : (<><Midia valores={valores} /><div className="veu08" /></>)}
-      {!claro && temNomes && <div className="veu-fim" />}
-      <div className="um-topo" style={claro ? { position: 'absolute', top: 52, left: 52, right: 52 } : undefined}>
-        <ConectaLogo escuro cor={logoCor(valores)} altura={92} />
-      </div>
+    <div className={classeCard('conecta-1a1', formato, false)} style={{ width: formato.largura, height: formato.altura, background: '#0a1222' }}>
+      <Midia valores={valores} />
+      {temNomes && <div className="veu-fim" />}
+      {badge && <div className="um-selo">{badge}</div>}
       <div className="um-fim" style={pos ? { transform: `translateY(${-pos}px)` } : undefined}>
         {temNomes && (
           <div className="um-nomes">
@@ -217,10 +212,6 @@ export function ConectaUmAUmCard({ valores, formato }: RenderProps) {
             </div>
           </div>
         )}
-        <div className="um-base">
-          <div className="conecta-1a1-badge">{badge}</div>
-          {claro && <ConectaIconeAssinatura escuro={false} tamanho={48} />}
-        </div>
       </div>
     </div>
   )
