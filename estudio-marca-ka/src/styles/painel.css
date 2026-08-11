@@ -555,3 +555,24 @@
     padding: 0.25rem 0.6rem;
   }
 }
+
+/* Botão "Abrir página do cliente" (link p/ a página pública, só no admin) */
+.btn--pagina-cliente {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: #fff;
+  background: var(--essencia, #3d6b7e);
+  border: 1px solid var(--essencia, #3d6b7e);
+  border-radius: 100px;
+  padding: 0.5rem 1.1rem;
+  text-decoration: none;
+  transition: 0.15s;
+}
+.btn--pagina-cliente:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 6px 16px -8px rgba(61, 107, 126, 0.7);
+}

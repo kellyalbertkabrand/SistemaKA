@@ -11,7 +11,7 @@ type Selecao = Template | 'carrossel' | null
 
 // Estúdio de uma marca: lista os templates daquela marca e abre o editor real.
 // Reutilizado pelo painel da KA (por cliente) e pela área do cliente.
-export function BrandStudio({ slug }: { slug: string }) {
+export function BrandStudio({ slug, admin = false }: { slug: string; admin?: boolean }) {
   const templates = templatesDoCliente(slug)
   const [sel, setSel] = useState<Selecao>(null)
 
@@ -66,6 +66,13 @@ export function BrandStudio({ slug }: { slug: string }) {
         <div className="eyebrow">{templates[0].clienteNome}</div>
         <h1>O que você quer criar?</h1>
         <p>Escolha um modelo para uma peça única, ou monte um carrossel.</p>
+        {admin && (
+          <p style={{ marginTop: '0.7rem' }}>
+            <a className="btn--pagina-cliente" href={`/${slug}`} target="_blank" rel="noopener noreferrer">
+              🔗 Abrir página do cliente
+            </a>
+          </p>
+        )}
       </div>
 
       <div className="grade-templates">

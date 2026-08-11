@@ -286,7 +286,7 @@ export function AdminPanel() {
                 ← Todos os clientes
               </button>
             </p>
-            <BrandStudio slug={slug} />
+            <BrandStudio slug={slug} admin />
           </>
         ) : (
           <>
