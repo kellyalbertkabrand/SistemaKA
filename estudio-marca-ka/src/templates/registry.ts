@@ -174,16 +174,18 @@ function campoTam(id: string, label: string): Campo {
   return { id: `${id}_tam`, label, tipo: 'range', min: 60, max: 160, passo: 2, padrao: 100 }
 }
 
-// Cor do texto (título): Automático ou uma cor fixa da paleta.
+// Cor do texto (título): Automático ou qualquer cor da paleta (12 + base).
 function campoCorTexto(): Campo {
   return {
     id: 'cor_texto',
     label: 'Cor do texto',
-    tipo: 'select',
-    chips: true,
+    tipo: 'paleta',
     padrao: 'auto',
-    ajuda: 'Automático combina com o fundo. A palavra-chave continua turquesa.',
-    opcoes: [{ valor: 'auto', rotulo: 'Automático' }, ...COLORS_CONECTA.map((c) => ({ valor: c.valor, rotulo: c.rotulo }))],
+    ajuda: 'A 1ª (A) combina com o fundo. A palavra-chave continua turquesa.',
+    opcoes: [
+      { valor: 'auto', rotulo: 'Automático' },
+      ...COLORS_CONECTA.map((c) => ({ valor: c.valor, rotulo: c.rotulo, cor: c.hex })),
+    ],
   }
 }
 

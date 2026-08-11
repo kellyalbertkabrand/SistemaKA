@@ -34,28 +34,52 @@ export interface FundoConecta {
 
 // Fundos oferecidos no editor. Famílias do sistema: escuro (navy / CTA /
 // sólidos) e claro (warm / branco). Turquesa NUNCA é fundo inteiro.
+
+// Paleta estendida da marca (12 cores) — pedida pela KA para usar tanto em
+// FUNDO quanto em TEXTO em todos os cards.
+export const PALETA_EXT: { valor: string; rotulo: string; hex: string }[] = [
+  { valor: 'teal', rotulo: 'Verde-azulado', hex: '#1C9E8E' },
+  { valor: 'turquesaVivo', rotulo: 'Turquesa vivo', hex: '#2FE0D2' },
+  { valor: 'azulClaro', rotulo: 'Azul-cinza claro', hex: '#C5D2DE' },
+  { valor: 'aco', rotulo: 'Azul-aço claro', hex: '#ABBDCF' },
+  { valor: 'acoMedio', rotulo: 'Azul-aço médio', hex: '#8BA0B8' },
+  { valor: 'acoEscuro', rotulo: 'Azul-aço escuro', hex: '#6A839F' },
+  { valor: 'cinzaAzul', rotulo: 'Cinza-azulado', hex: '#93A6BC' },
+  { valor: 'marinhoMedio', rotulo: 'Marinho médio', hex: '#1E3A5E' },
+  { valor: 'ardosia', rotulo: 'Ardósia', hex: '#566A86' },
+  { valor: 'gelo', rotulo: 'Azul-gelo', hex: '#DAE3EB' },
+  { valor: 'quaseBranco', rotulo: 'Quase branco', hex: '#EDF1F6' },
+  { valor: 'marinhoProfundo', rotulo: 'Marinho profundo', hex: '#12233F' },
+]
+
+// Fundos: gradientes-assinatura + warm + as 12 cores da paleta (sólidas).
 export const FUNDOS_CONECTA: FundoConecta[] = [
   { valor: 'navy', rotulo: 'Navy (gradiente)', hex: COR_NAVY, gradiente: GRADIENTE_NAVY },
   { valor: 'cta', rotulo: 'Navy CTA (radial)', hex: COR_DARK, gradiente: GRADIENTE_CTA },
-  { valor: 'navySolido', rotulo: 'Navy sólido', hex: COR_NAVY },
-  { valor: 'escuro', rotulo: 'Escuro', hex: COR_DARK },
-  { valor: 'preto', rotulo: 'Quase-preto', hex: COR_DARKER },
   { valor: 'warm', rotulo: 'Warm (claro)', hex: COR_WARM },
-  { valor: 'branco', rotulo: 'Branco', hex: '#FFFFFF' },
+  ...PALETA_EXT.map((c) => ({ valor: c.valor, rotulo: c.rotulo, hex: c.hex })),
 ]
 
 const MAPA = new Map(FUNDOS_CONECTA.map((f) => [f.valor, f]))
 
-// Cores escolhíveis para TEXTO e LOGO (além de "Automático").
+// Cores escolhíveis para TEXTO e LOGO (além de "Automático"): base + as 12.
 export const COLORS_CONECTA: { valor: string; rotulo: string; hex: string }[] = [
   { valor: 'branco', rotulo: 'Branco', hex: '#FFFFFF' },
   { valor: 'navy', rotulo: 'Navy', hex: COR_NAVY },
   { valor: 'turquesa', rotulo: 'Turquesa', hex: COR_TURQUESA },
-  { valor: 'cinza', rotulo: 'Cinza claro', hex: COR_GRAY },
-  { valor: 'cinzaEscuro', rotulo: 'Cinza escuro', hex: COR_GRAY_DARK },
-  { valor: 'grafite', rotulo: 'Grafite', hex: COR_DARK },
+  ...PALETA_EXT,
 ]
 const MAPA_COR = new Map(COLORS_CONECTA.map((c) => [c.valor, c.hex]))
+
+/** Luminância YIQ (0–255) de um hex. */
+function yiq(hex: string): number {
+  const h = hex.replace('#', '')
+  if (h.length < 6) return 255
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  return (r * 299 + g * 587 + b * 114) / 1000
+}
 
 /** Resolve a cor escolhida (chave) para hex; 'auto'/vazio devolve null. */
 export function corEscolhida(valor: string | number | undefined): string | null {
@@ -71,9 +95,12 @@ export function fundoCss(valor: string): string {
   return valor || GRADIENTE_NAVY
 }
 
-/** Fundo é escuro? (warm e branco = claro; o resto = escuro). */
+/** Fundo é escuro? Gradientes navy = escuro; sólidos pela luminância (YIQ). */
 export function ehFundoEscuro(valor: string): boolean {
-  return valor !== 'warm' && valor !== 'branco'
+  if (valor === 'navy' || valor === 'cta') return true
+  const f = MAPA.get(valor)
+  const hex = f ? f.hex : valor.startsWith('#') ? valor : COR_NAVY
+  return yiq(hex) < 150
 }
 
 /** Cor do TÍTULO: branco no escuro, navy no claro. */
