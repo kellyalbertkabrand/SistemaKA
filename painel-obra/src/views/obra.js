@@ -2,6 +2,7 @@ import {
   obterObra, listarEtapas, listarLancamentos, atualizarObra, excluirObra, definirPublicado,
   criarEtapa, atualizarEtapa, excluirEtapa, criarLancamento, atualizarLancamento, excluirLancamento, sair,
   anexarRecibo, removerRecibo, obterRecibo, enviarFoto, listarFotos, excluirFoto, atualizarFoto, obterFotoBin, salvarFotoBin, excluirBin,
+  listarFornecedores,
 } from '../dados.js';
 import { navegar } from '../main.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
@@ -58,9 +59,10 @@ export async function renderObra(container, obraId) {
   // Etapas e lançamentos entram no caminho crítico (os KPIs e as tabelas
   // dependem deles). As FOTOS são as mais pesadas (imagens em base64), então
   // NÃO seguram a abertura da tela: carregam em segundo plano logo abaixo.
-  const [etapas, lancamentos] = await Promise.all([
+  const [etapas, lancamentos, fornecedores] = await Promise.all([
     listarEtapas(obraId).catch(() => []),
     listarLancamentos(obraId).catch(() => []),
+    listarFornecedores().catch(() => []),
   ]);
   let fotos = []; // preenchido em segundo plano após o primeiro render
 
@@ -201,6 +203,7 @@ export async function renderObra(container, obraId) {
           ${lancamentos.length ? seletorOrdem('ord-lanc', 'data') : ''}
         </div>
         <datalist id="lista-etapas-edit">${etapas.map((e) => `<option value="${esc(e.nome)}"></option>`).join('')}</datalist>
+        <datalist id="lista-fornecedores">${fornecedores.map((f) => `<option value="${esc(f.nome)}"></option>`).join('')}</datalist>
         <div id="tabela-lancamentos">${tabelaLancamentos(ordenarLancamentos(lancamentos, 'data'))}</div>
       </section>
 
@@ -341,9 +344,9 @@ export async function renderObra(container, obraId) {
         ] },
         { titulo: 'Etapas', cabecalho: ['Etapa', 'Orçado (R$)', 'Realizado (R$)'],
           linhas: etapas.map((et) => [et.nome, numBR(et.orcado), numBR(realizado[et.nome] || 0)]) },
-        { titulo: 'Lançamentos', cabecalho: ['Data', 'Etapa', 'Descrição', 'Valor (R$)', 'Status', 'Nota fiscal (arquivo)'],
+        { titulo: 'Lançamentos', cabecalho: ['Data', 'Etapa', 'Fornecedor', 'Descrição', 'Valor (R$)', 'Status', 'Nota fiscal (arquivo)'],
           linhas: lancOrd.map((l) => [
-            dataBR(l.data), l.etapa, l.descricao || '', numBR(l.valor), l.status,
+            dataBR(l.data), l.etapa, l.fornecedor || '', l.descricao || '', numBR(l.valor), l.status,
             nfNome.get(l.id) || ((l.reciboDataUrl || l.reciboUrl || l.temRecibo || l.reciboNome) ? 'anexada' : '—'),
           ]) },
         { titulo: 'Fotos das visitas', cabecalho: ['Data da visita', 'Descrição', 'Arquivo'],
@@ -503,7 +506,7 @@ export async function renderObra(container, obraId) {
   });
 
   // ---- Lançamento por voz / texto / IA ----
-  configurarLancamento(container, obra, etapas, recarregar);
+  configurarLancamento(container, obra, etapas, fornecedores, recarregar);
 
   // ---- Etapas ----
   const addEtapaBtn = container.querySelector('#add-etapa');
@@ -637,6 +640,7 @@ export async function renderObra(container, obraId) {
     tr.innerHTML = `
       <td>${dataBR(l.data)}</td>
       <td><input class="ed-l-etapa" list="lista-etapas-edit" value="${esc(l.etapa || '')}" /></td>
+      <td><input class="ed-l-fornecedor" list="lista-fornecedores" value="${esc(l.fornecedor || '')}" placeholder="Fornecedor" /></td>
       <td><input class="ed-l-desc" value="${esc(l.descricao || '')}" /></td>
       <td class="num"><input class="ed-l-valor" type="number" min="0" step="0.01" value="${esc(String(Number(l.valor || 0)))}" /></td>
       <td>
@@ -661,6 +665,7 @@ export async function renderObra(container, obraId) {
     tr.querySelector('.ed-l-salvar').addEventListener('click', async () => {
       const dados = {
         etapa: tr.querySelector('.ed-l-etapa').value.trim() || 'Geral',
+        fornecedor: tr.querySelector('.ed-l-fornecedor').value.trim() || null,
         descricao: tr.querySelector('.ed-l-desc').value.trim() || null,
         valor: Number(tr.querySelector('.ed-l-valor').value || 0),
         status: tr.querySelector('.ed-l-status').value === 'pendente' ? 'pendente' : 'pago',
@@ -1075,7 +1080,7 @@ export async function renderObra(container, obraId) {
 // ---------------------------------------------------------------------------
 // Lançamento (voz + IA)
 // ---------------------------------------------------------------------------
-function configurarLancamento(container, obra, etapas, recarregar) {
+function configurarLancamento(container, obra, etapas, fornecedores, recarregar) {
   const btnMic = container.querySelector('#btn-mic');
   const inputTexto = container.querySelector('#texto-livre');
   const btnInterpretar = container.querySelector('#btn-interpretar');
@@ -1128,6 +1133,7 @@ function configurarLancamento(container, obra, etapas, recarregar) {
         <p class="muted">Confira e ajuste antes de salvar:</p>
         <div class="form-grid">
           <label>Etapa<input id="p-etapa" value="${esc(l.etapa || '')}" /></label>
+          <label>Fornecedor<input id="p-fornecedor" list="lista-fornecedores" value="${esc(l.fornecedor || '')}" placeholder="Escolha ou escreva" /></label>
           <label>Descrição<input id="p-descricao" value="${esc(l.descricao || '')}" /></label>
           <label>Valor (R$)<input id="p-valor" type="number" min="0" step="0.01" value="${Number(l.valor || 0)}" /></label>
           <label>Status
@@ -1156,6 +1162,7 @@ function configurarLancamento(container, obra, etapas, recarregar) {
       const novo = {
         obraId: obra.id,
         etapa: preview.querySelector('#p-etapa').value.trim() || 'Geral',
+        fornecedor: preview.querySelector('#p-fornecedor').value.trim() || null,
         descricao: preview.querySelector('#p-descricao').value.trim() || null,
         valor: Number(preview.querySelector('#p-valor').value || 0),
         status: preview.querySelector('#p-status').value,
@@ -1409,7 +1416,7 @@ function tabelaLancamentos(lancamentos) {
   return `
     <table class="tabela">
       <thead>
-        <tr><th>Data</th><th>Etapa</th><th>Descrição</th><th class="num">Valor</th><th>Status</th><th>Nota fiscal</th><th></th></tr>
+        <tr><th>Data</th><th>Etapa</th><th>Fornecedor</th><th>Descrição</th><th class="num">Valor</th><th>Status</th><th>Nota fiscal</th><th></th></tr>
       </thead>
       <tbody>
         ${lancamentos.map((l) => {
@@ -1418,6 +1425,7 @@ function tabelaLancamentos(lancamentos) {
           <tr>
             <td>${dataBR(l.data)}</td>
             <td>${esc(l.etapa)}</td>
+            <td>${l.fornecedor ? esc(l.fornecedor) : '<span class="muted">—</span>'}</td>
             <td>${esc(l.descricao || '')}</td>
             <td class="num">${moeda(l.valor)}</td>
             <td>${pillStatus(l.status)}${l.pagoPor === 'cliente' ? ' <span class="tag tag-off">pago direto</span>' : ''}</td>

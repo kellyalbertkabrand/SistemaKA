@@ -3,9 +3,17 @@
 // sucinta e clara para o cliente — e atualize a VERSAO (data da publicação).
 // É exibido na página pública /atualizacoes, que pode ser enviada ao cliente.
 
-export const VERSAO = '08/08/2026';
+export const VERSAO = '11/08/2026';
 
 export const CHANGELOG = [
+  {
+    data: '11/08/2026',
+    titulo: 'Fornecedor no lançamento',
+    itens: [
+      'Cada lançamento (custo) da obra passa a ter o campo Fornecedor: dá para escolher da lista de fornecedores cadastrados ou escrever um novo na hora.',
+      'O fornecedor aparece na tabela de lançamentos e também na planilha exportada.',
+    ],
+  },
   {
     data: '08/08/2026',
     titulo: 'Visual, celular e navegação',
