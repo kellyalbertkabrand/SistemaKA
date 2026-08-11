@@ -195,6 +195,7 @@ export function ConectaUmAUmCard({ valores, formato }: RenderProps) {
   const empresaDir = String(valores.empresa_dir || '')
   const temNomes = !!(nomeEsq || empresaEsq || nomeDir || empresaDir)
   const corBase = claro ? COR_NAVY : '#FFFFFF'
+  const pos = Number(valores.pos) || 0 // px para SUBIR o bloco de nomes+selo
   return (
     <div className={classeCard('conecta-1a1', formato, claro)} style={{ width: formato.largura, height: formato.altura, background: claro ? '#FAF9F7' : '#0a1222' }}>
       {claro && <div className="c-barra-topo" />}
@@ -203,7 +204,7 @@ export function ConectaUmAUmCard({ valores, formato }: RenderProps) {
       <div className="um-topo" style={claro ? { position: 'absolute', top: 52, left: 52, right: 52 } : undefined}>
         <ConectaLogo escuro cor={logoCor(valores)} altura={92} />
       </div>
-      <div className="um-fim">
+      <div className="um-fim" style={pos ? { transform: `translateY(${-pos}px)` } : undefined}>
         {temNomes && (
           <div className="um-nomes">
             <div className="pessoa esq" style={est(valores, 'pessoaEsq', corBase)}>

@@ -1058,6 +1058,7 @@ export const TEMPLATES: Template[] = [
       { id: 'nome_dir', label: 'Nome — direita (CAIXA ALTA)', tipo: 'texto', placeholder: 'Ex.: MARIA SOUZA', padrao: '' },
       { id: 'empresa_dir', label: 'Empresa — direita', tipo: 'texto', placeholder: 'Ex.: Souza & Cia', padrao: '' },
       { id: 'badge', label: 'Selo', tipo: 'texto', padrao: 'CONECTA 1:1' },
+      { id: 'pos', label: 'Subir nomes e botão', tipo: 'range', min: 0, max: 700, passo: 10, padrao: 0, ajuda: 'Sobe o bloco de nomes + selo. 0 = no rodapé.' },
       campoTam('pessoaEsq', 'Tamanho — participante esquerda'),
       campoCor('pessoaEsq', 'Cor — participante esquerda'),
       campoTam('pessoaDir', 'Tamanho — participante direita'),
