@@ -33,7 +33,7 @@ import {
   ConectaCtaCard,
   ConectaFeedbackCard,
 } from './conecta/ConectaCards'
-import { FUNDOS_CONECTA } from './conecta/cores'
+import { FUNDOS_CONECTA, COLORS_CONECTA } from './conecta/cores'
 
 // Paleta oficial da Shapes (primárias + gama secundária) para os fundos.
 const SWATCHES = PALETA_SHAPES
@@ -166,7 +166,43 @@ function campoTagConecta(padrao: string): Campo {
 
 const AJUDA_KW =
   'Título em peso leve; a PALAVRA-CHAVE entre "aspas" ou *asteriscos* fica em ' +
-  'negrito turquesa — é a identidade do sistema. Use quebras de linha.'
+  'negrito turquesa — é a identidade do sistema. Use quebras de linha. ' +
+  'O texto quebra sozinho para não passar da margem.'
+
+// Slider "volume" de tamanho de um texto (companheiro ${id}_tam, 100 = normal).
+function campoTam(id: string, label: string): Campo {
+  return { id: `${id}_tam`, label, tipo: 'range', min: 60, max: 160, passo: 2, padrao: 100 }
+}
+
+// Cor do texto (título): Automático ou uma cor fixa da paleta.
+function campoCorTexto(): Campo {
+  return {
+    id: 'cor_texto',
+    label: 'Cor do texto',
+    tipo: 'select',
+    chips: true,
+    padrao: 'auto',
+    ajuda: 'Automático combina com o fundo. A palavra-chave continua turquesa.',
+    opcoes: [{ valor: 'auto', rotulo: 'Automático' }, ...COLORS_CONECTA.map((c) => ({ valor: c.valor, rotulo: c.rotulo }))],
+  }
+}
+
+// Cor do logo: Automático (segue o fundo) ou fixa.
+function campoCorLogoConecta(): Campo {
+  return {
+    id: 'cor_logo',
+    label: 'Cor do logo',
+    tipo: 'select',
+    chips: true,
+    padrao: 'auto',
+    opcoes: [
+      { valor: 'auto', rotulo: 'Automático' },
+      { valor: 'branco', rotulo: 'Branco' },
+      { valor: 'turquesa', rotulo: 'Turquesa' },
+      { valor: 'navy', rotulo: 'Navy' },
+    ],
+  }
+}
 
 // ============================================================================
 // Registro de templates validados pela KA.
@@ -864,6 +900,10 @@ export const TEMPLATES: Template[] = [
         padrao: 'O núcleo de negócios da ACIGRA em Gravataí.',
       },
       { id: 'deslize', label: 'Rodapé (ex.: Deslize →)', tipo: 'texto', padrao: 'Deslize →' },
+      campoTam('titulo', 'Tamanho do título'),
+      campoTam('subtitulo', 'Tamanho do subtítulo'),
+      campoCorTexto(),
+      campoCorLogoConecta(),
       campoFundoConecta('navy'),
     ],
     render: ConectaCapaCard,
@@ -896,6 +936,10 @@ export const TEMPLATES: Template[] = [
         padrao:
           'Sem processos claros, cada decisão vira aposta. O núcleo ajuda a trocar o achismo por método.',
       },
+      campoTam('titulo', 'Tamanho do título'),
+      campoTam('texto', 'Tamanho do texto'),
+      campoCorTexto(),
+      campoCorLogoConecta(),
       campoFundoConecta('navy'),
     ],
     render: ConectaConteudoCard,
@@ -925,6 +969,10 @@ export const TEMPLATES: Template[] = [
           'Confiança: escuta, transparência e respeito.\n' +
           'Propósito: impacto positivo na comunidade.',
       },
+      campoTam('titulo', 'Tamanho do título'),
+      campoTam('itens', 'Tamanho dos itens'),
+      campoCorTexto(),
+      campoCorLogoConecta(),
       campoFundoConecta('navy'),
     ],
     render: ConectaListaCard,
@@ -960,6 +1008,10 @@ export const TEMPLATES: Template[] = [
         padrao: 'Conexões, aprendizado\ne troca de "experiências"',
       },
       { id: 'apoio', label: 'Data — Hora · Local', tipo: 'texto', padrao: '25 Mar 2025 — 19h · ACIGRA' },
+      campoTam('titulo', 'Tamanho do título'),
+      campoTam('apoio', 'Tamanho da data/local'),
+      campoCorTexto(),
+      campoCorLogoConecta(),
       campoFundoConecta('navy'),
     ],
     render: ConectaFotoCard,
@@ -984,6 +1036,7 @@ export const TEMPLATES: Template[] = [
         ajuda: 'A foto é o protagonista. Use Posição e Zoom para enquadrar.',
       },
       { id: 'badge', label: 'Selo', tipo: 'texto', padrao: 'CONECTA 1:1' },
+      campoCorLogoConecta(),
       campoFundoConecta('navy'),
     ],
     render: ConectaUmAUmCard,
@@ -1003,6 +1056,9 @@ export const TEMPLATES: Template[] = [
       { id: 'ano', label: 'Ano', tipo: 'texto', padrao: '2025' },
       { id: 'rodape', label: 'Rodapé', tipo: 'texto', padrao: 'Eventos do mês →' },
       { id: 'numero', label: 'Número do mês (fundo)', tipo: 'texto', maxLen: 2, padrao: '04' },
+      campoTam('mes', 'Tamanho do mês'),
+      campoCorTexto(),
+      campoCorLogoConecta(),
       campoFundoConecta('navy'),
     ],
     render: ConectaCalendarioCard,
@@ -1033,6 +1089,10 @@ export const TEMPLATES: Template[] = [
         padrao: 'Antes de pensar em crescer, pare e reflita.',
       },
       { id: 'deslize', label: 'Rodapé (ex.: Deslize →)', tipo: 'texto', padrao: 'Deslize →' },
+      campoTam('titulo', 'Tamanho do título'),
+      campoTam('texto', 'Tamanho do texto'),
+      campoCorTexto(),
+      campoCorLogoConecta(),
       campoFundoConecta('navy'),
     ],
     render: ConectaEducativoCard,
@@ -1055,6 +1115,9 @@ export const TEMPLATES: Template[] = [
         ajuda: AJUDA_KW,
         padrao: 'Empresas crescem quando\nas pessoas por trás delas\ncrescem "juntas".',
       },
+      campoTam('frase', 'Tamanho da frase'),
+      campoCorTexto(),
+      campoCorLogoConecta(),
       campoFundoConecta('navy'),
     ],
     render: ConectaFraseCard,
@@ -1079,6 +1142,9 @@ export const TEMPLATES: Template[] = [
         padrao: 'Conexão com "propósito".\nCrescimento com "consistência".',
       },
       { id: 'exclusivo', label: 'Linha de exclusividade', tipo: 'texto', padrao: 'As vagas abrem duas vezes por ano.' },
+      campoTam('frase', 'Tamanho da frase'),
+      campoCorTexto(),
+      campoCorLogoConecta(),
       campoFundoConecta('cta'),
     ],
     render: ConectaCtaCard,
@@ -1129,6 +1195,7 @@ export const TEMPLATES: Template[] = [
         placeholder: 'Vazio = 1ª letra do nome',
         padrao: '',
       },
+      campoCorLogoConecta(),
       campoFundoConecta('navy'),
     ],
     render: ConectaFeedbackCard,

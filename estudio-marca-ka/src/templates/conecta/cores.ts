@@ -32,15 +32,37 @@ export interface FundoConecta {
   gradiente?: string
 }
 
-// Fundos oferecidos no editor. Só as duas famílias do sistema: escuro (navy /
-// CTA) e claro (warm). Turquesa NUNCA é fundo inteiro.
+// Fundos oferecidos no editor. Famílias do sistema: escuro (navy / CTA /
+// sólidos) e claro (warm / branco). Turquesa NUNCA é fundo inteiro.
 export const FUNDOS_CONECTA: FundoConecta[] = [
   { valor: 'navy', rotulo: 'Navy (gradiente)', hex: COR_NAVY, gradiente: GRADIENTE_NAVY },
   { valor: 'cta', rotulo: 'Navy CTA (radial)', hex: COR_DARK, gradiente: GRADIENTE_CTA },
+  { valor: 'navySolido', rotulo: 'Navy sólido', hex: COR_NAVY },
+  { valor: 'escuro', rotulo: 'Escuro', hex: COR_DARK },
+  { valor: 'preto', rotulo: 'Quase-preto', hex: COR_DARKER },
   { valor: 'warm', rotulo: 'Warm (claro)', hex: COR_WARM },
+  { valor: 'branco', rotulo: 'Branco', hex: '#FFFFFF' },
 ]
 
 const MAPA = new Map(FUNDOS_CONECTA.map((f) => [f.valor, f]))
+
+// Cores escolhíveis para TEXTO e LOGO (além de "Automático").
+export const COLORS_CONECTA: { valor: string; rotulo: string; hex: string }[] = [
+  { valor: 'branco', rotulo: 'Branco', hex: '#FFFFFF' },
+  { valor: 'navy', rotulo: 'Navy', hex: COR_NAVY },
+  { valor: 'turquesa', rotulo: 'Turquesa', hex: COR_TURQUESA },
+  { valor: 'cinza', rotulo: 'Cinza claro', hex: COR_GRAY },
+  { valor: 'cinzaEscuro', rotulo: 'Cinza escuro', hex: COR_GRAY_DARK },
+  { valor: 'grafite', rotulo: 'Grafite', hex: COR_DARK },
+]
+const MAPA_COR = new Map(COLORS_CONECTA.map((c) => [c.valor, c.hex]))
+
+/** Resolve a cor escolhida (chave) para hex; 'auto'/vazio devolve null. */
+export function corEscolhida(valor: string | number | undefined): string | null {
+  const v = String(valor || 'auto')
+  if (v === 'auto' || v === '') return null
+  return MAPA_COR.get(v) ?? (v.startsWith('#') ? v : null)
+}
 
 /** CSS de background para a chave (gradiente ou hex), ou um hex direto. */
 export function fundoCss(valor: string): string {
@@ -49,9 +71,9 @@ export function fundoCss(valor: string): string {
   return valor || GRADIENTE_NAVY
 }
 
-/** Fundo é escuro? (navy e cta = escuro; warm = claro). */
+/** Fundo é escuro? (warm e branco = claro; o resto = escuro). */
 export function ehFundoEscuro(valor: string): boolean {
-  return valor !== 'warm'
+  return valor !== 'warm' && valor !== 'branco'
 }
 
 /** Cor do TÍTULO: branco no escuro, navy no claro. */

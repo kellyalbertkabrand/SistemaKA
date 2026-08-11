@@ -39,15 +39,24 @@ export function ConectaIconeAssinatura({
 }
 
 /**
- * Lockup: símbolo + CONECTA + tagline. Em fundo escuro usa a variante BRANCA
- * (com drop-shadow); em fundo claro, turquesa + tagline navy.
+ * Lockup: símbolo + CONECTA + tagline. `cor` = 'auto' segue o fundo (branco no
+ * escuro com drop-shadow; turquesa no claro); ou força 'branco'/'turquesa'/'navy'.
  */
-export function ConectaLogo({ escuro = true, altura = 64 }: { escuro?: boolean; altura?: number }) {
-  const corSimbolo = escuro ? 'branco' : 'turquesa'
-  const corWord = escuro ? 'branco' : 'turquesa'
-  const corTag = escuro ? '#FFFFFF' : '#1B2A4A'
+export function ConectaLogo({
+  escuro = true,
+  altura = 64,
+  cor = 'auto',
+}: {
+  escuro?: boolean
+  altura?: number
+  cor?: 'auto' | 'branco' | 'turquesa' | 'navy'
+}) {
+  const variante = cor === 'auto' ? (escuro ? 'branco' : 'turquesa') : cor
+  const corSimbolo = variante
+  const corWord = variante
+  const corTag = variante === 'branco' ? '#FFFFFF' : variante === 'turquesa' ? '#00CEC9' : '#1B2A4A'
   const hWord = altura * 0.44
-  const sombra = escuro ? 'drop-shadow(0 2px 10px rgba(0,0,0,0.5))' : 'none'
+  const sombra = variante === 'branco' && escuro ? 'drop-shadow(0 2px 10px rgba(0,0,0,0.5))' : 'none'
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: altura * 0.16, filter: sombra }}>
       <img

@@ -26,11 +26,30 @@
   box-sizing: border-box;
 }
 
+/* Quebra automática: nenhum texto (nem palavra longa sem espaço) passa da
+   margem. Vale para todos os cards do Conecta. */
+.conecta-card .c-tag,
+.conecta-card .c-titulo,
+.conecta-card .c-apoio,
+.conecta-card .sub,
+.conecta-card .frase,
+.conecta-card .exclusivo,
+.conecta-card .sobre,
+.conecta-card .c-deslize,
+.conecta-card .mes,
+.conecta-card .ano,
+.conecta-card .rod,
+.conecta-card .conecta-lista-itens .item {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 100%;
+}
+
 /* ---- Peças comuns ------------------------------------------------------- */
 
 /* Tag de categoria (texto solto, sem box) */
 .c-tag {
-  font-size: 26px;
+  font-size: calc(26px * var(--tg, 1));
   font-weight: 600;
   letter-spacing: 0.32em;
   text-transform: uppercase;
@@ -40,7 +59,7 @@
 
 /* Título light — a keyword (aspas/*asteriscos*) vira 700 turquesa */
 .c-titulo {
-  font-size: 62px;
+  font-size: calc(62px * var(--tf, 1));
   font-weight: 300;
   line-height: 1.2;
   letter-spacing: -0.01em;
@@ -62,7 +81,7 @@
 
 /* Texto de apoio */
 .c-apoio {
-  font-size: 32px;
+  font-size: calc(32px * var(--ta, 1));
   font-weight: 300;
   line-height: 1.45;
   white-space: pre-line;
@@ -125,7 +144,7 @@
   margin-bottom: 22px;
 }
 .conecta-capa .c-titulo {
-  font-size: 84px;
+  font-size: calc(84px * var(--tf, 1));
   font-weight: 200;
   line-height: 1.16;
 }
@@ -166,7 +185,7 @@
   text-align: center;
 }
 .conecta-frase .frase {
-  font-size: 72px;
+  font-size: calc(72px * var(--tf, 1));
   font-weight: 300;
   line-height: 1.24;
   letter-spacing: -0.01em;
@@ -180,7 +199,7 @@
   text-align: center;
 }
 .conecta-cta .frase {
-  font-size: 62px;
+  font-size: calc(62px * var(--tf, 1));
   font-weight: 200;
   line-height: 1.24;
   white-space: pre-line;
@@ -200,7 +219,7 @@
   margin-top: 6px;
 }
 .conecta-lista-itens .item {
-  font-size: 38px;
+  font-size: calc(38px * var(--ta, 1));
   font-weight: 300;
   line-height: 1.3;
 }
@@ -421,7 +440,7 @@
   position: relative;
 }
 .conecta-cal .mes {
-  font-size: 152px;
+  font-size: calc(152px * var(--tf, 1));
   font-weight: 200;
   line-height: 1;
 }
@@ -466,7 +485,7 @@
   right: 6%;
 }
 .conecta-edu .c-titulo {
-  font-size: 66px;
+  font-size: calc(66px * var(--tf, 1));
   font-weight: 200;
 }
 
@@ -481,8 +500,8 @@
   padding: 72px 96px;
 }
 .conecta-card--wide.conecta-capa .c-titulo {
-  font-size: 96px;
+  font-size: calc(96px * var(--tf, 1));
 }
 .conecta-card--wide .c-titulo {
-  font-size: 58px;
+  font-size: calc(58px * var(--tf, 1));
 }
