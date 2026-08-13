@@ -1,6 +1,6 @@
 {
   "date": "2026-07-27",
-  "generated_at": "2026-08-12T07:16:05.316758+00:00",
+  "generated_at": "2026-08-13T07:18:23.035981+00:00",
   "count": 40,
   "items": [
     {
@@ -781,6 +781,27 @@
       "id": "543df458f41e63a6"
     },
     {
+      "title": "Processo contra Virginia Fonseca por publicidade de apostas tem reviravolta após decisão da Justiça - BNews RN",
+      "link": "https://www.bnewsrn.com.br/noticias/entretenimento/processo-contra-virginia-fonseca-por-publicidade-de-apostas-tem-reviravolta-apos-decisao-da-justica.html",
+      "source": "BNews RN",
+      "lang": "pt",
+      "region": "BR",
+      "category": "influencer",
+      "kind": "noticia",
+      "published": "2026-07-27",
+      "raw_summary": "Tribunal de Justiça do DF determina que processo sobre Virginia Fonseca e a plataforma Blaze agora é público, após pedido do MPDFT",
+      "title_pt": "",
+      "summary_pt": "Tribunal torna público processo sobre influenciadora e plataforma de apostas, com implicações para regulação de influenciadores.",
+      "angle_pt": "",
+      "pme_pt": "",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 11,
+      "fetched_at": "2026-08-13T07:15:08.626263+00:00",
+      "id": "1a8d2d72c4e769ef"
+    },
+    {
       "title": "OpenAI se prepara para lançar ChatGPT Ads no Brasil",
       "link": "https://www.meioemensagem.com.br/midia/openai-se-prepara-para-lancar-chatgtp-ads-no-brasil",
       "source": "Meio & Mensagem",
@@ -821,27 +842,6 @@
       "score": 10,
       "fetched_at": "2026-07-28T08:19:47.831293+00:00",
       "id": "57b6caf5be2ddd79"
-    },
-    {
-      "title": "Dança das Contas: Uber, Eventim e outras",
-      "link": "https://www.meioemensagem.com.br/comunicacao/danca-das-contas-uber-eventim-e-outras",
-      "source": "Meio & Mensagem",
-      "lang": "pt",
-      "region": "BR",
-      "category": "campanha",
-      "kind": "noticia",
-      "published": "2026-07-27",
-      "raw_summary": "Atualizada em 27/07, às 12:08. A Omnicom Media venceu um processo de concorrência e retém a conta global de mídia da Uber na maioria dos mercados globais: América do Norte, Europa, Oriente Médio e América Latina. No Brasil, o grupo assume a mídia, antes concentrada na Wieden+Kennedy SP, que segue como agência criativa da marca. Já a b+ca conquistou a conta da Eventim. O contrato, inicialmente com validade de um ano, contempla o planejamento estratégico... O post Dança das Contas: Uber, Eventim e outras apareceu primeiro em Meio e Mensagem - Marketing, Mídia e Comunicação .",
-      "title_pt": "",
-      "summary_pt": "Omnicom Media conquista conta global de mídia da Uber e b+ca assume conta da Eventim.",
-      "angle_pt": "",
-      "pme_pt": "",
-      "roteiro_pt": "",
-      "link_kelly": "",
-      "authors": "",
-      "score": 10,
-      "fetched_at": "2026-07-28T08:19:47.831348+00:00",
-      "id": "6d55f1b7f62c2be6"
     }
   ]
 }
