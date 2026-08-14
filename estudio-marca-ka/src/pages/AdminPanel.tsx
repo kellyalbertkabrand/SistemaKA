@@ -4,6 +4,7 @@ import { SiteHeader, type ItemMenu } from '../components/SiteHeader'
 import { clientesComTemplates } from '../templates/registry'
 import { marcaVisual } from '../templates/marcas'
 import { BrandStudio } from '../components/BrandStudio'
+import { BackupBotao } from '../components/BackupBotao'
 import { GateAdmin } from './gestao/GateAdmin'
 import { GestaoClientes } from './gestao/GestaoClientes'
 import { GestaoOrcamentos } from './gestao/GestaoOrcamentos'
@@ -329,6 +330,11 @@ export function AdminPanel() {
                       <span className="atalho-card__nome">Calendário de marcas</span>
                     </a>
                   </div>
+                </div>
+
+                <div className="atalho-grupo">
+                  <div className="atalho-grupo__tit">Backup e segurança</div>
+                  <BackupBotao />
                 </div>
               </div>
             )}
