@@ -51,10 +51,14 @@ src/templates/
 ```
 docs/ka/
 ├── README.md               # visão geral + índice
+├── brandbook.html          # Manual da Marca visual (página única, offline)
 ├── 01-cores.md
 ├── 02-tipografia.md
 ├── 03-logo.md
 ├── 04-formato-e-regras.md
 ├── 05-cards.md
-└── 06-arquivos-no-codigo.md  (este arquivo)
+├── 06-arquivos-no-codigo.md  (este arquivo)
+└── assets/                 # imagens da doc (paleta + miniaturas dos cards)
+    ├── paleta.png
+    └── card-01-capa.png … card-07-feedback.png
 ```

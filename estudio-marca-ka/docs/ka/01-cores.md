@@ -7,6 +7,8 @@
 
 ## 1. Paleta oficial da marca (6)
 
+![Paleta oficial da KA — Cream, Bege Quente, Cobre, Caramelo, Azul Essência, Marinho](assets/paleta.png)
+
 Vêm primeiro no seletor — são a identidade da KA:
 
 | Nome | Hex | Uso típico |

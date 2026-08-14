@@ -26,12 +26,18 @@ estrategista de marca. A comunicação é **editorial e sóbria**, baseada em
 
 | Arquivo | Conteúdo |
 | --- | --- |
-| [`01-cores.md`](01-cores.md) | Paleta oficial (hex), contraste automático e cor de destaque |
+| [`brandbook.html`](brandbook.html) | **Manual da Marca visual** — página única e bonita (abrir no navegador) |
+| [`01-cores.md`](01-cores.md) | Paleta oficial (hex + amostra), contraste automático e cor de destaque |
 | [`02-tipografia.md`](02-tipografia.md) | Playfair Display · Montserrat · Outfit e a regra do negrito |
 | [`03-logo.md`](03-logo.md) | Logo KA (branco/preto) e uso automático por contraste |
 | [`04-formato-e-regras.md`](04-formato-e-regras.md) | Formato, cabeçalho, rodapé, texturas e regras de composição |
-| [`05-cards.md`](05-cards.md) | Os 7 cards/templates do sistema KA |
+| [`05-cards.md`](05-cards.md) | Os 7 cards/templates do sistema KA (com miniaturas) |
 | [`06-arquivos-no-codigo.md`](06-arquivos-no-codigo.md) | Onde cada coisa vive no código do app |
+
+> 📖 **Brandbook visual:** abra [`brandbook.html`](brandbook.html) no navegador
+> (é um arquivo único, com as fontes e imagens embutidas — funciona offline e dá
+> para imprimir/salvar em PDF). Reúne capa, essência, cores, tipografia, logo,
+> regras e a galeria dos 7 cards numa página só.
 
 ---
 
