@@ -58,7 +58,13 @@ docs/ka/
 ├── 04-formato-e-regras.md
 ├── 05-cards.md
 ├── 06-arquivos-no-codigo.md  (este arquivo)
-└── assets/                 # imagens da doc (paleta + miniaturas dos cards)
+├── 07-site.md              # padrao do site kellyalbert.com.br
+└── assets/                 # imagens da doc
     ├── paleta.png
-    └── card-01-capa.png … card-07-feedback.png
+    ├── card-01-capa.png … card-07-feedback.png
+    └── site-ambientes.png · site-acentos.png
 ```
+
+> ⚠️ O **site** (kellyalbert.com.br) é outro repositório:
+> **`kellyalbertkabrand/kellyalbert-site`** (HTML estático + `css/style.css`).
+> Não está neste repo do app. Ver [`07-site.md`](07-site.md).

@@ -33,6 +33,7 @@ estrategista de marca. A comunicação é **editorial e sóbria**, baseada em
 | [`04-formato-e-regras.md`](04-formato-e-regras.md) | Formato, cabeçalho, rodapé, texturas e regras de composição |
 | [`05-cards.md`](05-cards.md) | Os 7 cards/templates do sistema KA (com miniaturas) |
 | [`06-arquivos-no-codigo.md`](06-arquivos-no-codigo.md) | Onde cada coisa vive no código do app |
+| [`07-site.md`](07-site.md) | **Padrão do site** kellyalbert.com.br (cores, botões, seções) |
 
 > 📖 **Brandbook visual:** abra [`brandbook.html`](brandbook.html) no navegador
 > (é um arquivo único, com as fontes e imagens embutidas — funciona offline e dá
@@ -55,6 +56,9 @@ estrategista de marca. A comunicação é **editorial e sóbria**, baseada em
 - **Cabeçalho:** `KA | Inteligência para Marcas · Branding · Posicionamento · IA`.
 - **Rodapé:** `KELLY ALBERT` (espaçado, discreto).
 - **Onde criar:** Estúdio → cliente **KA** → carrossel. Rota pública: `/ver/ka`.
+- **Site (kellyalbert.com.br):** realce **Dourado** `#B89B6A` (botão) + **Azul
+  Essência** `#3D6B7E` (links); fundo bege com grade 32px; botões em pílula.
+  Detalhes em [`07-site.md`](07-site.md). Código: repo `kellyalbert-site`.
 
 ---
 
