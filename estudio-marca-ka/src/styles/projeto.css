@@ -1,0 +1,374 @@
+/* ============================================================
+   Página pública do PROJETO (/projeto/:token) — visual da marca KA.
+   Capa marinho + anel de progresso + cartões + linha do tempo.
+   ============================================================ */
+
+.proj-pub {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(184, 155, 106, 0.08), transparent 42%),
+    radial-gradient(circle at 88% 90%, rgba(61, 107, 126, 0.07), transparent 46%),
+    var(--bg-1);
+  padding-bottom: 3.5rem;
+}
+
+/* ---- Capa ---- */
+.proj-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(140deg, #0f1c2b 0%, var(--marinho) 55%, #1d3a52 100%);
+  color: var(--t-inv);
+  text-align: center;
+  padding: 3rem 1.4rem 5.2rem;
+}
+.proj-hero::before,
+.proj-hero::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.proj-hero::before {
+  width: 420px;
+  height: 420px;
+  left: -140px;
+  top: -180px;
+  background: radial-gradient(circle, rgba(184, 155, 106, 0.22), transparent 65%);
+}
+.proj-hero::after {
+  width: 380px;
+  height: 380px;
+  right: -120px;
+  bottom: -200px;
+  background: radial-gradient(circle, rgba(61, 107, 126, 0.35), transparent 65%);
+}
+.proj-hero__logo {
+  height: 40px;
+  opacity: 0.92;
+  margin-bottom: 1.6rem;
+}
+.proj-hero__eyebrow {
+  font-size: 0.64rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.32em;
+  color: var(--dourado-c);
+  margin-bottom: 0.7rem;
+}
+.proj-hero h1 {
+  font-family: var(--heading);
+  font-weight: 600;
+  font-size: clamp(1.6rem, 4.5vw, 2.4rem);
+  line-height: 1.2;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.proj-hero__meta {
+  font-size: 0.82rem;
+  color: rgba(244, 241, 235, 0.72);
+  margin-top: 0.7rem;
+}
+.proj-vivo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: rgba(244, 241, 235, 0.75);
+  border: 1px solid rgba(244, 241, 235, 0.25);
+  border-radius: 100px;
+  padding: 0.35rem 0.9rem;
+}
+.proj-vivo::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #6fd394;
+  animation: vivo 1.8s ease-in-out infinite;
+}
+@keyframes vivo {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(111, 211, 148, 0.55); }
+  55% { box-shadow: 0 0 0 6px rgba(111, 211, 148, 0); }
+}
+
+/* ---- Anel de progresso (sobrepõe a capa) ---- */
+.proj-anel-wrap {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  margin-top: -3.6rem;
+}
+.proj-anel {
+  width: 118px;
+  height: 118px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 16px 40px rgba(15, 25, 35, 0.16);
+  padding: 9px;
+}
+.proj-anel circle {
+  fill: none;
+  stroke-width: 9;
+  stroke-linecap: round;
+}
+.proj-anel__fundo {
+  stroke: rgba(15, 25, 35, 0.08);
+}
+.proj-anel__valor {
+  stroke: url(#proj-grad);
+  transform: rotate(-90deg);
+  transform-origin: center;
+  transition: stroke-dashoffset 0.7s ease;
+}
+.proj-anel text {
+  font-family: var(--heading);
+  font-size: 26px;
+  font-weight: 600;
+  fill: var(--t-900);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+/* ---- Cartões de resumo ---- */
+.proj-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+  max-width: 680px;
+  margin: 1.4rem auto 0;
+  padding: 0 1.2rem;
+}
+.proj-stat {
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.07);
+  border-radius: 14px;
+  padding: 0.9rem 0.7rem;
+  text-align: center;
+  box-shadow: 0 8px 26px rgba(15, 25, 35, 0.05);
+}
+.proj-stat__rotulo {
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--dourado);
+  margin-bottom: 0.3rem;
+}
+.proj-stat__valor {
+  font-family: var(--heading);
+  font-size: clamp(0.95rem, 2.6vw, 1.15rem);
+  color: var(--t-900);
+  line-height: 1.25;
+}
+
+/* ---- Cartão da linha do tempo ---- */
+.proj-card {
+  max-width: 680px;
+  margin: 1.4rem auto 0;
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.07);
+  border-radius: 20px;
+  box-shadow: 0 18px 50px rgba(15, 25, 35, 0.07);
+  padding: 2rem 1.8rem;
+}
+@media (max-width: 560px) {
+  .proj-card {
+    margin-left: 0.9rem;
+    margin-right: 0.9rem;
+    padding: 1.5rem 1.1rem;
+  }
+}
+.proj-card__titulo {
+  font-family: var(--heading);
+  font-size: 1.15rem;
+  margin-bottom: 1.4rem;
+}
+.proj-desc {
+  font-size: 0.88rem;
+  color: var(--t-500);
+  line-height: 1.6;
+  margin-bottom: 1.4rem;
+}
+
+/* ---- Linha do tempo ---- */
+.proj-lt {
+  position: relative;
+}
+.proj-fase {
+  position: relative;
+  display: flex;
+  gap: 1.1rem;
+  padding-bottom: 1.6rem;
+}
+.proj-fase:last-child {
+  padding-bottom: 0;
+}
+.proj-fase:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 22px;
+  top: 48px;
+  bottom: 4px;
+  width: 2px;
+  background: rgba(15, 25, 35, 0.1);
+}
+.proj-fase--concluida:not(:last-child)::before {
+  background: linear-gradient(180deg, #2e6b45, rgba(46, 107, 69, 0.25));
+}
+.proj-fase__ponto {
+  width: 46px;
+  height: 46px;
+  flex: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+  border: 2px solid rgba(15, 25, 35, 0.14);
+  background: var(--bg-1);
+  font-family: var(--heading);
+  font-size: 0.95rem;
+  color: var(--t-400);
+}
+.proj-fase--concluida .proj-fase__ponto {
+  background: linear-gradient(140deg, #2e6b45, #3d8a5c);
+  border-color: transparent;
+  color: #fff;
+  font-size: 1.1rem;
+}
+.proj-fase--andamento .proj-fase__ponto {
+  background: #fff;
+  border-color: #e0b73a;
+  color: #9a7414;
+  animation: pulso-proj 1.8s ease-in-out infinite;
+}
+@keyframes pulso-proj {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(224, 183, 58, 0.4); }
+  55% { box-shadow: 0 0 0 9px rgba(224, 183, 58, 0.08); }
+}
+.proj-fase__corpo {
+  flex: 1;
+  min-width: 0;
+  padding-top: 2px;
+}
+/* Em andamento = amarelinho bem claro (a KA/VM estão trabalhando na etapa). */
+.proj-fase--andamento .proj-fase__corpo {
+  background: rgba(247, 210, 100, 0.18);
+  border: 1px solid rgba(224, 183, 58, 0.5);
+  border-radius: 14px;
+  padding: 0.8rem 1rem;
+  margin-top: -6px;
+}
+/* Concluída = verde clarinho. */
+.proj-fase--concluida .proj-fase__corpo {
+  background: rgba(46, 107, 69, 0.09);
+  border: 1px solid rgba(46, 107, 69, 0.24);
+  border-radius: 14px;
+  padding: 0.8rem 1rem;
+  margin-top: -6px;
+}
+.proj-fase__nome {
+  font-family: var(--heading);
+  font-weight: 600;
+  font-size: 1.02rem;
+  color: var(--t-900);
+}
+.proj-fase--pendente .proj-fase__nome {
+  color: var(--t-400);
+  font-weight: 500;
+}
+.proj-fase--concluida .proj-fase__nome {
+  color: #2e6b45;
+}
+.proj-fase__meta {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--t-400);
+  margin-top: 0.25rem;
+}
+.proj-fase--andamento .proj-fase__meta {
+  color: #9a7414;
+}
+.proj-fase--concluida .proj-fase__meta {
+  color: rgba(46, 107, 69, 0.75);
+}
+
+/* ---- Projeto concluído ---- */
+.proj-fim {
+  max-width: 680px;
+  margin: 1.4rem auto 0;
+  text-align: center;
+  background: linear-gradient(120deg, rgba(184, 155, 106, 0.16), rgba(184, 155, 106, 0.06));
+  border: 1px solid rgba(184, 155, 106, 0.35);
+  border-radius: 20px;
+  padding: 1.6rem 1.4rem;
+}
+@media (max-width: 560px) {
+  .proj-fim {
+    margin-left: 0.9rem;
+    margin-right: 0.9rem;
+  }
+}
+.proj-fim__titulo {
+  font-family: var(--heading);
+  font-size: 1.3rem;
+  color: var(--t-900);
+}
+.proj-fim p {
+  font-size: 0.85rem;
+  color: var(--t-500);
+  margin-top: 0.4rem;
+}
+
+/* ---- Rodapé ---- */
+.proj-rodape {
+  text-align: center;
+  margin-top: 2.4rem;
+}
+.proj-rodape__nome {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--t-500);
+}
+.proj-rodape__sub {
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--t-400);
+  margin-top: 0.35rem;
+}
+/* Assinatura conjunta KA + VM Rocks: espaçamento normal, sem caixa alta */
+.proj-rodape__parceria {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  color: var(--t-500);
+}
+
+/* Descrição da etapa na página do cliente */
+.proj-fase__desc {
+  font-size: 0.85rem;
+  color: var(--t-500);
+  line-height: 1.55;
+  margin-top: 0.25rem;
+}
+/* Responsável pela fase (na página do cliente) — usa as cores resp--KA/VM/outro
+   de gestao.css, que também é carregado nesta página. */
+.proj-fase__resp {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 100px;
+  padding: 0.18rem 0.55rem;
+  margin-top: 0.4rem;
+}

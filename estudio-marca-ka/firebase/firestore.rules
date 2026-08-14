@@ -1,0 +1,101 @@
+rules_version = '2';
+
+// ============================================================================
+// Regras de segurança do Firestore — Sistema Visual de Publicações da Marca (KA)
+//
+// COMO USAR:
+//   Firebase Console → Firestore Database → aba "Regras" (Rules) → cole tudo →
+//   Publicar.
+//
+// Há DUAS versões abaixo. Deixe ATIVA apenas UMA (a outra fica comentada):
+//
+//   • MODO TESTE (padrão agora): tudo liberado — combina com o app em modo
+//     aberto (sem login). Bom para testar rápido. ⚠️ Qualquer pessoa com o
+//     endereço do projeto pode ler/gravar. Use só enquanto está testando.
+//
+//   • MODO PRODUÇÃO: leitura/gravação da gestão só para a KA logada
+//     (kellyalbertka@gmail.com). As páginas públicas por token (orçamento e
+//     contrato) continuam liberadas para leitura e para a resposta/assinatura.
+//     Troque para esta versão antes de usar com clientes de verdade.
+// ============================================================================
+
+// ------------------------- MODO TESTE (ATIVO) -------------------------------
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+
+// ----------------------- MODO PRODUÇÃO (comente o de cima e descomente este)
+// service cloud.firestore {
+//   match /databases/{database}/documents {
+//     function ehKA() {
+//       return request.auth != null
+//         && request.auth.token.email == 'kellyalbertka@gmail.com';
+//     }
+//
+//     // Gestão interna: só a KA. Exceção: o link público /cadastro cria a
+//     // ficha do cliente (create liberado; ler/editar continua só a KA).
+//     match /clientes/{id}      { allow create: if true; allow read, update, delete: if ehKA(); }
+//     match /usuarios/{id}      { allow read, write: if ehKA() || request.auth.uid == id; }
+//     match /convites/{id}      { allow read, write: if ehKA(); }
+//     match /kit_marca/{id}     { allow read, write: if ehKA(); }
+//     match /grafismos/{id}     { allow read, write: if ehKA(); }
+//     match /modelos_contrato/{id} { allow read, write: if ehKA(); }
+//
+//     // Orçamentos e contratos: a KA gerencia; o público responde/assina pelo
+//     // link (por token). Como o token está no próprio documento, a leitura
+//     // pública é liberada e a escrita pública fica restrita a poucos campos.
+//     match /orcamentos/{id} {
+//       allow read: if true;
+//       allow write: if ehKA();
+//     }
+//     match /contratos/{id} {
+//       allow read: if true;
+//       allow write: if ehKA()
+//         || (resource.data.status != 'assinado'); // assinatura pública única
+//     }
+//     match /cobrancas/{id} {
+//       allow read: if true;
+//       allow write: if ehKA();
+//     }
+//
+//     // PROJETOS: a KA gerencia; o cliente acompanha pelo link /projeto/:token
+//     // (leitura pública, como os orçamentos — quem não tem o token não acha).
+//     match /projetos/{id} {
+//       allow read: if true;
+//       allow write: if ehKA();
+//     }
+//     // Biblioteca de fases reutilizáveis: só a KA.
+//     match /fases_biblioteca/{id} { allow read, write: if ehKA(); }
+//
+//     // Atividades pessoais da KA (painel Trabalho/BIA/Pessoal): só a KA.
+//     match /atividades/{id} { allow read, write: if ehKA(); }
+//
+//     // Caixa pessoal da KA (Financeiro: entradas e saídas): só a KA.
+//     match /caixa/{id} { allow read, write: if ehKA(); }
+//
+//     // Métricas de acesso ao site (Relatórios → Desempenho do site): só a KA.
+//     match /site_metricas/{id} { allow read, write: if ehKA(); }
+//
+//     // CUIDADORAS (controle pessoal da KA): o link público /cadastro-cuidadora
+//     // pode CRIAR a ficha e os documentos anexados. O auto-salvamento também
+//     // ATUALIZA a própria ficha ENQUANTO é rascunho (ainda não enviada e não
+//     // revisada pela KA); depois de enviada/revisada, só a KA edita.
+//     match /cuidadoras/{id} {
+//       allow create: if true;
+//       allow update: if ehKA()
+//         || (resource.data.rascunho == true && resource.data.revisado == false);
+//       allow read, delete: if ehKA();
+//       match /documentos/{docId} {
+//         allow create: if true;
+//         // remover um anexo durante o preenchimento (rascunho) é liberado.
+//         allow delete: if ehKA()
+//           || get(/databases/$(database)/documents/cuidadoras/$(id)).data.rascunho == true;
+//         allow read, update: if ehKA();
+//       }
+//     }
+//   }
+// }

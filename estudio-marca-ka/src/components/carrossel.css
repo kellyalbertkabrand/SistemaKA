@@ -1,0 +1,253 @@
+.carrossel__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.2rem;
+}
+.carrossel__bar-actions {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+/* Painel "criar vários slides de uma vez" (colar textos). */
+.lote {
+  border: 1px solid var(--linha, rgba(15, 25, 35, 0.16));
+  background: var(--card, #fbf9f3);
+  border-radius: 14px;
+  padding: 1.1rem 1.2rem;
+  margin-bottom: 1.2rem;
+}
+.lote__head h3 {
+  margin: 0 0 0.3rem;
+  font-size: 1.05rem;
+}
+.lote__head p {
+  margin: 0 0 1rem;
+  font-size: 0.86rem;
+  color: var(--t-600, #5a5346);
+  line-height: 1.5;
+  max-width: 60ch;
+}
+.lote__grid {
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 1rem;
+  align-items: start;
+}
+@media (max-width: 720px) {
+  .lote__grid {
+    grid-template-columns: 1fr;
+  }
+}
+.lote__textarea {
+  width: 100%;
+  resize: vertical;
+  font-size: 16px;
+  line-height: 1.5;
+  padding: 0.7rem 0.8rem;
+}
+.lote__lado {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.lote__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.lote__dica {
+  font-size: 0.76rem;
+  color: var(--t-500, #837b6c);
+  margin: 0 0 0.2rem;
+  line-height: 1.45;
+}
+
+.carrossel__body {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 1.4rem;
+  align-items: start;
+}
+@media (max-width: 820px) {
+  .carrossel__body {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* filmstrip */
+.carrossel__strip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  max-height: 640px;
+  overflow-y: auto;
+  padding: 0.2rem;
+}
+@media (max-width: 820px) {
+  .carrossel__strip {
+    flex-direction: row;
+    max-height: none;
+    overflow-x: auto;
+  }
+}
+.thumb {
+  position: relative;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  flex: 0 0 auto;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(15, 25, 35, 0.1);
+}
+.thumb.on {
+  border-color: var(--essencia);
+}
+.thumb__scaler {
+  position: relative;
+  overflow: hidden;
+  display: block;
+}
+.thumb__n {
+  position: absolute;
+  left: 4px;
+  bottom: 3px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(15, 25, 35, 0.6);
+  border-radius: 6px;
+  padding: 0.05rem 0.35rem;
+}
+.thumb__x {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(15, 25, 35, 0.6);
+  color: #fff;
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.thumb__dup {
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(15, 25, 35, 0.6);
+  color: #fff;
+  font-size: 0.72rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+.thumb__move {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.thumb__move button {
+  width: 20px;
+  height: 18px;
+  border: none;
+  border-radius: 5px;
+  background: rgba(15, 25, 35, 0.6);
+  color: #fff;
+  font-size: 0.55rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+.thumb__move button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.thumb--add {
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  color: var(--t-500);
+  border: 2px dashed rgba(15, 25, 35, 0.2);
+  background: transparent;
+}
+
+/* editor do slide (reaproveita .editor__panel/.editor__stage do editor.css) */
+.carrossel__editor {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 1.4rem;
+  align-items: start;
+}
+@media (max-width: 820px) {
+  .carrossel__editor {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* nós de exportação fora da tela */
+.carrossel__offscreen {
+  position: absolute;
+  left: -99999px;
+  top: 0;
+  pointer-events: none;
+}
+
+/* Enquanto grava vídeo, os slides ficam bloqueados (não trocar/rolar). */
+.thumb--travado {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* Bloco "pronto para salvar" — no iPhone o salvamento no rolo precisa de um
+   toque novo (Web Share), então o vídeo fica pronto e a pessoa toca aqui. */
+.pronto-salvar {
+  border: 2px solid #2f6f6a;
+  background: #eef7f6;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  text-align: center;
+}
+.pronto-salvar strong {
+  color: #1f4f4b;
+}
+.pronto-salvar p {
+  margin: 4px 0 12px;
+  font-size: 14px;
+  color: #33564f;
+}
+.btn--salvar-rolo {
+  background: #2f6f6a !important;
+  color: #fff !important;
+  font-weight: 700;
+  animation: pulsarSalvar 1.6s ease-in-out infinite;
+}
+@keyframes pulsarSalvar {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(47, 111, 106, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(47, 111, 106, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn--salvar-rolo {
+    animation: none;
+  }
+}

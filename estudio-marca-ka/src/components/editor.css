@@ -1,0 +1,540 @@
+/* Celular: empilhado — preview (layout) EM CIMA, controles (mudanças) EMBAIXO.
+   Espaços apertados para o card fixo ocupar o mínimo e sobrar tela p/ mexer. */
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: stretch;
+}
+.editor__stage {
+  order: 1;
+}
+.editor__panel {
+  order: 2;
+}
+
+/* Desktop: duas colunas — controles (rolam) à esquerda e o card FIXO à direita
+   no tamanho cheio (Story inclusive). O scroll fica no lado dos controles. */
+@media (min-width: 900px) {
+  .editor {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 2rem;
+    align-items: start;
+  }
+  .editor__panel {
+    order: 1;
+  }
+  .editor__stage {
+    order: 2;
+    top: 16px;
+  }
+}
+
+.editor__panel {
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 14px;
+  padding: 1.4rem 1.4rem 1.6rem;
+}
+
+.editor__hint {
+  font-size: 0.7rem;
+  color: var(--t-500);
+  margin-top: 0.4rem;
+  line-height: 1.45;
+}
+
+/* segmentos (formato) */
+.seg {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.seg button {
+  flex: 1;
+  min-width: fit-content;
+  font-family: var(--body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.5rem 0.4rem;
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  background: #fff;
+  border-radius: 7px;
+  cursor: pointer;
+  color: var(--t-700);
+  transition: 0.15s;
+}
+.seg button.on {
+  background: var(--marinho);
+  color: var(--t-inv);
+  border-color: var(--marinho);
+}
+
+/* estrelas (input) */
+.stars-input {
+  display: flex;
+  gap: 0.3rem;
+}
+.stars-input button {
+  font-size: 1.7rem;
+  line-height: 1;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #d8d4cb;
+  transition: 0.1s;
+}
+.stars-input button.on {
+  color: #f4b24e;
+}
+
+/* upload de imagem */
+.img-input input[type='file'] {
+  font-size: 0.8rem;
+}
+.img-preview {
+  display: block;
+  margin-top: 0.6rem;
+  max-width: 100%;
+  max-height: 140px;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 25, 35, 0.12);
+}
+
+/* ajuste de enquadramento da foto */
+.ajuste-foto {
+  margin-top: 0.7rem;
+  padding: 0.7rem 0.8rem;
+  background: var(--bg-1);
+  border: 1px solid rgba(15, 25, 35, 0.1);
+  border-radius: 8px;
+}
+.ajuste-foto label {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--t-500);
+  margin: 0.5rem 0 0.15rem;
+}
+.ajuste-foto label:first-child {
+  margin-top: 0;
+}
+.ajuste-foto input[type='range'] {
+  width: 100%;
+  accent-color: var(--essencia);
+}
+
+/* seletor de forma (as 3 formas Shapes) */
+.forma-input {
+  display: flex;
+  gap: 0.6rem;
+}
+.forma-op {
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 10px;
+  background: #fff;
+  padding: 0.35rem;
+  cursor: pointer;
+  color: #c9c4b8;
+  line-height: 0;
+}
+.forma-op.on {
+  border-color: var(--essencia);
+  color: var(--marinho);
+}
+
+/* seletor de cor + amostras */
+.cor-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.cor-input input[type='color'] {
+  width: 44px;
+  height: 34px;
+  padding: 0;
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+}
+.cor-input .swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(15, 25, 35, 0.15);
+  cursor: pointer;
+  padding: 0;
+}
+.cor-input .swatch.on {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--essencia);
+}
+
+/* palco */
+/* Botões de exportar: todos iguais (mesma cor/formato), empilhados. */
+.export-botoes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+.export-botoes .btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+/* Sinal de carregando dentro do botão. */
+.spin-mini {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #fff;
+  animation: spin-mini 0.7s linear infinite;
+  flex: 0 0 auto;
+}
+@keyframes spin-mini {
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* "Carregando vídeo…" logo abaixo do seletor de arquivo (vídeo decodificando). */
+.video-carregando {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  background: #eef7f6;
+  border: 1px solid #bcdedb;
+  border-radius: 8px;
+  color: #1f4f4b;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.video-carregando .spin-mini {
+  border-color: rgba(31, 79, 75, 0.35);
+  border-top-color: #1f4f4b;
+}
+
+/* Caixa de ATENÇÃO (âmbar) durante a gravação do vídeo. */
+.aviso-atencao {
+  background: #fff4d6;
+  border: 1px solid #e6b800;
+  border-left: 4px solid #e6a100;
+  color: #6b4e00;
+  border-radius: 10px;
+  padding: 0.85rem 0.95rem;
+  font-size: 0.83rem;
+  line-height: 1.5;
+}
+/* Bloco "pronto para salvar" — no iPhone salvar no rolo precisa de um toque novo
+   (Web Share), então o vídeo fica pronto e a pessoa toca aqui. */
+.pronto-salvar {
+  border: 2px solid #2f6f6a;
+  background: #eef7f6;
+  border-radius: 12px;
+  padding: 0.85rem 0.95rem;
+  text-align: center;
+}
+.pronto-salvar strong {
+  color: #1f4f4b;
+}
+.pronto-salvar p {
+  margin: 0.25rem 0 0.75rem;
+  font-size: 0.85rem;
+  color: #33564f;
+}
+.btn--salvar-rolo {
+  background: #2f6f6a !important;
+  color: #fff !important;
+  font-weight: 700;
+  animation: pulsarSalvar 1.6s ease-in-out infinite;
+}
+@keyframes pulsarSalvar {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(47, 111, 106, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(47, 111, 106, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn--salvar-rolo {
+    animation: none;
+  }
+}
+.aviso-atencao strong {
+  color: #5a3d00;
+}
+
+/* Pré-visualização em tela cheia. */
+.preview-cheia {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 25, 35, 0.82);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  gap: 0.6rem;
+}
+.preview-cheia__palco {
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+.preview-cheia__x {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.preview-cheia__x:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+.preview-cheia__label {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.82rem;
+}
+
+/* Barra de Desfazer/Refazer/Tela cheia acima dos botões de baixar. */
+.acoes-rapidas {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+.acoes-rapidas button {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  border: 1px solid rgba(15, 25, 35, 0.16);
+  background: #fff;
+  color: var(--t-800, #1c2530);
+  border-radius: 8px;
+  padding: 0.45rem 0.5rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.acoes-rapidas button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.acoes-rapidas button:not(:disabled):hover {
+  background: #f5f2ec;
+}
+
+/* Chips visuais de seleção (ex.: proporção da mídia: 16:9 / 1:1 / 9:16). */
+.chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-width: 74px;
+  padding: 0.55rem 0.6rem;
+  border: 1px solid rgba(15, 25, 35, 0.16);
+  background: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--t-700, #33404d);
+}
+.chip:hover {
+  background: #f5f2ec;
+}
+.chip.on {
+  border-color: #c47830;
+  box-shadow: 0 0 0 1px #c47830 inset;
+  background: #fdf6ee;
+}
+.chip__ratio {
+  display: block;
+  background: rgba(15, 25, 35, 0.18);
+  border-radius: 3px;
+}
+.chip.on .chip__ratio {
+  background: #c47830;
+}
+.chip__label {
+  font-size: 0.74rem;
+  line-height: 1.1;
+  text-align: center;
+}
+
+/* Seletor de textura de fundo (padrões geométricos). */
+.textura-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(74px, 1fr));
+  gap: 0.5rem;
+}
+.textura-op {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem;
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.16);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.textura-op:hover { background: #f5f2ec; }
+.textura-op.on { border-color: #c47830; box-shadow: 0 0 0 1px #c47830 inset; }
+.textura-op__amostra {
+  width: 100%;
+  height: 42px;
+  border-radius: 6px;
+  background-color: #f3efe6;
+  display: grid;
+  place-items: center;
+  color: rgba(15, 25, 35, 0.4);
+  font-size: 18px;
+}
+.textura-op__nome {
+  font-size: 0.72rem;
+  line-height: 1.1;
+  text-align: center;
+  color: var(--t-700, #33404d);
+}
+
+/* Contador de caracteres abaixo dos campos de texto com limite. */
+.contador-chars {
+  display: block;
+  text-align: right;
+  font-size: 0.72rem;
+  color: #9a9384;
+  margin-top: 0.2rem;
+}
+
+/* Aviso de rascunho recuperado (não perdeu o trabalho). */
+.rascunho-aviso {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(46, 107, 69, 0.1);
+  border: 1px solid rgba(46, 107, 69, 0.28);
+  color: #2e6b45;
+  border-radius: 10px;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
+}
+.rascunho-aviso button {
+  border: 1px solid rgba(46, 107, 69, 0.4);
+  background: #fff;
+  color: #2e6b45;
+  border-radius: 8px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+
+/* Botão de PARAR/CANCELAR uma exportação travada (não perde o trabalho). */
+.btn--cancelar {
+  width: 100%;
+  background: #fff;
+  color: #b42318;
+  border: 1px solid #f1aca4;
+}
+.btn--cancelar:hover {
+  background: #fef3f2;
+  border-color: #e07a70;
+}
+
+/* Caixa de sucesso com as instruções pós-download. */
+.export-feito {
+  background: rgba(46, 107, 69, 0.1);
+  border: 1px solid rgba(46, 107, 69, 0.28);
+  color: #2e6b45;
+  border-radius: 10px;
+  padding: 0.8rem 0.9rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.export-feito strong {
+  color: #234f34;
+}
+
+/* Paleta de cores (fundo/texto): amostras clicáveis mostrando a cor real. */
+.paleta-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.paleta-swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(15, 25, 35, 0.18);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.paleta-swatch:hover {
+  transform: scale(1.08);
+}
+.paleta-swatch.on {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--essencia, #3d6b7e);
+}
+.paleta-swatch.auto {
+  background: conic-gradient(from 220deg, #152535, #c47830, #f8f7f2, #3d6b7e, #152535);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.editor__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0 0.5rem;
+  /* Card fixo: fica grudado no topo enquanto você rola os controles e vai
+     vendo as mudanças de cor/fonte/texto ao vivo. */
+  position: sticky;
+  top: 6px;
+  z-index: 5;
+  background: var(--bg-1);
+  border-radius: 0 0 12px 12px;
+}
+.editor__scaler {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 16px 50px rgba(15, 25, 35, 0.18);
+}
+.editor__label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--t-400);
+}

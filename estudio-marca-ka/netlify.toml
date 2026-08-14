@@ -1,0 +1,33 @@
+# Deploy do app "Estúdio de Marca — KA" (separado do site de notícias em Python).
+# Ao conectar este diretório como um site próprio no Netlify, use:
+#   Base directory:    estudio-marca-ka
+#   Build command:     npm run build
+#   Publish directory: estudio-marca-ka/dist
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Funções de servidor (guardam segredos, ex.: a chave da Anthropic para o
+# assistente de IA de contratos). Ficam em estudio-marca-ka/netlify/functions.
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+[build.environment]
+  NODE_VERSION = "20"
+  # As chaves que aparecem no front deste app são PÚBLICAS por design:
+  #  - config web do Firebase (apiKey AIzaSy...): identifica o projeto, não é
+  #    segredo — a segurança vem das Regras do Firestore.
+  #  - chave anon/publishable do Supabase (legado): idem, feita para o navegador.
+  # Os segredos de verdade (service_role, MP_ACCESS_TOKEN, chave da Anthropic)
+  # NUNCA vão para o front — ficam só em funções de servidor. Por isso desligamos
+  # a "detecção inteligente" do scanner de segredos do Netlify, que bloqueava o
+  # build ao confundir essas chaves públicas com segredos.
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+  SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY"
+
+# SPA: todas as rotas caem no index.html (React Router cuida do resto).
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

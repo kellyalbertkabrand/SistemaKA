@@ -1,0 +1,3171 @@
+/* ============================================================
+   Gestão interna — abas, tabelas, badges, formulários e fichas
+   ============================================================ */
+
+/* ---- Busca das listas ---- */
+.busca {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-1);
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 10px;
+  padding: 0.1rem 0.6rem;
+  margin-bottom: 0.9rem;
+  max-width: 420px;
+}
+.busca__ico {
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+.busca__input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font-family: var(--body);
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+  outline: none;
+}
+.busca__x {
+  flex: none;
+  border: none;
+  background: transparent;
+  color: var(--t-500);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.3rem;
+  line-height: 1;
+}
+
+.badge--vm-mini {
+  background: rgba(196, 120, 48, 0.16);
+  color: #8a4b1f;
+}
+
+/* Chip de filtro em estado de ALERTA (ex.: cobranças atrasadas > 0) */
+.chip--alerta {
+  border-color: rgba(178, 58, 58, 0.5);
+  color: var(--erro);
+}
+.chip--alerta.chip--on {
+  background: var(--erro);
+  color: #fff;
+  border-color: var(--erro);
+}
+.chip--cliente {
+  border-color: rgba(46, 107, 69, 0.5);
+  color: #2e6b45;
+}
+.chip--cliente.chip--on {
+  background: #2e6b45;
+  color: #fff;
+  border-color: #2e6b45;
+}
+
+/* Checkbox "VM Rocks participa" na cobrança */
+.check-vm {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: var(--t-700);
+}
+.check-vm input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  accent-color: #c47830;
+}
+.campo-ajuda {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--t-400);
+  margin-top: 0.25rem;
+}
+
+/* Textarea que cresce sozinha (usada onde antes era um input de uma linha) */
+.campo-cresce {
+  min-height: 2.4em;
+  line-height: 1.4;
+  resize: vertical;
+  overflow: hidden;
+}
+
+/* ---- Abas do painel ---- */
+.painel-abas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.6rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.1);
+  padding-bottom: 0.75rem;
+}
+.painel-aba {
+  font-family: var(--body);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--t-500);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 100px;
+  padding: 0.5rem 1.05rem;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.painel-aba:hover {
+  color: var(--t-900);
+  background: rgba(15, 25, 35, 0.05);
+}
+.painel-aba.ativa {
+  color: #fff;
+  background: var(--marinho);
+}
+
+/* ---- Barra de ações de uma seção ---- */
+.gestao-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+.gestao-acoes .espaco {
+  flex: 1;
+}
+/* Botão "Enviar pelo WhatsApp" (verde do WhatsApp). */
+.btn--wpp {
+  background: #25d366;
+  border-color: #25d366;
+  color: #0b3d20;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.btn--wpp:hover {
+  background: #1eb457;
+  border-color: #1eb457;
+}
+
+/* Seletor "Ordenar por" (fica à direita das chips). */
+.gestao-acoes .ordenar {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: var(--t-600, #5a5346);
+}
+.gestao-acoes .ordenar select {
+  font-size: 0.85rem;
+  padding: 0.3rem 0.5rem;
+}
+
+/* ---- Tabela ---- */
+.tabela-wrap {
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 14px;
+  overflow-x: auto;
+}
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.tabela th {
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--t-400);
+  text-align: left;
+  padding: 0.85rem 1rem 0.6rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.08);
+  white-space: nowrap;
+}
+.tabela td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.05);
+  vertical-align: middle;
+}
+.tabela tr:last-child td {
+  border-bottom: none;
+}
+.tabela tbody tr:hover {
+  background: rgba(184, 155, 106, 0.05);
+}
+.tabela .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.tabela .acoes {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ---- Badges de status ---- */
+.badge {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 100px;
+  padding: 0.28rem 0.7rem;
+  border: 1px solid transparent;
+}
+.badge--cinza {
+  color: var(--t-500);
+  background: rgba(15, 25, 35, 0.06);
+}
+.badge--azul {
+  color: var(--essencia);
+  background: rgba(61, 107, 126, 0.1);
+}
+.badge--verde {
+  color: #2e6b45;
+  background: rgba(46, 107, 69, 0.12);
+}
+.badge--dourado {
+  color: var(--dourado);
+  background: var(--dourado-soft);
+}
+.badge--vermelho {
+  color: var(--erro);
+  background: rgba(178, 58, 58, 0.1);
+}
+
+/* ---- Botões pequenos de linha ---- */
+.btn-mini {
+  font-family: var(--body);
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--essencia);
+  background: transparent;
+  border: 1px solid rgba(61, 107, 126, 0.3);
+  border-radius: 100px;
+  padding: 0.3rem 0.7rem;
+  cursor: pointer;
+  transition: 0.15s;
+  margin-left: 0.35rem;
+}
+.btn-mini:hover {
+  background: rgba(61, 107, 126, 0.08);
+}
+.btn-mini--perigo {
+  color: var(--erro);
+  border-color: rgba(178, 58, 58, 0.3);
+}
+.btn-mini--perigo:hover {
+  background: rgba(178, 58, 58, 0.07);
+}
+.btn-mini:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* ---- Formulários em grade (ficha do cliente, orçamento) ---- */
+.form-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0 1rem;
+}
+.form-grade .campo-2 {
+  grid-column: span 2;
+}
+.form-grade .campo-toda {
+  grid-column: 1 / -1;
+}
+@media (max-width: 560px) {
+  .form-grade {
+    grid-template-columns: 1fr; /* uma coluna no celular — nunca estoura */
+  }
+  .form-grade .campo-2 {
+    grid-column: auto;
+  }
+  .pub-wrap {
+    padding: 1.3rem 0.9rem 3rem;
+  }
+  .pub-doc {
+    padding: 1.6rem 1.2rem;
+  }
+}
+
+/* ---- Itens do orçamento ---- */
+.itens-orcamento {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.item-orcamento {
+  display: grid;
+  grid-template-columns: 1fr 70px 120px 34px;
+  gap: 0.5rem;
+  align-items: center;
+}
+.item-orcamento input {
+  width: 100%;
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(15, 25, 35, 0.12);
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+  background: var(--bg-1);
+}
+.item-orcamento .remover {
+  border: none;
+  background: transparent;
+  color: var(--erro);
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.orcamento-total {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 0.7rem;
+  font-size: 0.85rem;
+  color: var(--t-500);
+  margin: 0.6rem 0 1rem;
+}
+.orcamento-total strong {
+  font-family: var(--heading);
+  font-size: 1.35rem;
+  color: var(--t-900);
+}
+
+/* ---- Aviso/nota ---- */
+.nota {
+  background: var(--dourado-soft);
+  border: 1px solid rgba(184, 155, 106, 0.3);
+  color: var(--t-700);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  border-radius: 10px;
+  padding: 0.75rem 0.9rem;
+  margin-bottom: 1.1rem;
+}
+.nota code {
+  font-size: 0.72rem;
+  background: rgba(15, 25, 35, 0.06);
+  border-radius: 4px;
+  padding: 0.05rem 0.3rem;
+}
+.erro-msg {
+  background: rgba(178, 58, 58, 0.08);
+  color: var(--erro);
+  font-size: 0.8rem;
+  border-radius: 8px;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 1rem;
+}
+
+/* ---- Página pública (orçamento/contrato) ---- */
+.pub-wrap {
+  min-height: 100vh;
+  background: var(--bg-1);
+  padding: 2.2rem 1.2rem 4rem;
+}
+.pub-doc {
+  max-width: 720px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 18px 50px rgba(15, 25, 35, 0.08);
+  padding: 2.4rem 2.2rem;
+}
+.pub-doc__head {
+  border-bottom: 2px solid var(--dourado);
+  padding-bottom: 1.2rem;
+  margin-bottom: 1.6rem;
+}
+.pub-doc__head h1 {
+  font-size: 1.5rem;
+  margin-top: 0.3rem;
+}
+.pub-doc__meta {
+  font-size: 0.78rem;
+  color: var(--t-500);
+  margin-top: 0.4rem;
+}
+.pub-doc pre.conteudo {
+  font-family: var(--body);
+  font-size: 0.88rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--t-700);
+}
+
+/* Os dois <pre> do corpo (principal + fecho) fluem sem gap dobrado. */
+.contrato-doc pre.conteudo {
+  margin: 0;
+}
+/* O fecho (encerramento + foro + data) fica JUNTO das assinaturas ao imprimir:
+   nunca deixa assinatura sozinha no topo de outra página. */
+.contrato-fecho {
+  margin-top: 1.1rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.contrato-fecho__texto {
+  margin-bottom: 0.4rem;
+}
+
+/* Bloco de assinaturas do contrato (centralizado, com traço maior). */
+.assinaturas {
+  margin-top: 2.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.4rem;
+}
+.assinatura {
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  /* Uma assinatura nunca parte no meio (papel numa página, linha na outra). */
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.assinatura__papel {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--t-500);
+  /* Espaço p/ a pessoa assinar acima da linha. */
+  margin-bottom: 3.4rem;
+}
+.assinatura__traco {
+  border-top: 1.5px solid var(--t-700);
+  width: 100%;
+  margin: 0 auto 0.45rem;
+}
+.assinatura__nome {
+  font-weight: 600;
+  color: var(--t-700);
+}
+.assinatura__doc {
+  font-size: 0.82rem;
+  color: var(--t-600);
+  margin-top: 0.1rem;
+}
+.pub-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+  margin: 1rem 0;
+}
+.pub-tabela th {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--t-400);
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.12);
+}
+.pub-tabela td {
+  padding: 0.55rem 0.6rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.06);
+}
+.pub-tabela .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.pub-total {
+  text-align: right;
+  margin: 1rem 0 1.4rem;
+  font-size: 0.9rem;
+  color: var(--t-500);
+}
+.pub-total strong {
+  font-family: var(--heading);
+  font-size: 1.5rem;
+  color: var(--t-900);
+  margin-left: 0.6rem;
+}
+.pub-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  margin-top: 1.6rem;
+}
+.btn--recusar {
+  background: transparent;
+  color: var(--erro);
+  border: 1px solid rgba(178, 58, 58, 0.35);
+}
+.btn--recusar:hover {
+  background: rgba(178, 58, 58, 0.07);
+}
+.pub-assinado {
+  background: rgba(46, 107, 69, 0.1);
+  border: 1px solid rgba(46, 107, 69, 0.25);
+  color: #2e6b45;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  margin-top: 1.4rem;
+}
+.pub-rodape {
+  text-align: center;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--t-400);
+  margin-top: 1.6rem;
+}
+
+/* ---- Relatórios financeiros ---- */
+.rel-controles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: flex-end;
+  margin-bottom: 1.2rem;
+}
+.rel-datas {
+  display: flex;
+  gap: 0.6rem;
+}
+.rel-datas label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.72rem;
+  color: var(--t-500);
+  gap: 0.2rem;
+}
+.rel-datas input {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  background: var(--bg-1);
+}
+.rel-acoes {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+.rel-doc__head {
+  margin-bottom: 1.1rem;
+}
+.rel-doc__head h1 {
+  font-size: 1.5rem;
+}
+.rel-doc__periodo {
+  font-size: 0.82rem;
+  color: var(--t-500);
+  margin-top: 0.2rem;
+}
+.rel-doc__rodape {
+  margin-top: 1.6rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(15, 25, 35, 0.12);
+  font-size: 0.75rem;
+  color: var(--t-400);
+  text-align: center;
+}
+.rel-secao {
+  margin-top: 1.3rem;
+}
+.rel-tabela {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.rel-tabela th {
+  text-align: left;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--t-500);
+  padding: 0.3rem 0.5rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.14);
+}
+.rel-tabela td {
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.06);
+}
+.rel-num {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.rel-vence {
+  white-space: nowrap;
+  color: var(--t-500);
+  font-size: 0.8rem;
+}
+.rel-mais {
+  color: #2e6b45;
+}
+.rel-menos {
+  color: var(--erro);
+}
+
+/* ---- Desempenho do site ---- */
+.seg--rel {
+  margin-bottom: 1rem;
+}
+.site-aviso {
+  font-size: 0.8rem;
+  color: var(--t-600, #4a5560);
+  background: rgba(61, 107, 126, 0.07);
+  border: 1px solid rgba(61, 107, 126, 0.2);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.9rem;
+  line-height: 1.4;
+}
+.site-aviso a {
+  color: var(--essencia);
+  font-weight: 600;
+}
+.grafico-barras {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  height: 178px;
+  padding: 1.4rem 0.2rem 0;
+  overflow-x: auto;
+}
+.gb-col {
+  flex: 1 0 42px;
+  min-width: 42px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  gap: 0.3rem;
+}
+.gb-barra {
+  width: 70%;
+  min-height: 3px;
+  background: linear-gradient(180deg, var(--essencia), rgba(61, 107, 126, 0.7));
+  border-radius: 6px 6px 0 0;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.gb-valor {
+  position: absolute;
+  top: -1.1rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--marinho);
+  white-space: nowrap;
+}
+.gb-rot {
+  font-size: 0.62rem;
+  color: var(--t-500);
+  white-space: nowrap;
+}
+
+/* ---- Impressão (contrato/orçamento/relatório → PDF pelo navegador) ---- */
+@media print {
+  body {
+    background: #fff;
+  }
+  .ka-top {
+    display: none !important;
+  }
+  .page {
+    padding: 0 !important;
+    max-width: none !important;
+  }
+  .nao-imprimir {
+    display: none !important;
+  }
+  .rel-doc {
+    color: #111;
+  }
+  .fin-cards {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+  .rel-tabela {
+    page-break-inside: auto;
+  }
+  .rel-secao {
+    page-break-inside: avoid;
+  }
+  .pub-wrap {
+    padding: 0;
+  }
+  .pub-doc {
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    max-width: none;
+    padding: 0;
+  }
+}
+
+/* ---- Projetos: progresso, fases (admin) e linha do tempo (cliente) ---- */
+.progresso {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.progresso__barra {
+  flex: 1;
+  height: 8px;
+  border-radius: 100px;
+  background: rgba(15, 25, 35, 0.08);
+  overflow: hidden;
+  min-width: 90px;
+}
+.progresso__barra--grande {
+  height: 12px;
+}
+.progresso__barra span {
+  display: block;
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, var(--dourado), var(--essencia));
+  transition: width 0.4s ease;
+}
+.progresso__pct {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--t-500);
+  font-variant-numeric: tabular-nums;
+}
+
+.fases {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.fase {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 12px;
+  padding: 0.6rem 0.8rem;
+  background: var(--bg-1);
+}
+.fase--concluida {
+  background: rgba(46, 107, 69, 0.06);
+  border-color: rgba(46, 107, 69, 0.2);
+}
+.fase--andamento {
+  background: rgba(61, 107, 126, 0.06);
+  border-color: rgba(61, 107, 126, 0.25);
+}
+.fase__status {
+  width: 34px;
+  height: 34px;
+  flex: none;
+  border-radius: 50%;
+  border: 2px solid rgba(15, 25, 35, 0.2);
+  background: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1;
+  color: var(--essencia);
+  transition: 0.15s;
+}
+.fase--concluida .fase__status {
+  background: #2e6b45;
+  border-color: #2e6b45;
+  color: #fff;
+}
+.fase--andamento .fase__status {
+  border-color: var(--essencia);
+  color: var(--essencia);
+}
+.fase__status:hover {
+  transform: scale(1.08);
+}
+.fase__info {
+  flex: 1;
+  min-width: 0;
+}
+.fase__nome {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.fase--concluida .fase__nome {
+  color: #2e6b45;
+}
+.fase__meta {
+  font-size: 0.7rem;
+  color: var(--t-400);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.fase__acoes {
+  display: flex;
+  gap: 0.2rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+@media (max-width: 640px) {
+  .fase {
+    flex-wrap: wrap;
+  }
+  .fase__acoes {
+    width: 100%;
+  }
+}
+
+/* Linha do tempo pública (página do cliente) */
+.linha-tempo {
+  position: relative;
+  padding-left: 8px;
+}
+.lt-fase {
+  position: relative;
+  display: flex;
+  gap: 1rem;
+  padding: 0 0 1.4rem 0;
+}
+.lt-fase:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  left: 17px;
+  top: 36px;
+  bottom: 0;
+  width: 2px;
+  background: rgba(15, 25, 35, 0.12);
+}
+.lt-fase--concluida:not(:last-child)::before {
+  background: rgba(46, 107, 69, 0.4);
+}
+.lt-fase__ponto {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.95rem;
+  border: 2px solid rgba(15, 25, 35, 0.18);
+  background: #fff;
+  color: var(--essencia);
+  z-index: 1;
+}
+.lt-fase--concluida .lt-fase__ponto {
+  background: #2e6b45;
+  border-color: #2e6b45;
+  color: #fff;
+}
+.lt-fase--andamento .lt-fase__ponto {
+  border-color: var(--essencia);
+  animation: pulso 1.6s ease-in-out infinite;
+}
+@keyframes pulso {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(61, 107, 126, 0.3); }
+  50% { box-shadow: 0 0 0 7px rgba(61, 107, 126, 0.08); }
+}
+.lt-fase__nome {
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding-top: 6px;
+}
+.lt-fase--concluida .lt-fase__nome {
+  color: #2e6b45;
+}
+.lt-fase--pendente .lt-fase__nome {
+  color: var(--t-500);
+}
+.lt-fase__meta {
+  font-size: 0.72rem;
+  color: var(--t-400);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+
+/* ---- Botões de WhatsApp (verde) ---- */
+.btn-mini--whats {
+  color: #1d7c4d;
+  border-color: rgba(29, 124, 77, 0.35);
+}
+.btn-mini--whats:hover {
+  background: rgba(29, 124, 77, 0.08);
+}
+.btn--voltar-whats {
+  color: #1d7c4d;
+  border-color: rgba(29, 124, 77, 0.4);
+}
+.btn--voltar-whats:hover {
+  background: rgba(29, 124, 77, 0.08);
+  border-color: #1d7c4d;
+}
+
+/* ---- Popup de WhatsApp (montado via DOM em src/lib/whatsapp.ts) ---- */
+.wa-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 25, 35, 0.5);
+  display: grid;
+  place-items: center;
+  padding: 1.2rem;
+  animation: wa-fade 0.15s ease;
+}
+@keyframes wa-fade {
+  from { opacity: 0; }
+}
+.wa-box {
+  width: 100%;
+  max-width: 440px;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 24px 60px rgba(15, 25, 35, 0.28);
+  padding: 1.5rem 1.4rem;
+  font-family: var(--body);
+}
+.wa-box__titulo {
+  font-family: var(--heading);
+  font-size: 1.2rem;
+  color: var(--t-900);
+  margin-bottom: 1rem;
+}
+.wa-box__rotulo {
+  display: block;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--t-500);
+  margin: 0.7rem 0 0.35rem;
+}
+.wa-box__input,
+.wa-box__area {
+  width: 100%;
+  font-family: var(--body);
+  font-size: 0.9rem;
+  color: var(--t-900);
+  background: var(--bg-1);
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+}
+.wa-box__area {
+  resize: vertical;
+  line-height: 1.5;
+}
+.wa-box__input:focus,
+.wa-box__area:focus {
+  outline: none;
+  border-color: #1d7c4d;
+}
+.wa-box__aviso {
+  color: var(--erro);
+  font-size: 0.78rem;
+  min-height: 1rem;
+  margin-top: 0.4rem;
+}
+.wa-box__acoes {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: flex-end;
+  margin-top: 0.9rem;
+}
+.wa-btn {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 100px;
+  padding: 0.7rem 1.3rem;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: 0.15s;
+}
+.wa-btn--ghost {
+  background: transparent;
+  color: var(--t-500);
+  border-color: rgba(15, 25, 35, 0.2);
+}
+.wa-btn--ghost:hover {
+  background: rgba(15, 25, 35, 0.05);
+}
+.wa-btn--go {
+  background: #1d7c4d;
+  color: #fff;
+}
+.wa-btn--go:hover {
+  background: #17663f;
+}
+
+/* ---- Formulários do cliente (etapas do Marca com Essência) ---- */
+/* Página pública (o cliente preenche) */
+/* Cabeçalho: logo COMPLETO num tom levemente diferente do papel. */
+.form-pub__cabecalho {
+  background: #f1ead9;
+  border: 1px solid rgba(15, 25, 35, 0.06);
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  margin-bottom: 1.4rem;
+  text-align: center;
+}
+.form-pub__logo {
+  height: 46px;
+  max-width: 100%;
+  width: auto;
+  object-fit: contain;
+  display: inline-block;
+}
+/* Nome (IKIGAI) + etapa alinhados à ESQUERDA. */
+.form-pub__head {
+  text-align: left;
+}
+.form-pub__titulo {
+  margin: 0;
+}
+.form-pub__etapa {
+  margin-top: 0.35rem;
+  color: var(--dourado, #b98a3e);
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.form-pub__intro {
+  margin-top: 0.8rem;
+  color: var(--t-600);
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+.form-pub__barra {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--card, #fff);
+  padding: 0.7rem 0;
+  margin: 1rem 0 0.4rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.08);
+}
+.form-pub__prog {
+  height: 7px;
+  border-radius: 100px;
+  background: rgba(15, 25, 35, 0.08);
+  overflow: hidden;
+}
+.form-pub__prog-fill {
+  height: 100%;
+  background: var(--dourado, #b98a3e);
+  transition: width 0.3s ease;
+}
+.form-pub__status {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+  font-size: 0.76rem;
+  color: var(--t-500);
+}
+.form-pub__salvo {
+  font-weight: 600;
+  color: var(--t-600);
+}
+.form-pub__salvo--ok {
+  color: #1d7c4d;
+}
+.form-pub__salvo--erro {
+  color: var(--erro, #c0392b);
+}
+/* Cada seção é um BLOCO distinto, com destaque próprio (cor por seção). */
+.form-pub__secao {
+  margin-top: 1.6rem;
+  padding: 1.5rem 1.3rem 0.9rem;
+  border-radius: 16px;
+  background: #faf8f2;
+  border: 1px solid rgba(15, 25, 35, 0.07);
+  border-top: 4px solid var(--acento, #c47830);
+}
+/* Título da seção CENTRALIZADO, com bastante espaço até os campos. */
+.form-pub__secao-cab {
+  text-align: center;
+  margin-bottom: 1.7rem;
+}
+.form-pub__secao-tit {
+  font-size: 1.2rem;
+  color: var(--acento, #12212f);
+  margin: 0;
+}
+.form-pub__secao-desc {
+  color: var(--t-500);
+  font-size: 0.85rem;
+  margin: 0.35rem 0 0;
+  line-height: 1.4;
+}
+/* Aviso verde flutuante "Resposta salva". */
+.form-pub__flash {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  background: #1d7c4d;
+  color: #fff;
+  padding: 0.55rem 1.15rem;
+  border-radius: 100px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(15, 25, 35, 0.25);
+  z-index: 50;
+}
+.form-pub__campo {
+  margin-bottom: 1.7rem;
+}
+/* Mais respiro entre a pergunta (label + ajuda) e o campo de escrever. */
+.form-pub__campo label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+.form-pub__campo .campo-ajuda {
+  display: block;
+  margin-bottom: 0.7rem;
+  line-height: 1.4;
+}
+.form-pub__campo input,
+.form-pub__campo textarea {
+  margin-top: 0.5rem;
+}
+.form-pub__req {
+  color: var(--erro, #c0392b);
+}
+.form-pub__rodape {
+  margin-top: 2rem;
+  border-top: 1px solid rgba(15, 25, 35, 0.08);
+  padding-top: 1.2rem;
+}
+.form-pub__aviso {
+  font-size: 0.82rem;
+  color: var(--t-500);
+  margin-bottom: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Projeto Marca com Essência© — página organizada por ETAPAS */
+.me-intro {
+  margin-bottom: 1.4rem;
+}
+.me-guia {
+  margin: 0.8rem 0 0;
+  padding-left: 1.2rem;
+  color: var(--t-600);
+  line-height: 1.7;
+  font-size: 0.9rem;
+}
+.me-guia span {
+  color: var(--t-500);
+}
+.me-etapa {
+  border: 1px solid rgba(15, 25, 35, 0.09);
+  border-left: 5px solid var(--dourado, #b98a3e);
+  border-radius: 14px;
+  background: #fbf9f4;
+  padding: 1.2rem 1.2rem 1.4rem;
+  margin-bottom: 1.4rem;
+}
+.me-etapa__cab {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+.me-etapa__num {
+  background: var(--dourado, #b98a3e);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.22rem 0.6rem;
+  border-radius: 100px;
+}
+.me-etapa__nome {
+  margin: 0;
+  font-size: 1.2rem;
+}
+.me-etapa__tag {
+  margin-left: auto;
+  font-size: 0.72rem;
+  color: var(--t-500);
+  background: rgba(15, 25, 35, 0.05);
+  border-radius: 100px;
+  padding: 0.2rem 0.6rem;
+}
+.me-etapa__tag--audio {
+  color: #1d7c4d;
+  background: rgba(29, 124, 77, 0.1);
+}
+.me-etapa__desc {
+  color: var(--t-600);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 0.6rem 0 0;
+}
+.me-etapa__vazio {
+  color: var(--t-500);
+  font-size: 0.85rem;
+  font-style: italic;
+  margin: 0.4rem 0 0;
+}
+
+/* Admin: opção de envio (pré-preenchido / em branco) */
+.form-radio-linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.2rem;
+  margin: 0.2rem 0 0.3rem;
+}
+.form-radio {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.88rem;
+  color: var(--t-700);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+/* Admin: lista de formulários (cards) */
+.form-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.form-card {
+  border: 1px solid rgba(15, 25, 35, 0.1);
+  border-radius: 14px;
+  padding: 1rem;
+  background: var(--card, #fff);
+  border-left: 4px solid var(--azul, #3d6b7e);
+}
+.form-card--ok {
+  border-left-color: #2e9e5b;
+}
+.form-card__topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.4rem;
+}
+.form-card__meta {
+  font-size: 0.8rem;
+  color: var(--t-500);
+  margin-bottom: 0.8rem;
+}
+.form-card__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+/* Admin: ver respostas */
+.form-resp__secao {
+  margin-top: 1.4rem;
+}
+.form-resp__secao-tit {
+  font-size: 1rem;
+  color: var(--dourado, #b98a3e);
+  border-bottom: 1px solid rgba(15, 25, 35, 0.08);
+  padding-bottom: 0.3rem;
+}
+.form-resp__item {
+  margin: 0.9rem 0;
+}
+.form-resp__pergunta {
+  font-weight: 600;
+  font-size: 0.86rem;
+  color: var(--t-700);
+  margin-bottom: 0.2rem;
+}
+.form-resp__resposta {
+  font-size: 0.9rem;
+  color: var(--t-700);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+.form-resp__resposta--vazia {
+  color: var(--t-400, #9aa5ad);
+  font-style: italic;
+}
+
+/* Seletor de PIX (pessoal/empresa) dentro do popup do WhatsApp. */
+.wa-box__pix {
+  margin-top: 0.6rem;
+}
+.wa-box__opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+.wa-chip {
+  font-family: var(--body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 100px;
+  padding: 0.45rem 0.95rem;
+  cursor: pointer;
+  color: var(--t-600);
+  background: rgba(15, 25, 35, 0.05);
+  border: 1px solid rgba(15, 25, 35, 0.15);
+  transition: 0.15s;
+}
+.wa-chip:hover {
+  background: rgba(15, 25, 35, 0.09);
+}
+.wa-chip--ativo {
+  background: #1d7c4d;
+  color: #fff;
+  border-color: #1d7c4d;
+}
+
+/* ---- Fase: descrição e formulário de nova fase ---- */
+.fase__desc {
+  font-size: 0.78rem;
+  color: var(--t-500);
+  line-height: 1.45;
+  margin: 0.1rem 0 0.15rem;
+}
+.add-fase {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed rgba(15, 25, 35, 0.12);
+}
+.add-fase input,
+.add-fase__desc {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+  background: var(--bg-1);
+}
+.add-fase input:first-of-type {
+  flex: 1 1 180px;
+}
+/* Descrição da fase: caixa que cresce sozinha (texto que o cliente lê) */
+.add-fase__desc {
+  flex: 2 1 260px;
+  min-height: 2.4em;
+  line-height: 1.4;
+  resize: vertical;
+  overflow: hidden;
+}
+.fase__edit-desc {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--body);
+  font-size: 0.9rem;
+  border: 1px solid rgba(61, 107, 126, 0.4);
+  border-radius: 8px;
+  padding: 0.5rem 0.6rem;
+  background: var(--bg-1);
+  min-height: 2.4em;
+  line-height: 1.4;
+  resize: vertical;
+  overflow: hidden;
+}
+
+/* ---- Seletor de status da fase (colorido) ---- */
+.fase-status-sel {
+  font-family: var(--body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  border-radius: 100px;
+  padding: 0.32rem 0.6rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.fase-status-sel.status-pendente {
+  color: var(--t-500);
+  background: rgba(15, 25, 35, 0.06);
+  border-color: rgba(15, 25, 35, 0.12);
+}
+.fase-status-sel.status-andamento {
+  color: var(--essencia);
+  background: rgba(61, 107, 126, 0.1);
+  border-color: rgba(61, 107, 126, 0.3);
+}
+.fase-status-sel.status-concluida {
+  color: #2e6b45;
+  background: rgba(46, 107, 69, 0.12);
+  border-color: rgba(46, 107, 69, 0.35);
+}
+
+/* ---- Arrastar para reordenar (alça) + edição inline ---- */
+.fase__handle {
+  flex: none;
+  cursor: grab;
+  color: var(--dourado);
+  font-size: 1.3rem;
+  line-height: 1;
+  padding: 0.3rem 0.35rem;
+  border-radius: 8px;
+  background: rgba(184, 155, 106, 0.12);
+  user-select: none;
+  touch-action: none;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+.fase__handle:hover {
+  background: rgba(184, 155, 106, 0.22);
+}
+.fase__handle:active {
+  cursor: grabbing;
+  background: rgba(184, 155, 106, 0.3);
+}
+/* Fase sendo arrastada: "levantada", seguindo o ponteiro (transform inline). */
+.fase--arrastando {
+  position: relative;
+  opacity: 0.97;
+  border-color: var(--dourado);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
+  cursor: grabbing;
+}
+/* Linha de destaque onde o item vai cair */
+.fase--alvo {
+  border-color: var(--dourado);
+  background: rgba(184, 155, 106, 0.14);
+  box-shadow: 0 -3px 0 0 var(--dourado) inset;
+}
+
+/* Flash bem visível no item que ACABOU de mudar de lugar (arraste ou ↑/↓) */
+@keyframes flashMovido {
+  0% {
+    box-shadow: 0 0 0 0 rgba(184, 155, 106, 0.95);
+    transform: scale(1.025);
+  }
+  100% {
+    box-shadow: 0 0 0 16px rgba(184, 155, 106, 0);
+    transform: scale(1);
+  }
+}
+.fase--movido,
+.ativ--movido {
+  animation: flashMovido 1.2s ease-out;
+  border-color: var(--dourado) !important;
+  position: relative;
+  z-index: 2;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fase--movido,
+  .ativ--movido {
+    animation: none;
+    box-shadow: 0 0 0 2px var(--dourado);
+  }
+}
+/* Bloco de informações vira botão clicável (abre edição), sem cara de botão */
+.fase__info--btn {
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  padding: 0.1rem 0.2rem;
+  border-radius: 8px;
+  font: inherit;
+  color: inherit;
+  transition: background 0.15s;
+}
+.fase__info--btn:hover {
+  background: rgba(15, 25, 35, 0.04);
+}
+/* Edição inline (dois campos + ações) */
+.fase__edit {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.fase__edit input {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(61, 107, 126, 0.4);
+  border-radius: 8px;
+  padding: 0.5rem 0.65rem;
+  background: var(--bg-1);
+}
+.fase__edit input:first-of-type {
+  font-weight: 600;
+}
+.fase__edit-linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.fase__edit-linha label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--t-400);
+}
+.fase__edit-linha select,
+.fase__edit-linha input {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(61, 107, 126, 0.4);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  background: var(--bg-1);
+}
+.fase__edit-acoes {
+  display: flex;
+  gap: 0.35rem;
+}
+
+/* ---- Editar o nome do projeto (inline) ---- */
+.proj-nome-edit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+.proj-nome-edit input {
+  flex: 1 1 200px;
+  min-width: 0;
+  font-family: var(--heading);
+  font-size: 1.1rem;
+  border: 1px solid rgba(61, 107, 126, 0.4);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  background: var(--bg-1);
+}
+
+/* ---- Início do projeto ---- */
+.proj-inicio {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--t-500);
+}
+.proj-inicio input {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  text-transform: none;
+  letter-spacing: 0;
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 8px;
+  padding: 0.4rem 0.55rem;
+  background: var(--bg-1);
+}
+
+/* ---- Responsável (KA / VM Rocks) ---- */
+.resp-badge {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: 100px;
+  padding: 0.16rem 0.5rem;
+  margin-left: 6px;
+}
+.resp--KA {
+  color: var(--essencia);
+  background: rgba(61, 107, 126, 0.12);
+}
+.resp--VM {
+  color: #8a4b1f;
+  background: rgba(196, 120, 48, 0.16);
+}
+.resp--CLIENTE {
+  color: #2e6b45;
+  background: rgba(46, 107, 69, 0.14);
+}
+.resp--outro {
+  color: #6b4b8a;
+  background: rgba(107, 75, 138, 0.14);
+}
+/* Seletor de responsável (select + campo livre quando "Outro") */
+.resp-campo {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+.resp-sel {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  text-transform: none;
+  letter-spacing: 0;
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  background: var(--bg-1);
+}
+.fase__data {
+  margin-left: 6px;
+}
+.add-fase__resp,
+.add-fase__data {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 8px;
+  padding: 0.5rem 0.6rem;
+  background: var(--bg-1);
+}
+
+/* ---- Segmento Projetos / Pendências ---- */
+.seg {
+  display: inline-flex;
+  border: 1px solid rgba(15, 25, 35, 0.12);
+  border-radius: 100px;
+  overflow: hidden;
+  background: var(--bg-1);
+}
+.seg button {
+  font-family: var(--body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--t-500);
+  background: transparent;
+  border: none;
+  padding: 0.45rem 0.95rem;
+  cursor: pointer;
+}
+.seg button.seg__on {
+  color: #fff;
+  background: var(--essencia);
+}
+
+/* ---- Chips de filtro ---- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.pend-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+.chip {
+  font-family: var(--body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--t-500);
+  background: var(--bg-1);
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 100px;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.chip--on {
+  color: #fff;
+  background: var(--essencia);
+  border-color: var(--essencia);
+}
+.chip__n {
+  display: inline-block;
+  min-width: 1.1em;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  border-radius: 100px;
+  padding: 0 0.35em;
+  margin-left: 0.2em;
+  background: rgba(15, 25, 35, 0.1);
+}
+.chip--on .chip__n {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* ---- Lista de pendências ---- */
+.pend-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.pend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 12px;
+  padding: 0.65rem 0.8rem;
+  background: var(--bg-1);
+  cursor: pointer;
+  transition: 0.15s;
+}
+.pend-item:hover {
+  border-color: var(--essencia);
+}
+.pend-item__corpo {
+  flex: 1;
+  min-width: 0;
+}
+.pend-item__fase {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.pend-item__proj {
+  font-size: 0.75rem;
+  color: var(--t-500);
+}
+.pend-item__dir {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  flex: none;
+}
+.pend-item__data {
+  font-size: 0.7rem;
+  color: var(--t-400);
+}
+
+/* ---- Painel de Atividades da Kelly ---- */
+.add-ativ-card {
+  margin-bottom: 0.85rem;
+  padding: 0.75rem 0.85rem;
+}
+.add-ativ-seg {
+  margin-bottom: 0.55rem;
+}
+.add-ativ {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+.add-ativ > .campo-mic {
+  flex: 1 1 240px;
+}
+.add-ativ input,
+.add-ativ select,
+.add-ativ textarea,
+.add-ativ-colar textarea,
+.add-ativ-colar__baixo select,
+.add-ativ-colar__baixo input {
+  font-family: var(--body);
+  font-size: 0.9rem;
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 8px;
+  padding: 0.6rem 0.7rem;
+  background: var(--bg-1);
+}
+
+/* Campo com botão de microfone ao lado */
+.campo-mic {
+  display: flex;
+  gap: 0.4rem;
+  align-items: stretch;
+}
+.campo-mic > input,
+.campo-mic > textarea {
+  flex: 1;
+  min-width: 0;
+}
+/* Campo de UMA tarefa que cresce sozinho (textarea, não input de 1 linha) */
+.campo-mic--cresce {
+  align-items: flex-start;
+}
+.campo-mic--cresce > textarea {
+  min-height: 2.4em;
+  line-height: 1.4;
+  resize: vertical;
+  overflow: hidden;
+}
+
+.campo-mic--area {
+  align-items: flex-start;
+}
+.campo-mic--area textarea {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* Botão de microfone (ditado por voz) */
+.btn-mic {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--essencia);
+  background: var(--bg-1);
+  border: 1px solid rgba(61, 107, 126, 0.35);
+  border-radius: 8px;
+  padding: 0.5rem 0.7rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: 0.15s;
+}
+.btn-mic:hover {
+  background: rgba(61, 107, 126, 0.08);
+}
+.btn-mic__ico {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+.btn-mic--on {
+  color: #fff;
+  background: var(--erro);
+  border-color: var(--erro);
+  animation: mic-pulse 1.1s ease-in-out infinite;
+}
+@keyframes mic-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(178, 58, 58, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(178, 58, 58, 0);
+  }
+}
+/* No celular o botão de falar/parar ocupa a linha inteira, logo abaixo do
+   campo — assim nunca é empurrado pra fora da tela e o "Parar" fica sempre
+   visível e fácil de tocar. */
+@media (max-width: 640px) {
+  .campo-mic {
+    flex-wrap: wrap;
+  }
+  .campo-mic > .btn-mic {
+    flex: 1 0 100%;
+    justify-content: center;
+    padding: 0.65rem 0.7rem;
+    font-size: 0.85rem;
+  }
+  .campo-mic--area {
+    flex-direction: column;
+  }
+}
+
+.add-ativ-colar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+.add-ativ-colar__baixo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+.add-ativ__conta {
+  font-size: 0.8rem;
+  color: var(--t-500);
+  margin-left: auto;
+}
+.dica-voz {
+  margin-top: 0.8rem;
+  font-size: 0.75rem;
+  color: var(--t-400);
+  line-height: 1.5;
+}
+.ativ-grupo {
+  margin-bottom: 1.6rem;
+}
+.ativ-grupo__tit {
+  font-family: var(--body);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
+  border-bottom: 2px solid;
+}
+.ativ-grupo__tit.cat--trabalho {
+  color: var(--essencia);
+  border-color: rgba(61, 107, 126, 0.4);
+}
+.ativ-grupo__tit.cat--bia {
+  color: #7a5099;
+  border-color: rgba(122, 80, 153, 0.4);
+}
+.ativ-grupo__tit.cat--pessoal {
+  color: #8a4b1f;
+  border-color: rgba(196, 120, 48, 0.4);
+}
+.ativ-grupo__tit.cat--cliente {
+  color: #2e6b45;
+  border-color: rgba(46, 107, 69, 0.4);
+}
+.ativ-grupo__tit.cat--vm {
+  color: #b5451f;
+  border-color: rgba(181, 69, 31, 0.4);
+}
+.ativ-vazio {
+  color: var(--t-400);
+  font-size: 0.82rem;
+  padding: 0.2rem 0 0.6rem;
+}
+.ativ {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 12px;
+  padding: 0.55rem 0.75rem;
+  background: var(--bg-1);
+  margin-bottom: 0.4rem;
+}
+.ativ--projeto {
+  background: rgba(61, 107, 126, 0.05);
+  border-color: rgba(61, 107, 126, 0.18);
+}
+/* Tarefa do cliente (a cobrar) — acento verde */
+.ativ--cliente {
+  background: rgba(46, 107, 69, 0.05);
+  border-color: rgba(46, 107, 69, 0.22);
+}
+.ativ__check {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 2px solid rgba(15, 25, 35, 0.2);
+  background: #fff;
+  color: var(--essencia);
+  font-size: 0.9rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.ativ__check:hover {
+  transform: scale(1.08);
+}
+.ativ--feito .ativ__check {
+  background: #2e6b45;
+  border-color: #2e6b45;
+  color: #fff;
+}
+.ativ__corpo {
+  flex: 1;
+  min-width: 0;
+}
+.ativ__corpo--btn {
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  padding: 0.1rem 0.2rem;
+  border-radius: 8px;
+}
+.ativ__corpo--btn:hover {
+  background: rgba(15, 25, 35, 0.04);
+}
+.ativ__titulo {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.ativ--feito .ativ__titulo {
+  text-decoration: line-through;
+  color: var(--t-400);
+}
+.ativ__sub {
+  font-size: 0.74rem;
+  color: var(--t-500);
+}
+/* Data em DESTAQUE (chip caramelo) — usado nas atividades e nas fases dos
+   projetos, para a data "saltar aos olhos". */
+.data-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #8a4b1e;
+  background: rgba(196, 120, 48, 0.16);
+  border: 1px solid rgba(196, 120, 48, 0.28);
+  border-radius: 100px;
+  padding: 0.12rem 0.55rem;
+  text-transform: none;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+.ativ__data {
+  margin-top: 0.25rem;
+}
+.ativ__tag {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--essencia);
+  background: rgba(61, 107, 126, 0.14);
+  border-radius: 100px;
+  padding: 0.05rem 0.45rem;
+  margin-right: 0.4rem;
+}
+.ativ__acoes {
+  display: flex;
+  gap: 0.25rem;
+  flex: none;
+}
+.ativ--edit {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+.ativ--edit > input,
+.ativ--edit > .ativ__edit-txt {
+  font-family: var(--body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 1px solid rgba(61, 107, 126, 0.4);
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+  background: var(--bg-1);
+}
+/* Caixa de edição multilinha: cresce sozinha e mostra a tarefa inteira */
+.ativ--edit > .ativ__edit-txt {
+  width: 100%;
+  min-height: 3em;
+  line-height: 1.45;
+  resize: vertical;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.ativ__edit-linha {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+}
+.ativ__edit-linha select,
+.ativ__edit-linha input {
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(61, 107, 126, 0.4);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  background: var(--bg-1);
+}
+@media (max-width: 640px) {
+  .ativ {
+    flex-wrap: wrap;
+  }
+  .ativ__acoes {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* ---- Modernização: alvos de toque maiores no celular (guia iOS ≥44px) ---- */
+@media (max-width: 640px) {
+  .btn-mini {
+    min-height: 40px;
+    padding: 0.5rem 0.85rem;
+    font-size: 0.75rem;
+  }
+  .fase__status,
+  .ativ__check {
+    width: 38px;
+    height: 38px;
+  }
+  /* Ações de linha com mais respiro entre os botões */
+  .acoes .btn-mini,
+  .fase__acoes .btn-mini,
+  .ativ__acoes .btn-mini {
+    margin: 0.15rem 0 0.15rem 0.3rem;
+  }
+}
+
+/* ============================================================
+   MOBILE: tabelas de gestão viram CARTÕES (fim do rolar de lado)
+   Cada <td> precisa de data-label="..."; a 1ª célula usa .cel-nome.
+   ============================================================ */
+/* Nome/título clicável para abrir (sem cara de botão) */
+.cel-abrir {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.cel-abrir strong {
+  transition: color 0.15s;
+}
+.cel-abrir:hover strong,
+.cel-abrir:focus-visible strong {
+  color: var(--essencia);
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .tabela-wrap {
+    border: none;
+    background: transparent;
+    border-radius: 0;
+    overflow-x: visible;
+  }
+  .tabela,
+  .tabela tbody,
+  .tabela tr,
+  .tabela td {
+    display: block;
+    width: 100%;
+  }
+  .tabela thead {
+    display: none;
+  }
+  .tabela tr {
+    background: #fff;
+    border: 1px solid rgba(15, 25, 35, 0.08);
+    border-radius: 12px;
+    padding: 0.5rem 0.9rem;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 2px 8px rgba(15, 25, 35, 0.03);
+  }
+  .tabela tr:hover {
+    background: #fff;
+  }
+  .tabela td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.4rem 0;
+    border: none;
+    border-bottom: 1px solid rgba(15, 25, 35, 0.05);
+    text-align: right;
+    white-space: normal;
+  }
+  .tabela td:last-child {
+    border-bottom: none;
+  }
+  .tabela td::before {
+    content: attr(data-label);
+    flex: none;
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--t-400);
+    text-align: left;
+  }
+  /* Célula do nome = título do cartão (sem rótulo, alinhado à esquerda) */
+  .tabela td.cel-nome {
+    display: block;
+    text-align: left;
+    padding: 0.2rem 0 0.5rem;
+    font-size: 1rem;
+  }
+  .tabela td.cel-nome::before {
+    display: none;
+  }
+  /* Ações: botões à direita, com respiro */
+  .tabela td.acoes {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding-top: 0.6rem;
+    border-bottom: none;
+  }
+  .tabela td.acoes::before {
+    display: none;
+  }
+  .tabela td.acoes .btn-mini {
+    margin: 0;
+  }
+  .tabela td.num {
+    text-align: right;
+  }
+}
+
+/* ---- Resumo "a receber" (pagamentos do contrato: KA / VM / cliente) ---- */
+.resumo-receber {
+  margin-top: 1rem;
+  border: 1px solid rgba(184, 155, 106, 0.4);
+  background: var(--dourado-soft);
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+}
+.resumo-receber__tit {
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--dourado);
+  margin-bottom: 0.5rem;
+}
+.resumo-receber__linha {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.3rem 0;
+  border-top: 1px solid rgba(184, 155, 106, 0.22);
+  font-size: 0.88rem;
+}
+.resumo-receber__linha:first-of-type {
+  border-top: none;
+}
+.resumo-receber__linha strong {
+  font-family: var(--heading);
+  color: var(--t-900);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   Painel Financeiro (a receber por quem — KA / VM Rocks / …)
+   ============================================================ */
+.fin-total {
+  font-size: 0.95rem;
+  color: var(--t-500);
+  margin-bottom: 1rem;
+}
+.fin-total strong {
+  font-family: var(--heading);
+  font-size: 1.25rem;
+  color: var(--t-900);
+}
+.fin-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 0.7rem;
+  margin-bottom: 1.2rem;
+}
+.fin-card {
+  border: 1px solid rgba(15, 25, 35, 0.1);
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  background: #fff;
+}
+/* Agrupamento dos cards: "No seu caixa" x "Ainda em aberto" */
+.fin-grupo {
+  margin-bottom: 1rem;
+}
+.fin-grupo .fin-cards {
+  margin-bottom: 0;
+}
+.fin-grupo__tit {
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--dourado);
+  margin-bottom: 0.5rem;
+}
+/* Saldo em destaque (hero): ocupa a linha toda e a fonte maior */
+.fin-card--hero {
+  grid-column: 1 / -1;
+}
+.fin-card--hero .fin-card__valor {
+  font-size: 2rem;
+}
+.fin-card__nota {
+  font-weight: 400;
+  color: var(--t-500);
+  font-size: 0.72rem;
+}
+/* Legenda que explica o que conta no saldo */
+.fin-legenda {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--t-600, #4a5560);
+  background: rgba(184, 155, 106, 0.09);
+  border: 1px solid rgba(184, 155, 106, 0.25);
+  border-radius: 12px;
+  padding: 0.7rem 0.9rem;
+  margin: 0 0 1.1rem;
+}
+.fin-card--ka {
+  border-color: rgba(61, 107, 126, 0.35);
+  background: rgba(61, 107, 126, 0.05);
+}
+.fin-card--vm {
+  border-color: rgba(196, 120, 48, 0.4);
+  background: rgba(196, 120, 48, 0.06);
+}
+.fin-card__quem {
+  font-size: 0.64rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--t-500);
+}
+.fin-card--ka .fin-card__quem {
+  color: var(--essencia);
+}
+.fin-card--vm .fin-card__quem {
+  color: #8a4b1f;
+}
+.fin-card__valor {
+  font-family: var(--heading);
+  font-size: 1.5rem;
+  color: var(--t-900);
+  margin-top: 0.2rem;
+}
+.fin-card__mensal {
+  font-size: 0.82rem;
+  color: #2e6b45;
+  font-weight: 600;
+}
+/* Quebra do "A receber" por escopo (KA / Pessoal) dentro do card */
+.fin-card__quebra {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  margin: 0.2rem 0 0.1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #8a4b1f;
+}
+.fin-card__quebra em {
+  font-style: normal;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.66rem;
+  color: var(--t-500);
+  margin-right: 0.3rem;
+}
+.fin-card__qtd {
+  font-size: 0.72rem;
+  color: var(--t-400);
+  margin-top: 0.3rem;
+}
+.fin-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.fin-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 12px;
+  padding: 0.65rem 0.85rem;
+  background: #fff;
+}
+.fin-item__corpo {
+  flex: 1;
+  min-width: 0;
+}
+.fin-item__cliente {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.fin-item__meta {
+  font-size: 0.75rem;
+  color: var(--t-500);
+}
+.fin-item__valor {
+  flex: none;
+  font-family: var(--heading);
+  font-size: 1rem;
+  color: var(--t-900);
+  white-space: nowrap;
+}
+
+/* ---- Colar link de pagamento (inline, na cobrança) ---- */
+.colar-link {
+  display: flex;
+  flex-basis: 100%;
+  width: 100%;
+  gap: 0.35rem;
+  align-items: center;
+  margin-top: 0.45rem;
+  white-space: normal;
+}
+.colar-link input {
+  flex: 1;
+  min-width: 120px;
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(61, 107, 126, 0.4);
+  border-radius: 8px;
+  padding: 0.45rem 0.6rem;
+  background: var(--bg-1);
+}
+
+/* Financeiro: item clicável (leva pra ficha do cliente) */
+.fin-dica {
+  font-size: 0.75rem;
+  color: var(--t-400);
+  margin-bottom: 0.5rem;
+}
+.fin-item--btn {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition: 0.15s;
+}
+.fin-item--btn:hover {
+  border-color: var(--essencia);
+  background: rgba(61, 107, 126, 0.04);
+}
+
+/* ---- Financeiro: gestor de caixa pessoal (entradas/saídas) ---- */
+.fin-card--saldo {
+  border-color: rgba(21, 37, 53, 0.5);
+  background: rgba(21, 37, 53, 0.05);
+}
+.fin-card--saldo .fin-card__quem {
+  color: var(--marinho);
+}
+.fin-card--saldo .fin-card__mensal {
+  color: var(--marinho);
+  opacity: 0.75;
+}
+.fin-card--receber .fin-card__quem {
+  color: #8a4b1f;
+}
+.fin-card--entrada .fin-card__valor {
+  color: #2e6b45;
+}
+.fin-card--saida .fin-card__valor {
+  color: var(--erro);
+}
+.fin-card--pagar .fin-card__quem {
+  color: var(--erro);
+}
+.fin-card--pagar .fin-card__valor {
+  color: var(--erro);
+}
+.btn--saida {
+  background: var(--erro);
+  border-color: var(--erro);
+}
+.caixa-form {
+  margin-bottom: 1.1rem;
+}
+.caixa-form h3 {
+  margin-bottom: 0.7rem;
+  font-size: 1rem;
+}
+.caixa-form__linha {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+}
+@media (min-width: 560px) {
+  .caixa-form__linha {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+}
+.caixa-form__acoes {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.9rem;
+}
+.fin-secao {
+  margin-top: 1.4rem;
+}
+.fin-secao__tit {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--dourado);
+  margin-bottom: 0.55rem;
+}
+.mov {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-left-width: 3px;
+  border-radius: 12px;
+  padding: 0.6rem 0.85rem;
+  background: #fff;
+}
+.mov--entrada {
+  border-left-color: #2e6b45;
+}
+.mov--saida {
+  border-left-color: var(--erro);
+}
+.mov--receber {
+  border-left-color: #c47830;
+  background: rgba(196, 120, 48, 0.04);
+}
+/* Conta a pagar (saída ainda não realizada) */
+.mov--pagar {
+  border-left-color: var(--erro);
+  background: rgba(192, 57, 43, 0.04);
+}
+
+/* ============================================================
+   Cobranças — cards agrupados (por mês / por cliente)
+   ============================================================ */
+.cob-topo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0.2rem 0 1rem;
+}
+.cob-topo__rot {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--t-500);
+}
+.cob-grupo {
+  margin-bottom: 1.4rem;
+}
+.cob-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 0.55rem;
+}
+.cob-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.1);
+  border-left-width: 4px;
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
+}
+.cob-card--pendente {
+  border-left-color: var(--essencia);
+}
+.cob-card--atrasada {
+  border-left-color: var(--erro);
+  background: rgba(192, 57, 43, 0.035);
+}
+.cob-card--paga {
+  border-left-color: #2e6b45;
+  background: rgba(46, 107, 69, 0.03);
+}
+.cob-card--cancelada {
+  border-left-color: #9aa4ad;
+  opacity: 0.72;
+}
+.cob-card__cab {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+.cob-card__cliente {
+  font-weight: 700;
+  color: var(--t-900);
+  font-size: 1rem;
+}
+.cob-card__desc {
+  margin-top: 0.28rem;
+  color: var(--t-700);
+  font-size: 0.86rem;
+  line-height: 1.4;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+.cob-card__meta {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.7rem;
+  margin-top: 0.5rem;
+}
+.cob-card__valor {
+  font-family: var(--heading);
+  font-size: 1.35rem;
+  color: var(--t-900);
+}
+.cob-card__venc {
+  font-size: 0.82rem;
+  color: var(--t-500);
+}
+.cob-card__pago {
+  font-size: 0.78rem;
+  color: #2e6b45;
+  font-weight: 600;
+}
+.cob-card__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(15, 25, 35, 0.06);
+}
+.cob-card__excluir {
+  align-self: flex-end;
+  margin-top: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.72rem;
+  color: var(--t-400);
+  text-decoration: underline;
+}
+.cob-card__excluir:hover {
+  color: var(--erro);
+}
+.btn-mini--ok {
+  border-color: rgba(46, 107, 69, 0.4);
+  color: #2e6b45;
+}
+
+/* ============================================================
+   Assistente de IA no editor de contrato
+   ============================================================ */
+.ia-chat {
+  border: 1px solid rgba(61, 107, 126, 0.3);
+  background: rgba(61, 107, 126, 0.04);
+}
+.ia-chat__tit {
+  margin-bottom: 0.35rem;
+}
+.ia-chat__dica {
+  font-size: 0.83rem;
+  color: var(--t-600, #4a5560);
+  line-height: 1.5;
+  margin-bottom: 0.7rem;
+}
+.ia-chat__log {
+  list-style: none;
+  margin: 0 0 0.7rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+}
+.ia-chat__log li {
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 10px;
+  padding: 0.4rem 0.6rem;
+}
+.ia-chat__ok {
+  color: #2e6b45;
+  margin-left: 0.3rem;
+}
+.ia-chat__entrada {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.ia-chat__entrada textarea {
+  flex: 1;
+  min-width: 220px;
+  resize: vertical;
+}
+.ia-proposta {
+  margin-top: 0.9rem;
+  border: 1px solid rgba(184, 155, 106, 0.4);
+  border-radius: 12px;
+  background: #fff;
+  padding: 0.8rem;
+}
+.ia-proposta__resumo {
+  font-weight: 700;
+  color: var(--marinho);
+  margin-bottom: 0.5rem;
+}
+.ia-proposta__rot {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--t-500);
+  margin-bottom: 0.3rem;
+}
+.ia-proposta__preview {
+  max-height: 320px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: ui-monospace, monospace;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  background: var(--bg-1);
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 8px;
+  padding: 0.7rem;
+  margin: 0 0 0.7rem;
+}
+.ia-proposta__acoes {
+  display: flex;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+/* Card sendo editado: destaca e "cola" no formulário inline logo abaixo */
+.cob-card--editando {
+  border-color: var(--dourado);
+  box-shadow: 0 0 0 2px rgba(184, 155, 106, 0.25);
+}
+.cob-form {
+  border: 1px solid var(--dourado-c);
+  border-left: 4px solid var(--dourado);
+  margin-top: -0.1rem;
+}
+
+/* ============================================================
+   Portal da VM Rocks (só leitura, por link)
+   ============================================================ */
+.vm-total {
+  font-family: var(--heading);
+  font-size: 2rem;
+  color: #2e6b45;
+}
+.vm-total__mes {
+  font-family: var(--body);
+  font-size: 0.95rem;
+  color: var(--t-500);
+  font-weight: 600;
+}
+.vm-grupo {
+  margin-top: 1rem;
+}
+.vm-grupo:first-of-type {
+  margin-top: 0.4rem;
+}
+.vm-grupo__cli {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--heading);
+  font-size: 1.05rem;
+  color: var(--marinho);
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(184, 155, 106, 0.35);
+}
+.vm-grupo__n {
+  font-family: var(--body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--dourado);
+  background: rgba(184, 155, 106, 0.16);
+  border-radius: 100px;
+  padding: 0.05rem 0.5rem;
+}
+.vm-tarefas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.vm-tarefa {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-left-width: 3px;
+  border-left-color: var(--dourado-c);
+  border-radius: 12px;
+  padding: 0.6rem 0.8rem;
+  background: #fff;
+}
+.vm-tarefa--andamento {
+  border-left-color: var(--essencia);
+  background: rgba(61, 107, 126, 0.04);
+}
+.vm-tarefa__ponto {
+  color: var(--essencia);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+/* Botão de concluir (a VM marca a própria tarefa no portal dela). */
+.vm-tarefa__check {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--essencia);
+  font-size: 1.3rem;
+  line-height: 1.2;
+  padding: 0;
+  flex: 0 0 auto;
+}
+.vm-tarefa--concluida {
+  border-left-color: #7aa37a;
+  background: rgba(122, 163, 122, 0.06);
+}
+.vm-tarefa--concluida .vm-tarefa__check {
+  color: #4f7a4f;
+}
+.vm-tarefa__corpo {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+/* Botão de apagar a tarefa/atividade (VM remove no portal dela). */
+.vm-tarefa__apagar {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  padding: 4px;
+  border-radius: 8px;
+  flex: 0 0 auto;
+  opacity: 0.55;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+.vm-tarefa__apagar:hover,
+.vm-tarefa__apagar:focus-visible {
+  opacity: 1;
+  background: rgba(190, 40, 40, 0.1);
+}
+/* Título da tarefa editável (clica → vira campo). */
+.vm-tarefa__fase--btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  font-weight: 700;
+  color: var(--t-900);
+  text-align: left;
+  cursor: text;
+  border-bottom: 1px dashed transparent;
+}
+.vm-tarefa__fase--btn:hover {
+  border-bottom-color: rgba(21, 37, 53, 0.25);
+}
+.vm-edit {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--dourado-c, #c8a24a);
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 700;
+}
+
+/* Form da VM para adicionar tarefa no portal dela. */
+.vm-add {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+.vm-add input[type='text'],
+.vm-add input:not([type]) {
+  flex: 1 1 200px;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid rgba(21, 37, 53, 0.16);
+  border-radius: 10px;
+  font: inherit;
+}
+.vm-add input[type='date'] {
+  padding: 9px 12px;
+  border: 1px solid rgba(21, 37, 53, 0.16);
+  border-radius: 10px;
+  font: inherit;
+}
+
+/* Meta da tarefa: etiqueta do cliente + seletor de data moderno. */
+.vm-tarefa__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.vm-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(21, 37, 53, 0.06);
+  color: var(--t-600);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+/* Data moderna: pílula com ícone; o input fica "sem cara de formulário". */
+.vm-data {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 10px;
+  border: 1px solid rgba(21, 37, 53, 0.14);
+  border-radius: 999px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.vm-data:hover,
+.vm-data:focus-within {
+  border-color: var(--dourado-c, #c8a24a);
+  box-shadow: 0 0 0 3px rgba(200, 162, 74, 0.16);
+}
+.vm-data__ic {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+.vm-data input[type='date'] {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font: inherit;
+  font-size: 0.82rem;
+  color: var(--t-800);
+  cursor: pointer;
+  outline: none;
+}
+.vm-data input[type='date']::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.5;
+}
+.vm-tarefa__fase {
+  font-weight: 700;
+  color: var(--t-900);
+}
+.vm-tarefa__desc {
+  font-size: 0.82rem;
+  color: var(--t-600, #4a5560);
+  margin-top: 0.1rem;
+}
+.vm-tarefa__meta {
+  font-size: 0.76rem;
+  color: var(--t-500);
+  margin-top: 0.2rem;
+}
+.vm-nota {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--t-500);
+  margin: 1rem auto 0;
+  max-width: 640px;
+}
+/* Ocorrência PROJETADA (mensalidade recorrente nos próximos meses) */
+.mov--previsto {
+  border-left-style: dashed;
+  opacity: 0.82;
+}
+.mov__tag--prev {
+  margin-left: 0.4rem;
+  color: var(--essencia);
+  background: rgba(61, 107, 126, 0.14);
+  vertical-align: middle;
+}
+.mov__corpo {
+  flex: 1;
+  min-width: 0;
+}
+.mov__desc {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.mov__meta {
+  font-size: 0.74rem;
+  color: var(--t-500);
+}
+.mov__tag {
+  display: inline-block;
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #8a4b1f;
+  background: rgba(196, 120, 48, 0.14);
+  border-radius: 100px;
+  padding: 0.03rem 0.4rem;
+}
+.mov__escopo {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  border-radius: 100px;
+  padding: 0.03rem 0.45rem;
+}
+.mov__escopo--ka {
+  color: var(--essencia);
+  background: rgba(61, 107, 126, 0.14);
+}
+.mov__escopo--pessoal {
+  color: #6b4a86;
+  background: rgba(107, 74, 134, 0.14);
+}
+/* Segmento Pessoal/KA no formulário do caixa */
+.seg--escopo {
+  display: flex;
+  width: 100%;
+}
+.seg--escopo button {
+  flex: 1;
+}
+.mov__valor {
+  flex: none;
+  font-family: var(--heading);
+  font-size: 1rem;
+  white-space: nowrap;
+}
+.mov__valor--entrada {
+  color: #2e6b45;
+}
+.mov__valor--saida {
+  color: var(--erro);
+}
+.mov__valor--receber {
+  color: #8a4b1f;
+}
+.mov__acoes {
+  flex: none;
+  display: flex;
+  gap: 0.25rem;
+}
+/* Agrupamento por mês (A receber) */
+.mes-grupo {
+  margin-bottom: 0.9rem;
+}
+.mes-grupo__cab {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.15rem 0.2rem 0.4rem;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.08);
+  margin-bottom: 0.5rem;
+}
+.mes-grupo__nome {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--marinho);
+}
+.mes-grupo__total {
+  font-family: var(--heading);
+  font-size: 1rem;
+  color: #8a4b1f;
+}
+
+.fin-detalhes {
+  margin-top: 1.6rem;
+  border-top: 1px dashed rgba(15, 25, 35, 0.14);
+  padding-top: 0.9rem;
+}
+.fin-detalhes summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--t-700);
+}
+.fin-detalhes summary strong {
+  color: var(--t-900);
+}
+@media (max-width: 640px) {
+  .mov {
+    flex-wrap: wrap;
+  }
+  .mov__acoes {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* Atividades: arrastar para reordenar (usa .fase__handle) */
+/* Linha sendo arrastada: "levantada" e seguindo o ponteiro (transform vem do
+   inline translateY). Sem transição no transform para não atrasar o movimento. */
+.ativ--arrastando {
+  position: relative;
+  opacity: 0.97;
+  border-color: var(--dourado);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
+  cursor: grabbing;
+}
+.ativ--alvo {
+  border-color: var(--dourado);
+  background: rgba(184, 155, 106, 0.14);
+  box-shadow: 0 -3px 0 0 var(--dourado) inset;
+}
+/* As demais linhas deslizam suavemente ao se reacomodar. */
+.ativ {
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+/* Reordenar: alça de arraste + setas ↑/↓ (as setas funcionam em qualquer
+   aparelho, mesmo quando o arraste falha no toque). */
+.ativ__reordenar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+.ativ__setas {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.ativ__seta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid rgba(184, 155, 106, 0.5);
+  border-radius: 7px;
+  background: rgba(184, 155, 106, 0.12);
+  color: var(--dourado);
+  font-size: 0.7rem;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.ativ__seta:hover:not(:disabled) {
+  background: rgba(184, 155, 106, 0.28);
+}
+.ativ__seta:active:not(:disabled) {
+  background: rgba(184, 155, 106, 0.4);
+}
+.ativ__seta:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ---- Caixa de confirmação própria (confirmar.ts) ---- */
+.cf-msg {
+  font-family: var(--body);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--t-900);
+  margin-bottom: 1rem;
+}
+.wa-btn--perigo {
+  background: var(--erro);
+  color: #fff;
+  border-color: var(--erro);
+}
+.wa-btn--perigo:hover {
+  filter: brightness(0.94);
+}

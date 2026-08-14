@@ -1,0 +1,629 @@
+/* ============================================================
+   Painel interno — grades de clientes e de templates
+   ============================================================ */
+
+/* ---- Botão "voltar" para páginas claras (contraste correto) ---- */
+.btn--voltar {
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--essencia);
+  background: transparent;
+  border: 1px solid rgba(61, 107, 126, 0.35);
+  border-radius: 100px;
+  padding: 0.45rem 1rem;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.btn--voltar:hover {
+  background: rgba(61, 107, 126, 0.08);
+  border-color: var(--essencia);
+}
+
+/* ---- Grade de clientes (Painel KA) ---- */
+.grade-clientes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1.3rem;
+}
+.cliente-card {
+  font-family: var(--body);
+  text-align: left;
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+.cliente-card:hover,
+.cliente-card:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(15, 25, 35, 0.14);
+  border-color: var(--dourado-c);
+}
+.cliente-card:focus-visible {
+  outline: 2px solid var(--dourado);
+  outline-offset: 2px;
+}
+.cliente-card__capa {
+  height: 132px;
+  display: grid;
+  place-items: center;
+  background-size: cover;
+  background-position: center;
+}
+.cliente-card__capa img {
+  max-height: 46px;
+  max-width: 58%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.25));
+}
+.cliente-card__capa span {
+  font-family: var(--heading);
+  font-size: 1.3rem;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+.cliente-card__corpo {
+  padding: 1.1rem 1.25rem 1.2rem;
+}
+.cliente-card__corpo h3 {
+  font-size: 1.15rem;
+  margin-bottom: 0.15rem;
+}
+.cliente-card__tagline {
+  font-size: 0.78rem;
+  color: var(--t-500);
+  margin-bottom: 0.7rem;
+  line-height: 1.45;
+}
+.cliente-card__paleta {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+}
+.cliente-card__paleta span {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(15, 25, 35, 0.12);
+}
+.cliente-card__rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(15, 25, 35, 0.07);
+  padding-top: 0.85rem;
+}
+.cliente-card__qtd {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--t-400);
+}
+.cliente-card__cta {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--essencia);
+}
+
+/* ---- Grade de templates (estúdio da marca) ---- */
+.grade-templates {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(225px, 1fr));
+  gap: 1.3rem;
+}
+.tpl-card {
+  font-family: var(--body);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+.tpl-card:hover,
+.tpl-card:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px rgba(15, 25, 35, 0.14);
+  border-color: var(--dourado-c);
+}
+.tpl-card:focus-visible {
+  outline: 2px solid var(--dourado);
+  outline-offset: 2px;
+}
+.tpl-card__thumb {
+  position: relative;
+  aspect-ratio: 1080 / 1350;
+  background: var(--bg-3);
+  overflow: hidden;
+}
+.tpl-card__corpo {
+  padding: 0.95rem 1.1rem 1.05rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  flex: 1;
+}
+.tpl-card__corpo h3 {
+  font-size: 0.98rem;
+  line-height: 1.3;
+}
+.tpl-card__corpo p {
+  font-size: 0.76rem;
+  color: var(--t-500);
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.tpl-card__meta {
+  margin-top: auto;
+  padding-top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+.tpl-card__meta span {
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--t-400);
+  background: var(--bg-1);
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 100px;
+  padding: 0.2rem 0.55rem;
+}
+
+/* Miniatura ao vivo (arte real em escala) */
+.mini-preview {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+.mini-preview__zoom {
+  transform-origin: top left;
+}
+
+/* Card especial "Montar carrossel": leque de slides sobre fundo marinho */
+.tpl-card--carrossel .tpl-card__thumb {
+  background: radial-gradient(circle at 75% 20%, rgba(184, 155, 106, 0.28), transparent 55%),
+    var(--marinho);
+}
+.tpl-deck {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+.tpl-deck__slide {
+  position: absolute;
+  width: 46%;
+  aspect-ratio: 4 / 5;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transition: transform 0.25s ease;
+}
+.tpl-deck__slide:nth-child(1) {
+  background: var(--dourado-c);
+  transform: rotate(-10deg) translateX(-26%);
+  opacity: 0.85;
+}
+.tpl-deck__slide:nth-child(2) {
+  background: var(--bege);
+  transform: rotate(9deg) translateX(26%);
+  opacity: 0.9;
+}
+.tpl-deck__slide:nth-child(3) {
+  background: #fff;
+  transform: rotate(-2deg);
+  display: grid;
+  place-items: center;
+  font-family: var(--heading);
+  font-size: 1.6rem;
+  color: var(--marinho);
+}
+.tpl-card--carrossel:hover .tpl-deck__slide:nth-child(1) {
+  transform: rotate(-14deg) translateX(-34%);
+}
+.tpl-card--carrossel:hover .tpl-deck__slide:nth-child(2) {
+  transform: rotate(13deg) translateX(34%);
+}
+.tpl-deck__tag {
+  position: absolute;
+  bottom: 0.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--dourado-c);
+}
+
+/* ============================================================
+   Home: atalhos em "quadradinhos" (um por seção)
+   ============================================================ */
+.atalho-grupo {
+  margin-bottom: 1.7rem;
+}
+.atalho-grupo__tit {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--dourado);
+  margin-bottom: 0.75rem;
+}
+.grade-atalhos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.8rem;
+}
+.atalho-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 96px;
+  background: #fff;
+  border: 1px solid rgba(184, 155, 106, 0.28);
+  border-radius: 14px;
+  padding: 1rem 0.7rem;
+  cursor: pointer;
+  transition: 0.18s;
+  font-family: var(--body);
+}
+.atalho-card:hover {
+  border-color: var(--dourado);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(21, 37, 53, 0.09);
+}
+.atalho-card__ico {
+  color: var(--dourado);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.atalho-card__nome {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--marinho);
+  text-align: center;
+}
+@media (max-width: 480px) {
+  .grade-atalhos {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem;
+  }
+}
+
+/* ============================================================
+   Home compacta: TODOS os quadradinhos cabem numa tela só,
+   sem precisar rolar (pedido da KA).
+   ============================================================ */
+.page--inicio {
+  padding-top: 1.2rem;
+  padding-bottom: 1.2rem;
+}
+/* Home concentrada: no desktop não estica os cartões pela tela toda
+   (especificidade dupla para vencer o max-width padrão de .page). */
+.page.page--inicio {
+  max-width: 640px;
+}
+.page__head--inicio {
+  margin-bottom: 0.9rem;
+}
+/* 2 colunas fixas → grade sempre alinhada; um cartão ímpar solitário ocupa a
+   linha inteira (Estúdio na Criação, Relatórios no fim da Gestão), sem vãos. */
+.home-atalhos .grade-atalhos {
+  grid-template-columns: 1fr 1fr;
+}
+.home-atalhos .grade-atalhos > .atalho-card:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+/* Grupo "Criação" (Estúdio + Atividades): 1 coluna, Atividades fica embaixo
+   do Estúdio em vez de do lado. */
+.home-atalhos .atalho-grupo:first-child .grade-atalhos {
+  grid-template-columns: 1fr;
+}
+/* Ícone num disco suave dourado — dá coesão e elegância aos cartões. */
+.home-atalhos .atalho-card__ico {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(184, 155, 106, 0.12);
+}
+.page__head--inicio h1 {
+  font-size: 1.45rem;
+}
+.page__head--inicio p {
+  font-size: 0.8rem;
+  margin-top: 0.15rem;
+}
+.home-atalhos .atalho-grupo {
+  margin-bottom: 0.8rem;
+}
+.home-atalhos .atalho-grupo:last-child {
+  margin-bottom: 0;
+}
+.home-atalhos .atalho-grupo__tit {
+  margin-bottom: 0.4rem;
+  font-size: 0.62rem;
+}
+.home-atalhos .grade-atalhos {
+  gap: 0.5rem;
+}
+.home-atalhos .atalho-card {
+  min-height: 0;
+  padding: 0.5rem 0.5rem;
+  gap: 0.3rem;
+  border-radius: 12px;
+}
+.home-atalhos .atalho-card__ico svg {
+  width: 22px;
+  height: 22px;
+}
+.home-atalhos .atalho-card__nome {
+  font-size: 0.8rem;
+}
+
+/* Telas curtas: aperta ainda mais para garantir que caiba sem rolagem */
+@media (max-height: 740px) {
+  .page--inicio {
+    padding-top: 0.6rem;
+    padding-bottom: 0.5rem;
+  }
+  .page__head--inicio {
+    margin-bottom: 0.45rem;
+  }
+  .page__head--inicio h1 {
+    font-size: 1.25rem;
+  }
+  .page__head--inicio p {
+    display: none;
+  }
+  .home-atalhos .atalho-grupo {
+    margin-bottom: 0.4rem;
+  }
+  .home-atalhos .atalho-grupo__tit {
+    margin-bottom: 0.25rem;
+    font-size: 0.56rem;
+  }
+  .home-atalhos .grade-atalhos {
+    gap: 0.3rem;
+  }
+  .home-atalhos .atalho-card {
+    padding: 0.3rem 0.4rem;
+    gap: 0.2rem;
+  }
+  .home-atalhos .atalho-card__ico {
+    width: 28px;
+    height: 28px;
+  }
+  .home-atalhos .atalho-card__ico svg {
+    width: 20px;
+    height: 20px;
+  }
+  .home-atalhos .atalho-card__nome {
+    font-size: 0.75rem;
+  }
+}
+
+/* ============================================================
+   Novidades / atualizações do sistema (painel da Shapes)
+   ============================================================ */
+.novidades {
+  font-family: var(--body);
+  margin-top: 2rem;
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.1);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.novidades__cab {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.85rem 1.1rem;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.novidades__cab::-webkit-details-marker {
+  display: none;
+}
+.novidades__tag {
+  flex: none;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--essencia);
+  background: rgba(61, 107, 126, 0.12);
+  border: 1px solid rgba(61, 107, 126, 0.28);
+  padding: 0.28rem 0.6rem;
+  border-radius: 100px;
+}
+.novidades__tit {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  color: var(--t-900, #182634);
+  font-size: 0.98rem;
+  line-height: 1.25;
+}
+.novidades__sub {
+  font-weight: 500;
+  font-size: 0.76rem;
+  color: #6b7681;
+  margin-top: 1px;
+}
+.novidades__seta {
+  flex: none;
+  color: var(--essencia);
+  transition: transform 0.2s ease;
+}
+.novidades[open] .novidades__seta {
+  transform: rotate(180deg);
+}
+.novidades__corpo {
+  padding: 0 1.1rem 1rem;
+  border-top: 1px solid rgba(15, 25, 35, 0.07);
+}
+.novidades__nota {
+  font-size: 0.82rem;
+  color: #6b7681;
+  line-height: 1.5;
+  margin: 0.8rem 0 1rem;
+}
+.novidades__lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.novidades__item {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 0.9rem;
+  align-items: start;
+}
+.novidades__data {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--essencia);
+  background: rgba(61, 107, 126, 0.08);
+  border-radius: 8px;
+  padding: 0.3rem 0.5rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.novidades__h {
+  font-weight: 700;
+  color: var(--t-900, #182634);
+  font-size: 0.92rem;
+  margin-bottom: 0.3rem;
+}
+.novidades__pontos {
+  margin: 0;
+  padding-left: 1.05rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+.novidades__pontos li {
+  font-size: 0.88rem;
+  color: #3c4a57;
+  line-height: 1.45;
+}
+.novidades__pontos li::marker {
+  color: #c47830;
+}
+@media (max-width: 560px) {
+  .novidades__item {
+    grid-template-columns: 1fr;
+    gap: 0.4rem;
+  }
+  .novidades__data {
+    justify-self: start;
+    padding: 0.25rem 0.6rem;
+  }
+}
+
+/* Botão "Abrir página do cliente" (link p/ a página pública, só no admin) */
+.btn--pagina-cliente {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--body);
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: #fff;
+  background: var(--essencia, #3d6b7e);
+  border: 1px solid var(--essencia, #3d6b7e);
+  border-radius: 100px;
+  padding: 0.5rem 1.1rem;
+  text-decoration: none;
+  transition: 0.15s;
+}
+.btn--pagina-cliente:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 6px 16px -8px rgba(61, 107, 126, 0.7);
+}
+
+/* ============================================================
+   Backup do sistema (home do painel admin)
+   ============================================================ */
+.backup-box {
+  font-family: var(--body);
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.1);
+  border-radius: 14px;
+  padding: 1.1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-width: 640px;
+}
+.backup-box__cab {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+.backup-box__ico {
+  font-size: 1.7rem;
+  line-height: 1;
+  flex: none;
+}
+.backup-box__cab h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.02rem;
+  color: var(--t-900, #182634);
+}
+.backup-box__cab p {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #5c6875;
+  line-height: 1.5;
+}
+.backup-box__btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.backup-box__ok {
+  font-size: 0.86rem;
+  color: #2f5d3a;
+  background: rgba(122, 163, 122, 0.14);
+  border: 1px solid rgba(122, 163, 122, 0.4);
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+  line-height: 1.5;
+}

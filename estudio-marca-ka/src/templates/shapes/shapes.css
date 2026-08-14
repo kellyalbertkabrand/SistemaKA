@@ -1,0 +1,743 @@
+/* Fonte licenciada Montilla — família oficial completa (woff2), servida a
+   partir de /public/clientes/shapes/fonts. O navegador só baixa o peso usado. */
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 100;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-100.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 100;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-100i.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 200;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-200.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 200;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-200i.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 300;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-300.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 300;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-300i.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 400;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-400.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 400;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-400i.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 500;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-500.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 500;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-500i.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 600;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-600.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 600;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-600i.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 700;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-700.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 700;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-700i.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 800;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-800.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 800;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-800i.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 900;
+  font-style: normal;
+  src: url('/clientes/shapes/fonts/montilla-900.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montilla';
+  font-weight: 900;
+  font-style: italic;
+  src: url('/clientes/shapes/fonts/montilla-900i.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* ---- Card de feedback Shapes (fiel ao template-card.html oficial) ---- */
+.shapes-fb {
+  --orange: #ff7829;
+  --ink: #131313;
+  --gold: #f4b24e;
+  --brandfont: 'Montilla', system-ui, sans-serif;
+  position: relative;
+  width: 1080px;
+  overflow: hidden;
+  background: var(--orange);
+  font-family: var(--brandfont);
+}
+.shapes-fb .bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+.shapes-fb .content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 120px 92px;
+  z-index: 2;
+}
+.shapes-fb .logo {
+  width: 120px;
+  height: auto;
+  display: block;
+  margin-bottom: 34px;
+}
+.shapes-fb .kicker {
+  color: inherit;
+  font-weight: 700;
+  font-size: 40px;
+  letter-spacing: 9px;
+  text-transform: uppercase;
+  margin-bottom: 34px;
+}
+.shapes-fb .cardbox {
+  width: 100%;
+  background: #fff;
+  border-radius: 34px;
+  padding: 56px 58px;
+}
+.shapes-fb .stars {
+  color: var(--gold);
+  font-size: 48px;
+  letter-spacing: 6px;
+  line-height: 1;
+  font-family: system-ui, sans-serif;
+}
+.shapes-fb .stars .off {
+  color: #e3e3e3;
+}
+.shapes-fb .quote {
+  margin-top: 30px;
+  font-family: var(--brandfont);
+  font-weight: 400;
+  color: var(--ink);
+  font-size: 41px;
+  line-height: 1.5;
+  white-space: pre-line;
+  /* quebra palavras longas sem espaço em vez de estourar o card */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.shapes-fb.fmt-card .quote {
+  font-size: 38px;
+}
+.shapes-fb .who {
+  color: inherit;
+  font-weight: 500;
+  font-size: 34px;
+  letter-spacing: 6px;
+  text-transform: capitalize;
+  margin-top: 36px;
+}
+
+/* ---- Post de produto Shapes (fundo colorido + foto orgânica + texto) ---- */
+.shapes-prod {
+  --brandfont: 'Montilla', system-ui, sans-serif;
+  position: relative;
+  width: 1080px;
+  overflow: hidden;
+  font-family: var(--brandfont);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 96px;
+}
+.shapes-prod .logo {
+  width: 92px;
+  height: auto;
+  display: block;
+  flex: 0 0 auto;
+}
+.shapes-prod .blob-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 28px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.shapes-prod .foto-blob {
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+}
+.shapes-prod .foto-blob img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.shapes-prod .foto-ph {
+  margin: auto;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 34px;
+  letter-spacing: 0.02em;
+}
+.shapes-prod .texto {
+  flex: 0 0 auto;
+  font-size: 66px;
+  line-height: 1.12;
+  font-weight: 500;
+  white-space: pre-line;
+}
+/* Story: centraliza logo e texto (foto já é centralizada). */
+.shapes-prod.fmt-story,
+.shapes-cores.fmt-story {
+  align-items: center;
+  text-align: center;
+}
+
+/* Vídeo dentro da janela (produto/cores/forma = foto-blob; frase/grafismo =
+   frame): preenche igual à <img>. Sem isto o <video> fica no tamanho nativo e
+   "some" da moldura (a <img> tinha regra própria; o <video> não tinha). */
+.shapes-prod .foto-blob video,
+.shapes-cores .foto-blob video,
+.shapes-forma .foto-blob video,
+.shapes-frase .frame video,
+.shapes-graf .frame video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ---- 6 · Imagem inteira (tela cheia) + caixa de texto translúcida ---- */
+.shapes-imagem {
+  position: relative;
+  overflow: hidden;
+  font-family: 'Montilla', system-ui, sans-serif;
+  background: #d9d4c8;
+}
+.shapes-imagem .bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.shapes-imagem .bg-ph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 40px;
+}
+/* Caixa translúcida de cantos arredondados sobre a foto (texto opcional). */
+.shapes-imagem .caixa {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 84%;
+  box-sizing: border-box;
+  border-radius: 40px;
+  padding: 46px 54px;
+  text-align: center;
+  line-height: 1.25;
+  font-weight: 500;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  z-index: 2;
+}
+.shapes-imagem.pos-topo .caixa {
+  top: 7%;
+}
+.shapes-imagem.pos-meio .caixa {
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.shapes-imagem.pos-base .caixa {
+  bottom: 7%;
+}
+.shapes-imagem .caixa em {
+  font-style: italic;
+}
+
+/* ---- Exportação de VÍDEO (moldura) ----
+   Cards com JANELA (foto em forma orgânica): esconde a mídia e deixa a
+   foto-blob transparente; o buraco (na forma) é perfurado no canvas e o vídeo
+   aparece por baixo. Vale p/ produto, cores e forma. */
+.moldura-video .foto-blob {
+  background: transparent !important;
+}
+.moldura-video .foto-blob img,
+.moldura-video .foto-blob video,
+.moldura-video .foto-ph {
+  visibility: hidden !important;
+}
+/* Cards de vídeo-FUNDO (capa, cta): o texto/logo ficam POR CIMA do vídeo.
+   Deixa o fundo do card transparente (o canvas pinta a cor atrás do vídeo) e
+   não perfura nada — assim o título e o logo sobrevivem no vídeo exportado.
+   O nó exportado é um WRAPPER em volta do card, então a cor de fundo fica na
+   `.shapes-capa`/`.shapes-cta` (via style inline) — precisamos zerá-la ali. */
+.moldura-video--sobreposto,
+.moldura-video--sobreposto .shapes-capa,
+.moldura-video--sobreposto .shapes-cta,
+.moldura-video--sobreposto .shapes-imagem {
+  background: transparent !important;
+}
+.moldura-video--sobreposto .bg,
+.moldura-video--sobreposto .bg-ph {
+  visibility: hidden !important;
+}
+
+/* placeholder comum de foto */
+.shapes-capa .bg-ph,
+.shapes-cores .foto-ph,
+.shapes-forma .foto-ph,
+.shapes-cta .bg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Montilla', system-ui, sans-serif;
+  font-size: 34px;
+}
+
+/* ---- 1 · Capa ---- */
+.shapes-capa {
+  position: relative;
+  overflow: hidden;
+  font-family: 'Montilla', system-ui, sans-serif;
+}
+/* moldura da foto: centralizada; abaixo de 100% revela a cor de fundo em volta */
+.shapes-capa .foto-frame {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+}
+.shapes-capa .bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.shapes-capa .bg-ph {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.4);
+}
+.shapes-capa .titulo {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 90px;
+  font-size: 92px;
+  line-height: 1.1;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: inherit;
+  z-index: 2;
+}
+.shapes-capa .logo {
+  position: absolute;
+  right: 70px;
+  bottom: 66px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 2;
+}
+.shapes-capa .logo img {
+  width: 74px;
+  height: auto;
+}
+.shapes-capa .logo span {
+  font-size: 46px;
+  font-weight: 500;
+  color: inherit;
+}
+
+/* ---- Frase + foto (carrossel 03): texto em cima, foto no meio, texto embaixo ---- */
+.shapes-frase {
+  position: relative;
+  overflow: hidden;
+  font-family: 'Montilla', system-ui, sans-serif;
+}
+.shapes-frase .txt {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: inherit;
+  font-weight: 400;
+  font-size: 46px;
+  line-height: 1.32;
+  padding: 0 60px;
+  white-space: pre-line;
+  z-index: 2;
+}
+.shapes-frase .txt em {
+  font-style: italic;
+}
+.shapes-frase .frame {
+  position: absolute;
+  overflow: hidden;
+  z-index: 1;
+}
+.shapes-frase .frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.shapes-frase .ph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 3px dashed #e37037;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(227, 112, 55, 0.06) 0 22px,
+    rgba(227, 112, 55, 0.12) 22px 44px
+  );
+  color: #8a5a3a;
+  font-size: 34px;
+}
+.shapes-frase .ph-t2 {
+  font-size: 24px;
+  color: #b98a63;
+}
+
+/* ---- Card com grafismo lateral (texto + foto central + espirais recoloríveis) ---- */
+.shapes-graf {
+  position: relative;
+  overflow: hidden;
+  font-family: 'Montilla', system-ui, sans-serif;
+}
+.shapes-graf .graf {
+  position: absolute;
+  width: auto;
+  z-index: 1;
+  pointer-events: none;
+}
+.shapes-graf .txt {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: inherit;
+  font-weight: 400;
+  font-size: 46px;
+  line-height: 1.3;
+  padding: 0 90px;
+  white-space: pre-line;
+  z-index: 3;
+}
+.shapes-graf .txt em {
+  font-style: italic;
+}
+.shapes-graf .frame {
+  position: absolute;
+  overflow: hidden;
+  z-index: 2;
+}
+.shapes-graf .frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.shapes-graf .ph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 3px dashed #a06c9a;
+  color: #8a5a83;
+  font-size: 30px;
+}
+.shapes-graf .ph-t2 {
+  font-size: 22px;
+  opacity: 0.7;
+}
+
+/* ---- 3 · Diversas cores ---- */
+.shapes-cores {
+  position: relative;
+  overflow: hidden;
+  font-family: 'Montilla', system-ui, sans-serif;
+  color: #131313;
+  display: flex;
+  flex-direction: column;
+  padding: 96px;
+}
+.shapes-cores .logo {
+  width: 84px;
+  height: auto;
+  flex: 0 0 auto;
+}
+.shapes-cores .blob-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 28px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.shapes-cores .foto-blob {
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.06);
+  display: flex;
+}
+.shapes-cores .foto-blob img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.shapes-cores .foto-ph {
+  margin: auto;
+  color: rgba(19, 19, 19, 0.45);
+}
+.shapes-cores .labels {
+  flex: 0 0 auto;
+  font-size: 60px;
+  line-height: 1.25;
+  font-weight: 500;
+  white-space: pre-line;
+}
+
+/* ---- 4 · Forma função emoção ---- */
+.shapes-forma {
+  position: relative;
+  overflow: hidden;
+  font-family: 'Montilla', system-ui, sans-serif;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 64px;
+  padding: 96px;
+}
+.shapes-forma .foto-blob {
+  flex: 0 0 auto;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+}
+.shapes-forma .foto-blob img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.shapes-forma .foto-ph {
+  margin: auto;
+}
+.shapes-forma .lado {
+  flex: 0 0 auto;
+  width: 350px;
+}
+.shapes-forma .lado .logo {
+  width: 92px;
+  height: auto;
+  display: block;
+  margin-bottom: 34px;
+}
+.shapes-forma .texto {
+  font-size: 70px;
+  line-height: 1.14;
+  font-weight: 500;
+  white-space: pre-line;
+}
+/* Story: empilhado — texto (com concha) em cima, foto embaixo, centralizado. */
+.shapes-forma.empilhado {
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  gap: 56px;
+}
+.shapes-forma.empilhado .lado {
+  width: auto;
+}
+.shapes-forma.empilhado .lado .logo {
+  margin: 0 auto 28px;
+}
+.shapes-forma.empilhado .texto {
+  text-align: center;
+}
+
+/* ---- 5 · CTA "acesse a loja" ---- */
+.shapes-cta {
+  position: relative;
+  overflow: hidden;
+  font-family: 'Montilla', system-ui, sans-serif;
+  color: #fff;
+}
+.shapes-cta .bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+.shapes-cta .bg-ph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #6c6c6c;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 34px;
+  z-index: 0;
+}
+/* forma orgânica semi-transparente sobre a foto */
+.shapes-cta .blob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+.shapes-cta .blob svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.shapes-cta .centro {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 74%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  z-index: 2;
+}
+.shapes-cta .icone {
+  width: 120px;
+  height: auto;
+  margin-bottom: 40px;
+}
+.shapes-cta .botao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 104px;
+  /* Mais respiro: o texto não pode encostar nas bordas do retângulo (ainda mais
+     quando quebra em 2 linhas). Vertical p/ não colar em cima/embaixo; o
+     text-indent compensa o letter-spacing (que sobra do lado direito). */
+  padding: 26px 68px;
+  border: 2.5px solid currentColor;
+  border-radius: 16px;
+  font-size: 52px;
+  font-weight: 500;
+  letter-spacing: 4px;
+  text-indent: 4px;
+  text-transform: uppercase;
+  line-height: 1.2;
+}
+.shapes-cta .sub {
+  font-size: 40px;
+  font-weight: 400;
+  margin-top: 24px;
+  white-space: pre-line;
+}
+.shapes-cta .extra {
+  font-size: 44px;
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-top: 4px;
+  white-space: pre-line;
+}
