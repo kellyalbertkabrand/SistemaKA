@@ -39,6 +39,11 @@ estrategista de marca. A comunicação é **editorial e sóbria**, baseada em
 > (é um arquivo único, com as fontes e imagens embutidas — funciona offline e dá
 > para imprimir/salvar em PDF). Reúne capa, essência, cores, tipografia, logo,
 > regras e a galeria dos 7 cards numa página só.
+>
+> 🖼️ **Gerar os cards de verdade:** o brandbook *descreve*; para **reproduzir**
+> os cards KA (PNG idêntico ao app) num chat novo, use o kit
+> [`sistema-visual/`](sistema-visual/SISTEMA-VISUAL-KA.md) — você escreve um JSON
+> de slides e roda o gerador (fontes reais + medidas exatas do app).
 
 ---
 

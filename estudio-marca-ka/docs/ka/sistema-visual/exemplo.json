@@ -1,0 +1,40 @@
+{
+  "titulo_carrossel": "Exemplo — um carrossel KA completo (10 slides)",
+  "slides": [
+    { "tipo": "capa", "cor_fundo": "marinho",
+      "titulo": "Sua marca é o que as pessoas \"sentem\"\nquando você não está na sala." },
+
+    { "tipo": "texto", "cor_fundo": "cream", "titulo": "Aparecer mais não é a resposta",
+      "texto": "Posicionar é ser \"escolhido\" com clareza — antes mesmo do preço entrar na conversa. A marca forte reduz a dúvida de quem decide." },
+
+    { "tipo": "passo", "cor_fundo": "cream", "numero": "01",
+      "texto": "Essência antes da estética. Antes de escolher cor e fonte, defina o que a marca \"acredita\"." },
+
+    { "tipo": "passo", "cor_fundo": "essencia", "numero": "02",
+      "texto": "Clareza antes de canal. Uma mensagem \"nítida\" viaja sozinha — em qualquer rede." },
+
+    { "tipo": "midia", "cor_fundo": "marinho", "proporcao": "9:16",
+      "texto": "O que essa notícia revela sobre o \"comportamento\" de quem compra:" },
+
+    { "tipo": "comentario", "cor_fundo": "bege-quente",
+      "texto": "Um comentário que resume tudo:",
+      "usuario": "@marca_exemplo",
+      "fala": "Parei de competir por preço quando entendi meu posicionamento. Mudou o jogo." },
+
+    { "tipo": "texto", "cor_fundo": "cobre", "titulo": "O invisível vende",
+      "texto": "A maior parte de uma marca é invisível — e é justamente essa parte que precisa ser pensada, sentida e \"gerida\"." },
+
+    { "tipo": "passo", "cor_fundo": "cream", "numero": "03",
+      "texto": "Direção contínua. Marca não é um projeto que termina — é uma \"decisão\" que se repete." },
+
+    { "tipo": "feedback", "cor_fundo": "caramelo",
+      "rotulo": "FEEDBACK ;)", "nome": "Mariana Alves",
+      "sub": "Fundadora · Marca de skincare", "estrelas": 5,
+      "depoimento": "A Kelly traduziu em estratégia o que eu só sentia. Minha marca ficou clara, e a comunicação começou a vender por mim." },
+
+    { "tipo": "cta", "cor_fundo": "bege-quente",
+      "frase": "Quer uma marca com",
+      "produto": "Marca com Essência©",
+      "botao": "Link na minha bio →" }
+  ]
+}
