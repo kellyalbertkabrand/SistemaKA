@@ -1,0 +1,3 @@
+# Guia de Negócios do Conecta — site estático (uma página).
+[build]
+  publish = "."
