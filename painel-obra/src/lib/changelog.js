@@ -3,9 +3,18 @@
 // sucinta e clara para o cliente — e atualize a VERSAO (data da publicação).
 // É exibido na página pública /atualizacoes, que pode ser enviada ao cliente.
 
-export const VERSAO = '11/08/2026';
+export const VERSAO = '17/08/2026';
 
 export const CHANGELOG = [
+  {
+    data: '17/08/2026',
+    titulo: 'Downloads no painel do cliente e link por WhatsApp',
+    itens: [
+      'Painel do cliente: botão para baixar as fotos de cada visita técnica num único arquivo (ZIP), além de um "Baixar todas" com as fotos de todas as visitas de uma vez.',
+      'Painel do cliente: botão para baixar os arquivos do projeto (plantas, PDFs) em um único ZIP.',
+      'Link do cliente: novo botão "Enviar por WhatsApp" que já monta a mensagem com o nome da obra, o link do acompanhamento e o passo a passo para o cliente salvar o painel como um app na tela inicial (iPhone e Android).',
+    ],
+  },
   {
     data: '11/08/2026',
     titulo: 'Lançamentos mais fáceis no celular',
