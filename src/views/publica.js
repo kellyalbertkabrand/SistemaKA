@@ -5,6 +5,9 @@ import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { calcularReembolso } from '../lib/reembolso.js';
 import { caixaLogo } from '../lib/marca.js';
 import { abrirLightbox, abrirAnexo } from '../lib/lightbox.js';
+import { criarZip } from '../lib/zip.js';
+import { baixarBlob } from '../lib/exportar.js';
+import { dataURLParaBytes } from '../lib/imagem.js';
 
 // Página pública do cliente (só leitura), acessada por /obra/{slug}.
 // Mostra o andamento da obra com visual limpo — e NADA interno.
@@ -141,7 +144,12 @@ export async function renderPublica(container, slug) {
 
       ${(obra.projetos && obra.projetos.length) ? `
       <section class="pub-bloco pub-bloco-projeto">
-        ${tituloSecao('📐', 'Projeto da obra')}
+        <div class="pub-bloco-cab">
+          ${tituloSecao('📐', 'Projeto da obra')}
+          ${(obra.projetos.some((p) => !p.link && (p.dataUrl || p.temArquivo)))
+            ? `<button class="btn btn-mini" id="pub-baixar-projetos" title="Baixar os arquivos do projeto num único ZIP">⬇ Baixar arquivos</button>`
+            : ''}
+        </div>
         <ul class="proj-lista" id="pub-projetos">
           ${obra.projetos.map((p) => {
             const ext = (p.arquivo && p.arquivo.includes('.')) ? p.arquivo.split('.').pop().toLowerCase() : '';
@@ -164,7 +172,10 @@ export async function renderPublica(container, slug) {
       </section>` : ''}
 
       <section class="pub-bloco pub-bloco-fotos" id="pub-fotos-sec" hidden>
-        ${tituloSecao('📷', 'Fotos da obra')}
+        <div class="pub-bloco-cab">
+          ${tituloSecao('📷', 'Fotos da obra')}
+          <button class="btn btn-mini" id="pub-baixar-todas" title="Baixar todas as fotos num único ZIP" hidden>⬇ Baixar todas</button>
+        </div>
         <div id="pub-fotos"><p class="muted"><span class="spinner"></span> Carregando fotos…</p></div>
       </section>
 
@@ -192,8 +203,26 @@ export async function renderPublica(container, slug) {
     if (sec && wrap && fotos.length) {
       wrap.innerHTML = blocosFotosPub(fotos);
       sec.hidden = false;
+      const btnTodas = container.querySelector('#pub-baixar-todas');
+      if (btnTodas) btnTodas.hidden = false;
     }
   }).catch(() => {});
+
+  // Baixar TODAS as fotos (todas as visitas) num único ZIP.
+  const btnBaixarTodas = container.querySelector('#pub-baixar-todas');
+  if (btnBaixarTodas) {
+    btnBaixarTodas.addEventListener('click', () => {
+      baixarFotosZip(btnBaixarTodas, fotos, `fotos-${obra.slug}`);
+    });
+  }
+
+  // Baixar os arquivos do projeto (plantas/PDFs) — só os que são arquivo, não link.
+  const btnBaixarProjetos = container.querySelector('#pub-baixar-projetos');
+  if (btnBaixarProjetos) {
+    btnBaixarProjetos.addEventListener('click', () => {
+      baixarProjetosZip(btnBaixarProjetos, obra.projetos || [], `projeto-${obra.slug}`);
+    });
+  }
 
   // Abrir projeto anexado como arquivo (link abre direto pelo <a>).
   const pubProjetos = container.querySelector('#pub-projetos');
@@ -228,6 +257,15 @@ export async function renderPublica(container, slug) {
   const pubFotos = container.querySelector('#pub-fotos');
   if (pubFotos) {
     pubFotos.addEventListener('click', (e) => {
+      // Baixar as fotos de uma visita específica.
+      const bx = e.target.closest('[data-baixar-visita]');
+      if (bx) {
+        const chave = bx.getAttribute('data-baixar-visita');
+        const daVisita = fotos.filter((f) => chaveVisitaPub(f) === chave);
+        const rotulo = chave && chave !== 'sem-data' ? fmtDataVisita(chave).replace(/\//g, '-') : 'sem-data';
+        baixarFotosZip(bx, daVisita, `fotos-visita-${rotulo}-${obra.slug}`);
+        return;
+      }
       const b = e.target.closest('[data-abrir-foto]');
       if (!b) return;
       const numero = numerarFotosPub(fotos);
@@ -327,11 +365,16 @@ function fmtDataVisita(v) {
 // carrossel (data-abrir-foto).
 // Numera as fotos na mesma ordem de exibição — o número bate com o do painel
 // interno, então a cliente pode citar "a foto 5".
+// Chave do grupo (data da visita, ou data de criação, ou 'sem-data').
+function chaveVisitaPub(f) {
+  return String(f.dataVisita || '').slice(0, 10)
+    || (f.criadoEm ? new Date(f.criadoEm).toISOString().slice(0, 10) : 'sem-data');
+}
+
 function numerarFotosPub(fotos) {
   const grupos = new Map();
   fotos.forEach((f) => {
-    const chave = String(f.dataVisita || '').slice(0, 10)
-      || (f.criadoEm ? new Date(f.criadoEm).toISOString().slice(0, 10) : 'sem-data');
+    const chave = chaveVisitaPub(f);
     if (!grupos.has(chave)) grupos.set(chave, []);
     grupos.get(chave).push(f);
   });
@@ -346,8 +389,7 @@ function blocosFotosPub(fotos) {
   const numero = numerarFotosPub(fotos);
   const grupos = new Map();
   fotos.forEach((f, idx) => {
-    const chave = String(f.dataVisita || '').slice(0, 10)
-      || (f.criadoEm ? new Date(f.criadoEm).toISOString().slice(0, 10) : 'sem-data');
+    const chave = chaveVisitaPub(f);
     if (!grupos.has(chave)) grupos.set(chave, []);
     grupos.get(chave).push({ f, idx });
   });
@@ -361,6 +403,7 @@ function blocosFotosPub(fotos) {
     <div class="visita-bloco">
       <div class="visita-cab">
         <h3 class="visita-titulo">Visita técnica${data ? ` <span class="visita-data">${data}</span>` : ''}</h3>
+        <button class="btn btn-mini" data-baixar-visita="${esc(chave)}" title="Baixar as fotos desta visita num ZIP">⬇ Baixar fotos</button>
       </div>
       ${obsVisita ? `<p class="visita-obs">${esc(obsVisita)}</p>` : ''}
       <div class="fotos-grid">
@@ -376,6 +419,71 @@ function blocosFotosPub(fotos) {
       </div>
     </div>`;
   }).join('');
+}
+
+// Nome de arquivo seguro (sem acento nem caractere estranho), preservando ponto
+// da extensão. Usado para nomear as fotos/arquivos dentro do ZIP.
+function nomeSegPub(s, padrao = 'arquivo') {
+  const limpo = String(s || '')
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^\w.\- ]+/g, '').trim().replace(/\s+/g, '-').slice(0, 60);
+  return limpo || padrao;
+}
+
+// Baixa uma lista de fotos como um único ZIP (mesmo mecanismo do painel interno).
+// As imagens já são JPEG; o ZIP usa método "store" (sem recomprimir).
+async function baixarFotosZip(botao, lista, nomeBase) {
+  const rotulo = botao ? botao.textContent : '';
+  if (botao) { botao.disabled = true; botao.textContent = 'Preparando…'; }
+  try {
+    const arquivos = [];
+    let n = 0;
+    for (const f of lista) {
+      let dado = f.dataUrl || f.url;
+      if (!dado) dado = await obterFotoBin(f.id);
+      if (dado && String(dado).startsWith('data:')) {
+        n++;
+        const d = f.dataVisita
+          || (f.criadoEm ? new Date(f.criadoEm).toISOString().slice(0, 10) : '')
+          || 'foto';
+        arquivos.push({ nome: `${String(n).padStart(2, '0')}-${nomeSegPub(d, 'foto')}.jpg`, dados: dataURLParaBytes(dado) });
+      }
+    }
+    if (!arquivos.length) { alert('Não há fotos disponíveis para baixar.'); return; }
+    baixarBlob(`${nomeSegPub(nomeBase, 'fotos')}.zip`, criarZip(arquivos));
+  } catch (err) {
+    alert('Não foi possível baixar as fotos: ' + (err?.message || err));
+  } finally {
+    if (botao) { botao.disabled = false; botao.textContent = rotulo; }
+  }
+}
+
+// Baixa os arquivos do projeto (plantas/PDFs) como um único ZIP. Ignora os itens
+// que são apenas link (esses o cliente abre direto).
+async function baixarProjetosZip(botao, projetos, nomeBase) {
+  const rotulo = botao ? botao.textContent : '';
+  if (botao) { botao.disabled = true; botao.textContent = 'Preparando…'; }
+  try {
+    const arquivos = [];
+    let n = 0;
+    for (const p of projetos) {
+      if (p.link) continue;
+      let dado = p.dataUrl;
+      if (!dado && p.temArquivo) dado = await obterFotoBin(p.id);
+      if (dado && String(dado).startsWith('data:')) {
+        n++;
+        const base = nomeSegPub(p.arquivo || p.nome || 'projeto', 'projeto');
+        const nome = /\.[a-z0-9]{1,6}$/i.test(base) ? base : base + '.dat';
+        arquivos.push({ nome: `${String(n).padStart(2, '0')}-${nome}`, dados: dataURLParaBytes(dado) });
+      }
+    }
+    if (!arquivos.length) { alert('Não há arquivos de projeto para baixar.'); return; }
+    baixarBlob(`${nomeSegPub(nomeBase, 'projeto')}.zip`, criarZip(arquivos));
+  } catch (err) {
+    alert('Não foi possível baixar os arquivos: ' + (err?.message || err));
+  } finally {
+    if (botao) { botao.disabled = false; botao.textContent = rotulo; }
+  }
 }
 
 // Corre a consulta do Firebase contra um tempo-limite, para a página nunca

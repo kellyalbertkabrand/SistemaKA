@@ -136,8 +136,10 @@ export async function renderObra(container, obraId) {
             </label>
             <button class="btn btn-mini" id="copiar-link">Copiar</button>
             <a class="btn btn-mini" href="/obra/${esc(obra.slug)}" target="_blank" rel="noopener" title="Abre o painel do cliente numa nova aba">Abrir ↗</a>
+            <button class="btn btn-mini btn-whats" id="whats-link" title="Enviar o link ao cliente pelo WhatsApp com o passo a passo para salvar como app">💬 Enviar por WhatsApp</button>
           </div>
         </div>
+        <div id="whats-link-saida"></div>
       </section>
 
       <section class="card">
@@ -503,6 +505,24 @@ export async function renderObra(container, obraId) {
   });
   container.querySelector('#toggle-pub').addEventListener('change', async (e) => {
     await definirPublicado(obra.id, e.target.checked);
+  });
+  // Enviar o link ao cliente pelo WhatsApp, já com o passo a passo para salvar
+  // o painel como um app na tela inicial do celular.
+  const whatsSaida = container.querySelector('#whats-link-saida');
+  container.querySelector('#whats-link').addEventListener('click', () => {
+    const msg = montarMensagemLinkCliente({ obra, link: linkPublico });
+    window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+    whatsSaida.innerHTML = `
+      <div class="preview-card" style="margin-top:.6rem">
+        <p class="muted">Abri o WhatsApp para você escolher o contato. Se preferir, copie a mensagem:</p>
+        <textarea class="texto-livre" rows="10" readonly id="whats-link-txt"></textarea>
+        <div class="row-end"><button class="btn btn-mini" id="whats-link-copiar">Copiar mensagem</button></div>
+      </div>`;
+    whatsSaida.querySelector('#whats-link-txt').value = msg;
+    whatsSaida.querySelector('#whats-link-copiar').addEventListener('click', async (ev) => {
+      try { await navigator.clipboard.writeText(msg); ev.target.textContent = 'Copiado!'; }
+      catch { ev.target.textContent = 'Copie manualmente'; }
+    });
   });
 
   // ---- Lançamento por voz / texto / IA ----
@@ -1552,4 +1572,34 @@ function flash(btn, msg) {
   const original = btn.textContent;
   btn.textContent = msg;
   setTimeout(() => { btn.textContent = original; }, 1500);
+}
+
+// Mensagem pronta para o WhatsApp: apresenta o link do acompanhamento da obra e
+// ensina o cliente a salvar o painel como um app na tela inicial (iPhone e
+// Android). Formatação com *asteriscos* (negrito do WhatsApp).
+function montarMensagemLinkCliente({ obra, link }) {
+  const saudacao = obra.cliente ? `Olá, ${obra.cliente}! 👋` : 'Olá! 👋';
+  return [
+    saudacao,
+    '',
+    `Aqui está o acompanhamento da sua obra *${obra.nome}* — você vê fotos, andamento e pagamentos em tempo real:`,
+    '',
+    link,
+    '',
+    '📲 *Deixe como um app no seu celular* (abre com 1 toque, sem baixar nada):',
+    '',
+    '*iPhone (Safari):*',
+    '1) Abra o link acima no Safari',
+    '2) Toque no ícone de compartilhar (o quadradinho com a seta ↑)',
+    '3) Toque em "Adicionar à Tela de Início"',
+    '4) Toque em "Adicionar"',
+    '',
+    '*Android (Chrome):*',
+    '1) Abra o link acima no Chrome',
+    '2) Toque no menu ⋮ (três pontinhos, no canto)',
+    '3) Toque em "Adicionar à tela inicial" (ou "Instalar app")',
+    '4) Confirme',
+    '',
+    'Pronto! O acompanhamento fica sempre à mão. 🏗️',
+  ].join('\n');
 }
