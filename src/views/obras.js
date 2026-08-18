@@ -62,10 +62,10 @@ export async function renderObras(container) {
               <option value="sem">Sem gestão de obra (só projeto)</option>
             </select>
           </label>
-          <label>Orçamento total (R$)
+          <label id="o-orcamento-label">Orçamento total (R$)
             <input id="o-orcamento" type="number" min="0" step="0.01" value="0" />
           </label>
-          <label>Percentual do escritório — gestão (%)
+          <label id="o-percentual-label">Percentual do escritório — gestão (%)
             <input id="o-percentual" type="number" min="0" max="100" step="0.1" value="0" placeholder="Ex.: 10" />
           </label>
 
@@ -425,6 +425,19 @@ function configurarFormNovaObra(container) {
   const nome = container.querySelector('#o-nome');
   const slug = container.querySelector('#o-slug');
   const linhas = container.querySelector('#etapas-linhas');
+
+  // "Sem gestão de obra" (só projeto): o campo de orçamento vira "Valor do
+  // projeto" e o percentual de gestão some (não se aplica).
+  const gestaoSel = container.querySelector('#o-gestao');
+  const orcLabel = container.querySelector('#o-orcamento-label');
+  const pctLabel = container.querySelector('#o-percentual-label');
+  const sincronizarTipoServico = () => {
+    const semGestao = gestaoSel.value === 'sem';
+    orcLabel.childNodes[0].nodeValue = semGestao ? 'Valor do projeto (R$)' : 'Orçamento total (R$)';
+    pctLabel.hidden = semGestao;
+  };
+  gestaoSel.addEventListener('change', sincronizarTipoServico);
+  sincronizarTipoServico();
 
   abrir.addEventListener('click', () => {
     form.hidden = false;
