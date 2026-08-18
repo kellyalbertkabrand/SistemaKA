@@ -3,9 +3,17 @@
 // sucinta e clara para o cliente — e atualize a VERSAO (data da publicação).
 // É exibido na página pública /atualizacoes, que pode ser enviada ao cliente.
 
-export const VERSAO = '17/08/2026';
+export const VERSAO = '18/08/2026';
 
 export const CHANGELOG = [
+  {
+    data: '18/08/2026',
+    titulo: 'Tipo de serviço: com ou sem gestão de obra',
+    itens: [
+      'Ao criar ou editar uma obra dá para escolher o tipo de serviço: "com gestão de obra" (painel completo, como antes) ou "sem gestão de obra" (só projeto).',
+      'No modo "sem gestão", o painel do cliente fica enxuto, com apenas: controle de pagamento do projeto, imagens das visitas técnicas e arquivos do projeto.',
+    ],
+  },
   {
     data: '17/08/2026',
     titulo: 'Downloads no painel do cliente e link por WhatsApp',

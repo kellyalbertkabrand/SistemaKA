@@ -56,6 +56,12 @@ export async function renderObras(container) {
           <label>Link do cliente (slug)
             <input id="o-slug" placeholder="casa-familia-silva" />
           </label>
+          <label>Tipo de serviço
+            <select id="o-gestao">
+              <option value="com">Com gestão de obra (painel completo)</option>
+              <option value="sem">Sem gestão de obra (só projeto)</option>
+            </select>
+          </label>
           <label>Orçamento total (R$)
             <input id="o-orcamento" type="number" min="0" step="0.01" value="0" />
           </label>
@@ -459,6 +465,7 @@ function configurarFormNovaObra(container) {
       slug: (slug.value.trim() || slugify(nome.value)),
       orcamento: Number(container.querySelector('#o-orcamento').value || 0),
       percentualEscritorio: Number(container.querySelector('#o-percentual').value || 0),
+      gestao: container.querySelector('#o-gestao').value !== 'sem',
       publicado: true,
     };
     if (!payload.nome) { mostrarErro(erro, 'Dê um nome à obra.'); return; }
