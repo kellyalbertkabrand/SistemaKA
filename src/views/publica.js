@@ -8,6 +8,7 @@ import { abrirLightbox, abrirAnexo } from '../lib/lightbox.js';
 import { criarZip } from '../lib/zip.js';
 import { baixarBlob } from '../lib/exportar.js';
 import { dataURLParaBytes } from '../lib/imagem.js';
+import { normalizarPlano, somaPagas } from '../lib/parcelas.js';
 
 // Página pública do cliente (só leitura), acessada por /obra/{slug}.
 // Mostra o andamento da obra com visual limpo — e NADA interno.
@@ -60,10 +61,12 @@ export async function renderPublica(container, slug) {
   // pago/pendente aqui são só dos itens pagos pelo escritório (reembolsáveis);
   // o que o cliente pagou direto não entra no total a pagar ao escritório.
   const r = calcularReembolso(lancamentos, obra);
-  const recebido = soma(pagamentos);
+  // Sem gestão (só projeto): plano de parcelas (data, forma, status pago).
+  const planoParcelas = comGestao ? null : normalizarPlano(obra).plano;
+  // Com gestão: recebido = pagamentos avulsos. Sem gestão: soma das parcelas pagas.
+  const recebido = comGestao ? soma(pagamentos) : somaPagas(planoParcelas);
   // Com gestão: o cliente deve o reembolso + honorário (calcularReembolso).
-  // Sem gestão (só projeto): o cliente deve o VALOR DO PROJETO (campo orçamento),
-  // e paga em parcelas registradas no Financeiro (recebimentos).
+  // Sem gestão (só projeto): o cliente deve o VALOR DO PROJETO (campo orçamento).
   const totalDevido = comGestao ? r.totalEscritorio : Number(obra.orcamento || 0);
   const saldoCliente = totalDevido - recebido;
   const parcelasProjeto = Math.max(1, Number(obra.parcelas || 1)); // 1 = à vista
@@ -161,7 +164,8 @@ export async function renderPublica(container, slug) {
         <p class="pub-nota">${comGestao
           ? `O total é o reembolso dos fornecedores${r.pctEsc > 0 ? ` + o honorário de gestão (${r.pctFmt}%)` : ''}. O saldo já desconta o que você pagou.`
           : `${parcelasProjeto > 1 ? `Combinado em <strong>${parcelasProjeto}x de ${moeda(totalDevido / parcelasProjeto)}</strong>. ` : '<strong>Pagamento à vista.</strong> '}O saldo já desconta as parcelas que você pagou.`}</p>
-        ${pagamentos.length ? `
+        ${comGestao
+          ? (pagamentos.length ? `
           <ul class="pub-timeline">
             ${pagamentos.map((p) => `
               <li>
@@ -174,7 +178,23 @@ export async function renderPublica(container, slug) {
                   <span class="tl-status">${dataBR(p.data)}</span>
                 </div>
               </li>`).join('')}
-          </ul>` : `<p class="muted">Nenhum pagamento registrado ainda.</p>`}
+          </ul>` : `<p class="muted">Nenhum pagamento registrado ainda.</p>`)
+          : `
+          <ul class="pub-timeline">
+            ${planoParcelas.map((p) => `
+              <li>
+                <div class="tl-topo">
+                  <span class="tl-etapa">Parcela ${p.n} de ${planoParcelas.length}</span>
+                  <span class="tl-valor">${moeda(p.valor)}</span>
+                </div>
+                <div class="tl-base">
+                  <span>${p.data ? dataBR(p.data) : ''}${p.forma ? ' · ' + esc(p.forma) : ''}</span>
+                  <span class="tl-status">${p.pago
+                    ? '<span class="pill pill-pago"><span class="dot"></span>pago</span>'
+                    : '<span class="pill">em aberto</span>'}</span>
+                </div>
+              </li>`).join('')}
+          </ul>`}
       </section>
 
       ${comGestao ? `

@@ -340,6 +340,20 @@ input:focus, select:focus, textarea:focus {
 .fin-controle .btn-primary { background: var(--ok); border-color: var(--ok); }
 .fin-controle .btn-primary:hover { background: #336b47; border-color: #336b47; }
 
+/* Financeiro: parcelas do projeto (obras sem gestão) — editáveis. */
+.fin-parcelas { margin-top: .6rem; display: flex; flex-direction: column; gap: .5rem; }
+.fin-parcela { border: 1px solid #cfe3d5; border-radius: 10px; padding: .6rem .7rem; background: #fff; }
+.fin-parcela.paga { background: #eef6f0; }
+.fin-parc-topo { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
+.fin-parc-num { font-weight: 600; font-size: .86rem; }
+.fin-parc-valor { font-size: .98rem; }
+.fin-parc-campos { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .5rem .7rem; margin-top: .5rem; }
+.fin-parc-campos label { font-size: .76rem; color: var(--muted); display: flex; flex-direction: column; gap: .2rem; }
+.fin-parc-campos input, .fin-parc-campos select { font-size: .85rem; padding: .3rem .5rem; }
+.parc-status { align-self: flex-end; }
+.parc-status.pago { background: var(--ok); border-color: var(--ok); color: #fff; }
+.parc-status.pago:hover { background: #336b47; border-color: #336b47; color: #fff; }
+
 /* Financeiro: lista de pagamentos por obra. */
 .fin-pag-lista { margin-top: .6rem; display: flex; flex-direction: column; gap: .2rem; }
 .fin-pag-item { padding: .35rem 0; border-top: 1px solid #cfe3d5; font-size: .9rem; }
