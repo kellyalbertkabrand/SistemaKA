@@ -95,6 +95,12 @@ export async function renderObra(container, obraId) {
           <label>Cliente
             <input id="ed-cliente" value="${esc(obra.cliente || '')}" />
           </label>
+          <label>Tipo de serviço
+            <select id="ed-gestao">
+              <option value="com" ${obra.gestao !== false ? 'selected' : ''}>Com gestão de obra (painel completo)</option>
+              <option value="sem" ${obra.gestao === false ? 'selected' : ''}>Sem gestão de obra (só projeto)</option>
+            </select>
+          </label>
           <label>Orçamento total (R$)
             <input id="ed-orcamento" type="number" min="0" step="0.01" value="${Number(obra.orcamento || 0)}" />
           </label>
@@ -481,11 +487,12 @@ export async function renderObra(container, obraId) {
     const cliente = container.querySelector('#ed-cliente').value.trim() || null;
     const orcamento = Number(container.querySelector('#ed-orcamento').value || 0);
     const percentualEscritorio = Number(container.querySelector('#ed-percentual').value || 0);
+    const gestao = container.querySelector('#ed-gestao').value !== 'sem';
     if (!nome) { edErro.textContent = 'Dê um nome à obra.'; edErro.hidden = false; return; }
     const btn = formEditar.querySelector('button[type="submit"]');
     btn.disabled = true; btn.textContent = 'Salvando…';
     try {
-      await atualizarObra(obra.id, { nome, cliente, orcamento, percentualEscritorio });
+      await atualizarObra(obra.id, { nome, cliente, orcamento, percentualEscritorio, gestao });
     } catch (error) {
       btn.disabled = false; btn.textContent = 'Salvar alterações';
       edErro.textContent = error?.message || 'Erro ao salvar.'; edErro.hidden = false;

@@ -71,7 +71,7 @@ export async function slugExiste(slug) {
   return d.exists();
 }
 
-export async function criarObra({ nome, cliente, slug, orcamento, percentualEscritorio, publicado }) {
+export async function criarObra({ nome, cliente, slug, orcamento, percentualEscritorio, publicado, gestao }) {
   await setDoc(doc(db, 'obras', slug), {
     nome,
     cliente: cliente ?? null,
@@ -79,6 +79,9 @@ export async function criarObra({ nome, cliente, slug, orcamento, percentualEscr
     orcamento: Number(orcamento || 0),
     percentualEscritorio: Number(percentualEscritorio || 0),
     publicado: Boolean(publicado),
+    // Tipo de serviço: true = com gestão de obra (painel completo);
+    // false = sem gestão (painel reduzido). Padrão: com gestão.
+    gestao: gestao !== false,
     ownerId: uid(),
     criadoEm: Date.now(),
   });

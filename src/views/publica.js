@@ -69,83 +69,30 @@ export async function renderPublica(container, slug) {
 
   document.title = `${obra.nome} — acompanhamento`;
 
-  container.innerHTML = `
-    <div class="publica">
-      <header class="pub-logo-header">
-        ${caixaLogo('caixa-logo-cliente')}
-      </header>
+  // Tipo de serviço: com gestão de obra = painel completo (padrão);
+  // sem gestão = painel reduzido (só pagamento do projeto, imagens das visitas
+  // e arquivos do projeto). Obras antigas não têm o campo -> tratadas como "com".
+  const comGestao = obra.gestao !== false;
+  const tituloPagamento = comGestao ? 'Controle de pagamentos' : 'Controle de pagamento do projeto';
+  const tituloFotos = comGestao ? 'Fotos da obra' : 'Imagens das visitas técnicas';
+  const tituloProjeto = comGestao ? 'Projeto da obra' : 'Arquivos do projeto';
 
-      <section class="pub-hero">
-        <p class="pub-marca">Acompanhamento de obra</p>
-        <h1>${esc(obra.nome)}</h1>
-        ${obra.cliente ? `<p class="pub-cliente">Cliente: ${esc(obra.cliente)}</p>` : ''}
-      </section>
-
-      <section class="pub-resumo">
-        <div class="anel" style="--p:${Math.min(andamento, 100)}">
-          <div class="anel-centro">
-            <strong>${andamento}%</strong>
-            <small>executado</small>
-          </div>
-        </div>
-        <div class="pub-numeros">
-          ${num('Orçamento', moeda(obra.orcamento), 'val-orcado')}
-          ${num('Saldo em aberto', moeda(saldoCliente), saldoCliente > 0.005 ? 'neg' : 'val-saldo')}
-          <p class="pub-nota">Detalhes no <strong>controle de pagamentos</strong> abaixo.</p>
-        </div>
-      </section>
-
-      <section class="pub-bloco">
-        ${tituloSecao('💳', 'Controle de pagamentos')}
-        <div class="pub-numeros pub-numeros-3">
-          ${num('Total a pagar ao escritório', moeda(r.totalEscritorio))}
-          ${num('Já pago por você', moeda(recebido), 'val-ok')}
-          ${num('Saldo em aberto', moeda(saldoCliente), saldoCliente > 0.005 ? 'neg' : 'val-saldo')}
-        </div>
-        <p class="pub-nota">O total é o reembolso dos fornecedores${r.pctEsc > 0 ? ` + o honorário de gestão (${r.pctFmt}%)` : ''}. O saldo já desconta o que você pagou.</p>
-        ${pagamentos.length ? `
-          <ul class="pub-timeline">
-            ${pagamentos.map((p) => `
-              <li>
-                <div class="tl-topo">
-                  <span class="tl-etapa">${esc(p.forma || 'Pagamento')}</span>
-                  <span class="tl-valor">${moeda(p.valor)}</span>
-                </div>
-                <div class="tl-base">
-                  <span>${esc(p.observacao || '')}</span>
-                  <span class="tl-status">${dataBR(p.data)}</span>
-                </div>
-              </li>`).join('')}
-          </ul>` : `<p class="muted">Nenhum pagamento registrado ainda.</p>`}
-      </section>
-
-      <section class="pub-bloco pub-bloco-fases">
-        ${etapas.length === 0 && extras.length === 0
-          ? `${tituloSecao('🏗️', 'Fases da obra')}<p class="muted">As fases aparecerão aqui conforme a obra avança.</p>`
-          : `<div class="pub-bloco-cab">
-              ${tituloSecao('🏗️', 'Fases da obra')}
-              <button class="btn-toggle" id="pub-toggle-etapas" aria-expanded="false">
-                <span class="chev">▾</span><span class="tog-lbl">Ver fases (${etapas.length + extras.length})</span>
-              </button>
-            </div>
-            <div class="pub-etapas" id="pub-etapas" hidden>
-              ${etapas.map((e) => barraEtapa(e.nome, Number(e.orcado || 0), realizado[e.nome] || 0)).join('')}
-              ${extras.map((n) => barraEtapa(n, 0, realizado[n] || 0)).join('')}
-            </div>`}
-      </section>
-
-      <section class="pub-bloco pub-bloco-updates">
+  // Seções de fotos e de arquivos do projeto: montadas em variáveis para poder
+  // ordená-las conforme o tipo de serviço. No painel reduzido (sem gestão) a
+  // ordem pedida é Imagens → Arquivos; no completo mantém-se Projeto → Fotos.
+  const secFotos = `
+      <section class="pub-bloco pub-bloco-fotos" id="pub-fotos-sec" hidden>
         <div class="pub-bloco-cab">
-          ${tituloSecao('📋', 'Atualizações')}
-          ${lancamentos.length ? seletorOrdem('pub-ord', 'data') : ''}
+          ${tituloSecao('📷', tituloFotos)}
+          <button class="btn btn-mini" id="pub-baixar-todas" title="Baixar todas as fotos num único ZIP" hidden>⬇ Baixar todas</button>
         </div>
-        <div id="pub-lista">${listaTimeline(ordenarLancamentos(lancamentos, 'data'))}</div>
-      </section>
+        <div id="pub-fotos"><p class="muted"><span class="spinner"></span> Carregando fotos…</p></div>
+      </section>`;
 
-      ${(obra.projetos && obra.projetos.length) ? `
+  const secProjeto = (obra.projetos && obra.projetos.length) ? `
       <section class="pub-bloco pub-bloco-projeto">
         <div class="pub-bloco-cab">
-          ${tituloSecao('📐', 'Projeto da obra')}
+          ${tituloSecao('📐', tituloProjeto)}
           ${(obra.projetos.some((p) => !p.link && (p.dataUrl || p.temArquivo)))
             ? `<button class="btn btn-mini" id="pub-baixar-projetos" title="Baixar os arquivos do projeto num único ZIP">⬇ Baixar arquivos</button>`
             : ''}
@@ -169,15 +116,86 @@ export async function renderPublica(container, slug) {
             </li>`;
           }).join('')}
         </ul>
+      </section>` : '';
+
+  container.innerHTML = `
+    <div class="publica">
+      <header class="pub-logo-header">
+        ${caixaLogo('caixa-logo-cliente')}
+      </header>
+
+      <section class="pub-hero">
+        <p class="pub-marca">Acompanhamento de obra</p>
+        <h1>${esc(obra.nome)}</h1>
+        ${obra.cliente ? `<p class="pub-cliente">Cliente: ${esc(obra.cliente)}</p>` : ''}
+      </section>
+
+      ${comGestao ? `
+      <section class="pub-resumo">
+        <div class="anel" style="--p:${Math.min(andamento, 100)}">
+          <div class="anel-centro">
+            <strong>${andamento}%</strong>
+            <small>executado</small>
+          </div>
+        </div>
+        <div class="pub-numeros">
+          ${num('Orçamento', moeda(obra.orcamento), 'val-orcado')}
+          ${num('Saldo em aberto', moeda(saldoCliente), saldoCliente > 0.005 ? 'neg' : 'val-saldo')}
+          <p class="pub-nota">Detalhes no <strong>controle de pagamentos</strong> abaixo.</p>
+        </div>
       </section>` : ''}
 
-      <section class="pub-bloco pub-bloco-fotos" id="pub-fotos-sec" hidden>
-        <div class="pub-bloco-cab">
-          ${tituloSecao('📷', 'Fotos da obra')}
-          <button class="btn btn-mini" id="pub-baixar-todas" title="Baixar todas as fotos num único ZIP" hidden>⬇ Baixar todas</button>
+      <section class="pub-bloco">
+        ${tituloSecao('💳', tituloPagamento)}
+        <div class="pub-numeros pub-numeros-3">
+          ${num('Total a pagar ao escritório', moeda(r.totalEscritorio))}
+          ${num('Já pago por você', moeda(recebido), 'val-ok')}
+          ${num('Saldo em aberto', moeda(saldoCliente), saldoCliente > 0.005 ? 'neg' : 'val-saldo')}
         </div>
-        <div id="pub-fotos"><p class="muted"><span class="spinner"></span> Carregando fotos…</p></div>
+        <p class="pub-nota">${comGestao
+          ? `O total é o reembolso dos fornecedores${r.pctEsc > 0 ? ` + o honorário de gestão (${r.pctFmt}%)` : ''}. O saldo já desconta o que você pagou.`
+          : 'O saldo já desconta o que você pagou.'}</p>
+        ${pagamentos.length ? `
+          <ul class="pub-timeline">
+            ${pagamentos.map((p) => `
+              <li>
+                <div class="tl-topo">
+                  <span class="tl-etapa">${esc(p.forma || 'Pagamento')}</span>
+                  <span class="tl-valor">${moeda(p.valor)}</span>
+                </div>
+                <div class="tl-base">
+                  <span>${esc(p.observacao || '')}</span>
+                  <span class="tl-status">${dataBR(p.data)}</span>
+                </div>
+              </li>`).join('')}
+          </ul>` : `<p class="muted">Nenhum pagamento registrado ainda.</p>`}
       </section>
+
+      ${comGestao ? `
+      <section class="pub-bloco pub-bloco-fases">
+        ${etapas.length === 0 && extras.length === 0
+          ? `${tituloSecao('🏗️', 'Fases da obra')}<p class="muted">As fases aparecerão aqui conforme a obra avança.</p>`
+          : `<div class="pub-bloco-cab">
+              ${tituloSecao('🏗️', 'Fases da obra')}
+              <button class="btn-toggle" id="pub-toggle-etapas" aria-expanded="false">
+                <span class="chev">▾</span><span class="tog-lbl">Ver fases (${etapas.length + extras.length})</span>
+              </button>
+            </div>
+            <div class="pub-etapas" id="pub-etapas" hidden>
+              ${etapas.map((e) => barraEtapa(e.nome, Number(e.orcado || 0), realizado[e.nome] || 0)).join('')}
+              ${extras.map((n) => barraEtapa(n, 0, realizado[n] || 0)).join('')}
+            </div>`}
+      </section>
+
+      <section class="pub-bloco pub-bloco-updates">
+        <div class="pub-bloco-cab">
+          ${tituloSecao('📋', 'Atualizações')}
+          ${lancamentos.length ? seletorOrdem('pub-ord', 'data') : ''}
+        </div>
+        <div id="pub-lista">${listaTimeline(ordenarLancamentos(lancamentos, 'data'))}</div>
+      </section>` : ''}
+
+      ${comGestao ? secProjeto + secFotos : secFotos + secProjeto}
 
       <a class="btn btn-ghost pub-voltar-arq" id="voltar-arq" data-link href="/painel/${esc(obra.slug)}" hidden>← Voltar ao painel do arquiteto</a>
 
