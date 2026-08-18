@@ -347,6 +347,11 @@ export async function criarClienteEscritorio(campos) {
   });
 }
 
+// Editar um cliente já cadastrado (escritório).
+export async function atualizarCliente(id, campos) {
+  await updateDoc(doc(db, 'clientes', id), campos);
+}
+
 export async function excluirCliente(id) {
   await deleteDoc(doc(db, 'clientes', id));
 }
