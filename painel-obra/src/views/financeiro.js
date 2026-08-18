@@ -49,9 +49,15 @@ export async function renderFinanceiro(container) {
       const recebido = soma(pagPorObra[o.id]);
       return { o, comGestao, total: c.totalEscritorio, recebido, saldo: c.totalEscritorio - recebido, plano: null };
     }
-    const { plano, mudou } = normalizarPlano(o);
-    if (mudou) planosParaSalvar.push({ id: o.id, plano });
+    // Sem valor definido e sem plano salvo: não geramos parcela "fantasma".
     const total = Number(o.orcamento || 0);
+    const temPlanoSalvo = Array.isArray(o.parcelasPlano) && o.parcelasPlano.length;
+    let plano = [];
+    if (temPlanoSalvo || total > 0) {
+      const norm = normalizarPlano(o);
+      plano = norm.plano;
+      if (norm.mudou) planosParaSalvar.push({ id: o.id, plano });
+    }
     const recebido = somaPagas(plano);
     return { o, comGestao, total, recebido, saldo: total - recebido, plano };
   }).sort((a, b) => b.saldo - a.saldo); // quem deve mais primeiro
@@ -115,6 +121,7 @@ export async function renderFinanceiro(container) {
           <span class="muted fin-hint">Edite valor, data e forma; marque como pago; cobre pelo WhatsApp.</span>
         </div>
         <div class="fin-parcelas" data-parcelas-obra="${esc(o.id)}">
+          ${plano.length ? '' : '<p class="muted" style="margin:0">Defina o valor do projeto (na obra) e clique em "Refazer", ou adicione parcelas manualmente.</p>'}
           ${plano.map((p) => `
           <div class="fin-parcela ${p.pago ? 'paga' : ''}" data-parc-n="${p.n}">
             <div class="fin-parc-topo">
@@ -140,7 +147,7 @@ export async function renderFinanceiro(container) {
           <button type="button" class="btn btn-mini" data-add-parc="${esc(o.id)}">+ Adicionar parcela</button>
           <span class="fin-parc-refazer">
             Refazer em
-            <input type="number" min="1" max="60" class="parc-refazer-n" value="${plano.length}" />
+            <input type="number" min="1" max="60" class="parc-refazer-n" value="${Math.max(1, plano.length)}" />
             parcelas iguais
             <button type="button" class="btn btn-mini" data-refazer-parc="${esc(o.id)}">Refazer</button>
           </span>
