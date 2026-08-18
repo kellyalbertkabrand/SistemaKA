@@ -66,6 +66,7 @@ export async function renderPublica(container, slug) {
   // e paga em parcelas registradas no Financeiro (recebimentos).
   const totalDevido = comGestao ? r.totalEscritorio : Number(obra.orcamento || 0);
   const saldoCliente = totalDevido - recebido;
+  const parcelasProjeto = Math.max(1, Number(obra.parcelas || 1)); // 1 = à vista
 
   // Realizado por etapa
   const realizado = {};
@@ -159,7 +160,7 @@ export async function renderPublica(container, slug) {
         </div>
         <p class="pub-nota">${comGestao
           ? `O total é o reembolso dos fornecedores${r.pctEsc > 0 ? ` + o honorário de gestão (${r.pctFmt}%)` : ''}. O saldo já desconta o que você pagou.`
-          : 'É o valor combinado do projeto. O saldo já desconta as parcelas que você pagou.'}</p>
+          : `${parcelasProjeto > 1 ? `Combinado em <strong>${parcelasProjeto}x de ${moeda(totalDevido / parcelasProjeto)}</strong>. ` : '<strong>Pagamento à vista.</strong> '}O saldo já desconta as parcelas que você pagou.`}</p>
         ${pagamentos.length ? `
           <ul class="pub-timeline">
             ${pagamentos.map((p) => `

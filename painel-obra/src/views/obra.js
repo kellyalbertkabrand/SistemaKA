@@ -104,6 +104,12 @@ export async function renderObra(container, obraId) {
           <label id="ed-orcamento-label">Orçamento total (R$)
             <input id="ed-orcamento" type="number" min="0" step="0.01" value="${Number(obra.orcamento || 0)}" />
           </label>
+          <label id="ed-parcelas-label" hidden>Pagamento do projeto
+            <select id="ed-parcelas">
+              <option value="1" ${Number(obra.parcelas || 1) <= 1 ? 'selected' : ''}>À vista</option>
+              ${[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((n) => `<option value="${n}" ${Number(obra.parcelas || 1) === n ? 'selected' : ''}>${n}x</option>`).join('')}
+            </select>
+          </label>
           <label id="ed-percentual-label">Percentual do escritório — gestão (%)
             <input id="ed-percentual" type="number" min="0" max="100" step="0.1" value="${Number(obra.percentualEscritorio || 0)}" placeholder="Ex.: 10" />
           </label>
@@ -464,10 +470,12 @@ export async function renderObra(container, obraId) {
   const edGestaoSel = container.querySelector('#ed-gestao');
   const edOrcLabel = container.querySelector('#ed-orcamento-label');
   const edPctLabel = container.querySelector('#ed-percentual-label');
+  const edParcLabel = container.querySelector('#ed-parcelas-label');
   const sincronizarTipoServicoEd = () => {
     const semGestao = edGestaoSel.value === 'sem';
     edOrcLabel.childNodes[0].nodeValue = semGestao ? 'Valor do projeto (R$)' : 'Orçamento total (R$)';
     edPctLabel.hidden = semGestao;
+    edParcLabel.hidden = !semGestao;
   };
   edGestaoSel.addEventListener('change', sincronizarTipoServicoEd);
   sincronizarTipoServicoEd();
@@ -500,11 +508,12 @@ export async function renderObra(container, obraId) {
     const orcamento = Number(container.querySelector('#ed-orcamento').value || 0);
     const percentualEscritorio = Number(container.querySelector('#ed-percentual').value || 0);
     const gestao = container.querySelector('#ed-gestao').value !== 'sem';
+    const parcelas = Number(container.querySelector('#ed-parcelas').value || 1);
     if (!nome) { edErro.textContent = 'Dê um nome à obra.'; edErro.hidden = false; return; }
     const btn = formEditar.querySelector('button[type="submit"]');
     btn.disabled = true; btn.textContent = 'Salvando…';
     try {
-      await atualizarObra(obra.id, { nome, cliente, orcamento, percentualEscritorio, gestao });
+      await atualizarObra(obra.id, { nome, cliente, orcamento, percentualEscritorio, gestao, parcelas });
     } catch (error) {
       btn.disabled = false; btn.textContent = 'Salvar alterações';
       edErro.textContent = error?.message || 'Erro ao salvar.'; edErro.hidden = false;
