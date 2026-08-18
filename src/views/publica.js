@@ -70,6 +70,9 @@ export async function renderPublica(container, slug) {
   const totalDevido = comGestao ? r.totalEscritorio : Number(obra.orcamento || 0);
   const saldoCliente = totalDevido - recebido;
   const parcelasProjeto = Math.max(1, Number(obra.parcelas || 1)); // 1 = à vista
+  // Sem gestão: só mostramos a nota e a lista de parcelas quando há valor
+  // definido (ou algo já recebido). Sem valor, nada de texto sobre pagamento.
+  const temPagamentoProjeto = totalDevido > 0.005 || recebido > 0.005;
 
   // Realizado por etapa
   const realizado = {};
@@ -161,9 +164,11 @@ export async function renderPublica(container, slug) {
           ${num('Já pago por você', moeda(recebido), 'val-ok')}
           ${num('Saldo em aberto', moeda(saldoCliente), saldoCliente > 0.005 ? 'neg' : 'val-saldo')}
         </div>
-        <p class="pub-nota">${comGestao
-          ? `O total é o reembolso dos fornecedores${r.pctEsc > 0 ? ` + o honorário de gestão (${r.pctFmt}%)` : ''}. O saldo já desconta o que você pagou.`
-          : `${parcelasProjeto > 1 ? `Combinado em <strong>${parcelasProjeto}x de ${moeda(totalDevido / parcelasProjeto)}</strong>. ` : '<strong>Pagamento à vista.</strong> '}O saldo já desconta as parcelas que você pagou.`}</p>
+        ${comGestao
+          ? `<p class="pub-nota">O total é o reembolso dos fornecedores${r.pctEsc > 0 ? ` + o honorário de gestão (${r.pctFmt}%)` : ''}. O saldo já desconta o que você pagou.</p>`
+          : (temPagamentoProjeto
+            ? `<p class="pub-nota">${parcelasProjeto > 1 ? `Combinado em <strong>${parcelasProjeto}x de ${moeda(totalDevido / parcelasProjeto)}</strong>. ` : '<strong>Pagamento à vista.</strong> '}O saldo já desconta as parcelas que você pagou.</p>`
+            : '')}
         ${comGestao
           ? (pagamentos.length ? `
           <ul class="pub-timeline">
@@ -179,7 +184,7 @@ export async function renderPublica(container, slug) {
                 </div>
               </li>`).join('')}
           </ul>` : `<p class="muted">Nenhum pagamento registrado ainda.</p>`)
-          : `
+          : (temPagamentoProjeto ? `
           <ul class="pub-timeline">
             ${planoParcelas.map((p) => `
               <li>
@@ -194,7 +199,7 @@ export async function renderPublica(container, slug) {
                     : '<span class="pill">em aberto</span>'}</span>
                 </div>
               </li>`).join('')}
-          </ul>`}
+          </ul>` : '')}
       </section>
 
       ${comGestao ? `
