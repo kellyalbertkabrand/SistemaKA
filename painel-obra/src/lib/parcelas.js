@@ -4,6 +4,8 @@
 // { n, valor, data, forma, pago }. Este módulo gera e reconcilia esse plano
 // para o Financeiro (editável) e para o painel do cliente (só leitura).
 
+import { moeda, dataBR } from './format.js';
+
 // Divide um total em n parcelas que SOMAM exatamente o total (a última absorve
 // o arredondamento dos centavos).
 export function dividirValor(total, n) {
@@ -29,29 +31,36 @@ export function somarMeses(iso, m) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-// Reconcilia o plano guardado com o valor/quantidade atuais da obra:
-// - os valores são sempre recalculados a partir de orçamento ÷ parcelas;
-// - data, forma e status "pago" são preservados por posição quando já existem;
-// - se aumentou o nº de parcelas, as novas entram com vencimento mensal e "Pix";
-// - se diminuiu, as sobrando são descartadas.
+// Gera um plano NOVO dividindo o total em n parcelas iguais, com vencimento
+// mensal a partir de hoje (ou de dataBase). Usado na 1ª geração e no "Refazer".
+export function gerarPlano(total, n, dataBase) {
+  const valores = dividirValor(total, n);
+  const base = String(dataBase || new Date().toISOString().slice(0, 10)).slice(0, 10);
+  return valores.map((v, i) => ({ n: i + 1, valor: v, data: somarMeses(base, i), forma: 'Pix', pago: false }));
+}
+
+// Renumera as parcelas (n = 1..N) mantendo os demais campos — usado após
+// adicionar/remover parcelas.
+export function renumerar(plano) {
+  return (plano || []).map((p, i) => ({ ...p, n: i + 1 }));
+}
+
+// Devolve o plano de parcelas da obra. Se já existe um plano salvo, ELE é a
+// fonte da verdade (a arquiteta edita valores/datas/forma/status e adiciona ou
+// remove parcelas no Financeiro). Só quando não há plano é que geramos um a
+// partir do valor do projeto ÷ nº de parcelas.
 // Devolve { plano, mudou } — `mudou` diz se difere do que está salvo.
 export function normalizarPlano(obra) {
-  const n = Math.max(1, Number(obra?.parcelas || 1));
-  const total = Number(obra?.orcamento || 0);
-  const valores = dividirValor(total, n);
   const antigo = Array.isArray(obra?.parcelasPlano) ? obra.parcelasPlano : [];
-  const hoje = new Date().toISOString().slice(0, 10);
-
-  const plano = valores.map((v, i) => {
-    const a = antigo[i] || null;
-    return {
-      n: i + 1,
-      valor: v,
-      data: (a && a.data) || somarMeses(hoje, i),
-      forma: (a && a.forma) || 'Pix',
-      pago: Boolean(a && a.pago),
-    };
-  });
+  const plano = antigo.length
+    ? renumerar(antigo).map((p) => ({
+        n: p.n,
+        valor: Number(p.valor || 0),
+        data: p.data || '',
+        forma: p.forma || 'Pix',
+        pago: Boolean(p.pago),
+      }))
+    : gerarPlano(Number(obra?.orcamento || 0), Math.max(1, Number(obra?.parcelas || 1)));
 
   const mudou = JSON.stringify(plano) !== JSON.stringify(antigo);
   return { plano, mudou };
@@ -60,4 +69,31 @@ export function normalizarPlano(obra) {
 // Soma das parcelas já pagas.
 export function somaPagas(plano) {
   return (plano || []).filter((p) => p.pago).reduce((t, p) => t + Number(p.valor || 0), 0);
+}
+
+// Mensagem pronta para o WhatsApp cobrando uma parcela do projeto. Sem emojis
+// (evita caracteres quebrados). `pagamento` (opcional) traz os dados de Pix do
+// escritório; `link` (opcional) é o painel do cliente.
+export function mensagemCobrancaParcela({ obra, parcela, total, link, pagamento }) {
+  const l = [];
+  l.push(obra?.cliente ? `Olá, ${obra.cliente}!` : 'Olá!');
+  l.push('');
+  l.push(`Passando para combinar a *parcela ${parcela.n} de ${total}* do projeto *${obra?.nome || ''}*.`);
+  l.push('');
+  l.push(`Valor: ${moeda(parcela.valor)}`);
+  if (parcela.data) l.push(`Vencimento: ${dataBR(parcela.data)}`);
+  if (parcela.forma) l.push(`Forma combinada: ${parcela.forma}`);
+  if (pagamento && pagamento.pix) {
+    l.push('');
+    l.push(`Chave Pix (${pagamento.pixTipo || 'chave'}): ${pagamento.pix}`);
+    if (pagamento.titular) l.push(`Titular: ${pagamento.titular}`);
+  }
+  if (link) {
+    l.push('');
+    l.push(`Acompanhe o projeto e os pagamentos por aqui:`);
+    l.push(link);
+  }
+  l.push('');
+  l.push('Qualquer dúvida, estou à disposição. Obrigada!');
+  return l.join('\n');
 }

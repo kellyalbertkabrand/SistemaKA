@@ -13,6 +13,8 @@ export const CHANGELOG = [
       'Ao criar ou editar uma obra dá para escolher o tipo de serviço: "com gestão de obra" (painel completo, como antes) ou "sem gestão de obra" (só projeto).',
       'No modo "sem gestão", o painel do cliente fica enxuto, com apenas: controle de pagamento do projeto, imagens das visitas técnicas e arquivos do projeto.',
       'Pagamento do projeto: escolha "à vista" ou o número de parcelas. O sistema gera as parcelas automaticamente no Financeiro — dá para ajustar a data e a forma de cada uma e marcar como paga ou em aberto. O cliente vê cada parcela com data, forma e status.',
+      'Parcelas totalmente editáveis no Financeiro: mudar o valor de cada parcela, adicionar uma parcela (ex.: um pagamento a mais num mês), remover ou refazer o plano em N parcelas iguais.',
+      'Botão "Cobrar" em cada parcela: abre o WhatsApp com a mensagem pronta (obra, parcela, valor, vencimento, Pix e link do cliente).',
     ],
   },
   {

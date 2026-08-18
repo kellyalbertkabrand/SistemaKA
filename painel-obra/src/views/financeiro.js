@@ -4,8 +4,8 @@ import {
 } from '../dados.js';
 import { moeda, dataBR, esc } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
-import { calcularReembolso, baixarPdfReembolso, baixarExcelReembolso, montarMensagemWhatsApp } from '../lib/reembolso.js';
-import { normalizarPlano, somaPagas } from '../lib/parcelas.js';
+import { calcularReembolso, baixarPdfReembolso, baixarExcelReembolso, montarMensagemWhatsApp, PAGAMENTO } from '../lib/reembolso.js';
+import { normalizarPlano, somaPagas, gerarPlano, renumerar, somarMeses, mensagemCobrancaParcela } from '../lib/parcelas.js';
 
 // Financeiro: uma tela só, por obra, com Total a pagar / Recebido / Saldo em
 // aberto; gera o relatório do cliente (PDF/WhatsApp) e controla os pagamentos ali.
@@ -104,22 +104,28 @@ export async function renderFinanceiro(container) {
       </div>`;
   };
 
-  // Bloco de parcelas do projeto (obras SEM gestão) — geradas automaticamente;
-  // a arquiteta ajusta data/forma e marca cada uma como paga ou em aberto.
+  // Bloco de parcelas do projeto (obras SEM gestão) — geradas automaticamente e
+  // totalmente editáveis: valor, data, forma, status; dá para adicionar/remover
+  // parcelas e refazer o plano em N parcelas iguais. Cada parcela pode ser
+  // cobrada pelo WhatsApp.
   const blocoParcelas = (o, plano) => `
       <div class="fin-controle">
         <div class="row-between">
           <h3 class="fin-controle-titulo">Parcelas do projeto</h3>
-          <span class="muted fin-hint">Ajuste a data e a forma; marque como pago quando receber.</span>
+          <span class="muted fin-hint">Edite valor, data e forma; marque como pago; cobre pelo WhatsApp.</span>
         </div>
         <div class="fin-parcelas" data-parcelas-obra="${esc(o.id)}">
           ${plano.map((p) => `
           <div class="fin-parcela ${p.pago ? 'paga' : ''}" data-parc-n="${p.n}">
             <div class="fin-parc-topo">
               <span class="fin-parc-num">Parcela ${p.n} de ${plano.length}</span>
-              <strong class="fin-parc-valor">${moeda(p.valor)}</strong>
+              <span class="row-end">
+                <button type="button" class="btn btn-mini btn-whats parc-cobrar" title="Cobrar esta parcela pelo WhatsApp">💬 Cobrar</button>
+                <button type="button" class="btn btn-x parc-del" title="Remover parcela">×</button>
+              </span>
             </div>
             <div class="fin-parc-campos">
+              <label>Valor (R$) <input type="number" min="0" step="0.01" class="parc-valor" value="${Number(p.valor || 0)}" /></label>
               <label>Data <input type="date" class="parc-data" value="${esc(p.data || '')}" /></label>
               <label>Forma
                 <select class="parc-forma">
@@ -129,6 +135,15 @@ export async function renderFinanceiro(container) {
               <button type="button" class="btn btn-mini parc-status ${p.pago ? 'pago' : ''}">${p.pago ? '✓ Pago' : 'Marcar como pago'}</button>
             </div>
           </div>`).join('')}
+        </div>
+        <div class="fin-parc-acoes">
+          <button type="button" class="btn btn-mini" data-add-parc="${esc(o.id)}">+ Adicionar parcela</button>
+          <span class="fin-parc-refazer">
+            Refazer em
+            <input type="number" min="1" max="60" class="parc-refazer-n" value="${plano.length}" />
+            parcelas iguais
+            <button type="button" class="btn btn-mini" data-refazer-parc="${esc(o.id)}">Refazer</button>
+          </span>
         </div>
       </div>`;
 
@@ -181,7 +196,7 @@ export async function renderFinanceiro(container) {
     atualizarObra(id, { parcelasPlano: plano }).catch(() => {});
   });
 
-  // Editar data/forma de uma parcela (obra sem gestão): salva sem recarregar.
+  // Editar valor/data/forma de uma parcela (obra sem gestão).
   container.addEventListener('change', async (e) => {
     const wrap = e.target.closest('[data-parcelas-obra]');
     if (!wrap) return;
@@ -189,11 +204,15 @@ export async function renderFinanceiro(container) {
     const obraId = wrap.getAttribute('data-parcelas-obra');
     const plano = planoPorObra[obraId]; if (!plano) return;
     const p = plano.find((x) => x.n === Number(row.getAttribute('data-parc-n'))); if (!p) return;
-    if (e.target.classList.contains('parc-data')) p.data = e.target.value;
+    let recomputa = false;
+    if (e.target.classList.contains('parc-valor')) { p.valor = Number(e.target.value || 0); recomputa = true; }
+    else if (e.target.classList.contains('parc-data')) p.data = e.target.value;
     else if (e.target.classList.contains('parc-forma')) p.forma = e.target.value;
     else return;
-    try { await atualizarObra(obraId, { parcelasPlano: plano }); }
-    catch (err) { alert('Não foi possível salvar: ' + (err?.message || err)); }
+    try {
+      await atualizarObra(obraId, { parcelasPlano: plano });
+      if (recomputa) renderFinanceiro(container); // valor mexe no recebido/saldo
+    } catch (err) { alert('Não foi possível salvar: ' + (err?.message || err)); }
   });
 
   container.addEventListener('click', async (e) => {
@@ -215,6 +234,63 @@ export async function renderFinanceiro(container) {
         p.pago = !p.pago; status.disabled = false;
         alert('Não foi possível salvar: ' + (err?.message || err));
       }
+      return;
+    }
+
+    // Cobrar a parcela pelo WhatsApp (abre o app; a arquiteta escolhe o contato).
+    const cobrar = e.target.closest('.parc-cobrar');
+    if (cobrar) {
+      const obraId = cobrar.closest('[data-parcelas-obra]').getAttribute('data-parcelas-obra');
+      const o = obras.find((x) => x.id === obraId);
+      const plano = planoPorObra[obraId];
+      const p = plano && plano.find((x) => x.n === Number(cobrar.closest('.fin-parcela').getAttribute('data-parc-n')));
+      if (!o || !p) return;
+      const link = `${window.location.origin}/obra/${o.slug}`;
+      const msg = mensagemCobrancaParcela({ obra: o, parcela: p, total: plano.length, link, pagamento: PAGAMENTO });
+      window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank', 'noopener');
+      return;
+    }
+
+    // Remover uma parcela do plano.
+    const delParc = e.target.closest('.parc-del');
+    if (delParc) {
+      const obraId = delParc.closest('[data-parcelas-obra]').getAttribute('data-parcelas-obra');
+      const n = Number(delParc.closest('.fin-parcela').getAttribute('data-parc-n'));
+      const plano = planoPorObra[obraId]; if (!plano) return;
+      if (plano.length <= 1) { alert('Deixe ao menos uma parcela. Se preferir, use "Refazer".'); return; }
+      if (!confirm('Remover esta parcela?')) return;
+      const novo = renumerar(plano.filter((x) => x.n !== n));
+      try { await atualizarObra(obraId, { parcelasPlano: novo }); renderFinanceiro(container); }
+      catch (err) { alert('Não foi possível salvar: ' + (err?.message || err)); }
+      return;
+    }
+
+    // Adicionar uma parcela nova (em aberto) — ex.: um pagamento a mais.
+    const addParc = e.target.closest('[data-add-parc]');
+    if (addParc) {
+      const obraId = addParc.getAttribute('data-add-parc');
+      const plano = planoPorObra[obraId]; if (!plano) return;
+      const ultima = plano[plano.length - 1];
+      const proxData = ultima && ultima.data ? somarMeses(ultima.data, 1) : new Date().toISOString().slice(0, 10);
+      const novo = renumerar([...plano, { n: plano.length + 1, valor: 0, data: proxData, forma: 'Pix', pago: false }]);
+      try { await atualizarObra(obraId, { parcelasPlano: novo }); renderFinanceiro(container); }
+      catch (err) { alert('Não foi possível salvar: ' + (err?.message || err)); }
+      return;
+    }
+
+    // Refazer o plano em N parcelas iguais (a partir do valor do projeto).
+    const refazer = e.target.closest('[data-refazer-parc]');
+    if (refazer) {
+      const obraId = refazer.getAttribute('data-refazer-parc');
+      const o = obras.find((x) => x.id === obraId); if (!o) return;
+      const card = refazer.closest('.card');
+      const n = Math.max(1, Math.min(60, Number(card.querySelector('.parc-refazer-n')?.value || 1)));
+      if (!confirm(`Refazer o plano em ${n} parcela(s) iguais? Isso substitui as parcelas atuais.`)) return;
+      const novo = gerarPlano(Number(o.orcamento || 0), n);
+      try {
+        await atualizarObra(obraId, { parcelasPlano: novo, parcelas: n });
+        renderFinanceiro(container);
+      } catch (err) { alert('Não foi possível salvar: ' + (err?.message || err)); }
       return;
     }
 

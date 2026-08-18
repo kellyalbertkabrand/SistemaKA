@@ -350,9 +350,14 @@ input:focus, select:focus, textarea:focus {
 .fin-parc-campos { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .5rem .7rem; margin-top: .5rem; }
 .fin-parc-campos label { font-size: .76rem; color: var(--muted); display: flex; flex-direction: column; gap: .2rem; }
 .fin-parc-campos input, .fin-parc-campos select { font-size: .85rem; padding: .3rem .5rem; }
+.fin-parc-campos .parc-valor { max-width: 130px; }
 .parc-status { align-self: flex-end; }
 .parc-status.pago { background: var(--ok); border-color: var(--ok); color: #fff; }
 .parc-status.pago:hover { background: #336b47; border-color: #336b47; color: #fff; }
+.parc-cobrar { padding: .28rem .6rem; }
+.fin-parc-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; margin-top: .7rem; }
+.fin-parc-refazer { display: inline-flex; align-items: center; gap: .4rem; font-size: .82rem; color: var(--muted); }
+.fin-parc-refazer .parc-refazer-n { width: 4rem; }
 
 /* Financeiro: lista de pagamentos por obra. */
 .fin-pag-lista { margin-top: .6rem; display: flex; flex-direction: column; gap: .2rem; }
