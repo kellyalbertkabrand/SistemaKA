@@ -14,7 +14,7 @@ const ESCRITORIO_ENDERECO =
   'Rua Dr. Luiz Bastos do Prado, 2093 - 504 - Centro, Gravataí - RS, 94010-021';
 
 // Dados bancários para o pagamento do honorário de gestão.
-const PAGAMENTO = {
+export const PAGAMENTO = {
   banco: 'Banco do Brasil',
   titular: 'Schramm Eng e Proj Ltda',
   agencia: '0883-4',
