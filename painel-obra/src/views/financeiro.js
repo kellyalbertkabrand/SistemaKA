@@ -1,10 +1,11 @@
 import {
   listarObras, listarLancamentosDoEscritorio, listarPagamentosDoEscritorio,
-  criarPagamento, excluirPagamento, sair,
+  criarPagamento, excluirPagamento, atualizarObra, sair,
 } from '../dados.js';
 import { moeda, dataBR, esc } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
 import { calcularReembolso, baixarPdfReembolso, baixarExcelReembolso, montarMensagemWhatsApp } from '../lib/reembolso.js';
+import { normalizarPlano, somaPagas } from '../lib/parcelas.js';
 
 // Financeiro: uma tela só, por obra, com Total a pagar / Recebido / Saldo em
 // aberto; gera o relatório do cliente (PDF/WhatsApp) e controla os pagamentos ali.
@@ -34,39 +35,37 @@ export async function renderFinanceiro(container) {
   const hojeISO = new Date().toISOString().slice(0, 10);
   const kpi = (r, v, c = '') => `<div class="kpi"><small>${r}</small><strong class="${c}">${v}</strong></div>`;
 
+  // Planos de parcelas (obras sem gestão) que precisam ser gravados por estarem
+  // desatualizados — persistimos depois do render, sem travar a tela.
+  const planosParaSalvar = [];
+
   const linhas = obras.map((o) => {
     const comGestao = o.gestao !== false;
     const c = calcularReembolso(lancPorObra[o.id] || [], o);
-    const recebido = soma(pagPorObra[o.id]);
-    // Com gestão: total = reembolso + honorário. Sem gestão (só projeto):
-    // total = valor do projeto (campo orçamento da obra).
-    const total = comGestao ? c.totalEscritorio : Number(o.orcamento || 0);
-    return { o, comGestao, total, recebido, saldo: total - recebido };
+    // Com gestão: total = reembolso + honorário; recebido = pagamentos avulsos.
+    // Sem gestão (só projeto): total = valor do projeto; o recebido vem das
+    // PARCELAS marcadas como pagas (plano gerado automaticamente).
+    if (comGestao) {
+      const recebido = soma(pagPorObra[o.id]);
+      return { o, comGestao, total: c.totalEscritorio, recebido, saldo: c.totalEscritorio - recebido, plano: null };
+    }
+    const { plano, mudou } = normalizarPlano(o);
+    if (mudou) planosParaSalvar.push({ id: o.id, plano });
+    const total = Number(o.orcamento || 0);
+    const recebido = somaPagas(plano);
+    return { o, comGestao, total, recebido, saldo: total - recebido, plano };
   }).sort((a, b) => b.saldo - a.saldo); // quem deve mais primeiro
 
   const totalGeral = linhas.reduce((t, l) => t + l.total, 0);
   const recebidoGeral = linhas.reduce((t, l) => t + l.recebido, 0);
   const saldoGeral = totalGeral - recebidoGeral;
 
-  const cardFin = (l) => {
-    const o = l.o;
+  const FORMAS = ['Pix', 'Transferência', 'Dinheiro', 'Cartão', 'Boleto', 'Outro'];
+
+  // Bloco de pagamentos avulsos (obras COM gestão) — como era antes.
+  const blocoPagamentos = (o) => {
     const pgs = (pagPorObra[o.id] || []).slice().sort((a, b) => String(b.data).localeCompare(String(a.data)));
     return `
-    <section class="card">
-      <div class="row-between">
-        <div>
-          <strong>${esc(o.nome)}</strong>
-          <p class="muted" style="margin:.1rem 0 0">${esc(o.cliente || 'Sem cliente definido')}</p>
-        </div>
-        <div class="row-end">
-          <a class="btn btn-mini" data-link href="/painel/${esc(o.slug)}">Abrir obra</a>
-        </div>
-      </div>
-      <div class="kpis">
-        ${kpi(l.comGestao ? 'Total a pagar' : 'Valor do projeto', moeda(l.total))}
-        ${kpi('Recebido', moeda(l.recebido), 'val-ok')}
-        ${kpi('Saldo em aberto', moeda(l.saldo), l.saldo > 0.005 ? 'neg' : 'val-saldo')}
-      </div>
       <div class="reembolso-form fin-relatorio">
         <label>De<input type="date" class="fin-de" /></label>
         <label>Até<input type="date" class="fin-ate" /></label>
@@ -86,7 +85,7 @@ export async function renderFinanceiro(container) {
           <label>Valor (R$)<input type="number" min="0" step="0.01" class="pg-valor" /></label>
           <label>Forma
             <select class="pg-forma">
-              <option>Pix</option><option>Transferência</option><option>Dinheiro</option><option>Cartão</option><option>Outro</option>
+              ${FORMAS.map((f) => `<option>${f}</option>`).join('')}
             </select>
           </label>
           <label>Observação<input class="pg-obs" placeholder="Opcional" /></label>
@@ -102,9 +101,62 @@ export async function renderFinanceiro(container) {
               <strong class="val-ok fin-pag-valor">${moeda(p.valor)}</strong>
               <button class="btn btn-x" data-del-pag="${esc(p.id)}" title="Remover">×</button></span>
           </div>`).join('')}</div>` : `<p class="muted" style="margin:.4rem 0 0">Nenhum pagamento registrado ainda.</p>`}
+      </div>`;
+  };
+
+  // Bloco de parcelas do projeto (obras SEM gestão) — geradas automaticamente;
+  // a arquiteta ajusta data/forma e marca cada uma como paga ou em aberto.
+  const blocoParcelas = (o, plano) => `
+      <div class="fin-controle">
+        <div class="row-between">
+          <h3 class="fin-controle-titulo">Parcelas do projeto</h3>
+          <span class="muted fin-hint">Ajuste a data e a forma; marque como pago quando receber.</span>
+        </div>
+        <div class="fin-parcelas" data-parcelas-obra="${esc(o.id)}">
+          ${plano.map((p) => `
+          <div class="fin-parcela ${p.pago ? 'paga' : ''}" data-parc-n="${p.n}">
+            <div class="fin-parc-topo">
+              <span class="fin-parc-num">Parcela ${p.n} de ${plano.length}</span>
+              <strong class="fin-parc-valor">${moeda(p.valor)}</strong>
+            </div>
+            <div class="fin-parc-campos">
+              <label>Data <input type="date" class="parc-data" value="${esc(p.data || '')}" /></label>
+              <label>Forma
+                <select class="parc-forma">
+                  ${FORMAS.map((f) => `<option ${p.forma === f ? 'selected' : ''}>${f}</option>`).join('')}
+                </select>
+              </label>
+              <button type="button" class="btn btn-mini parc-status ${p.pago ? 'pago' : ''}">${p.pago ? '✓ Pago' : 'Marcar como pago'}</button>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>`;
+
+  const cardFin = (l) => {
+    const o = l.o;
+    return `
+    <section class="card">
+      <div class="row-between">
+        <div>
+          <strong>${esc(o.nome)}</strong>
+          <p class="muted" style="margin:.1rem 0 0">${esc(o.cliente || 'Sem cliente definido')}</p>
+        </div>
+        <div class="row-end">
+          <a class="btn btn-mini" data-link href="/painel/${esc(o.slug)}">Abrir obra</a>
+        </div>
       </div>
+      <div class="kpis">
+        ${kpi(l.comGestao ? 'Total a pagar' : 'Valor do projeto', moeda(l.total))}
+        ${kpi('Recebido', moeda(l.recebido), 'val-ok')}
+        ${kpi('Saldo em aberto', moeda(l.saldo), l.saldo > 0.005 ? 'neg' : 'val-saldo')}
+      </div>
+      ${l.comGestao ? blocoPagamentos(o) : blocoParcelas(o, l.plano)}
     </section>`;
   };
+
+  // Mapa obraId -> plano (referência mutável usada pelos handlers de parcela).
+  const planoPorObra = {};
+  linhas.forEach((l) => { if (!l.comGestao && l.plano) planoPorObra[l.o.id] = l.plano; });
 
   container.innerHTML = `
     ${navBar('financeiro')}
@@ -124,7 +176,48 @@ export async function renderFinanceiro(container) {
 
   container.querySelector('#sair').addEventListener('click', async () => { await sair(); });
 
+  // Grava os planos de parcela recém-gerados/reconciliados (sem travar a tela).
+  planosParaSalvar.forEach(({ id, plano }) => {
+    atualizarObra(id, { parcelasPlano: plano }).catch(() => {});
+  });
+
+  // Editar data/forma de uma parcela (obra sem gestão): salva sem recarregar.
+  container.addEventListener('change', async (e) => {
+    const wrap = e.target.closest('[data-parcelas-obra]');
+    if (!wrap) return;
+    const row = e.target.closest('.fin-parcela'); if (!row) return;
+    const obraId = wrap.getAttribute('data-parcelas-obra');
+    const plano = planoPorObra[obraId]; if (!plano) return;
+    const p = plano.find((x) => x.n === Number(row.getAttribute('data-parc-n'))); if (!p) return;
+    if (e.target.classList.contains('parc-data')) p.data = e.target.value;
+    else if (e.target.classList.contains('parc-forma')) p.forma = e.target.value;
+    else return;
+    try { await atualizarObra(obraId, { parcelasPlano: plano }); }
+    catch (err) { alert('Não foi possível salvar: ' + (err?.message || err)); }
+  });
+
   container.addEventListener('click', async (e) => {
+    // Marcar/desmarcar parcela como paga (obra sem gestão).
+    const status = e.target.closest('.parc-status');
+    if (status) {
+      const wrap = status.closest('[data-parcelas-obra]');
+      const row = status.closest('.fin-parcela');
+      const obraId = wrap.getAttribute('data-parcelas-obra');
+      const plano = planoPorObra[obraId];
+      const p = plano && plano.find((x) => x.n === Number(row.getAttribute('data-parc-n')));
+      if (!p) return;
+      p.pago = !p.pago;
+      status.disabled = true;
+      try {
+        await atualizarObra(obraId, { parcelasPlano: plano });
+        renderFinanceiro(container); // recomputa recebido/saldo (card e geral)
+      } catch (err) {
+        p.pago = !p.pago; status.disabled = false;
+        alert('Não foi possível salvar: ' + (err?.message || err));
+      }
+      return;
+    }
+
     // Período escolhido no card (em branco = toda a obra).
     const periodoDoCard = (el) => {
       const card = el.closest('.card');
