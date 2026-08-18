@@ -1,4 +1,4 @@
-import { listarClientes, listarObras, criarConvite, criarClienteEscritorio, excluirCliente, sair } from '../dados.js';
+import { listarClientes, listarObras, criarConvite, criarClienteEscritorio, atualizarCliente, excluirCliente, sair } from '../dados.js';
 import { esc, dataBR } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
 import { ligarMascara, ligarEmail, formatarCpfCnpj, formatarTelefone, validarEmail, linkWhatsApp } from '../lib/mascaras.js';
@@ -91,10 +91,30 @@ export async function renderClientes(container) {
     await sair();
   });
 
-  // ---- Cadastrar cliente pelo escritório ----
+  // ---- Cadastrar / editar cliente pelo escritório ----
   const abrirCad = container.querySelector('#abrir-cad');
   const formCli = container.querySelector('#form-cli');
   const erroCli = container.querySelector('#erro-cli');
+  const submitCli = formCli.querySelector('button[type="submit"]');
+
+  // Guarda o id do cliente em edição (null = novo cadastro).
+  let editandoId = null;
+
+  // Mapa campo do formulário -> chave do cliente (usado para preencher/editar).
+  const CAMPOS_CLI = {
+    '#e-nome': 'nome', '#e-email': 'email', '#e-telefone': 'telefone',
+    '#e-documento': 'documento', '#e-cidade': 'cidade', '#e-endereco': 'endereco',
+    '#e-observacoes': 'observacoes', '#c-nome': 'contrato_nome',
+    '#c-doc': 'contrato_documento', '#c-rg': 'contrato_rg',
+    '#c-nacionalidade': 'contrato_nacionalidade', '#c-estadocivil': 'contrato_estadocivil',
+    '#c-profissao': 'contrato_profissao', '#c-endereco': 'contrato_endereco',
+  };
+  const preencherForm = (c) => {
+    Object.entries(CAMPOS_CLI).forEach(([sel, key]) => {
+      container.querySelector(sel).value = (c && c[key]) ? c[key] : '';
+    });
+    const dica = container.querySelector('#e-email-dica'); if (dica) dica.hidden = true;
+  };
 
   // Máscaras (telefone e CPF/CNPJ) + verificação de e-mail.
   ligarMascara(container.querySelector('#e-telefone'), formatarTelefone);
@@ -102,11 +122,31 @@ export async function renderClientes(container) {
   ligarMascara(container.querySelector('#c-doc'), formatarCpfCnpj);
   ligarEmail(container.querySelector('#e-email'), container.querySelector('#e-email-dica'));
   abrirCad.addEventListener('click', () => {
+    editandoId = null;
+    preencherForm(null);
+    submitCli.textContent = 'Salvar cliente';
+    erroCli.hidden = true;
     formCli.hidden = false; abrirCad.hidden = true;
     container.querySelector('#e-nome').focus();
   });
   container.querySelector('#cancelar-cli').addEventListener('click', () => {
+    editandoId = null;
     formCli.hidden = true; abrirCad.hidden = false;
+  });
+
+  // Abrir o formulário já preenchido para editar um cliente existente.
+  container.querySelectorAll('[data-edit-cli]').forEach((b) => {
+    b.addEventListener('click', () => {
+      const c = clientes.find((x) => x.id === b.getAttribute('data-edit-cli'));
+      if (!c) return;
+      editandoId = c.id;
+      preencherForm(c);
+      submitCli.textContent = 'Salvar alterações';
+      erroCli.hidden = true;
+      formCli.hidden = false; abrirCad.hidden = true;
+      formCli.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      container.querySelector('#e-nome').focus();
+    });
   });
 
   // Copiar os dados de contato para o bloco de contrato (mesma pessoa).
@@ -144,11 +184,13 @@ export async function renderClientes(container) {
     };
 
     const btn = formCli.querySelector('button[type="submit"]');
+    const rotuloBtn = editandoId ? 'Salvar alterações' : 'Salvar cliente';
     btn.disabled = true; btn.textContent = 'Salvando…';
     try {
-      await criarClienteEscritorio(registro);
+      if (editandoId) await atualizarCliente(editandoId, registro);
+      else await criarClienteEscritorio(registro);
     } catch (err) {
-      btn.disabled = false; btn.textContent = 'Salvar cliente';
+      btn.disabled = false; btn.textContent = rotuloBtn;
       erroCli.textContent = err?.message || 'Não foi possível salvar.'; erroCli.hidden = false;
       return;
     }
@@ -201,6 +243,7 @@ function listaClientes(clientes) {
         <strong>${esc(c.nome)}</strong>
         <span class="row-end">
           ${c.telefone && linkWhatsApp(c.telefone) ? `<a class="btn btn-mini btn-whats" href="${esc(linkWhatsApp(c.telefone, c.nome ? `Olá, ${c.nome}!` : ''))}" target="_blank" rel="noopener" title="Chamar no WhatsApp">💬 WhatsApp</a>` : ''}
+          <button class="btn btn-mini" data-edit-cli="${esc(c.id)}" title="Editar cadastro">✎ Editar</button>
           <button class="btn btn-x" data-del-cli="${esc(c.id)}" title="Excluir">×</button>
         </span>
       </div>
