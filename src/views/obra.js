@@ -1578,7 +1578,7 @@ function flash(btn, msg) {
 // ensina o cliente a salvar o painel como um app na tela inicial (iPhone e
 // Android). Formatação com *asteriscos* (negrito do WhatsApp).
 function montarMensagemLinkCliente({ obra, link }) {
-  const saudacao = obra.cliente ? `Olá, ${obra.cliente}! 👋` : 'Olá! 👋';
+  const saudacao = obra.cliente ? `Olá, ${obra.cliente}!` : 'Olá!';
   return [
     saudacao,
     '',
@@ -1586,20 +1586,20 @@ function montarMensagemLinkCliente({ obra, link }) {
     '',
     link,
     '',
-    '📲 *Deixe como um app no seu celular* (abre com 1 toque, sem baixar nada):',
+    '*Deixe como um app no seu celular* (abre com 1 toque, sem baixar nada):',
     '',
     '*iPhone (Safari):*',
     '1) Abra o link acima no Safari',
-    '2) Toque no ícone de compartilhar (o quadradinho com a seta ↑)',
+    '2) Toque no ícone de compartilhar (o quadradinho com a setinha para cima)',
     '3) Toque em "Adicionar à Tela de Início"',
     '4) Toque em "Adicionar"',
     '',
     '*Android (Chrome):*',
     '1) Abra o link acima no Chrome',
-    '2) Toque no menu ⋮ (três pontinhos, no canto)',
+    '2) Toque no menu de três pontinhos, no canto',
     '3) Toque em "Adicionar à tela inicial" (ou "Instalar app")',
     '4) Confirme',
     '',
-    'Pronto! O acompanhamento fica sempre à mão. 🏗️',
+    'Pronto! O acompanhamento fica sempre à mão.',
   ].join('\n');
 }
