@@ -65,6 +65,12 @@ export async function renderObras(container) {
           <label id="o-orcamento-label">Orçamento total (R$)
             <input id="o-orcamento" type="number" min="0" step="0.01" value="0" />
           </label>
+          <label id="o-parcelas-label" hidden>Pagamento do projeto
+            <select id="o-parcelas">
+              <option value="1">À vista</option>
+              ${[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((n) => `<option value="${n}">${n}x</option>`).join('')}
+            </select>
+          </label>
           <label id="o-percentual-label">Percentual do escritório — gestão (%)
             <input id="o-percentual" type="number" min="0" max="100" step="0.1" value="0" placeholder="Ex.: 10" />
           </label>
@@ -431,10 +437,12 @@ function configurarFormNovaObra(container) {
   const gestaoSel = container.querySelector('#o-gestao');
   const orcLabel = container.querySelector('#o-orcamento-label');
   const pctLabel = container.querySelector('#o-percentual-label');
+  const parcLabel = container.querySelector('#o-parcelas-label');
   const sincronizarTipoServico = () => {
     const semGestao = gestaoSel.value === 'sem';
     orcLabel.childNodes[0].nodeValue = semGestao ? 'Valor do projeto (R$)' : 'Orçamento total (R$)';
     pctLabel.hidden = semGestao;
+    parcLabel.hidden = !semGestao;
   };
   gestaoSel.addEventListener('change', sincronizarTipoServico);
   sincronizarTipoServico();
@@ -479,6 +487,7 @@ function configurarFormNovaObra(container) {
       orcamento: Number(container.querySelector('#o-orcamento').value || 0),
       percentualEscritorio: Number(container.querySelector('#o-percentual').value || 0),
       gestao: container.querySelector('#o-gestao').value !== 'sem',
+      parcelas: Number(container.querySelector('#o-parcelas').value || 1),
       publicado: true,
     };
     if (!payload.nome) { mostrarErro(erro, 'Dê um nome à obra.'); return; }
