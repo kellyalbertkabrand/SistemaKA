@@ -52,12 +52,20 @@ export async function renderPublica(container, slug) {
   const executado = soma(lancamentos);
   const andamento = pct(executado, obra.orcamento);
 
+  // Tipo de serviço: com gestão de obra = painel completo (padrão);
+  // sem gestão = só projeto (painel reduzido). Obras antigas não têm o campo.
+  const comGestao = obra.gestao !== false;
+
   // Valores no modelo "escritório adianta / cliente reembolsa + honorário".
   // pago/pendente aqui são só dos itens pagos pelo escritório (reembolsáveis);
   // o que o cliente pagou direto não entra no total a pagar ao escritório.
   const r = calcularReembolso(lancamentos, obra);
   const recebido = soma(pagamentos);
-  const saldoCliente = r.totalEscritorio - recebido;
+  // Com gestão: o cliente deve o reembolso + honorário (calcularReembolso).
+  // Sem gestão (só projeto): o cliente deve o VALOR DO PROJETO (campo orçamento),
+  // e paga em parcelas registradas no Financeiro (recebimentos).
+  const totalDevido = comGestao ? r.totalEscritorio : Number(obra.orcamento || 0);
+  const saldoCliente = totalDevido - recebido;
 
   // Realizado por etapa
   const realizado = {};
@@ -69,10 +77,7 @@ export async function renderPublica(container, slug) {
 
   document.title = `${obra.nome} — acompanhamento`;
 
-  // Tipo de serviço: com gestão de obra = painel completo (padrão);
-  // sem gestão = painel reduzido (só pagamento do projeto, imagens das visitas
-  // e arquivos do projeto). Obras antigas não têm o campo -> tratadas como "com".
-  const comGestao = obra.gestao !== false;
+  // Títulos das seções conforme o tipo de serviço (comGestao definido acima).
   const tituloPagamento = comGestao ? 'Controle de pagamentos' : 'Controle de pagamento do projeto';
   const tituloFotos = comGestao ? 'Fotos da obra' : 'Imagens das visitas técnicas';
   const tituloProjeto = comGestao ? 'Projeto da obra' : 'Arquivos do projeto';
@@ -148,13 +153,13 @@ export async function renderPublica(container, slug) {
       <section class="pub-bloco">
         ${tituloSecao('💳', tituloPagamento)}
         <div class="pub-numeros pub-numeros-3">
-          ${num('Total a pagar ao escritório', moeda(r.totalEscritorio))}
+          ${num(comGestao ? 'Total a pagar ao escritório' : 'Valor do projeto', moeda(totalDevido))}
           ${num('Já pago por você', moeda(recebido), 'val-ok')}
           ${num('Saldo em aberto', moeda(saldoCliente), saldoCliente > 0.005 ? 'neg' : 'val-saldo')}
         </div>
         <p class="pub-nota">${comGestao
           ? `O total é o reembolso dos fornecedores${r.pctEsc > 0 ? ` + o honorário de gestão (${r.pctFmt}%)` : ''}. O saldo já desconta o que você pagou.`
-          : 'O saldo já desconta o que você pagou.'}</p>
+          : 'É o valor combinado do projeto. O saldo já desconta as parcelas que você pagou.'}</p>
         ${pagamentos.length ? `
           <ul class="pub-timeline">
             ${pagamentos.map((p) => `

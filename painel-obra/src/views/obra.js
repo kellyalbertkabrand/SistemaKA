@@ -101,10 +101,10 @@ export async function renderObra(container, obraId) {
               <option value="sem" ${obra.gestao === false ? 'selected' : ''}>Sem gestão de obra (só projeto)</option>
             </select>
           </label>
-          <label>Orçamento total (R$)
+          <label id="ed-orcamento-label">Orçamento total (R$)
             <input id="ed-orcamento" type="number" min="0" step="0.01" value="${Number(obra.orcamento || 0)}" />
           </label>
-          <label>Percentual do escritório — gestão (%)
+          <label id="ed-percentual-label">Percentual do escritório — gestão (%)
             <input id="ed-percentual" type="number" min="0" max="100" step="0.1" value="${Number(obra.percentualEscritorio || 0)}" placeholder="Ex.: 10" />
           </label>
         </div>
@@ -459,6 +459,18 @@ export async function renderObra(container, obraId) {
   const abrirEditar = container.querySelector('#abrir-editar');
   const formEditar = container.querySelector('#form-editar');
   const edErro = container.querySelector('#ed-erro');
+  // "Sem gestão de obra" (só projeto): orçamento vira "Valor do projeto" e o
+  // percentual de gestão some.
+  const edGestaoSel = container.querySelector('#ed-gestao');
+  const edOrcLabel = container.querySelector('#ed-orcamento-label');
+  const edPctLabel = container.querySelector('#ed-percentual-label');
+  const sincronizarTipoServicoEd = () => {
+    const semGestao = edGestaoSel.value === 'sem';
+    edOrcLabel.childNodes[0].nodeValue = semGestao ? 'Valor do projeto (R$)' : 'Orçamento total (R$)';
+    edPctLabel.hidden = semGestao;
+  };
+  edGestaoSel.addEventListener('change', sincronizarTipoServicoEd);
+  sincronizarTipoServicoEd();
   abrirEditar.addEventListener('click', () => {
     formEditar.hidden = !formEditar.hidden;
     if (!formEditar.hidden) container.querySelector('#ed-nome').focus();
