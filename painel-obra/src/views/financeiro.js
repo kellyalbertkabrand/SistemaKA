@@ -35,9 +35,13 @@ export async function renderFinanceiro(container) {
   const kpi = (r, v, c = '') => `<div class="kpi"><small>${r}</small><strong class="${c}">${v}</strong></div>`;
 
   const linhas = obras.map((o) => {
+    const comGestao = o.gestao !== false;
     const c = calcularReembolso(lancPorObra[o.id] || [], o);
     const recebido = soma(pagPorObra[o.id]);
-    return { o, total: c.totalEscritorio, recebido, saldo: c.totalEscritorio - recebido };
+    // Com gestão: total = reembolso + honorário. Sem gestão (só projeto):
+    // total = valor do projeto (campo orçamento da obra).
+    const total = comGestao ? c.totalEscritorio : Number(o.orcamento || 0);
+    return { o, comGestao, total, recebido, saldo: total - recebido };
   }).sort((a, b) => b.saldo - a.saldo); // quem deve mais primeiro
 
   const totalGeral = linhas.reduce((t, l) => t + l.total, 0);
@@ -59,7 +63,7 @@ export async function renderFinanceiro(container) {
         </div>
       </div>
       <div class="kpis">
-        ${kpi('Total a pagar', moeda(l.total))}
+        ${kpi(l.comGestao ? 'Total a pagar' : 'Valor do projeto', moeda(l.total))}
         ${kpi('Recebido', moeda(l.recebido), 'val-ok')}
         ${kpi('Saldo em aberto', moeda(l.saldo), l.saldo > 0.005 ? 'neg' : 'val-saldo')}
       </div>
