@@ -130,7 +130,7 @@ export async function renderPublica(container, slug) {
       </header>
 
       <section class="pub-hero">
-        <p class="pub-marca">Acompanhamento de obra</p>
+        <p class="pub-marca">${comGestao ? 'Acompanhamento de obra' : 'Acompanhamento do projeto'}</p>
         <h1>${esc(obra.nome)}</h1>
         ${obra.cliente ? `<p class="pub-cliente">Cliente: ${esc(obra.cliente)}</p>` : ''}
       </section>
