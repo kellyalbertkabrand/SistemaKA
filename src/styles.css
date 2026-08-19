@@ -359,8 +359,10 @@ input:focus, select:focus, textarea:focus {
 
 /* Financeiro: parcelas do projeto (obras sem gestão) — editáveis. */
 .fin-parcelas { margin-top: .6rem; display: flex; flex-direction: column; gap: .5rem; }
-.fin-parcela { border: 1px solid #cfe3d5; border-radius: 10px; padding: .6rem .7rem; background: #fff; }
-.fin-parcela.paga { background: #eef6f0; }
+/* Parcela EM ABERTO: fundo vermelho bem claro. Só fica VERDE quando marcada
+   como paga. */
+.fin-parcela { border: 1px solid #f1d5ce; border-radius: 10px; padding: .6rem .7rem; background: #fdf1ef; }
+.fin-parcela.paga { background: #e7f4ec; border-color: #bfe0cb; }
 .fin-parc-topo { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
 .fin-parc-num { font-weight: 600; font-size: .86rem; }
 .fin-parc-valor { font-size: .98rem; }
