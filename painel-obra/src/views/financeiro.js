@@ -9,8 +9,13 @@ import { normalizarPlano, somaPagas, gerarPlano, renumerar, somarMeses, mensagem
 
 // Financeiro: uma tela só, por obra, com Total a pagar / Recebido / Saldo em
 // aberto; gera o relatório do cliente (PDF/WhatsApp) e controla os pagamentos ali.
-export async function renderFinanceiro(container) {
-  container.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
+export async function renderFinanceiro(container, opts = {}) {
+  // manterScroll: refresh silencioso (sem "Carregando…" e sem pular pro topo),
+  // usado quando o usuário marca pago/registra pagamento e a tela só precisa
+  // recalcular os valores — a posição de rolagem é preservada.
+  const manterScroll = Boolean(opts.manterScroll);
+  const scrollY = manterScroll ? window.scrollY : 0;
+  if (!manterScroll) container.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
 
   let obras, lancs, pags;
   try {
@@ -203,8 +208,21 @@ export async function renderFinanceiro(container) {
     atualizarObra(id, { parcelasPlano: plano }).catch(() => {});
   });
 
+  // O container (app) é o MESMO elemento entre re-renders, então removemos os
+  // handlers do render anterior antes de religar — senão eles se acumulam e cada
+  // clique dispara várias vezes.
+  const prevH = container.__finH;
+  if (prevH) {
+    container.removeEventListener('change', prevH.change);
+    container.removeEventListener('click', prevH.click);
+    container.removeEventListener('submit', prevH.submit);
+  }
+  container.__finH = {};
+  // Refresh que preserva a rolagem (não sobe pro topo ao marcar pago/registrar).
+  const recarregar = () => renderFinanceiro(container, { manterScroll: true });
+
   // Editar valor/data/forma de uma parcela (obra sem gestão).
-  container.addEventListener('change', async (e) => {
+  container.addEventListener('change', container.__finH.change = async (e) => {
     const wrap = e.target.closest('[data-parcelas-obra]');
     if (!wrap) return;
     const row = e.target.closest('.fin-parcela'); if (!row) return;
@@ -218,11 +236,11 @@ export async function renderFinanceiro(container) {
     else return;
     try {
       await atualizarObra(obraId, { parcelasPlano: plano });
-      if (recomputa) renderFinanceiro(container); // valor mexe no recebido/saldo
+      if (recomputa) recarregar(); // valor mexe no recebido/saldo
     } catch (err) { alert('Não foi possível salvar: ' + (err?.message || err)); }
   });
 
-  container.addEventListener('click', async (e) => {
+  container.addEventListener('click', container.__finH.click = async (e) => {
     // Marcar/desmarcar parcela como paga (obra sem gestão).
     const status = e.target.closest('.parc-status');
     if (status) {
@@ -236,7 +254,7 @@ export async function renderFinanceiro(container) {
       status.disabled = true;
       try {
         await atualizarObra(obraId, { parcelasPlano: plano });
-        renderFinanceiro(container); // recomputa recebido/saldo (card e geral)
+        recarregar(); // recomputa recebido/saldo (card e geral)
       } catch (err) {
         p.pago = !p.pago; status.disabled = false;
         alert('Não foi possível salvar: ' + (err?.message || err));
@@ -267,7 +285,7 @@ export async function renderFinanceiro(container) {
       if (plano.length <= 1) { alert('Deixe ao menos uma parcela. Se preferir, use "Refazer".'); return; }
       if (!confirm('Remover esta parcela?')) return;
       const novo = renumerar(plano.filter((x) => x.n !== n));
-      try { await atualizarObra(obraId, { parcelasPlano: novo }); renderFinanceiro(container); }
+      try { await atualizarObra(obraId, { parcelasPlano: novo }); recarregar(); }
       catch (err) { alert('Não foi possível salvar: ' + (err?.message || err)); }
       return;
     }
@@ -280,7 +298,7 @@ export async function renderFinanceiro(container) {
       const ultima = plano[plano.length - 1];
       const proxData = ultima && ultima.data ? somarMeses(ultima.data, 1) : new Date().toISOString().slice(0, 10);
       const novo = renumerar([...plano, { n: plano.length + 1, valor: 0, data: proxData, forma: 'Pix', pago: false }]);
-      try { await atualizarObra(obraId, { parcelasPlano: novo }); renderFinanceiro(container); }
+      try { await atualizarObra(obraId, { parcelasPlano: novo }); recarregar(); }
       catch (err) { alert('Não foi possível salvar: ' + (err?.message || err)); }
       return;
     }
@@ -296,7 +314,7 @@ export async function renderFinanceiro(container) {
       const novo = gerarPlano(Number(o.orcamento || 0), n);
       try {
         await atualizarObra(obraId, { parcelasPlano: novo, parcelas: n });
-        renderFinanceiro(container);
+        recarregar();
       } catch (err) { alert('Não foi possível salvar: ' + (err?.message || err)); }
       return;
     }
@@ -354,11 +372,11 @@ export async function renderFinanceiro(container) {
     if (del) {
       if (!confirm('Remover este pagamento?')) return;
       await excluirPagamento(del.getAttribute('data-del-pag'));
-      renderFinanceiro(container);
+      recarregar();
     }
   });
 
-  container.addEventListener('submit', async (e) => {
+  container.addEventListener('submit', container.__finH.submit = async (e) => {
     const form = e.target.closest('[data-form-pag]');
     if (!form) return;
     e.preventDefault();
@@ -375,10 +393,13 @@ export async function renderFinanceiro(container) {
         forma: form.querySelector('.pg-forma').value || null,
         observacao: form.querySelector('.pg-obs').value.trim() || null,
       });
-      renderFinanceiro(container);
+      recarregar();
     } catch (err) {
       btn.disabled = false; btn.textContent = 'Salvar';
       erro.textContent = 'Não foi possível salvar: ' + (err?.message || err); erro.hidden = false;
     }
   });
+
+  // Refresh silencioso: devolve a rolagem ao ponto onde o usuário estava.
+  if (manterScroll) requestAnimationFrame(() => window.scrollTo(0, scrollY));
 }
