@@ -52,7 +52,11 @@ export async function renderFinanceiro(container, opts = {}) {
     // PARCELAS marcadas como pagas (plano gerado automaticamente).
     if (comGestao) {
       const recebido = soma(pagPorObra[o.id]);
-      return { o, comGestao, total: c.totalEscritorio, recebido, saldo: c.totalEscritorio - recebido, plano: null };
+      // Plano de pagamento do PROJETO (honorário de projeto) — CONTROLE INTERNO:
+      // não é gerado automaticamente e NÃO aparece no painel do cliente (lá só
+      // entra a obra). Os KPIs da obra continuam sendo o reembolso da obra.
+      const plano = (Array.isArray(o.parcelasPlano) && o.parcelasPlano.length) ? renumerar(o.parcelasPlano) : [];
+      return { o, comGestao, total: c.totalEscritorio, recebido, saldo: c.totalEscritorio - recebido, plano };
     }
     // Sem valor definido e sem plano salvo: não geramos parcela "fantasma".
     const orc = Number(o.orcamento || 0);
@@ -118,18 +122,30 @@ export async function renderFinanceiro(container, opts = {}) {
       </div>`;
   };
 
-  // Bloco de parcelas do projeto (obras SEM gestão) — geradas automaticamente e
-  // totalmente editáveis: valor, data, forma, status; dá para adicionar/remover
-  // parcelas e refazer o plano em N parcelas iguais. Cada parcela pode ser
-  // cobrada pelo WhatsApp.
-  const blocoParcelas = (o, plano) => `
-      <div class="fin-controle">
+  // Mini-resumo do plano de parcelas (usado no bloco interno do projeto, nas
+  // obras COM gestão) — atualizado no lugar ao marcar pago / editar valor.
+  const resumoParcelas = (plano) => {
+    const total = somaPlano(plano), receb = somaPagas(plano), saldo = total - receb;
+    return `<div class="fin-proj-resumo">
+      <span>Total do projeto <strong data-proj-total>${moeda(total)}</strong></span>
+      <span>Recebido <strong class="val-ok" data-proj-recebido>${moeda(receb)}</strong></span>
+      <span>Falta <strong class="${saldo > 0.005 ? 'neg' : 'val-saldo'}" data-proj-saldo>${moeda(saldo)}</strong></span>
+    </div>`;
+  };
+
+  // Bloco de parcelas do projeto — totalmente editável: valor, data, forma,
+  // status; dá para adicionar/remover parcelas e refazer em N iguais; cada
+  // parcela pode ser cobrada pelo WhatsApp. Usado tanto no painel do cliente
+  // (obras SEM gestão) quanto no controle INTERNO do projeto (obras COM gestão).
+  const blocoParcelas = (o, plano, opts = {}) => `
+      <div class="fin-controle${opts.interno ? ' fin-controle-interno' : ''}">
         <div class="row-between">
-          <h3 class="fin-controle-titulo">Parcelas do projeto</h3>
-          <span class="muted fin-hint">Edite valor, data e forma; marque como pago; cobre pelo WhatsApp.</span>
+          <h3 class="fin-controle-titulo">${opts.titulo || 'Parcelas do projeto'}</h3>
+          <span class="muted fin-hint">${opts.nota || 'Edite valor, data e forma; marque como pago; cobre pelo WhatsApp.'}</span>
         </div>
+        ${opts.resumo ? resumoParcelas(plano) : ''}
         <div class="fin-parcelas" data-parcelas-obra="${esc(o.id)}">
-          ${plano.length ? '' : '<p class="muted" style="margin:0">Defina o valor do projeto (na obra) e clique em "Refazer", ou adicione parcelas manualmente.</p>'}
+          ${plano.length ? '' : `<p class="muted" style="margin:0">${opts.vazioMsg || 'Defina o valor do projeto (na obra) e clique em "Refazer", ou adicione parcelas manualmente.'}</p>`}
           ${plano.map((p) => `
           <div class="fin-parcela ${p.pago ? 'paga' : ''}" data-parc-n="${p.n}">
             <div class="fin-parc-topo">
@@ -162,6 +178,19 @@ export async function renderFinanceiro(container, opts = {}) {
         </div>
       </div>`;
 
+  // Controle INTERNO do pagamento do projeto (obras COM gestão). Fica recolhido
+  // por padrão e NÃO aparece para o cliente. Reaproveita a UI de parcelas.
+  const blocoProjetoInterno = (o, plano) => `
+      <details class="fin-proj-det"${plano.length ? ' open' : ''}>
+        <summary class="fin-proj-summary">💼 Pagamento do projeto — controle interno <span class="muted">(não aparece para o cliente)</span></summary>
+        ${blocoParcelas(o, plano, {
+          titulo: 'Parcelas do projeto (honorário de projeto)',
+          nota: 'Só você vê. Marque pago e cobre pelo WhatsApp.',
+          resumo: true, interno: true,
+          vazioMsg: 'Adicione as parcelas do pagamento do projeto. Isso é um controle interno — o cliente não vê.',
+        })}
+      </details>`;
+
   const cardFin = (l) => {
     const o = l.o;
     return `
@@ -180,13 +209,13 @@ export async function renderFinanceiro(container, opts = {}) {
         ${kpi('Recebido', moeda(l.recebido), 'val-ok')}
         ${kpi('Saldo em aberto', moeda(l.saldo), l.saldo > 0.005 ? 'neg' : 'val-saldo')}
       </div>
-      ${l.comGestao ? blocoPagamentos(o) : blocoParcelas(o, l.plano)}
+      ${l.comGestao ? (blocoPagamentos(o) + blocoProjetoInterno(o, l.plano || [])) : blocoParcelas(o, l.plano)}
     </section>`;
   };
 
   // Mapa obraId -> plano (referência mutável usada pelos handlers de parcela).
   const planoPorObra = {};
-  linhas.forEach((l) => { if (!l.comGestao && l.plano) planoPorObra[l.o.id] = l.plano; });
+  linhas.forEach((l) => { if (l.plano) planoPorObra[l.o.id] = l.plano; });
 
   container.innerHTML = `
     ${navBar('financeiro')}
@@ -228,17 +257,31 @@ export async function renderFinanceiro(container, opts = {}) {
   // Atualiza os valores (Recebido/Saldo do card e do resumo geral) SEM
   // re-renderizar a página — assim a tela NÃO sobe ao marcar pago / editar valor.
   const refletirValores = (obraId, cardEl) => {
+    const linha = linhas.find((x) => x.o.id === obraId);
     const plano = planoPorObra[obraId] || [];
     const total = somaPlano(plano);
     const recebido = somaPagas(plano);
     const saldo = total - recebido;
+    // COM gestão: o plano é o controle INTERNO do projeto — mexe SÓ no resumo do
+    // bloco interno; os KPIs da obra e o resumo geral (que são da obra) não mudam.
+    if (linha && linha.comGestao) {
+      const box = cardEl && cardEl.querySelector('.fin-proj-resumo');
+      if (box) {
+        const t = box.querySelector('[data-proj-total]'); if (t) t.textContent = moeda(total);
+        const r = box.querySelector('[data-proj-recebido]'); if (r) r.textContent = moeda(recebido);
+        const sd = box.querySelector('[data-proj-saldo]');
+        if (sd) { sd.textContent = moeda(saldo); sd.className = saldo > 0.005 ? 'neg' : 'val-saldo'; }
+      }
+      return;
+    }
+    // SEM gestão: o plano É o total do projeto — atualiza os KPIs do card...
     if (cardEl) {
       const s = cardEl.querySelectorAll('.kpis .kpi strong');
       if (s[0]) s[0].textContent = moeda(total);
       if (s[1]) s[1].textContent = moeda(recebido);
       if (s[2]) { s[2].textContent = moeda(saldo); s[2].className = saldo > 0.005 ? 'neg' : 'val-saldo'; }
     }
-    // Resumo geral (soma de todos os clientes) — recomputado com os planos atuais.
+    // ...e o resumo geral (soma de todos os clientes).
     let tG = 0, rG = 0;
     for (const l of linhas) {
       tG += l.comGestao ? l.total : somaPlano(planoPorObra[l.o.id] || l.plano || []);
@@ -346,7 +389,7 @@ export async function renderFinanceiro(container, opts = {}) {
       const card = refazer.closest('.card');
       const n = Math.max(1, Math.min(60, Number(card.querySelector('.parc-refazer-n')?.value || 1)));
       if (!confirm(`Refazer o plano em ${n} parcela(s) iguais? Isso substitui as parcelas atuais.`)) return;
-      const base = somaPlano(planoPorObra[obraId] || []) || Number(o.orcamento || 0);
+      const base = somaPlano(planoPorObra[obraId] || []) || (o.gestao === false ? Number(o.orcamento || 0) : 0);
       const novo = gerarPlano(base, n);
       try {
         await atualizarObra(obraId, { parcelasPlano: novo, parcelas: n });

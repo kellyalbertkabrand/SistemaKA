@@ -337,6 +337,23 @@ input:focus, select:focus, textarea:focus {
 .fin-controle { margin-top: .9rem; padding: .8rem .9rem; border: 1px solid #cfe3d5;
   border-left: 4px solid var(--ok); border-radius: 10px; background: #f1f7f2; }
 .fin-controle-titulo { margin: 0; font-size: 1rem; color: var(--ok); }
+
+/* Controle INTERNO do pagamento do projeto (obras com gestão) — recolhível,
+   com tom neutro (terracota) para diferenciar do controle da obra (verde). */
+.fin-proj-det { margin-top: .9rem; }
+.fin-proj-summary { cursor: pointer; font-weight: 600; color: var(--acento);
+  padding: .55rem .7rem; border: 1px dashed #e2c6b4; border-radius: 10px;
+  background: var(--acento-tint); list-style: none; }
+.fin-proj-summary::-webkit-details-marker { display: none; }
+.fin-proj-summary::before { content: '▸ '; }
+.fin-proj-det[open] .fin-proj-summary::before { content: '▾ '; }
+.fin-proj-summary .muted { font-weight: 400; font-size: .82rem; }
+.fin-proj-det .fin-controle-interno { margin-top: .5rem; border-left-color: var(--acento);
+  border-color: #ecd9cc; background: #faf3ee; }
+.fin-proj-det .fin-controle-interno .fin-controle-titulo { color: var(--acento); }
+.fin-proj-det .fin-controle-interno .btn-primary { background: var(--acento); border-color: var(--acento); }
+.fin-proj-resumo { display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; margin: .2rem 0 .5rem; font-size: .9rem; }
+.fin-proj-resumo strong { margin-left: .25rem; }
 .fin-controle .btn-primary { background: var(--ok); border-color: var(--ok); }
 .fin-controle .btn-primary:hover { background: #336b47; border-color: #336b47; }
 
