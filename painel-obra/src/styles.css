@@ -333,6 +333,22 @@ input:focus, select:focus, textarea:focus {
 .fin-geral { background: #faf3ee; border: 1px solid #ecd9cc; border-left: 5px solid #c65a2e; }
 .fin-geral-titulo { margin: 0 0 .5rem; font-size: 1rem; color: #c65a2e; }
 
+/* Card de cada obra: traço lateral colorido pela situação + cabeçalho com selo,
+   para diferenciar visualmente uma obra da outra. */
+.fin-obra-card { border-left: 5px solid var(--linha-forte); margin-bottom: 1.15rem; }
+.fin-status-quitado { border-left-color: var(--ok); }
+.fin-status-aberto { border-left-color: var(--neg); }
+.fin-status-neutro { border-left-color: var(--linha-forte); }
+.fin-obra-cab { display: flex; justify-content: space-between; align-items: flex-start; gap: .8rem; margin-bottom: .7rem; }
+.fin-obra-id { display: flex; flex-direction: column; min-width: 0; }
+.fin-obra-nome { font-family: var(--fonte); font-size: 1.18rem; line-height: 1.2; }
+.fin-obra-cliente { font-size: .85rem; margin-top: .1rem; }
+.fin-obra-cab-dir { display: flex; flex-direction: column; align-items: flex-end; gap: .45rem; flex-shrink: 0; }
+.fin-badge { font-size: .7rem; font-weight: 700; padding: .22rem .6rem; border-radius: 999px; white-space: nowrap; }
+.fin-badge-ok { background: #e2f1e8; color: var(--ok); }
+.fin-badge-aberto { background: #fbe4df; color: var(--neg); }
+.fin-badge-neutro { background: var(--bg-2); color: var(--muted); }
+
 /* Financeiro: bloco "Controle de pagamentos" destacado (tons de verde). */
 .fin-controle { margin-top: .9rem; padding: .8rem .9rem; border: 1px solid #cfe3d5;
   border-left: 4px solid var(--ok); border-radius: 10px; background: #f1f7f2; }
@@ -361,19 +377,24 @@ input:focus, select:focus, textarea:focus {
 .fin-parcelas { margin-top: .6rem; display: flex; flex-direction: column; gap: .5rem; }
 /* Parcela EM ABERTO: fundo vermelho bem claro. Só fica VERDE quando marcada
    como paga. */
-.fin-parcela { border: 1px solid #f1d5ce; border-radius: 10px; padding: .6rem .7rem; background: #fdf1ef; }
+.fin-parcela { border: 1px solid #f1d5ce; border-left-width: 4px; border-radius: 12px; padding: .7rem .8rem; background: #fdf1ef; }
 .fin-parcela.paga { background: #e7f4ec; border-color: #bfe0cb; }
-.fin-parc-topo { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; }
-.fin-parc-num { font-weight: 600; font-size: .86rem; }
-.fin-parc-valor { font-size: .98rem; }
-.fin-parc-campos { display: flex; flex-wrap: wrap; align-items: flex-end; gap: .5rem .7rem; margin-top: .5rem; }
-.fin-parc-campos label { font-size: .76rem; color: var(--muted); display: flex; flex-direction: column; gap: .2rem; }
-.fin-parc-campos input, .fin-parc-campos select { font-size: .85rem; padding: .3rem .5rem; }
-.fin-parc-campos .parc-valor { max-width: 130px; }
-.parc-status { align-self: flex-end; }
+/* Cabeçalho da parcela: número + selo de situação + remover. */
+.fin-parc-topo { display: flex; align-items: center; gap: .5rem; }
+.fin-parc-num { font-weight: 700; font-size: .92rem; }
+.fin-parc-badge { font-size: .66rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+  padding: .16rem .5rem; border-radius: 999px; background: #f6d3cb; color: #a53a2c; }
+.fin-parcela.paga .fin-parc-badge { background: #cdead6; color: var(--ok); }
+.fin-parc-topo .parc-del { margin-left: auto; }
+/* Campos em grade (some do "retângulo comprido"): 3 colunas no desktop. */
+.fin-parc-campos { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem .6rem; margin-top: .55rem; }
+.fin-parc-campos label { font-size: .72rem; color: var(--muted); display: flex; flex-direction: column; gap: .2rem; }
+.fin-parc-campos input, .fin-parc-campos select { font-size: .9rem; padding: .42rem .5rem; width: 100%; }
+/* Ações da parcela numa linha só, alinhadas. */
+.fin-parc-rodape { display: flex; gap: .5rem; margin-top: .6rem; }
+.fin-parc-rodape .parc-status { flex: 1 1 auto; }
 .parc-status.pago { background: var(--ok); border-color: var(--ok); color: #fff; }
 .parc-status.pago:hover { background: #336b47; border-color: #336b47; color: #fff; }
-.parc-cobrar { padding: .28rem .6rem; }
 .fin-parc-acoes { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; margin-top: .7rem; }
 .fin-parc-refazer { display: inline-flex; align-items: center; gap: .4rem; font-size: .82rem; color: var(--muted); }
 .fin-parc-refazer .parc-refazer-n { width: 4rem; }
@@ -762,4 +783,14 @@ body.modal-aberto { overflow: hidden; }
   /* Botões: largura conforme o texto (1 linha), mesma altura para todos. */
   .reembolso-form .btn { flex: 0 1 auto; justify-content: center; white-space: nowrap; }
   .fin-hint { flex-basis: 100%; align-self: flex-start; }
+
+  /* Parcelas no celular: Valor | Data lado a lado e Forma numa linha só —
+     acaba com o "retângulo comprido". Ações podem quebrar se faltar espaço. */
+  .fin-parc-campos { grid-template-columns: 1fr 1fr; }
+  .fin-parc-campos label:last-of-type { grid-column: 1 / -1; }
+  .fin-parc-rodape { flex-wrap: wrap; }
+  .fin-parc-rodape .btn { min-height: 40px; }
+  /* Cabeçalho do card da obra mais compacto. */
+  .fin-obra-nome { font-size: 1.06rem; }
+  .fin-obra-cab { gap: .6rem; }
 }

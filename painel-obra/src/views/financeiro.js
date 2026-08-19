@@ -149,11 +149,9 @@ export async function renderFinanceiro(container, opts = {}) {
           ${plano.map((p) => `
           <div class="fin-parcela ${p.pago ? 'paga' : ''}" data-parc-n="${p.n}">
             <div class="fin-parc-topo">
-              <span class="fin-parc-num">Parcela ${p.n} de ${plano.length}</span>
-              <span class="row-end">
-                <button type="button" class="btn btn-mini btn-whats parc-cobrar" title="Cobrar esta parcela pelo WhatsApp">💬 Cobrar</button>
-                <button type="button" class="btn btn-x parc-del" title="Remover parcela">×</button>
-              </span>
+              <span class="fin-parc-num">Parcela ${p.n}<span class="muted">/${plano.length}</span></span>
+              <span class="fin-parc-badge">${p.pago ? 'Paga' : 'Em aberto'}</span>
+              <button type="button" class="btn btn-x parc-del" title="Remover parcela">×</button>
             </div>
             <div class="fin-parc-campos">
               <label>Valor (R$) <input type="number" min="0" step="0.01" class="parc-valor" value="${Number(p.valor || 0)}" /></label>
@@ -163,7 +161,10 @@ export async function renderFinanceiro(container, opts = {}) {
                   ${FORMAS.map((f) => `<option ${p.forma === f ? 'selected' : ''}>${f}</option>`).join('')}
                 </select>
               </label>
+            </div>
+            <div class="fin-parc-rodape">
               <button type="button" class="btn btn-mini parc-status ${p.pago ? 'pago' : ''}">${p.pago ? '✓ Pago' : 'Marcar como pago'}</button>
+              <button type="button" class="btn btn-mini btn-whats parc-cobrar" title="Cobrar esta parcela pelo WhatsApp">💬 Cobrar</button>
             </div>
           </div>`).join('')}
         </div>
@@ -191,16 +192,24 @@ export async function renderFinanceiro(container, opts = {}) {
         })}
       </details>`;
 
+  // Situação da obra (para o selo e o traço colorido): quitado / em aberto /
+  // sem cobranças. Base: total e saldo da OBRA (reembolso ou projeto).
+  const situacao = (total, saldo) => total <= 0.005 ? 'neutro' : (saldo <= 0.005 ? 'quitado' : 'aberto');
+  const seloTxt = (st, saldo) => st === 'quitado' ? '✓ Quitado' : st === 'aberto' ? 'Falta ' + moeda(saldo) : 'Sem cobranças';
+  const seloCls = (st) => st === 'quitado' ? 'fin-badge-ok' : st === 'aberto' ? 'fin-badge-aberto' : 'fin-badge-neutro';
+
   const cardFin = (l) => {
     const o = l.o;
+    const st = situacao(l.total, l.saldo);
     return `
-    <section class="card">
-      <div class="row-between">
-        <div>
-          <strong>${esc(o.nome)}</strong>
-          <p class="muted" style="margin:.1rem 0 0">${esc(o.cliente || 'Sem cliente definido')}</p>
+    <section class="card fin-obra-card fin-status-${st}">
+      <div class="fin-obra-cab">
+        <div class="fin-obra-id">
+          <strong class="fin-obra-nome">${esc(o.nome)}</strong>
+          <span class="muted fin-obra-cliente">${esc(o.cliente || 'Sem cliente definido')}</span>
         </div>
-        <div class="row-end">
+        <div class="fin-obra-cab-dir">
+          <span class="fin-badge ${seloCls(st)}">${seloTxt(st, l.saldo)}</span>
           <a class="btn btn-mini" data-link href="/painel/${esc(o.slug)}">Abrir obra</a>
         </div>
       </div>
@@ -280,6 +289,12 @@ export async function renderFinanceiro(container, opts = {}) {
       if (s[0]) s[0].textContent = moeda(total);
       if (s[1]) s[1].textContent = moeda(recebido);
       if (s[2]) { s[2].textContent = moeda(saldo); s[2].className = saldo > 0.005 ? 'neg' : 'val-saldo'; }
+      // ...e o selo/traço de situação da obra.
+      const st = situacao(total, saldo);
+      cardEl.classList.remove('fin-status-quitado', 'fin-status-aberto', 'fin-status-neutro');
+      cardEl.classList.add('fin-status-' + st);
+      const bd = cardEl.querySelector('.fin-badge');
+      if (bd) { bd.className = 'fin-badge ' + seloCls(st); bd.textContent = seloTxt(st, saldo); }
     }
     // ...e o resumo geral (soma de todos os clientes).
     let tG = 0, rG = 0;
@@ -331,6 +346,8 @@ export async function renderFinanceiro(container, opts = {}) {
         row.classList.toggle('paga', !!p.pago);
         status.classList.toggle('pago', !!p.pago);
         status.textContent = p.pago ? '✓ Pago' : 'Marcar como pago';
+        const bdg = row.querySelector('.fin-parc-badge');
+        if (bdg) bdg.textContent = p.pago ? 'Paga' : 'Em aberto';
         status.disabled = false;
         refletirValores(obraId, status.closest('.card'));
       } catch (err) {
