@@ -5,7 +5,7 @@ import {
 import { moeda, dataBR, esc } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
 import { calcularReembolso, baixarPdfReembolso, baixarExcelReembolso, montarMensagemWhatsApp, PAGAMENTO } from '../lib/reembolso.js';
-import { normalizarPlano, somaPagas, gerarPlano, renumerar, somarMeses, mensagemCobrancaParcela } from '../lib/parcelas.js';
+import { normalizarPlano, somaPagas, somaPlano, gerarPlano, renumerar, somarMeses, mensagemCobrancaParcela } from '../lib/parcelas.js';
 
 // Financeiro: uma tela só, por obra, com Total a pagar / Recebido / Saldo em
 // aberto; gera o relatório do cliente (PDF/WhatsApp) e controla os pagamentos ali.
@@ -55,14 +55,17 @@ export async function renderFinanceiro(container, opts = {}) {
       return { o, comGestao, total: c.totalEscritorio, recebido, saldo: c.totalEscritorio - recebido, plano: null };
     }
     // Sem valor definido e sem plano salvo: não geramos parcela "fantasma".
-    const total = Number(o.orcamento || 0);
+    const orc = Number(o.orcamento || 0);
     const temPlanoSalvo = Array.isArray(o.parcelasPlano) && o.parcelasPlano.length;
     let plano = [];
-    if (temPlanoSalvo || total > 0) {
+    if (temPlanoSalvo || orc > 0) {
       const norm = normalizarPlano(o);
       plano = norm.plano;
       if (norm.mudou) planosParaSalvar.push({ id: o.id, plano });
     }
+    // Valor do projeto = SOMA das parcelas (permite acrescentar um serviço numa
+    // nova parcela sem precisar refazer nem mexer nas parcelas já pagas).
+    const total = plano.length ? somaPlano(plano) : orc;
     const recebido = somaPagas(plano);
     return { o, comGestao, total, recebido, saldo: total - recebido, plano };
   }).sort((a, b) => b.saldo - a.saldo); // quem deve mais primeiro
@@ -226,23 +229,24 @@ export async function renderFinanceiro(container, opts = {}) {
   // re-renderizar a página — assim a tela NÃO sobe ao marcar pago / editar valor.
   const refletirValores = (obraId, cardEl) => {
     const plano = planoPorObra[obraId] || [];
-    const o = obras.find((x) => x.id === obraId);
-    const total = Number(o?.orcamento || 0);
+    const total = somaPlano(plano);
     const recebido = somaPagas(plano);
     const saldo = total - recebido;
     if (cardEl) {
       const s = cardEl.querySelectorAll('.kpis .kpi strong');
+      if (s[0]) s[0].textContent = moeda(total);
       if (s[1]) s[1].textContent = moeda(recebido);
       if (s[2]) { s[2].textContent = moeda(saldo); s[2].className = saldo > 0.005 ? 'neg' : 'val-saldo'; }
     }
-    // Resumo geral (soma de todos os clientes).
+    // Resumo geral (soma de todos os clientes) — recomputado com os planos atuais.
     let tG = 0, rG = 0;
     for (const l of linhas) {
-      tG += l.total;
+      tG += l.comGestao ? l.total : somaPlano(planoPorObra[l.o.id] || l.plano || []);
       rG += l.comGestao ? l.recebido : somaPagas(planoPorObra[l.o.id] || l.plano || []);
     }
     const sG = tG - rG;
     const g = container.querySelectorAll('.fin-geral .kpis .kpi strong');
+    if (g[0]) g[0].textContent = moeda(tG);
     if (g[1]) g[1].textContent = moeda(rG);
     if (g[2]) { g[2].textContent = moeda(sG); g[2].className = sG > 0.005 ? 'neg' : 'val-saldo'; }
   };
@@ -342,7 +346,8 @@ export async function renderFinanceiro(container, opts = {}) {
       const card = refazer.closest('.card');
       const n = Math.max(1, Math.min(60, Number(card.querySelector('.parc-refazer-n')?.value || 1)));
       if (!confirm(`Refazer o plano em ${n} parcela(s) iguais? Isso substitui as parcelas atuais.`)) return;
-      const novo = gerarPlano(Number(o.orcamento || 0), n);
+      const base = somaPlano(planoPorObra[obraId] || []) || Number(o.orcamento || 0);
+      const novo = gerarPlano(base, n);
       try {
         await atualizarObra(obraId, { parcelasPlano: novo, parcelas: n });
         recarregar();

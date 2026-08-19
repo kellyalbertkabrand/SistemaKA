@@ -71,6 +71,12 @@ export function somaPagas(plano) {
   return (plano || []).filter((p) => p.pago).reduce((t, p) => t + Number(p.valor || 0), 0);
 }
 
+// Soma de TODAS as parcelas. O valor do projeto passa a ser a soma das parcelas
+// — assim dá para acrescentar um serviço (nova parcela) sem mexer nas já pagas.
+export function somaPlano(plano) {
+  return (plano || []).reduce((t, p) => t + Number(p.valor || 0), 0);
+}
+
 // Mensagem pronta para o WhatsApp cobrando uma parcela do projeto. Sem emojis
 // (evita caracteres quebrados). `pagamento` (opcional) traz os dados de Pix do
 // escritório; `link` (opcional) é o painel do cliente.

@@ -8,7 +8,7 @@ import { abrirLightbox, abrirAnexo } from '../lib/lightbox.js';
 import { criarZip } from '../lib/zip.js';
 import { baixarBlob } from '../lib/exportar.js';
 import { dataURLParaBytes } from '../lib/imagem.js';
-import { normalizarPlano, somaPagas } from '../lib/parcelas.js';
+import { normalizarPlano, somaPagas, somaPlano } from '../lib/parcelas.js';
 
 // Página pública do cliente (só leitura), acessada por /obra/{slug}.
 // Mostra o andamento da obra com visual limpo — e NADA interno.
@@ -66,10 +66,19 @@ export async function renderPublica(container, slug) {
   // Com gestão: recebido = pagamentos avulsos. Sem gestão: soma das parcelas pagas.
   const recebido = comGestao ? soma(pagamentos) : somaPagas(planoParcelas);
   // Com gestão: o cliente deve o reembolso + honorário (calcularReembolso).
-  // Sem gestão (só projeto): o cliente deve o VALOR DO PROJETO (campo orçamento).
-  const totalDevido = comGestao ? r.totalEscritorio : Number(obra.orcamento || 0);
+  // Sem gestão (só projeto): o cliente deve a SOMA das parcelas do projeto
+  // (assim um serviço a mais, numa nova parcela, já entra no total).
+  const totalDevido = comGestao
+    ? r.totalEscritorio
+    : (planoParcelas && planoParcelas.length ? somaPlano(planoParcelas) : Number(obra.orcamento || 0));
   const saldoCliente = totalDevido - recebido;
-  const parcelasProjeto = Math.max(1, Number(obra.parcelas || 1)); // 1 = à vista
+  const parcelasProjeto = comGestao
+    ? Math.max(1, Number(obra.parcelas || 1))
+    : Math.max(1, (planoParcelas && planoParcelas.length) || 1); // 1 = à vista
+  // As parcelas podem ter valores diferentes (ex.: um serviço a mais). Só
+  // mostramos "Nx de R$Y" quando são todas iguais; senão, só "N parcelas".
+  const parcelasIguais = Boolean(planoParcelas && planoParcelas.length > 1
+    && planoParcelas.every((p) => Math.round(Number(p.valor || 0) * 100) === Math.round(Number(planoParcelas[0].valor || 0) * 100)));
   // Sem gestão: só mostramos a nota e a lista de parcelas quando há valor
   // definido (ou algo já recebido). Sem valor, nada de texto sobre pagamento.
   const temPagamentoProjeto = totalDevido > 0.005 || recebido > 0.005;
@@ -167,7 +176,7 @@ export async function renderPublica(container, slug) {
         ${comGestao
           ? `<p class="pub-nota">O total é o reembolso dos fornecedores${r.pctEsc > 0 ? ` + o honorário de gestão (${r.pctFmt}%)` : ''}. O saldo já desconta o que você pagou.</p>`
           : (temPagamentoProjeto
-            ? `<p class="pub-nota">${parcelasProjeto > 1 ? `Combinado em <strong>${parcelasProjeto}x de ${moeda(totalDevido / parcelasProjeto)}</strong>. ` : '<strong>Pagamento à vista.</strong> '}O saldo já desconta as parcelas que você pagou.</p>`
+            ? `<p class="pub-nota">${parcelasProjeto > 1 ? `Combinado em <strong>${parcelasIguais ? `${parcelasProjeto}x de ${moeda(totalDevido / parcelasProjeto)}` : `${parcelasProjeto} parcelas`}</strong>. ` : '<strong>Pagamento à vista.</strong> '}O saldo já desconta as parcelas que você pagou.</p>`
             : '')}
         ${comGestao
           ? (pagamentos.length ? `
