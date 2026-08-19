@@ -218,8 +218,34 @@ export async function renderFinanceiro(container, opts = {}) {
     container.removeEventListener('submit', prevH.submit);
   }
   container.__finH = {};
-  // Refresh que preserva a rolagem (não sobe pro topo ao marcar pago/registrar).
+  // Refresh que preserva a rolagem (usado só quando a estrutura muda: adicionar/
+  // remover parcela, registrar/excluir pagamento).
   const recarregar = () => renderFinanceiro(container, { manterScroll: true });
+
+  // Atualiza os valores (Recebido/Saldo do card e do resumo geral) SEM
+  // re-renderizar a página — assim a tela NÃO sobe ao marcar pago / editar valor.
+  const refletirValores = (obraId, cardEl) => {
+    const plano = planoPorObra[obraId] || [];
+    const o = obras.find((x) => x.id === obraId);
+    const total = Number(o?.orcamento || 0);
+    const recebido = somaPagas(plano);
+    const saldo = total - recebido;
+    if (cardEl) {
+      const s = cardEl.querySelectorAll('.kpis .kpi strong');
+      if (s[1]) s[1].textContent = moeda(recebido);
+      if (s[2]) { s[2].textContent = moeda(saldo); s[2].className = saldo > 0.005 ? 'neg' : 'val-saldo'; }
+    }
+    // Resumo geral (soma de todos os clientes).
+    let tG = 0, rG = 0;
+    for (const l of linhas) {
+      tG += l.total;
+      rG += l.comGestao ? l.recebido : somaPagas(planoPorObra[l.o.id] || l.plano || []);
+    }
+    const sG = tG - rG;
+    const g = container.querySelectorAll('.fin-geral .kpis .kpi strong');
+    if (g[1]) g[1].textContent = moeda(rG);
+    if (g[2]) { g[2].textContent = moeda(sG); g[2].className = sG > 0.005 ? 'neg' : 'val-saldo'; }
+  };
 
   // Editar valor/data/forma de uma parcela (obra sem gestão).
   container.addEventListener('change', container.__finH.change = async (e) => {
@@ -236,7 +262,7 @@ export async function renderFinanceiro(container, opts = {}) {
     else return;
     try {
       await atualizarObra(obraId, { parcelasPlano: plano });
-      if (recomputa) recarregar(); // valor mexe no recebido/saldo
+      if (recomputa) refletirValores(obraId, e.target.closest('.card')); // valor mexe no recebido/saldo — sem re-render
     } catch (err) { alert('Não foi possível salvar: ' + (err?.message || err)); }
   });
 
@@ -254,7 +280,12 @@ export async function renderFinanceiro(container, opts = {}) {
       status.disabled = true;
       try {
         await atualizarObra(obraId, { parcelasPlano: plano });
-        recarregar(); // recomputa recebido/saldo (card e geral)
+        // Atualiza SÓ o que mudou, no lugar — a tela não sobe pro topo.
+        row.classList.toggle('paga', !!p.pago);
+        status.classList.toggle('pago', !!p.pago);
+        status.textContent = p.pago ? '✓ Pago' : 'Marcar como pago';
+        status.disabled = false;
+        refletirValores(obraId, status.closest('.card'));
       } catch (err) {
         p.pago = !p.pago; status.disabled = false;
         alert('Não foi possível salvar: ' + (err?.message || err));
