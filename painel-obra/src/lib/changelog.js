@@ -3,9 +3,20 @@
 // sucinta e clara para o cliente — e atualize a VERSAO (data da publicação).
 // É exibido na página pública /atualizacoes, que pode ser enviada ao cliente.
 
-export const VERSAO = '18/08/2026';
+export const VERSAO = '20/08/2026';
 
 export const CHANGELOG = [
+  {
+    data: '20/08/2026',
+    titulo: 'Financeiro mais claro e controle do projeto',
+    itens: [
+      'Ao marcar uma parcela como paga (ou registrar um pagamento), a tela não "sobe" mais para o topo — fica no ponto onde você está.',
+      'Acrescentar um serviço ficou simples: basta "+ Adicionar parcela" e informar o valor. O total e o saldo se ajustam sozinhos, sem precisar refazer o plano nem mexer nas parcelas já pagas.',
+      'Novo controle interno do pagamento do projeto nas obras com gestão: você controla as parcelas do projeto só para o escritório — não aparece no painel do cliente e não se mistura com os valores da obra.',
+      'Parcela em aberto aparece em vermelho bem claro; fica verde só quando você marca como paga.',
+      'Financeiro repaginado (principalmente no celular): cada obra num card destacado, com selo de situação (Quitado / Falta R$X) e cor por status; as parcelas ficaram mais organizadas e fáceis de ler.',
+    ],
+  },
   {
     data: '18/08/2026',
     titulo: 'Tipo de serviço: com ou sem gestão de obra',
