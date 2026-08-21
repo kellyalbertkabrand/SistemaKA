@@ -1,0 +1,9 @@
+# Configuração do site estático "Guia de Negócios do Conecta".
+# Este site é apenas um index.html pronto (sem etapa de build).
+# No painel do Netlify, defina "Base directory" = conecta para que ele
+# use ESTE arquivo, e não o netlify.toml do painel SistemaKA na raiz.
+[build]
+  # Sem build: o conteúdo já está pronto nesta pasta.
+  command = ""
+  # Publica a própria pasta conecta (relativa ao base directory).
+  publish = "."
