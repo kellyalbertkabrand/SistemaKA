@@ -1,0 +1,12 @@
+# Cache do app (Netlify). Resolve o "não atualiza no ar / é cache do navegador":
+# o HTML e as rotas do SPA NUNCA ficam em cache (o navegador sempre revalida e
+# pega a versão nova na hora); só os arquivos com hash no nome (JS/CSS/imagens
+# do build em /assets) ficam em cache eterno — como o nome muda a cada build,
+# é seguro e mantém o carregamento rápido.
+
+/*
+  Cache-Control: no-cache
+
+# Arquivos versionados por hash (Vite): imutáveis, cache de 1 ano.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
