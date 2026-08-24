@@ -579,20 +579,16 @@ export function mensagemHistoria(nome?: string | null): string {
 }
 
 /**
- * Mensagem padrão de BOAS-VINDAS ao grupo do projeto (WhatsApp). É enviada
- * quando a KA cria um grupo novo com o cliente para conduzir o projeto.
- * `nome` (primeiro nome do responsável) e `marca` são opcionais — a saudação e
- * a referência ao projeto se adaptam. Usa *asteriscos* = negrito do WhatsApp.
+ * Mensagem padrão (fixa) de BOAS-VINDAS ao grupo do projeto (WhatsApp). Enviada
+ * quando a KA cria um grupo novo com o cliente para conduzir o projeto. Texto
+ * genérico ("da sua marca") — serve para qualquer grupo. Usa *asteriscos* =
+ * negrito do WhatsApp.
  */
-export function mensagemBoasVindasGrupo(nome?: string | null, marca?: string | null): string {
-  const saud = nome && nome.trim() ? `Olá, ${nome.trim()}!` : 'Olá!'
-  // Sem asteriscos internos aqui: o negrito (*...*) envolve a frase inteira
-  // abaixo — asteriscos aninhados quebrariam o negrito do WhatsApp.
-  const projeto = marca && marca.trim() ? `da ${marca.trim()}` : 'da sua marca'
+export function mensagemBoasVindasGrupo(): string {
   return [
-    `${saud} Seja muito bem-vindo(a) — e bem-vindos todos que fazem parte deste grupo.`,
+    'Olá! Sejam bem-vindos todos que fazem parte deste grupo.',
     '',
-    `Criamos este espaço para ser *exclusivo do projeto ${projeto}*: é aqui que vamos conduzir, juntos, cada etapa do método *Marca com Essência©*.`,
+    'Criamos este espaço para ser *exclusivo do projeto da sua marca*: é aqui que vamos conduzir, juntos, cada etapa do Projeto de Posicionamento *Marca com Essência©*.',
     '',
     'Para que serve este grupo:',
     '– Centralizar tudo sobre o projeto num lugar só;',
