@@ -75,10 +75,10 @@ export function GestaoFormularios() {
         </ol>
       </div>
 
+      <BoasVindasGrupo />
+
       {erro && <div className="erro-msg">{erro}</div>}
       {carregando && <p>Carregando…</p>}
-
-      {!carregando && <BoasVindasGrupo clientes={clientes} />}
 
       {!carregando &&
         ETAPAS_MARCA_ESSENCIA.map((etapa) =>
@@ -101,17 +101,11 @@ export function GestaoFormularios() {
 
 // ---- Boas-vindas ao grupo do projeto (mensagem padrão no WhatsApp) ----------
 // Enviada quando a KA cria um grupo novo com o cliente: dá boas-vindas a todos
-// e explica que o grupo é exclusivo do projeto. Sem número (é grupo) — o
-// WhatsApp abre com o texto pronto e a KA escolhe o grupo.
-function BoasVindasGrupo({ clientes }: { clientes: Cliente[] }) {
-  const [clienteId, setClienteId] = useState('')
-  const [comNome, setComNome] = useState(true)
+// e explica que o grupo é exclusivo do projeto. Texto fixo (genérico). Sem
+// número (é grupo) — o WhatsApp abre com o texto pronto e a KA escolhe o grupo.
+function BoasVindasGrupo() {
   const copiar = useCopiar()
-  const clientePorId = useMemo(() => new Map(clientes.map((c) => [c.id, c])), [clientes])
-
-  const c = clienteId ? clientePorId.get(clienteId) : null
-  const nome = comNome ? primeiroNome(c?.responsavel || c?.nome_marca) : ''
-  const mensagem = mensagemBoasVindasGrupo(nome || null, c?.nome_marca || null)
+  const mensagem = mensagemBoasVindasGrupo()
 
   return (
     <section className="me-etapa me-etapa--boas-vindas">
@@ -122,36 +116,10 @@ function BoasVindasGrupo({ clientes }: { clientes: Cliente[] }) {
       </div>
       <p className="me-etapa__desc">
         Ao criar o grupo do projeto com o cliente, envie esta mensagem para dar as boas-vindas a
-        todos e explicar que o grupo é <strong>exclusivo do projeto</strong>. Escolha o cliente para
-        personalizar o nome e a marca.
+        todos e explicar que o grupo é <strong>exclusivo do projeto</strong>.
       </p>
 
       <div className="card">
-        <div className="form-grade">
-          <div className="field campo-toda">
-            <label>Cliente (para personalizar)</label>
-            <select value={clienteId} onChange={(e) => setClienteId(e.target.value)}>
-              <option value="">Sem cliente (mensagem genérica)…</option>
-              {clientes.map((cl) => (
-                <option key={cl.id} value={cl.id}>
-                  {cl.nome_marca}
-                  {cl.responsavel ? ` · ${cl.responsavel}` : ''}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="field campo-toda">
-            <label className="form-radio">
-              <input
-                type="checkbox"
-                checked={comNome}
-                onChange={(e) => setComNome(e.target.checked)}
-              />
-              Incluir o nome do cliente na saudação
-            </label>
-          </div>
-        </div>
-
         <pre className="me-msg-previa">{mensagem}</pre>
 
         <div className="me-etapa__acoes">
