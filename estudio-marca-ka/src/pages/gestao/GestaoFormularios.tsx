@@ -207,7 +207,7 @@ function EtapaFormulario({
     return [
       `Olá${nome ? `, ${nome}` : ''}! Como vai?`,
       '',
-      `Pra continuarmos o *Projeto Marca com Essência©*, o próximo passo é preencher o formulário *${
+      `Para iniciarmos o *Projeto Marca com Essência©*, o próximo passo é preencher o formulário *${
         def?.nome || 'do projeto'
       }*.`,
       '',
