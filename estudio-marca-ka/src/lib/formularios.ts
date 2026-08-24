@@ -586,7 +586,7 @@ export function mensagemHistoria(nome?: string | null): string {
  */
 export function mensagemBoasVindasGrupo(): string {
   return [
-    'Olá! Sejam bem-vindos todos que fazem parte deste grupo.',
+    'Olá! Sejam todos muito bem-vindos a este grupo.',
     '',
     'Criamos este espaço para ser *exclusivo do projeto da sua marca*: é aqui que vamos conduzir, juntos, cada etapa do Projeto de Posicionamento *Marca com Essência©*.',
     '',
