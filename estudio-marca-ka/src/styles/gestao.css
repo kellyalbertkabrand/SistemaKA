@@ -1223,6 +1223,32 @@
   font-style: italic;
   margin: 0.4rem 0 0;
 }
+/* Destaca a seção de boas-vindas (não é uma etapa numerada) */
+.me-etapa--boas-vindas {
+  border-left-color: #1d7c4d;
+  background: #f4faf6;
+}
+.me-etapa--boas-vindas .me-etapa__num {
+  background: #1d7c4d;
+}
+/* Prévia da mensagem padrão (WhatsApp) */
+.me-msg-previa {
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  color: var(--t-700);
+  background: #fff;
+  border: 1px solid rgba(15, 25, 35, 0.1);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  margin: 0.4rem 0 0.9rem;
+}
+.me-etapa__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
 
 /* Admin: opção de envio (pré-preenchido / em branco) */
 .form-radio-linha {
