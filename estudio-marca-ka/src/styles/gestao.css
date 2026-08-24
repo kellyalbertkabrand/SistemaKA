@@ -1249,6 +1249,23 @@
   flex-wrap: wrap;
   gap: 0.6rem;
 }
+/* Prévia do texto de introdução que o cliente lê (IKIGAI, Identidade Verbal) */
+.me-etapa__intro {
+  margin: 0.7rem 0 0;
+}
+.me-etapa__intro > summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--t-500);
+  list-style-position: inside;
+}
+.me-etapa__intro > summary:hover {
+  color: var(--t-700);
+}
+.me-etapa__intro .me-msg-previa {
+  margin: 0.5rem 0 0;
+}
 
 /* Admin: opção de envio (pré-preenchido / em branco) */
 .form-radio-linha {

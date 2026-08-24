@@ -229,6 +229,13 @@ function EtapaFormulario({
       </div>
       <p className="me-etapa__desc">{etapa.descricao}</p>
 
+      {def?.intro && (
+        <details className="me-etapa__intro" open>
+          <summary>Texto que o cliente lê ao abrir o formulário</summary>
+          <div className="me-msg-previa">{def.intro}</div>
+        </details>
+      )}
+
       <p style={{ margin: '0.6rem 0 0.4rem' }}>
         <button className="btn" onClick={() => setNovo((v) => !v)}>
           {novo ? 'Cancelar' : `+ Enviar ${etapa.nome} para um cliente`}
