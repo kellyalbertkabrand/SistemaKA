@@ -179,7 +179,7 @@ function EtapaFormulario({
       setNovo(false)
       setClienteId('')
       await aoMudar()
-      await copiar(linkPublicoFormulario(f.token, rotuloLink(f)), 'Link do formulário copiado!')
+      await copiar(mensagemComLink(f), 'Mensagem copiada (com o link) ✓')
     } catch (e) {
       mostrar(e instanceof Error ? e.message : String(e), 'erro')
     }
@@ -199,10 +199,12 @@ function EtapaFormulario({
     }
   }
 
-  function enviarWhatsApp(f: Formulario) {
+  // Mensagem pronta (texto + link). Usada no WhatsApp E no "Copiar" — assim o
+  // link nunca vai "pelado": ao copiar, o texto explicativo cai junto.
+  function mensagemComLink(f: Formulario): string {
     const c = f.cliente_id ? clientePorId.get(f.cliente_id) : null
     const nome = primeiroNome(f.cliente_nome || c?.responsavel || c?.nome_marca)
-    const msg = [
+    return [
       `Olá${nome ? `, ${nome}` : ''}! Como vai?`,
       '',
       `Pra continuarmos o *Projeto Marca com Essência©*, o próximo passo é preencher o formulário *${
@@ -217,7 +219,11 @@ function EtapaFormulario({
       '',
       '_Quando finalizar por favor me avise_',
     ].join('\n')
-    abrirWhatsApp(c?.telefone, msg, f.cliente_nome || null)
+  }
+
+  function enviarWhatsApp(f: Formulario) {
+    const c = f.cliente_id ? clientePorId.get(f.cliente_id) : null
+    abrirWhatsApp(c?.telefone, mensagemComLink(f), f.cliente_nome || null)
   }
 
   return (
@@ -273,7 +279,7 @@ function EtapaFormulario({
           </div>
           <p>
             <button className="btn" onClick={() => void criar()}>
-              Criar e copiar o link
+              Criar e copiar a mensagem
             </button>
           </p>
         </div>
@@ -312,9 +318,9 @@ function EtapaFormulario({
                   </button>
                   <button
                     className="btn--voltar"
-                    onClick={() => void copiar(linkPublicoFormulario(f.token, rotuloLink(f)), 'Link copiado!')}
+                    onClick={() => void copiar(mensagemComLink(f), 'Mensagem copiada (com o link) ✓')}
                   >
-                    Copiar link
+                    Copiar mensagem
                   </button>
                   <button className="btn--voltar btn--voltar-whats" onClick={() => enviarWhatsApp(f)}>
                     WhatsApp
