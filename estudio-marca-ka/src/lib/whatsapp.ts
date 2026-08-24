@@ -37,6 +37,79 @@ export interface OpcaoMensagem {
  * (ex.: PIX pessoal / PIX empresa); clicar troca o texto na hora. A `mensagem`
  * inicial deve ser a da 1ª opção (ela já vem selecionada).
  */
+/**
+ * Abre um popup com a mensagem pronta e SEM campo de número — para enviar a um
+ * GRUPO. O WhatsApp não permite mirar um grupo por número (wa.me só abre
+ * conversa de contato), então usamos `wa.me/?text=…`: o app abre com o texto
+ * pronto e a pessoa ESCOLHE o grupo (ou o contato) na hora e envia.
+ */
+export function abrirWhatsAppTexto(mensagem: string, titulo?: string): void {
+  document.getElementById('wa-overlay')?.remove()
+
+  const overlay = document.createElement('div')
+  overlay.id = 'wa-overlay'
+  overlay.className = 'wa-overlay'
+
+  const box = document.createElement('div')
+  box.className = 'wa-box'
+
+  const tit = document.createElement('div')
+  tit.className = 'wa-box__titulo'
+  tit.textContent = titulo || 'Enviar no WhatsApp'
+
+  const dica = document.createElement('div')
+  dica.className = 'wa-box__aviso'
+  dica.textContent =
+    'O WhatsApp vai abrir com a mensagem pronta — é só escolher o grupo (ou o contato) e enviar.'
+
+  const rotuloMsg = document.createElement('label')
+  rotuloMsg.className = 'wa-box__rotulo'
+  rotuloMsg.textContent = 'Mensagem (pode editar)'
+
+  const area = document.createElement('textarea')
+  area.className = 'wa-box__area'
+  area.rows = 12
+  area.value = mensagem
+
+  const acoes = document.createElement('div')
+  acoes.className = 'wa-box__acoes'
+
+  const cancelar = document.createElement('button')
+  cancelar.type = 'button'
+  cancelar.className = 'wa-btn wa-btn--ghost'
+  cancelar.textContent = 'Cancelar'
+
+  const enviar = document.createElement('button')
+  enviar.type = 'button'
+  enviar.className = 'wa-btn wa-btn--go'
+  enviar.textContent = 'Abrir WhatsApp'
+
+  function fechar() {
+    overlay.remove()
+    document.removeEventListener('keydown', onKey)
+  }
+  function onKey(e: KeyboardEvent) {
+    if (e.key === 'Escape') fechar()
+  }
+
+  enviar.addEventListener('click', () => {
+    const url = `https://wa.me/?text=${encodeURIComponent(area.value)}`
+    window.open(url, '_blank', 'noopener')
+    fechar()
+  })
+  cancelar.addEventListener('click', fechar)
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) fechar()
+  })
+  document.addEventListener('keydown', onKey)
+
+  acoes.append(cancelar, enviar)
+  box.append(tit, dica, rotuloMsg, area, acoes)
+  overlay.append(box)
+  document.body.append(overlay)
+  area.focus()
+}
+
 export function abrirWhatsApp(
   telefone: string | null | undefined,
   mensagem: string,

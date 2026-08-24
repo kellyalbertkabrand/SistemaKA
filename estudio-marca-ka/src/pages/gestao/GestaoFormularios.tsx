@@ -9,6 +9,7 @@ import {
   excluirFormulario,
   linkPublicoFormulario,
   listarFormularios,
+  mensagemBoasVindasGrupo,
   mensagemHistoria,
   prefillDoCliente,
   reabrirFormulario,
@@ -19,7 +20,7 @@ import {
 import { formatarData } from '../../lib/gestao'
 import { imprimirComoPdf } from '../../lib/ui'
 import { useCopiar } from '../../hooks/useCopiar'
-import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
+import { abrirWhatsApp, abrirWhatsAppTexto, primeiroNome } from '../../lib/whatsapp'
 import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
 
@@ -77,6 +78,8 @@ export function GestaoFormularios() {
       {erro && <div className="erro-msg">{erro}</div>}
       {carregando && <p>Carregando…</p>}
 
+      {!carregando && <BoasVindasGrupo clientes={clientes} />}
+
       {!carregando &&
         ETAPAS_MARCA_ESSENCIA.map((etapa) =>
           etapa.tipo === 'formulario' ? (
@@ -93,6 +96,77 @@ export function GestaoFormularios() {
           ),
         )}
     </div>
+  )
+}
+
+// ---- Boas-vindas ao grupo do projeto (mensagem padrão no WhatsApp) ----------
+// Enviada quando a KA cria um grupo novo com o cliente: dá boas-vindas a todos
+// e explica que o grupo é exclusivo do projeto. Sem número (é grupo) — o
+// WhatsApp abre com o texto pronto e a KA escolhe o grupo.
+function BoasVindasGrupo({ clientes }: { clientes: Cliente[] }) {
+  const [clienteId, setClienteId] = useState('')
+  const [comNome, setComNome] = useState(true)
+  const copiar = useCopiar()
+  const clientePorId = useMemo(() => new Map(clientes.map((c) => [c.id, c])), [clientes])
+
+  const c = clienteId ? clientePorId.get(clienteId) : null
+  const nome = comNome ? primeiroNome(c?.responsavel || c?.nome_marca) : ''
+  const mensagem = mensagemBoasVindasGrupo(nome || null, c?.nome_marca || null)
+
+  return (
+    <section className="me-etapa me-etapa--boas-vindas">
+      <div className="me-etapa__cab">
+        <span className="me-etapa__num">Início</span>
+        <h3 className="me-etapa__nome">Boas-vindas ao grupo</h3>
+        <span className="me-etapa__tag me-etapa__tag--audio">Mensagem no WhatsApp</span>
+      </div>
+      <p className="me-etapa__desc">
+        Ao criar o grupo do projeto com o cliente, envie esta mensagem para dar as boas-vindas a
+        todos e explicar que o grupo é <strong>exclusivo do projeto</strong>. Escolha o cliente para
+        personalizar o nome e a marca.
+      </p>
+
+      <div className="card">
+        <div className="form-grade">
+          <div className="field campo-toda">
+            <label>Cliente (para personalizar)</label>
+            <select value={clienteId} onChange={(e) => setClienteId(e.target.value)}>
+              <option value="">Sem cliente (mensagem genérica)…</option>
+              {clientes.map((cl) => (
+                <option key={cl.id} value={cl.id}>
+                  {cl.nome_marca}
+                  {cl.responsavel ? ` · ${cl.responsavel}` : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field campo-toda">
+            <label className="form-radio">
+              <input
+                type="checkbox"
+                checked={comNome}
+                onChange={(e) => setComNome(e.target.checked)}
+              />
+              Incluir o nome do cliente na saudação
+            </label>
+          </div>
+        </div>
+
+        <pre className="me-msg-previa">{mensagem}</pre>
+
+        <div className="me-etapa__acoes">
+          <button
+            className="btn btn--voltar-whats"
+            onClick={() => abrirWhatsAppTexto(mensagem, 'Boas-vindas ao grupo do projeto')}
+          >
+            Enviar no WhatsApp (escolher o grupo)
+          </button>
+          <button className="btn" onClick={() => void copiar(mensagem, 'Mensagem copiada ✓')}>
+            Copiar mensagem
+          </button>
+        </div>
+      </div>
+    </section>
   )
 }
 
