@@ -35,8 +35,12 @@ function msgErroAnexo(err) {
 import { navBar } from '../lib/nav.js';
 
 // Detalhe interno de uma obra: KPIs, lançamento por voz/IA, etapas e lançamentos.
-export async function renderObra(container, obraId) {
-  container.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
+export async function renderObra(container, obraId, opts = {}) {
+  // Refresh (após salvar/apagar algo): mantém a posição de rolagem e não mostra
+  // "Carregando…" nem recarrega a tela do zero — assim a tela NÃO volta pro topo.
+  const manterScroll = opts.scrollY != null;
+  const alvoScroll = manterScroll ? opts.scrollY : 0;
+  if (!manterScroll) container.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
 
   // A obra é o dado crítico. Carregamos ela primeiro e sozinha: só ela decide
   // se a tela existe ou não.
@@ -64,7 +68,9 @@ export async function renderObra(container, obraId) {
     listarLancamentos(obraId).catch(() => []),
     listarFornecedores().catch(() => []),
   ]);
-  let fotos = []; // preenchido em segundo plano após o primeiro render
+  // No refresh, reaproveita as fotos já carregadas (opts.fotosCache) para o grid
+  // já sair com a altura certa e a rolagem cair no lugar exato (sem "pulo").
+  let fotos = Array.isArray(opts.fotosCache) ? opts.fotosCache : [];
 
   const executado = soma(lancamentos);
   const pago = soma(lancamentos.filter((l) => l.status === 'pago'));
@@ -244,7 +250,7 @@ export async function renderObra(container, obraId) {
           </div>
           <p class="status-voz" id="status-fotos" hidden></p>
         </form>
-        <div id="grid-fotos"><p class="muted"><span class="spinner"></span> Carregando fotos…</p></div>
+        <div id="grid-fotos">${fotos.length ? gridFotos(fotos) : '<p class="muted"><span class="spinner"></span> Carregando fotos…</p>'}</div>
       </section>
 
       <section class="card">
@@ -286,7 +292,9 @@ export async function renderObra(container, obraId) {
     </div>`;
 
   // Recarrega a tela inteira (após salvar/excluir algo).
-  const recarregar = () => renderObra(container, obraId);
+  const recarregar = () => renderObra(container, obraId, { scrollY: window.scrollY, fotosCache: fotos });
+  // Restaura a posição de rolagem após o refresh (a tela não sobe pro topo).
+  if (manterScroll) requestAnimationFrame(() => window.scrollTo(0, alvoScroll));
 
   container.querySelector('#sair').addEventListener('click', async () => {
     await sair();
@@ -930,7 +938,9 @@ export async function renderObra(container, obraId) {
     }
     if (del) {
       if (!confirm('Excluir esta foto?')) return;
-      await excluirFoto(del.getAttribute('data-del-foto'));
+      const id = del.getAttribute('data-del-foto');
+      await excluirFoto(id);
+      fotos = fotos.filter((f) => f.id !== id); // some do cache já, sem "pulo"
       recarregar();
     }
   });
@@ -940,6 +950,9 @@ export async function renderObra(container, obraId) {
   listarFotos(obraId).then((fs) => {
     fotos = fs || [];
     if (gridFotosEl) gridFotosEl.innerHTML = gridFotos(fotos);
+    // Depois que as fotos (re)carregam, a altura pode mudar; recoloca a rolagem
+    // no lugar para não haver "pulo" após um refresh.
+    if (manterScroll) requestAnimationFrame(() => window.scrollTo(0, alvoScroll));
   }).catch(() => {
     if (gridFotosEl) gridFotosEl.innerHTML = `<p class="muted">Não foi possível carregar as fotos agora.</p>`;
   });
