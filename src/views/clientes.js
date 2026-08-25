@@ -5,8 +5,10 @@ import { ligarMascara, ligarEmail, formatarCpfCnpj, formatarTelefone, validarEma
 
 // Tela interna: cadastrar cliente pelo escritório, gerar link de autopreenchimento
 // e listar os cadastrados.
-export async function renderClientes(container) {
-  container.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
+export async function renderClientes(container, opts = {}) {
+  const manterScroll = opts.scrollY != null;
+  const alvoScroll = manterScroll ? opts.scrollY : 0;
+  if (!manterScroll) container.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
 
   let clientes, obras;
   try {
@@ -194,7 +196,7 @@ export async function renderClientes(container) {
       erroCli.textContent = err?.message || 'Não foi possível salvar.'; erroCli.hidden = false;
       return;
     }
-    renderClientes(container);
+    renderClientes(container, { scrollY: window.scrollY });
   });
 
   // ---- Gerar convite → link ----
@@ -230,9 +232,12 @@ export async function renderClientes(container) {
   container.querySelectorAll('[data-del-cli]').forEach((b) => {
     b.addEventListener('click', async () => {
       await excluirCliente(b.getAttribute('data-del-cli'));
-      renderClientes(container);
+      renderClientes(container, { scrollY: window.scrollY });
     });
   });
+
+  // Refresh silencioso: devolve a rolagem ao ponto onde o usuário estava.
+  if (manterScroll) requestAnimationFrame(() => window.scrollTo(0, alvoScroll));
 }
 
 function listaClientes(clientes) {

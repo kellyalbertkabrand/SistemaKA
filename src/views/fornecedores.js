@@ -4,8 +4,10 @@ import { navBar } from '../lib/nav.js';
 import { ligarMascara, ligarEmail, formatarCpfCnpj, formatarTelefone, validarEmail, linkWhatsApp } from '../lib/mascaras.js';
 
 // Tela interna: cadastro, edição e lista de fornecedores.
-export async function renderFornecedores(container) {
-  container.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
+export async function renderFornecedores(container, opts = {}) {
+  const manterScroll = opts.scrollY != null;
+  const alvoScroll = manterScroll ? opts.scrollY : 0;
+  if (!manterScroll) container.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
 
   let fornecedores;
   try {
@@ -187,7 +189,7 @@ export async function renderFornecedores(container) {
       erro.textContent = err?.message || 'Erro ao salvar.'; erro.hidden = false;
       return;
     }
-    renderFornecedores(container);
+    renderFornecedores(container, { scrollY: window.scrollY });
   });
 
   container.querySelectorAll('[data-edit-forn]').forEach((b) => {
@@ -202,9 +204,12 @@ export async function renderFornecedores(container) {
       const f = fornecedores.find((x) => x.id === b.getAttribute('data-del-forn'));
       if (!confirm(`Excluir o fornecedor "${f?.nome || ''}"?`)) return;
       await excluirFornecedor(b.getAttribute('data-del-forn'));
-      renderFornecedores(container);
+      renderFornecedores(container, { scrollY: window.scrollY });
     });
   });
+
+  // Refresh silencioso: devolve a rolagem ao ponto onde o usuário estava.
+  if (manterScroll) requestAnimationFrame(() => window.scrollTo(0, alvoScroll));
 }
 
 function listaForn(fornecedores) {
