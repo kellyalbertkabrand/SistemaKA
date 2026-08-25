@@ -204,6 +204,8 @@ def card_feedback(s):
     rotulo = s.get('rotulo', 'FEEDBACK ;)')
     sub = s.get('sub', '')
     depo = com_destaque(s.get('depoimento', ''))
+    # depoimento longo: permite reduzir a fonte do depoimento (padrão 33px).
+    depo_style = f' style="font-size:{int(s["depo_tam"])}px"' if s.get('depo_tam') else ''
     inner = (f'<div class="main">'
              f'<img class="logo" src="{logo}">'
              f'<div class="rotulo">{html.escape(rotulo)}</div>'
@@ -213,7 +215,7 @@ def card_feedback(s):
              + (f'<div class="rl">{html.escape(sub)}</div>' if sub else '') +
              f'</div></div>'
              f'<div class="stars">{stars}</div>'
-             f'<div class="depo">{depo}</div></div></div>'
+             f'<div class="depo"{depo_style}>{depo}</div></div></div>'
              f'<div class="footer">Kelly Albert</div>')
     return (f'<div class="ka-fb" style="width:1080px;height:1350px;'
             f'background:{hex_fundo(fundo)};color:{cor}">{inner}</div>')
