@@ -62,15 +62,20 @@ export function GestaoCobrancas() {
   const [busca, setBusca] = useState('')
   const [filtroStatus, setFiltroStatus] = useState<'todos' | CobrancaStatus>('todos')
   const [agrupar, setAgrupar] = useState<'mes' | 'cliente'>('mes')
-  // Meses/grupos recolhidos (expandir/recolher). Guardado por chave do grupo.
-  const [mesesRecolhidos, setMesesRecolhidos] = useState<Set<string>>(new Set())
+  // Expandir/recolher meses. Por padrão os meses PASSADOS já vêm recolhidos
+  // (só o mês atual e os futuros ficam abertos); a KA pode abrir/fechar à mão.
+  // `mesToggle` guarda só as escolhas manuais (chave → recolhido?).
+  const [mesToggle, setMesToggle] = useState<Record<string, boolean>>({})
+  const mesAtual = (() => {
+    const d = new Date()
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+  })()
+  // Só faz sentido "mês passado" quando agrupado por mês (chave = YYYY-MM).
+  const recolhidoPadrao = (chave: string) =>
+    agrupar === 'mes' && chave !== 'sem' && chave < mesAtual
+  const estaRecolhido = (chave: string) => mesToggle[chave] ?? recolhidoPadrao(chave)
   const toggleMes = (chave: string) =>
-    setMesesRecolhidos((p) => {
-      const n = new Set(p)
-      if (n.has(chave)) n.delete(chave)
-      else n.add(chave)
-      return n
-    })
+    setMesToggle((p) => ({ ...p, [chave]: !estaRecolhido(chave) }))
   // Formulário de cobrança avulsa (criar OU editar) — sem window.prompt.
   const [criando, setCriando] = useState(false)
   const [editandoId, setEditandoId] = useState<string | null>(null)
@@ -656,7 +661,7 @@ export function GestaoCobrancas() {
       )}
 
       {grupos.map((g) => {
-        const recolhido = mesesRecolhidos.has(g.chave)
+        const recolhido = estaRecolhido(g.chave)
         return (
         <section key={g.chave} className="cob-grupo">
           <button

@@ -142,15 +142,9 @@ export function GestaoFinanceiro() {
   // Visão: "Meu caixa" (pessoal da KA) OU "A receber da VM Rocks" (só o que é
   // dela — é a prévia do que a VM verá quando entrar com o login por papel).
   const [visao, setVisao] = useState<'caixa' | 'vm'>('caixa')
-  // Meses recolhidos na visão VM (expandir/recolher por mês).
-  const [vmRecolhidos, setVmRecolhidos] = useState<Set<string>>(new Set())
-  const toggleVmMes = (chave: string) =>
-    setVmRecolhidos((p) => {
-      const n = new Set(p)
-      if (n.has(chave)) n.delete(chave)
-      else n.add(chave)
-      return n
-    })
+  // Expandir/recolher meses na visão VM. Meses PASSADOS já vêm recolhidos por
+  // padrão; `vmToggle` guarda só as escolhas manuais (chave → recolhido?).
+  const [vmToggle, setVmToggle] = useState<Record<string, boolean>>({})
 
   // Formulário de entrada/saída (à mão)
   const [formTipo, setFormTipo] = useState<TipoLancamento | null>(null)
@@ -321,6 +315,11 @@ export function GestaoFinanceiro() {
     .slice()
     .reverse()
   const totalVMPago = somarDinheiro(vmPagas.map(valorDaVM))
+  // Chave = 'r-YYYY-MM' | 'p-YYYY-MM'; o mês é key.slice(2). Passado (< mês
+  // atual) vem recolhido por padrão; a KA pode abrir/fechar à mão.
+  const vmEstaRecolhido = (key: string) => vmToggle[key] ?? key.slice(2) < hojeChave
+  const toggleVmMes = (key: string) =>
+    setVmToggle((p) => ({ ...p, [key]: !vmEstaRecolhido(key) }))
 
   function abrirForm(tipo: TipoLancamento) {
     setFormTipo(tipo)
@@ -511,7 +510,7 @@ export function GestaoFinanceiro() {
                 <section className="fin-secao">
                   <h3 className="fin-secao__tit">A receber — por mês (cobranças)</h3>
                   {vmCobrancasPorMes.map((g) => {
-                    const recolhido = vmRecolhidos.has('r-' + g.chave)
+                    const recolhido = vmEstaRecolhido('r-' + g.chave)
                     return (
                     <div key={g.chave} className="mes-grupo">
                       <button
@@ -553,7 +552,7 @@ export function GestaoFinanceiro() {
                 <section className="fin-secao">
                   <h3 className="fin-secao__tit">Já pagas — VM Rocks · {formatarBRL(totalVMPago)}</h3>
                   {vmPagasPorMes.map((g) => {
-                    const recolhido = vmRecolhidos.has('p-' + g.chave)
+                    const recolhido = vmEstaRecolhido('p-' + g.chave)
                     return (
                     <div key={g.chave} className="mes-grupo">
                       <button
