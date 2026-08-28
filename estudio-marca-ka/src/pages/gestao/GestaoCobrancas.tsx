@@ -14,6 +14,7 @@ import {
   formatarData,
 } from '../../lib/gestao'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
+import { linkPortalVM } from '../../lib/vm'
 import { PIX_OPCOES, blocoPix, type DadosPix } from '../../lib/pagamento'
 import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
@@ -578,6 +579,16 @@ export function GestaoCobrancas() {
         </button>
         <button className="btn--voltar" disabled={ocupado === 'nova' || criando} onClick={abrirNova}>
           + Cobrança avulsa
+        </button>
+        <button
+          className="btn--voltar"
+          onClick={() => {
+            void navigator.clipboard.writeText(linkPortalVM())
+            mostrar('Link do portal da VM copiado ✓ — mande no WhatsApp dela', 'ok')
+          }}
+          title="Página só-leitura da VM Rocks (o que ela tem a receber)"
+        >
+          Copiar link do portal da VM
         </button>
         <span className="espaco" />
         {pendentes.length > 0 && (
