@@ -5,7 +5,14 @@ import { Busca, normalizar } from '../../components/Busca'
 import { SociosEditor } from '../../components/SociosEditor'
 import { useToast } from '../../components/Toast'
 import { useCopiar } from '../../hooks/useCopiar'
-import { parseValorBR } from '../../lib/ui'
+import { imprimirComoPdf, parseValorBR } from '../../lib/ui'
+import {
+  baixarCsv,
+  csvDeClientes,
+  nomeArquivo,
+  secoesDoCliente,
+  textoDoCliente,
+} from '../../lib/exportarCliente'
 import { rotuloStatus } from '../../lib/rotulos'
 import type { Cliente, Usuario, PagamentoContrato } from '../../lib/database.types'
 import {
@@ -143,6 +150,20 @@ export function GestaoClientes() {
     }
   }
 
+  // Baixa em planilha (CSV) os cadastros que estão na lista — respeita a busca,
+  // então dá para exportar só um grupo de clientes se quiser.
+  function exportarPlanilha() {
+    if (clientesFiltrados.length === 0) return
+    const hoje = new Date().toISOString().slice(0, 10)
+    baixarCsv(`clientes-${hoje}`, csvDeClientes(clientesFiltrados))
+    mostrar(
+      clientesFiltrados.length === 1
+        ? 'Planilha baixada ✓'
+        : `Planilha com ${clientesFiltrados.length} cadastros baixada ✓`,
+      'ok',
+    )
+  }
+
   const novos = clientes.filter(ehNovo).length
 
   async function recarregar() {
@@ -189,6 +210,14 @@ export function GestaoClientes() {
         <span className="espaco" />
         <button className="btn--voltar" onClick={() => void copiarLinkCadastro()}>
           Copiar link de cadastro
+        </button>
+        <button
+          className="btn--voltar"
+          onClick={exportarPlanilha}
+          disabled={clientesFiltrados.length === 0}
+          title="Baixar todos os cadastros em planilha (abre no Excel)"
+        >
+          ⤓ Exportar planilha
         </button>
         <button className="btn" onClick={() => abrirUrl('novo')}>
           + Novo cliente
@@ -302,6 +331,7 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente | null; aoVolt
   const novoIdRef = useRef<string | null>(null)
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
+  const [exportando, setExportando] = useState(false)
 
   function campo<K extends keyof FichaCliente>(k: K, v: FichaCliente[K]) {
     setF((atual) => ({ ...atual, [k]: v }))
@@ -349,12 +379,35 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente | null; aoVolt
     }
   }
 
+  // O que é exportado é o que está NA TELA (inclui o que ainda não foi salvo).
+  const paraExportar: Cliente | null = cliente
+    ? ({
+        ...cliente,
+        ...f,
+        valor_mensalidade: valorMensalTxt.trim() ? parseValorBR(valorMensalTxt) : null,
+      } as Cliente)
+    : null
+
+  if (exportando && paraExportar) {
+    return <CadastroExport cliente={paraExportar} aoVoltar={() => setExportando(false)} />
+  }
+
   return (
     <>
-      <p style={{ marginBottom: '1rem' }}>
+      <p style={{ marginBottom: '1rem', display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
         <button className="btn--voltar" onClick={aoVoltar}>
           ← Todos os clientes
         </button>
+        {!criando && (
+          <button
+            className="btn--voltar"
+            type="button"
+            onClick={() => setExportando(true)}
+            title="Ver o cadastro em documento (PDF, planilha ou texto)"
+          >
+            ⤓ Exportar cadastro
+          </button>
+        )}
       </p>
 
       <div className="card">
@@ -603,6 +656,71 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente | null; aoVolt
           Salve a ficha para poder convidar acessos deste cliente.
         </p>
       )}
+    </>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// Exportar o cadastro: mostra a ficha como DOCUMENTO (fácil de ler e de
+// imprimir) com as saídas — PDF pelo navegador, planilha (CSV) e texto para
+// copiar/mandar no WhatsApp.
+// ---------------------------------------------------------------------------
+function CadastroExport({ cliente, aoVoltar }: { cliente: Cliente; aoVoltar: () => void }) {
+  const { mostrar } = useToast()
+  const copiar = useCopiar()
+  const secoes = secoesDoCliente(cliente)
+  const hoje = new Date().toLocaleDateString('pt-BR')
+
+  function baixarPlanilha() {
+    baixarCsv(`cadastro-${nomeArquivo(cliente.nome_marca)}`, csvDeClientes([cliente]))
+    mostrar('Planilha baixada ✓', 'ok')
+  }
+
+  return (
+    <>
+      <p
+        className="nao-imprimir"
+        style={{ marginBottom: '1rem', display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}
+      >
+        <button className="btn--voltar" onClick={aoVoltar}>
+          ← Voltar à ficha
+        </button>
+        <button className="btn" onClick={() => imprimirComoPdf('Cadastro', cliente.nome_marca)}>
+          Imprimir / Salvar PDF
+        </button>
+        <button className="btn--voltar" onClick={baixarPlanilha}>
+          ⤓ Planilha (CSV)
+        </button>
+        <button
+          className="btn--voltar"
+          onClick={() => void copiar(textoDoCliente(cliente), 'Cadastro copiado ✓')}
+        >
+          Copiar texto
+        </button>
+      </p>
+
+      <div className="card cad-doc">
+        <div className="cad-doc__head">
+          <h1>{cliente.nome_marca}</h1>
+          <p className="cad-doc__sub">Cadastro do cliente · gerado em {hoje}</p>
+        </div>
+
+        {secoes.map((s) => (
+          <section className="cad-secao" key={s.titulo}>
+            <h2>{s.titulo}</h2>
+            <dl className="cad-lista">
+              {s.itens.map((i, n) => (
+                <div className="cad-linha" key={`${s.titulo}-${n}`}>
+                  {i.rotulo && <dt>{i.rotulo}</dt>}
+                  <dd className={i.rotulo ? undefined : 'cad-livre'}>{i.valor}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ))}
+
+        <p className="cad-doc__rodape">KA | Inteligência para Marcas</p>
+      </div>
     </>
   )
 }

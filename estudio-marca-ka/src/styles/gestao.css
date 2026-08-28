@@ -678,6 +678,72 @@
 }
 
 /* ---- Impressão (contrato/orçamento/relatório → PDF pelo navegador) ---- */
+/* ---- Cadastro do cliente exportado (documento p/ ler e imprimir) --------- */
+.cad-doc {
+  max-width: 780px;
+}
+.cad-doc__head {
+  border-bottom: 1px solid rgba(15, 25, 35, 0.12);
+  padding-bottom: 0.7rem;
+  margin-bottom: 0.4rem;
+}
+.cad-doc__head h1 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+.cad-doc__sub {
+  font-size: 0.8rem;
+  color: var(--t-500);
+  margin: 0.25rem 0 0;
+}
+.cad-secao {
+  margin-top: 1.2rem;
+  page-break-inside: avoid;
+}
+.cad-secao h2 {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--t-500);
+  margin: 0 0 0.45rem;
+}
+.cad-lista {
+  margin: 0;
+}
+.cad-linha {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 0.6rem;
+  padding: 0.32rem 0;
+  border-bottom: 1px solid rgba(15, 25, 35, 0.06);
+}
+.cad-linha dt {
+  font-size: 0.82rem;
+  color: var(--t-500);
+}
+.cad-linha dd {
+  margin: 0;
+  font-size: 0.9rem;
+}
+.cad-livre {
+  grid-column: 1 / -1;
+  white-space: pre-wrap;
+}
+.cad-doc__rodape {
+  margin-top: 1.6rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid rgba(15, 25, 35, 0.12);
+  font-size: 0.75rem;
+  color: var(--t-400);
+  text-align: center;
+}
+@media (max-width: 640px) {
+  .cad-linha {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+  }
+}
+
 @media print {
   body {
     background: #fff;
@@ -694,6 +760,13 @@
   }
   .rel-doc {
     color: #111;
+  }
+  .cad-doc {
+    color: #111;
+    max-width: none;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
   }
   .fin-cards {
     grid-template-columns: repeat(4, 1fr) !important;
