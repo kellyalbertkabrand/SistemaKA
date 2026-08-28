@@ -34,7 +34,14 @@ import {
   ConectaFeedbackCard,
 } from './conecta/ConectaCards'
 import { FUNDOS_CONECTA, COLORS_CONECTA } from './conecta/cores'
-import { GraziFraseCard, GraziDepoimentoCard } from './grazi/GraziCards'
+import {
+  GraziFraseCard,
+  GraziDepoimentoCard,
+  GraziTextoCard,
+  GraziPassoCard,
+  GraziCtaCard,
+  GraziMistaCard,
+} from './grazi/GraziCards'
 import { FUNDOS_GRAZI } from './grazi/cores'
 
 // Paleta oficial da Shapes (primárias + gama secundária) para os fundos.
@@ -1367,6 +1374,133 @@ export const TEMPLATES: Template[] = [
       campoFundoGrazi('verde-escuro'),
     ],
     render: GraziDepoimentoCard,
+  },
+  {
+    id: 'grazi-texto',
+    clienteSlug: 'grazi',
+    clienteNome: 'Grazi Martini',
+    nome: 'Texto (desenvolvimento)',
+    descricao:
+      'Slide de conteúdo para carrossel: título opcional + corpo de texto. ' +
+      'Palavra entre "aspas" fica em negrito.',
+    formatos: FORMATO_GRAZI,
+    campos: [
+      {
+        id: 'titulo',
+        label: 'Título (opcional)',
+        tipo: 'texto',
+        placeholder: 'Ex.: O que ninguém te conta sobre liderança',
+        padrao: 'O que ninguém te conta',
+      },
+      {
+        id: 'texto',
+        label: 'Texto',
+        tipo: 'textarea',
+        obrigatorio: true,
+        ajuda: 'Palavra entre "aspas" fica em negrito.',
+        padrao:
+          'A liderança não quebra num grande erro. Ela se desgasta nas "pequenas incoerências" do dia a dia — o que você cobra, mas não pratica.',
+      },
+      campoFundoGrazi('verde'),
+      campoCorTextoGrazi(),
+    ],
+    render: GraziTextoCard,
+  },
+  {
+    id: 'grazi-passo',
+    clienteSlug: 'grazi',
+    clienteNome: 'Grazi Martini',
+    nome: 'Passo numerado',
+    descricao: 'Número grande + título + texto. Para etapas do método ou listas.',
+    formatos: FORMATO_GRAZI,
+    campos: [
+      { id: 'numero', label: 'Número', tipo: 'texto', obrigatorio: true, padrao: '01' },
+      {
+        id: 'titulo',
+        label: 'Título (opcional)',
+        tipo: 'texto',
+        placeholder: 'Ex.: Escute antes de agir',
+        padrao: 'Escute antes de agir',
+      },
+      {
+        id: 'texto',
+        label: 'Texto',
+        tipo: 'textarea',
+        obrigatorio: true,
+        padrao:
+          'Antes de cobrar coerência da equipe, organize o que você sente. A liderança começa por dentro.',
+      },
+      campoFundoGrazi('terracota'),
+      campoCorTextoGrazi(),
+    ],
+    render: GraziPassoCard,
+  },
+  {
+    id: 'grazi-cta',
+    clienteSlug: 'grazi',
+    clienteNome: 'Grazi Martini',
+    nome: 'CTA (fechamento)',
+    descricao:
+      'Card de encerramento: uma frase + nome em script + botão. Fecha o carrossel.',
+    formatos: FORMATO_GRAZI,
+    campos: [
+      { id: 'frase', label: 'Frase', tipo: 'texto', padrao: 'Vamos organizar a sua', obrigatorio: true },
+      {
+        id: 'produto',
+        label: 'Palavra em script',
+        tipo: 'texto',
+        placeholder: 'Ex.: liderança',
+        padrao: 'liderança',
+      },
+      { id: 'botao', label: 'Texto do botão', tipo: 'texto', padrao: 'Agende sua sessão' },
+      campoFundoGrazi('bege-dourado'),
+      campoCorTextoGrazi(),
+    ],
+    render: GraziCtaCard,
+  },
+  {
+    id: 'grazi-mista',
+    clienteSlug: 'grazi',
+    clienteNome: 'Grazi Martini',
+    nome: 'Frase mista',
+    descricao:
+      'Frase com intro, uma palavra-herói em script no meio, um fecho (com ' +
+      'destaque em "aspas") e uma nota manuscrita. Fundo verde.',
+    formatos: FORMATO_GRAZI,
+    campos: [
+      {
+        id: 'texto_cima',
+        label: 'Intro (1ª linha maior)',
+        tipo: 'textarea',
+        ajuda: 'A 1ª linha aparece um pouco maior.',
+        padrao: 'Relacionamentos\nsaudáveis começam quando',
+      },
+      {
+        id: 'script',
+        label: 'Palavra-herói (script)',
+        tipo: 'texto',
+        placeholder: 'Ex.: líderes',
+        padrao: 'líderes',
+      },
+      {
+        id: 'texto_baixo',
+        label: 'Fecho',
+        tipo: 'textarea',
+        ajuda: 'Palavra entre "aspas" fica em negrito.',
+        padrao: '"reorganizam" suas\npróprias emoções',
+      },
+      {
+        id: 'nota',
+        label: 'Nota manuscrita (opcional)',
+        tipo: 'texto',
+        placeholder: 'Ex.: antes de exigir coerência da equipe.',
+        padrao: 'antes de exigir coerência da equipe.',
+      },
+      { id: 'botao', label: 'Rodapé (opcional)', tipo: 'texto', padrao: 'leia a legenda' },
+      campoFundoGrazi('verde'),
+      campoCorTextoGrazi(),
+    ],
+    render: GraziMistaCard,
   },
 ]
 

@@ -214,3 +214,129 @@
   letter-spacing: 0.01em;
   color: #c9a24c;
 }
+
+/* destaque (aspas/asteriscos) — negrito na mesma cor */
+.grazi-card strong {
+  font-weight: 700;
+}
+
+/* ---- Card de texto (desenvolvimento) ---- */
+.grazi-texto .titulo {
+  font-weight: 700;
+  font-size: 66px;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin-bottom: 30px;
+  max-width: 92%;
+}
+.grazi-texto .corpo {
+  font-weight: 400;
+  font-size: 46px;
+  line-height: 1.5;
+  max-width: 94%;
+  white-space: pre-line;
+}
+
+/* ---- Passo numerado ---- */
+.grazi-passo .numero {
+  font-weight: 700;
+  font-size: 220px;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  opacity: 0.9;
+}
+.grazi-passo .titulo {
+  font-weight: 700;
+  font-size: 60px;
+  line-height: 1.1;
+  margin: 8px 0 24px;
+  max-width: 92%;
+}
+.grazi-passo .corpo {
+  font-weight: 400;
+  font-size: 44px;
+  line-height: 1.5;
+  max-width: 94%;
+  white-space: pre-line;
+}
+
+/* ---- CTA de fechamento ---- */
+.grazi-cta {
+  align-items: center;
+  text-align: center;
+}
+.grazi-cta .frase {
+  font-weight: 400;
+  font-size: 48px;
+  line-height: 1.4;
+  max-width: 84%;
+}
+.grazi-cta .produto {
+  font-family: var(--script);
+  font-weight: 400;
+  font-size: 132px;
+  line-height: 1.05;
+  margin: 14px 0 6px;
+}
+.grazi-cta .grazi-btn {
+  align-self: center;
+}
+
+/* ---- Frase mista (intro + script grande + destaque + nota) ---- */
+.grazi-mista {
+  justify-content: center;
+}
+.grazi-mista .cima {
+  font-weight: 400;
+  font-size: 52px;
+  line-height: 1.15;
+  max-width: 92%;
+}
+.grazi-mista .cima .primeira {
+  display: block;
+  font-size: 62px;
+  font-weight: 500;
+}
+.grazi-mista .script-hero {
+  font-family: var(--script);
+  font-size: 200px;
+  line-height: 0.8;
+  margin: 6px 0 18px;
+}
+.grazi-mista .baixo {
+  font-weight: 400;
+  font-size: 58px;
+  line-height: 1.15;
+  max-width: 92%;
+}
+.grazi-mista .baixo strong {
+  font-weight: 700;
+}
+.grazi-mista .nota {
+  font-family: var(--script);
+  font-size: 46px;
+  line-height: 1.2;
+  margin-top: 30px;
+  padding-left: 92px;
+  position: relative;
+  max-width: 60%;
+}
+.grazi-mista .nota::before {
+  content: '↳';
+  position: absolute;
+  left: 26px;
+  top: 2px;
+  font-family: var(--sans);
+  font-size: 52px;
+  opacity: 0.9;
+}
+.grazi-mista .rodape-txt {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 92px;
+  text-align: center;
+  font-weight: 400;
+  font-size: 34px;
+  opacity: 0.85;
+}
