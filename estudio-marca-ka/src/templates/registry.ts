@@ -34,7 +34,7 @@ import {
   ConectaFeedbackCard,
 } from './conecta/ConectaCards'
 import { FUNDOS_CONECTA, COLORS_CONECTA } from './conecta/cores'
-import { GraziFraseCard } from './grazi/GraziCards'
+import { GraziFraseCard, GraziDepoimentoCard } from './grazi/GraziCards'
 import { FUNDOS_GRAZI } from './grazi/cores'
 
 // Paleta oficial da Shapes (primárias + gama secundária) para os fundos.
@@ -1315,6 +1315,58 @@ export const TEMPLATES: Template[] = [
       campoCorTextoGrazi(),
     ],
     render: GraziFraseCard,
+  },
+  {
+    id: 'grazi-depoimento',
+    clienteSlug: 'grazi',
+    clienteNome: 'Grazi Martini',
+    nome: 'Depoimento',
+    descricao:
+      'Prova social estilo review do Google (card branco com estrelas) sobre a ' +
+      'marca d’água "depoimento". Depoimento sempre real.',
+    formatos: FORMATO_GRAZI,
+    campos: [
+      { id: 'nome', label: 'Nome de quem avaliou', tipo: 'texto', obrigatorio: true, padrao: 'Emerson Raiza Batagin' },
+      {
+        id: 'sub',
+        label: 'Sublinha (opcional)',
+        tipo: 'texto',
+        placeholder: 'Ex.: 2 avaliações · 12 fotos',
+        padrao: '2 avaliações · 12 fotos',
+      },
+      {
+        id: 'depoimento',
+        label: 'Depoimento',
+        tipo: 'textarea',
+        obrigatorio: true,
+        padrao:
+          'A Grazi é simplesmente espetacular. Domina de muitos assuntos e traz diversos insights práticos e ferramentas que auxiliam na análise comportamental, principalmente. As sessões são super dinâmicas.',
+      },
+      { id: 'estrelas', label: 'Estrelas', tipo: 'estrelas', padrao: 5 },
+      {
+        id: 'avatar',
+        label: 'Letra do avatar (opcional)',
+        tipo: 'texto',
+        maxLen: 2,
+        placeholder: 'Vazio = 1ª letra do nome',
+        padrao: '',
+      },
+      {
+        id: 'cor_avatar',
+        label: 'Cor do avatar',
+        tipo: 'cor',
+        padrao: '#A0349B',
+        opcoes: [
+          { valor: '#A0349B', rotulo: 'Roxo' },
+          { valor: '#C47830', rotulo: 'Caramelo' },
+          { valor: '#3D6B7E', rotulo: 'Azul' },
+          { valor: '#2E8B57', rotulo: 'Verde' },
+          { valor: '#AA3D30', rotulo: 'Terracota' },
+        ],
+      },
+      campoFundoGrazi('verde-escuro'),
+    ],
+    render: GraziDepoimentoCard,
   },
 ]
 

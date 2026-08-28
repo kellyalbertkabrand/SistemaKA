@@ -37,6 +37,51 @@ function GraziFrame({
   )
 }
 
+// Depoimento: review estilo Google (card branco) sobre a marca d'água
+// "depoimento", com @sougrazimartini em dourado no rodapé.
+export function GraziDepoimentoCard({ valores, formato }: RenderProps) {
+  const fundo = String(valores.cor_fundo || 'verde-escuro')
+  const nome = String(valores.nome || '')
+  const sub = String(valores.sub || '')
+  const depo = String(valores.depoimento || '')
+  const n = Math.max(0, Math.min(5, Number(valores.estrelas ?? 5)))
+  const inicial = (String(valores.avatar || '').trim() || nome.trim().charAt(0) || '?').toUpperCase()
+  const corAvatar = String(valores.cor_avatar || '#A0349B')
+  return (
+    <div
+      className={`grazi-card grazi-depo fmt-${formato.formato}`}
+      style={{ width: formato.largura, height: formato.altura, background: hexFundoGrazi(fundo) }}
+    >
+      <div className="depo-marca">
+        {'depoimento '.repeat(3).trim()}
+        <br />
+        {'depoimento '.repeat(3).trim()}
+        <br />
+        {'depoimento '.repeat(3).trim()}
+        <br />
+        {'depoimento '.repeat(3).trim()}
+        <br />
+        {'depoimento '.repeat(3).trim()}
+      </div>
+      <div className="depo-box">
+        <div className="depo-head">
+          <div className="depo-av" style={{ background: corAvatar }}>
+            {inicial}
+          </div>
+          <div className="depo-quem">
+            <div className="depo-nm">{nome}</div>
+            {sub && <div className="depo-sub">{sub}</div>}
+          </div>
+          <div className="depo-dots">⋮</div>
+        </div>
+        <div className="depo-stars">{'★'.repeat(n)}</div>
+        <div className="depo-texto">{depo}</div>
+      </div>
+      <div className="depo-handle">@sougrazimartini</div>
+    </div>
+  )
+}
+
 // Frase editorial: título sans caixa-alta + palavra de destaque em script + botão.
 export function GraziFraseCard({ valores, formato }: RenderProps) {
   const fundo = String(valores.cor_fundo || 'mostarda')
