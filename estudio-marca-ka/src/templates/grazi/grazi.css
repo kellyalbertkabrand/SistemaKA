@@ -340,3 +340,152 @@
   font-size: 34px;
   opacity: 0.85;
 }
+
+/* ---- Frase + foto (título / janela de foto / legenda) ---- */
+.grazi-frasefoto .titulo {
+  font-weight: 700;
+  font-size: 60px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 30px;
+  max-width: 96%;
+}
+.grazi-frasefoto .foto-janela {
+  position: relative;
+  width: 100%;
+  border-radius: 28px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.14);
+}
+.grazi-frasefoto .foto-janela img,
+.grazi-frasefoto .foto-janela video {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.grazi-frasefoto .foto-ph {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  opacity: 0.7;
+}
+.grazi-frasefoto .legenda {
+  font-weight: 400;
+  font-size: 42px;
+  line-height: 1.35;
+  margin-top: 30px;
+  max-width: 96%;
+}
+
+/* ---- Comparativo (duas colunas: pesa × inspira) ---- */
+.grazi-comp .titulo {
+  font-weight: 700;
+  font-size: 58px;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  text-align: center;
+  margin-bottom: 44px;
+  max-width: 100%;
+}
+.grazi-comp .comp-grade {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+}
+.grazi-comp .comp-col {
+  flex: 1;
+  min-width: 0;
+}
+.grazi-comp .comp-col--a {
+  padding-right: 42px;
+}
+.grazi-comp .comp-col--b {
+  padding-left: 42px;
+}
+.grazi-comp .comp-linha {
+  width: 2px;
+  align-self: stretch;
+  background: currentColor;
+  opacity: 0.28;
+}
+.grazi-comp .comp-cab {
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin-bottom: 30px;
+}
+.grazi-comp .comp-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  font-weight: 400;
+  font-size: 36px;
+  line-height: 1.34;
+  margin-bottom: 22px;
+}
+.grazi-comp .comp-mk {
+  flex-shrink: 0;
+  font-size: 32px;
+  line-height: 1.5;
+  opacity: 0.85;
+}
+.grazi-comp .comp-mk--ok {
+  opacity: 1;
+}
+
+/* ---- Bloco de notas (cartão estilo "Notas" do iPhone) ---- */
+.grazi-notas .chamada {
+  font-weight: 700;
+  font-size: 56px;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin-bottom: 40px;
+  max-width: 96%;
+}
+.grazi-notas .nota-card {
+  background: #fbf9f4;
+  color: #2c2a26;
+  border-radius: 34px;
+  overflow: hidden;
+  box-shadow: 0 26px 64px rgba(0, 0, 0, 0.3);
+}
+.grazi-notas .nota-barra {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 26px 40px;
+  background: #efece4;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+.grazi-notas .nota-ponto {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #d9d4c8;
+}
+.grazi-notas .nota-tit-barra {
+  margin-left: 12px;
+  font-weight: 600;
+  font-size: 30px;
+  color: #8a8478;
+  letter-spacing: 0.01em;
+}
+.grazi-notas .nota-corpo {
+  padding: 46px 52px 56px;
+}
+.grazi-notas .nota-tit {
+  font-weight: 700;
+  font-size: 52px;
+  line-height: 1.15;
+  margin-bottom: 26px;
+}
+.grazi-notas .nota-txt {
+  font-weight: 400;
+  font-size: 42px;
+  line-height: 1.5;
+  white-space: pre-line;
+}

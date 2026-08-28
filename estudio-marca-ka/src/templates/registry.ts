@@ -41,6 +41,9 @@ import {
   GraziPassoCard,
   GraziCtaCard,
   GraziMistaCard,
+  GraziFraseFotoCard,
+  GraziComparativoCard,
+  GraziNotasCard,
 } from './grazi/GraziCards'
 import { FUNDOS_GRAZI } from './grazi/cores'
 
@@ -1501,6 +1504,118 @@ export const TEMPLATES: Template[] = [
       campoCorTextoGrazi(),
     ],
     render: GraziMistaCard,
+  },
+  {
+    id: 'grazi-frase-foto',
+    clienteSlug: 'grazi',
+    clienteNome: 'Grazi Martini',
+    nome: 'Frase + foto',
+    descricao:
+      'Título em cima, foto (ou vídeo) numa janela arredondada e uma frase de ' +
+      'fecho embaixo. Tamanho da foto ajustável.',
+    formatos: FORMATO_GRAZI,
+    campos: [
+      {
+        id: 'titulo',
+        label: 'Título',
+        tipo: 'textarea',
+        obrigatorio: true,
+        placeholder: 'Ex.: As travas emocionais que travam a sua liderança',
+        ajuda: 'Palavra entre "aspas" fica em negrito.',
+        padrao: 'As travas emocionais que travam a sua "liderança"',
+      },
+      {
+        id: 'foto',
+        label: 'Foto ou vídeo',
+        tipo: 'imagem',
+        obrigatorio: true,
+        aceitaVideo: true,
+        areaPadrao: 92,
+        ajuda: 'Fica numa janela arredondada. Use "Tamanho da foto" para aumentar ou diminuir a altura. Com vídeo, dá para baixar a moldura (p/ CapCut) ou o vídeo pronto com áudio.',
+      },
+      {
+        id: 'legenda',
+        label: 'Frase de fecho (opcional)',
+        tipo: 'textarea',
+        placeholder: 'Ex.: Reconhecer é o primeiro passo para reorganizar.',
+        padrao: 'Reconhecer é o primeiro passo para "reorganizar".',
+      },
+      campoFundoGrazi('vinho'),
+      campoCorTextoGrazi(),
+    ],
+    render: GraziFraseFotoCard,
+  },
+  {
+    id: 'grazi-comparativo',
+    clienteSlug: 'grazi',
+    clienteNome: 'Grazi Martini',
+    nome: 'Comparativo (2 colunas)',
+    descricao:
+      'Duas colunas lado a lado — o que "pesa" × o que "inspira" (ou os rótulos ' +
+      'que você quiser). Uma linha por item.',
+    formatos: FORMATO_GRAZI,
+    campos: [
+      {
+        id: 'titulo',
+        label: 'Título (opcional)',
+        tipo: 'texto',
+        placeholder: 'Ex.: Dois jeitos de liderar',
+        padrao: 'Dois jeitos de liderar',
+      },
+      { id: 'rotulo_a', label: 'Cabeçalho da coluna 1', tipo: 'texto', padrao: 'Uma liderança que pesa' },
+      {
+        id: 'itens_a',
+        label: 'Itens da coluna 1 (um por linha)',
+        tipo: 'textarea',
+        obrigatorio: true,
+        ajuda: 'Uma linha por item. Palavra entre "aspas" fica em negrito.',
+        padrao: 'Cobra, mas não escuta\nControla cada detalhe\nDecide pelo medo\nReage no impulso',
+      },
+      { id: 'rotulo_b', label: 'Cabeçalho da coluna 2', tipo: 'texto', padrao: 'Uma liderança que inspira' },
+      {
+        id: 'itens_b',
+        label: 'Itens da coluna 2 (um por linha)',
+        tipo: 'textarea',
+        obrigatorio: true,
+        ajuda: 'Uma linha por item. Palavra entre "aspas" fica em negrito.',
+        padrao: 'Escuta antes de agir\nConfia e delega\nDecide com clareza\nResponde com intenção',
+      },
+      campoFundoGrazi('verde'),
+      campoCorTextoGrazi(),
+    ],
+    render: GraziComparativoCard,
+  },
+  {
+    id: 'grazi-notas',
+    clienteSlug: 'grazi',
+    clienteNome: 'Grazi Martini',
+    nome: 'Bloco de notas',
+    descricao:
+      'Cartão estilo "Notas" do iPhone (título + texto) sobre o fundo da marca. ' +
+      'Para listas e reflexões com um ar pessoal.',
+    formatos: FORMATO_GRAZI,
+    campos: [
+      {
+        id: 'chamada',
+        label: 'Chamada (acima do bloco, opcional)',
+        tipo: 'texto',
+        placeholder: 'Ex.: Anota aí:',
+        padrao: 'Anota aí:',
+      },
+      { id: 'titulo', label: 'Título da nota', tipo: 'texto', padrao: '3 perguntas antes de reagir' },
+      {
+        id: 'corpo',
+        label: 'Texto da nota',
+        tipo: 'textarea',
+        obrigatorio: true,
+        ajuda: 'Palavra entre "aspas" fica em negrito. Enter cria uma nova linha.',
+        padrao:
+          '1. O que eu estou sentindo agora?\n2. Isso é sobre a equipe ou sobre mim?\n3. Qual resposta a minha "melhor versão" daria?',
+      },
+      campoFundoGrazi('bege-dourado'),
+      campoCorTextoGrazi(),
+    ],
+    render: GraziNotasCard,
   },
 ]
 
