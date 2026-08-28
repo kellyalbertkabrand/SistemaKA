@@ -34,6 +34,8 @@ import {
   ConectaFeedbackCard,
 } from './conecta/ConectaCards'
 import { FUNDOS_CONECTA, COLORS_CONECTA } from './conecta/cores'
+import { GraziFraseCard } from './grazi/GraziCards'
+import { FUNDOS_GRAZI } from './grazi/cores'
 
 // Paleta oficial da Shapes (primárias + gama secundária) para os fundos.
 const SWATCHES = PALETA_SHAPES
@@ -121,6 +123,35 @@ function campoTexturaKA(): Campo {
 const AJUDA_DESTAQUE =
   'Para deixar uma palavra ou frase em negrito, coloque entre aspas. ' +
   'Ex.: a marca é "percepção".'
+
+// ---- Grazi Martini · Comportamento Humano · Método The One© ---------------
+const FORMATO_GRAZI = [
+  { formato: 'post' as const, rotulo: 'Feed 4:5', largura: 1080, altura: 1350 },
+  { formato: 'story' as const, rotulo: 'Story 9:16', largura: 1080, altura: 1920 },
+  { formato: 'card' as const, rotulo: 'Quadrado 1:1', largura: 1080, altura: 1080 },
+]
+function campoFundoGrazi(padrao: string): Campo {
+  return {
+    id: 'cor_fundo',
+    label: 'Cor de fundo',
+    tipo: 'paleta',
+    padrao,
+    opcoes: FUNDOS_GRAZI.map((f) => ({ valor: f.valor, rotulo: f.rotulo, cor: f.hex })),
+  }
+}
+function campoCorTextoGrazi(): Campo {
+  return {
+    id: 'cor_fonte',
+    label: 'Cor do texto',
+    tipo: 'paleta',
+    padrao: 'auto',
+    ajuda: 'A primeira (A) é automática, combina com o fundo. Ou escolha uma cor fixa.',
+    opcoes: [
+      { valor: 'auto', rotulo: 'Automático (combina com o fundo)' },
+      ...FUNDOS_GRAZI.map((f) => ({ valor: f.valor, rotulo: f.rotulo, cor: f.hex })),
+    ],
+  }
+}
 
 // Dimensões dos 3 formatos (todos os modelos usam as mesmas).
 const FORMATOS = [
@@ -1243,6 +1274,47 @@ export const TEMPLATES: Template[] = [
       campoFundoConecta('navy'),
     ],
     render: ConectaFeedbackCard,
+  },
+
+  // ---- Grazi Martini ----
+  {
+    id: 'grazi-frase',
+    clienteSlug: 'grazi',
+    clienteNome: 'Grazi Martini',
+    nome: 'Frase editorial',
+    descricao:
+      'Frase de impacto: título em Poppins caixa-alta + uma palavra em script ' +
+      '(destaque) e o botão "Leia a Legenda". Faixa verde no rodapé.',
+    formatos: FORMATO_GRAZI,
+    campos: [
+      {
+        id: 'titulo',
+        label: 'Título (caixa-alta)',
+        tipo: 'textarea',
+        obrigatorio: true,
+        placeholder: 'Ex.: Erros comuns de quem',
+        ajuda: 'Vai aparecer em MAIÚSCULAS. A palavra de destaque (em script) fica no campo abaixo.',
+        padrao: 'Erros comuns de quem',
+      },
+      {
+        id: 'script',
+        label: 'Palavra em destaque (script)',
+        tipo: 'texto',
+        placeholder: 'Ex.: lidera',
+        ajuda: 'Uma palavra curta, escrita à mão (script). Deixe em branco se não quiser.',
+        padrao: 'lidera',
+      },
+      {
+        id: 'botao',
+        label: 'Texto do botão',
+        tipo: 'texto',
+        placeholder: 'Ex.: Leia a Legenda',
+        padrao: 'Leia a Legenda',
+      },
+      campoFundoGrazi('mostarda'),
+      campoCorTextoGrazi(),
+    ],
+    render: GraziFraseCard,
   },
 ]
 
