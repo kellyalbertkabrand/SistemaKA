@@ -778,7 +778,12 @@ export type NovaCobranca = Pick<
   Cobranca,
   'cliente_id' | 'tipo' | 'descricao' | 'valor' | 'vencimento'
 > &
-  Partial<Pick<Cobranca, 'competencia' | 'link_pagamento' | 'telefone' | 'vm_participa' | 'valor_vm'>>
+  Partial<
+    Pick<
+      Cobranca,
+      'competencia' | 'link_pagamento' | 'telefone' | 'vm_participa' | 'valor_vm' | 'com_nota'
+    >
+  >
 
 export async function criarCobranca(dados: NovaCobranca): Promise<Cobranca> {
   const novo = limpar({
@@ -790,6 +795,7 @@ export async function criarCobranca(dados: NovaCobranca): Promise<Cobranca> {
     vencimento: dados.vencimento,
     vm_participa: dados.vm_participa ?? false,
     valor_vm: dados.valor_vm ?? null,
+    com_nota: dados.com_nota ?? null,
     telefone: dados.telefone ?? null,
     competencia: dados.competencia ?? null,
     status: 'pendente',
@@ -810,7 +816,16 @@ export async function atualizarCobranca(
   dados: Partial<
     Pick<
       Cobranca,
-      'status' | 'link_pagamento' | 'pago_em' | 'vencimento' | 'valor' | 'descricao' | 'cliente_id' | 'vm_participa' | 'valor_vm'
+      | 'status'
+      | 'link_pagamento'
+      | 'pago_em'
+      | 'vencimento'
+      | 'valor'
+      | 'descricao'
+      | 'cliente_id'
+      | 'vm_participa'
+      | 'valor_vm'
+      | 'com_nota'
     >
   >,
 ): Promise<Cobranca> {

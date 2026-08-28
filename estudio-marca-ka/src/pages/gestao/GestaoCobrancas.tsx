@@ -15,10 +15,10 @@ import {
 } from '../../lib/gestao'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import { linkPortalVM } from '../../lib/vm'
-import { PIX_OPCOES, blocoPix, type DadosPix } from '../../lib/pagamento'
+import { blocoPix, pixPorNota, pixVmPorNota, type DadosPix } from '../../lib/pagamento'
 import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
-import { autoAltura, parseValorBR, somarDinheiro, hojeLocal } from '../../lib/ui'
+import { arredondar, autoAltura, hojeLocal, parseValorBR, somarDinheiro } from '../../lib/ui'
 import { rotuloStatus } from '../../lib/rotulos'
 import { Busca, normalizar } from '../../components/Busca'
 
@@ -89,6 +89,8 @@ export function GestaoCobrancas() {
   // VM Rocks participa desta cobrança? (aparece na visão financeira dela)
   const [novaVM, setNovaVM] = useState(false)
   const [novoValorVM, setNovoValorVM] = useState('')
+  // Sai com nota fiscal? Define qual PIX vai na mensagem (empresa x pessoal).
+  const [novaComNota, setNovaComNota] = useState(false)
   // Colar link de pagamento (inline, por linha)
   const [linkPara, setLinkPara] = useState<string | null>(null)
   const [linkTemp, setLinkTemp] = useState('')
@@ -176,7 +178,40 @@ export function GestaoCobrancas() {
       linhas.push('', '_Mensagem automática enviada pelo sistema._')
       return linhas.join('\n')
     }
-    const opcoes = PIX_OPCOES.map((p) => ({ rotulo: p.chip, mensagem: montar(p) }))
+    // Cobrança da KA E da VM: mensagem com os DOIS PIX e o valor de cada uma
+    // (o cliente paga cada parte direto para quem recebe).
+    const montarComVM = (pix: DadosPix) => {
+      const pixVM = pixVmPorNota(c.com_nota)
+      const vm = arredondar(Number(c.valor_vm ?? c.valor))
+      const ka = arredondar(Number(c.valor) - vm)
+      const linhas = [
+        `Oi${nome ? `, ${nome}` : ''}! Tudo bem? 😊`,
+        '',
+        `Segue a cobrança: *${c.descricao}*`,
+        `Valor: ${formatarBRL(c.valor)} · vencimento: ${formatarData(c.vencimento)}`,
+        '',
+        'O pagamento é dividido em dois PIX:',
+      ]
+      if (ka > 0) {
+        linhas.push('', `*${formatarBRL(ka)}* — ${pix.favorecido}`, pix.banco, pix.linhaPix)
+      }
+      linhas.push('', `*${formatarBRL(vm)}* — ${pixVM.favorecido}`, pixVM.banco, pixVM.linhaPix)
+      if (c.link_pagamento) {
+        linhas.push('', `Ou pague por aqui (cartão, boleto ou PIX): ${c.link_pagamento}`)
+      }
+      linhas.push('', '_Mensagem automática enviada pelo sistema._')
+      return linhas.join('\n')
+    }
+
+    // Com nota → PIX da empresa (CNPJ); sem nota → PIX pessoal. O 1º da lista
+    // já vem escrito; os outros ficam como botões, se ela quiser trocar.
+    const contas = pixPorNota(c.com_nota)
+    const opcoes = contas.map((p) => ({ rotulo: p.chip, mensagem: montar(p) }))
+    // Cobrança que também é da VM: opção com os dois PIX (o cliente paga cada
+    // parte para quem recebe).
+    if (c.vm_participa) {
+      opcoes.push({ rotulo: 'KA + VM (2 PIX)', mensagem: montarComVM(contas[0]) })
+    }
     abrirWhatsApp(
       // O telefone atual da ficha vem primeiro; `||` garante que vazio/nulo
       // caia para o próximo (o `??` deixava passar string vazia antiga).
@@ -241,6 +276,7 @@ export function GestaoCobrancas() {
     setNovaVezes('2')
     setNovaVM(false)
     setNovoValorVM('')
+    setNovaComNota(false)
     setErro(null)
     setCriando(true)
   }
@@ -258,6 +294,7 @@ export function GestaoCobrancas() {
     setNovaForma(c.tipo === 'mensalidade' ? 'mensal' : 'avista')
     setNovaVezes('2')
     setNovaVM(c.vm_participa ?? false)
+    setNovaComNota(c.com_nota === true)
     setNovoValorVM(c.valor_vm != null ? String(c.valor_vm).replace('.', ',') : '')
     setErro(null)
     setCriando(true)
@@ -297,6 +334,7 @@ export function GestaoCobrancas() {
           vencimento: novoVenc,
           vm_participa: novaVM,
           valor_vm: valorVM,
+          com_nota: novaComNota,
         })
         mostrar('Cobrança atualizada')
       } else {
@@ -312,6 +350,7 @@ export function GestaoCobrancas() {
               vencimento: venc,
               vm_participa: novaVM,
               valor_vm: valorVM,
+              com_nota: novaComNota,
             })
           } else {
             await criarCobranca({
@@ -323,6 +362,7 @@ export function GestaoCobrancas() {
               telefone: cliente.telefone ?? null,
               vm_participa: novaVM,
               valor_vm: valorVM,
+              com_nota: novaComNota,
             })
           }
         }
@@ -522,6 +562,21 @@ export function GestaoCobrancas() {
           <input type="date" value={novoVenc} onChange={(e) => setNovoVenc(e.target.value)} />
         </div>
 
+        <div className="field">
+          <label>Nota fiscal</label>
+          <div className="seg seg--nota">
+            <button type="button" className={!novaComNota ? 'seg__on' : ''} onClick={() => setNovaComNota(false)}>
+              Sem nota
+            </button>
+            <button type="button" className={novaComNota ? 'seg__on' : ''} onClick={() => setNovaComNota(true)}>
+              Com nota
+            </button>
+          </div>
+          <span className="campo-ajuda">
+            Com nota, a mensagem já vai com o PIX da empresa (CNPJ); sem nota, com o PIX pessoal.
+          </span>
+        </div>
+
         <div className="field campo-toda">
           <label className="check-vm">
             <input type="checkbox" checked={novaVM} onChange={(e) => setNovaVM(e.target.checked)} />
@@ -711,6 +766,18 @@ export function GestaoCobrancas() {
                         title={c.valor_vm != null ? `VM Rocks: ${formatarBRL(c.valor_vm)}` : 'VM Rocks'}
                       >
                         VM
+                      </span>
+                    )}
+                    {c.com_nota != null && (
+                      <span
+                        className={`badge ${c.com_nota ? 'badge--nota' : 'badge--cinza'}`}
+                        title={
+                          c.com_nota
+                            ? 'Com nota fiscal — recebe pelo PIX da empresa'
+                            : 'Sem nota — recebe pelo PIX pessoal'
+                        }
+                      >
+                        {c.com_nota ? 'com nota' : 'sem nota'}
                       </span>
                     )}
                   </div>

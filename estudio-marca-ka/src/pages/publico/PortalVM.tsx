@@ -12,7 +12,7 @@ import {
   type Atividade,
 } from '../../lib/atividades'
 import type { Cliente, Cobranca } from '../../lib/database.types'
-import { somarDinheiro, arredondar } from '../../lib/ui'
+import { somarDinheiro } from '../../lib/ui'
 import { confirmar } from '../../lib/confirmar'
 import { useTituloPagina } from '../../hooks/useTituloPagina'
 import '../../styles/gestao.css'
@@ -221,7 +221,10 @@ export function PortalVM() {
   const totalContratoUnico = somarDinheiro(linhasVM.map((l) => l.unico))
   const totalContratoMensal = somarDinheiro(linhasVM.map((l) => l.mensal))
 
-  const totalGeral = arredondar(totalCobrancas + totalContratoUnico)
+  // O total mostrado é SÓ o que está em aberto (cobranças pendentes/atrasadas).
+  // As linhas do contrato são o combinado do projeto — não têm baixa de
+  // pagamento, então entram como referência, fora do total.
+  const totalGeral = totalCobrancas
   const temAlgo = vmCobrancas.length > 0 || linhasVM.length > 0
 
   return (
@@ -242,7 +245,7 @@ export function PortalVM() {
         <div className="proj-card__titulo">A Receber</div>
         <div className="vm-total">
           {formatarBRL(totalGeral)}
-          {totalContratoMensal > 0 && <span className="vm-total__mes"> + {formatarBRL(totalContratoMensal)}/mês</span>}
+          <span className="vm-total__rot"> em aberto</span>
         </div>
 
         {!temAlgo && <p className="ativ-vazio">Nada a receber registrado ainda.</p>}
@@ -272,7 +275,13 @@ export function PortalVM() {
 
         {linhasVM.length > 0 && (
           <section className="fin-secao" style={{ marginTop: '1rem' }}>
-            <h3 className="fin-secao__tit">Por contrato</h3>
+            <h3 className="fin-secao__tit">
+              Por contrato — o combinado{totalContratoMensal > 0 ? ` (+ ${formatarBRL(totalContratoMensal)}/mês)` : ''}
+            </h3>
+            <p className="fin-dica" style={{ margin: '0 0 0.5rem' }}>
+              Referência do que foi acertado em cada projeto (total de {formatarBRL(totalContratoUnico)}). Não
+              entra no valor em aberto acima, porque aqui não há baixa de pagamento.
+            </p>
             <div className="fin-lista">
               {linhasVM
                 .slice()

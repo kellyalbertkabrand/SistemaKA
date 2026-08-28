@@ -2868,7 +2868,8 @@
   font-size: 2rem;
   color: #2e6b45;
 }
-.vm-total__mes {
+.vm-total__mes,
+.vm-total__rot {
   font-family: var(--body);
   font-size: 0.95rem;
   color: var(--t-500);
@@ -3533,4 +3534,20 @@
   .ativ-quadro .ativ-col {
     min-width: 84vw;
   }
+}
+
+/* ---- Cobrança: com nota x sem nota -------------------------------------- */
+/* Segmento compacto dentro do formulário de cobrança. */
+.seg--nota {
+  width: fit-content;
+}
+.seg--nota button {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.8rem;
+}
+/* Etiqueta "com nota" no cartão da cobrança (a "sem nota" usa badge--cinza). */
+.badge--nota {
+  background: rgba(61, 107, 126, 0.16);
+  color: var(--essencia);
+  border: 1px solid rgba(61, 107, 126, 0.3);
 }

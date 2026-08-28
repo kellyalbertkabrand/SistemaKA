@@ -586,6 +586,21 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
     partir do 1º vencimento, `somarMeses`) com descrição `(k/N)`. Mensal = 1
     cobrança tipo `mensalidade`. No modo editar, parcelado transforma a atual na
     1ª parcela e cria as demais.
+  - **COM NOTA × SEM NOTA (ago/2026):** a cobrança tem o campo `com_nota`
+    (segmento "Sem nota / Com nota" no formulário; etiqueta no cartão). Ele
+    decide qual PIX já vem escrito na mensagem do WhatsApp: **com nota** → conta
+    da EMPRESA (chave CNPJ); **sem nota** → conta PESSOAL. `pixPorNota()` em
+    `src/lib/pagamento.ts` devolve as contas na ordem certa (a 1ª é a que entra
+    na mensagem; as outras continuam como chips, dá para trocar na hora).
+    Cobrança antiga (sem o campo) mantém a ordem padrão.
+  - **PIX da VM junto (ago/2026):** quando a cobrança tem `vm_participa`, o
+    popup do WhatsApp ganha o chip **"KA + VM (2 PIX)"**: a mensagem sai com o
+    valor dividido — a parte da KA (`valor − valor_vm`) no PIX dela e a parte da
+    VM (`valor_vm`) no PIX da VM —, cada uma com o banco e o favorecido. A conta
+    da VM segue a MESMA regra da nota: com nota → **Serena Market Ltda** (PIX
+    CNPJ); sem nota → **Gabriela Lucato Serra** (PIX por e-mail). Só os dados do
+    PIX ficam no código (`PIX_VM_EMPRESA`/`PIX_VM_PESSOAL`) — agência, conta e
+    CPF NÃO entram, porque o JavaScript do site é público.
   - **Cobranças em CARTÕES agrupados (jul/2026):** a tabela virou **cards** com
     faixa colorida por status (pendente azul, atrasada vermelha, paga verde,
     cancelada cinza), valor em destaque e ações que quebram linha (desktop e
@@ -743,11 +758,32 @@ coloridos).
   várias", um textão (uma tarefa por linha, ou ditado — cada frase vira uma
   linha) cria todas de uma vez na categoria escolhida. Onde o navegador não
   suporta voz, o botão some e aparece uma dica.
-- **Arrastar para reordenar** (jul/2026): no modo **Padrão**, cada tarefa
-  pessoal tem a alça `⠿` e usa **Pointer Events** (`iniciarArraste`) — funciona
-  no toque do iPhone. Campo novo `Atividade.ordem` (menor = mais em cima);
-  novos itens nascem no topo (`menorOrdem-1`); `reordenarAtividades(ids)` grava
-  `ordem` = posição. Pendências de projeto não arrastam (são derivadas).
+- **Arrastar para reordenar** (jul/2026): cada cartão tem a alça `⠿` e usa
+  **Pointer Events** (`iniciarArraste`) — funciona no toque do iPhone. Campo
+  `Atividade.ordem` (menor = mais em cima); novos itens nascem no topo
+  (`menorOrdem-1`); `definirOrdens([{id,ordem}])` grava a posição.
+- **VISÃO EM PAINÉIS OU LISTA (ago/2026) — reforma da aba:** segmento
+  **▦ Painéis / ☰ Lista** (a escolha fica no `localStorage`, `ka.ativ.visao`).
+  *Painéis* = uma coluna por categoria, lado a lado (`.ativ-quadro`, rola de
+  lado no celular); *Lista* = as categorias empilhadas (`.ativ-pilha`). Nas
+  duas, cada categoria é a mesma `coluna()` (cabeçalho + contagem + corpo).
+- **Etapas de projeto TAMBÉM se movem (ago/2026):** os "Bloco 01…04" deixaram de
+  ser fixos no topo — entram na mesma lista/ordem manual das tarefas. Como são
+  derivadas dos projetos (não têm doc próprio), a posição delas fica no doc
+  **`preferencias/ordem_atividades`** (mapa `chave → posição`, chave
+  `p-<projetoId>-<faseIdx>`; `carregarOrdemPendencias`/`salvarOrdemPendencias`).
+  Etapa que ainda não foi arrastada entra com ordem −1 (nasce no topo).
+- **Arrastar ENTRE colunas (ago/2026):** soltar uma tarefa em outra coluna troca
+  a **categoria** dela (`mudarCategoria`). Etapa de projeto não muda de coluna
+  (fica na do responsável) — avisa por toast.
+- **Cartão enxuto (ago/2026):** linha baixa (~36px), meta numa linha só
+  (projeto · cliente · data), e as **ações flutuam à direita** (aparecem no
+  hover no computador, ficam fixas no toque) — antes elas roubavam a largura e
+  o título quebrava palavra por palavra. "Duplicar" foi para a caixa de edição.
+- **Concluídas recolhidas (ago/2026):** cada categoria tem o bloco
+  **"Concluídas (n)"** que abre/fecha (`feitasAbertas`, guardado em
+  `ka.ativ.feitas`). O formulário de nova tarefa também virou um botão
+  (**+ Nova tarefa**), para a tela abrir já na lista.
 - **Regra Firestore:** `atividades` = só a KA (modo produção).
 
 ### Pagamentos do contrato (ficha do cliente — jul/2026)
@@ -821,6 +857,11 @@ Na ficha do cliente (`GestaoClientes.tsx` → `PagamentosContrato`), a seção
     envia); quando o **login por papel** (parceiro) entrar, essa é exatamente a
     tela que a VM verá (o caixa `caixa` e o resto ficam fora do escopo dela).
     O `caixa` pessoal (entradas/saídas) é sempre só da KA.
+  - **"A receber" da VM = só o EM ABERTO (ago/2026):** o total da visão VM (no
+    Financeiro e no portal `/vm-rocks`) soma **apenas as cobranças pendentes/
+    atrasadas** onde ela participa. As linhas de `pagamentos_contrato` (o
+    combinado do contrato) não têm baixa de pagamento — somá-las inflava o
+    total —, então saíram do número e ficam listadas embaixo, como referência.
   - **Portal da VM por LINK (só leitura) — jul/2026 (`src/lib/vm.ts` +
     `pages/publico/PortalVM.tsx`, rota LIMPA `/vm-rocks`):** enquanto o modo
     seguro (login por papel) não entra, a VM acessa por uma URL fixa e amigável

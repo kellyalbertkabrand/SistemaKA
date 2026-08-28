@@ -306,7 +306,10 @@ export function GestaoFinanceiro() {
   const vmOcor = expandirReceber(vmCobrancas, hojeChave, fimChave)
   const vmCobrancasPorMes = agruparPorMes(vmOcor, (o) => o.venc, (o) => valorDaVM(o.c))
   const totalVMCobrancas = somarDinheiro(vmCobrancas.map(valorDaVM))
-  const totalVMGeral = arredondar(totalVMUnico + totalVMCobrancas)
+  // "A receber" = só o que está EM ABERTO (cobranças pendentes/atrasadas). O
+  // combinado do contrato aparece embaixo, como referência: aquelas linhas não
+  // têm baixa de pagamento, então somá-las inflava o total.
+  const totalVMGeral = totalVMCobrancas
 
   // Parcelas da VM JÁ PAGAS (aparecem em verde na visão VM) — por mês do
   // pagamento (ou do vencimento, se faltar a data), da mais recente p/ a antiga.
@@ -463,10 +466,10 @@ export function GestaoFinanceiro() {
             <div className="fin-card fin-card--vm">
               <div className="fin-card__quem">VM Rocks tem a receber</div>
               <div className="fin-card__valor">{formatarBRL(totalVMGeral)}</div>
-              {totalVMMensal > 0 && <div className="fin-card__mensal">+ {formatarBRL(totalVMMensal)}/mês</div>}
+              <div className="fin-card__mensal">em cobranças em aberto</div>
               <div className="fin-card__qtd">
-                {vmCobrancas.length + linhasVM.length} item(ns) ·{' '}
-                {new Set([...vmCobrancas.map((c) => c.cliente_id), ...linhasVM.map((l) => l.cliente_id)]).size} cliente(s)
+                {vmCobrancas.length} cobrança(s) ·{' '}
+                {new Set(vmCobrancas.map((c) => c.cliente_id)).size} cliente(s)
               </div>
             </div>
           </div>
@@ -593,7 +596,14 @@ export function GestaoFinanceiro() {
               {/* Pagamentos de contrato marcados como VM */}
               {linhasVM.length > 0 && (
                 <section className="fin-secao">
-                  <h3 className="fin-secao__tit">Por contrato</h3>
+                  <h3 className="fin-secao__tit">
+                    Por contrato — o combinado ({formatarBRL(totalVMUnico)}
+                    {totalVMMensal > 0 ? ` + ${formatarBRL(totalVMMensal)}/mês` : ''})
+                  </h3>
+                  <p className="fin-dica" style={{ margin: '0 0 0.5rem' }}>
+                    Referência do que foi acertado nos contratos. Não entra no total em aberto
+                    acima (estas linhas não têm baixa de pagamento).
+                  </p>
                   <div className="fin-lista">
                     {linhasVM
                       .slice()

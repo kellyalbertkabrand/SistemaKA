@@ -201,6 +201,10 @@ export interface Cobranca {
   /** Quanto a VM Rocks tem a receber nesta cobrança (às vezes difere do valor
    * total cobrado do cliente). Usado só quando `vm_participa`. */
   valor_vm?: number | null
+  /** Cobrança COM nota fiscal? Define qual PIX entra na mensagem: com nota =
+   *  conta da empresa (chave CNPJ); sem nota = conta pessoal. undefined = a KA
+   *  ainda não marcou (a mensagem deixa ela escolher na hora). */
+  com_nota?: boolean | null
   /** Telefone do destinatário (copiado do orçamento), para o WhatsApp. */
   telefone?: string | null
   competencia: string | null

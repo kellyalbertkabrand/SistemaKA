@@ -33,7 +33,47 @@ export const PIX_EMPRESA: DadosPix = {
   linhaPix: 'Pix (CNPJ): 15096943000137',
 }
 
+// ---- VM ROCKS (parceira) --------------------------------------------------
+// A VM também tem as duas contas, e a regra é a MESMA da KA: cobrança com nota
+// vai para a empresa; sem nota, para a conta pessoal.
+// (Só os dados do PIX ficam aqui — agência, conta e CPF não entram no código,
+//  porque o JavaScript do site é público.)
+
+/** VM com nota — PIX pela chave CNPJ. */
+export const PIX_VM_EMPRESA: DadosPix = {
+  chip: 'VM empresa',
+  banco: 'Nubank',
+  favorecido: 'Serena Market Ltda',
+  linhaPix: 'Pix (CNPJ): 26534647000197',
+}
+
+/** VM sem nota — PIX por e-mail. */
+export const PIX_VM_PESSOAL: DadosPix = {
+  chip: 'VM pessoal',
+  banco: 'Nubank',
+  favorecido: 'Gabriela Lucato Serra',
+  linhaPix: 'Pix: gabriela.lucato@gmail.com',
+}
+
+/** A conta da VM que combina com a nota fiscal da cobrança. */
+export function pixVmPorNota(comNota?: boolean | null): DadosPix {
+  return comNota === true ? PIX_VM_EMPRESA : PIX_VM_PESSOAL
+}
+
 export const PIX_OPCOES: DadosPix[] = [PIX_PESSOAL, PIX_EMPRESA]
+
+/**
+ * Ordem dos PIX conforme a cobrança sai COM ou SEM nota fiscal:
+ * • com nota  → recebe pela EMPRESA (chave CNPJ);
+ * • sem nota  → recebe na conta PESSOAL;
+ * • não marcado (undefined/null) → mantém a ordem padrão, a KA escolhe na hora.
+ * O primeiro da lista é o que já vem escrito na mensagem.
+ */
+export function pixPorNota(comNota?: boolean | null): DadosPix[] {
+  if (comNota === true) return [PIX_EMPRESA, PIX_PESSOAL]
+  if (comNota === false) return [PIX_PESSOAL, PIX_EMPRESA]
+  return PIX_OPCOES
+}
 
 /**
  * Bloco de pagamento para a mensagem (sem citar física/jurídica — é interno).
