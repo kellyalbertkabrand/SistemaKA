@@ -4,6 +4,7 @@
 import type { Cliente, PagamentoContrato, Socio } from './database.types'
 import { formatarBRL, formatarData } from './gestao'
 import { formatarDocumento, rotuloTipoDocumento } from './documento'
+import { baixarXlsx, type Celula } from './xlsx'
 
 export interface ItemCadastro {
   rotulo: string
@@ -151,10 +152,10 @@ export function textoDoCliente(c: Cliente): string {
   return `Cadastro — ${c.nome_marca}\n\n${blocos.join('\n\n')}`
 }
 
-// ---- Planilha (CSV) -------------------------------------------------------
+// ---- Planilha do Excel ----------------------------------------------------
 
 /** Colunas da planilha de clientes (uma linha por cliente). */
-const COLUNAS: { cabecalho: string; valor: (c: Cliente) => string }[] = [
+const COLUNAS: { cabecalho: string; valor: (c: Cliente) => Celula }[] = [
   { cabecalho: 'Marca', valor: (c) => c.nome_marca ?? '' },
   { cabecalho: 'Segmento', valor: (c) => c.segmento ?? '' },
   { cabecalho: 'Instagram', valor: (c) => c.instagram_handle ?? '' },
@@ -174,8 +175,9 @@ const COLUNAS: { cabecalho: string; valor: (c: Cliente) => string }[] = [
   { cabecalho: 'RG', valor: (c) => c.contrato_rg ?? '' },
   { cabecalho: 'E-mail de quem assina', valor: (c) => c.contrato_email ?? '' },
   { cabecalho: 'E-mail de cobrança', valor: (c) => c.email_cobranca ?? '' },
-  { cabecalho: 'Mensalidade', valor: (c) => (c.valor_mensalidade ? String(c.valor_mensalidade).replace('.', ',') : '') },
-  { cabecalho: 'Dia do vencimento', valor: (c) => (c.valor_mensalidade ? String(c.dia_vencimento ?? '') : '') },
+  // Números entram como NÚMERO (dá para somar/filtrar na planilha).
+  { cabecalho: 'Mensalidade (R$)', valor: (c) => c.valor_mensalidade ?? '' },
+  { cabecalho: 'Dia do vencimento', valor: (c) => (c.valor_mensalidade ? (c.dia_vencimento ?? '') : '') },
   { cabecalho: 'Cobrança mensal', valor: (c) => (c.cobranca_ativa ? 'ativa' : 'desligada') },
   { cabecalho: 'Sócios', valor: (c) => (c.socios ?? []).map(linhaSocio).join(' | ') },
   { cabecalho: 'Pagamentos do contrato', valor: (c) => (c.pagamentos_contrato ?? []).map(linhaPagamento).join(' | ') },
@@ -184,19 +186,17 @@ const COLUNAS: { cabecalho: string; valor: (c: Cliente) => string }[] = [
   { cabecalho: 'Cadastrado em', valor: (c) => (c.criado_em ? formatarData(c.criado_em) : '') },
 ]
 
-// Excel brasileiro lê CSV separado por ";". Aspas duplicadas e quebras de linha
-// viram espaço para a planilha não desalinhar.
-function celula(v: string): string {
-  const limpo = v.replace(/\r?\n/g, ' ').replace(/"/g, '""')
-  return `"${limpo}"`
+export function cabecalhosDeClientes(): string[] {
+  return COLUNAS.map((c) => c.cabecalho)
 }
 
-export function csvDeClientes(lista: Cliente[]): string {
-  const linhas = [
-    COLUNAS.map((c) => celula(c.cabecalho)).join(';'),
-    ...lista.map((cli) => COLUNAS.map((c) => celula(c.valor(cli))).join(';')),
-  ]
-  return linhas.join('\r\n')
+export function linhasDeClientes(lista: Cliente[]): Celula[][] {
+  return lista.map((cli) => COLUNAS.map((c) => c.valor(cli)))
+}
+
+/** Baixa a planilha (.xlsx) com os clientes informados. */
+export async function baixarPlanilhaClientes(lista: Cliente[], nome: string): Promise<void> {
+  await baixarXlsx(nome, cabecalhosDeClientes(), linhasDeClientes(lista), 'Clientes')
 }
 
 /** Nome de arquivo seguro a partir do nome da marca. */
@@ -209,15 +209,4 @@ export function nomeArquivo(base: string): string {
       .replace(/^-|-$/g, '')
       .toLowerCase() || 'cliente'
   )
-}
-
-/** Baixa o CSV (com BOM, para o Excel abrir com os acentos certos). */
-export function baixarCsv(nome: string, csv: string) {
-  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = nome.endsWith('.csv') ? nome : `${nome}.csv`
-  a.click()
-  URL.revokeObjectURL(url)
 }

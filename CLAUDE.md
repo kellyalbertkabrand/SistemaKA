@@ -598,19 +598,26 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
     uma nova cobrança e **logo abaixo do card** ao editar (`editandoId === c.id`,
     card em `<Fragment>` + `.cob-card--editando`). Antes abria só no topo e, no
     desktop com a lista longa, parecia que "não abria".
-- **EXPORTAR o cadastro do cliente (ago/2026) — `src/lib/exportarCliente.ts`:**
-  na ficha do cliente há o botão **"⤓ Exportar cadastro"**, que troca o
-  formulário por um **documento** (`CadastroExport` em `GestaoClientes.tsx`,
-  estilos `.cad-*` em gestao.css) com a ficha inteira em seções (Marca, Contato,
-  Dados para o contrato, Sócios, Cobrança, Pagamentos do contrato, Acesso ao
-  estúdio, Observações — seção vazia não aparece). Dali saem 3 formatos:
-  **Imprimir / Salvar PDF** (`imprimirComoPdf`, `@media print` limpa a página),
-  **⤓ Planilha (CSV)** (`csvDeClientes`, separador `;` + BOM p/ o Excel) e
-  **Copiar texto** (`textoDoCliente`, com `*negrito*` do WhatsApp). O documento
-  reflete o que está NA TELA (inclui edições ainda não salvas). Na LISTA de
-  clientes há **"⤓ Exportar planilha"**, que baixa todos os cadastros filtrados
-  pela busca (`clientes-AAAA-MM-DD.csv`) — serve de backup e do envio ao
-  contador. CPF/CNPJ saem formatados (`documento.ts`).
+- **EXPORTAR o cadastro do cliente (ago/2026) — `src/lib/exportarCliente.ts` +
+  `src/lib/xlsx.ts`:** na ficha do cliente há **"⤓ Baixar PDF"** (abre o cadastro
+  como documento e já chama a impressão / Salvar como PDF) e **"⤓ Exportar
+  cadastro"**, que mostra o mesmo documento (`CadastroExport` em
+  `GestaoClientes.tsx`, estilos `.cad-*` em gestao.css) com a ficha em seções
+  (Marca, Contato, Dados para o contrato, Sócios, Cobrança, Pagamentos do
+  contrato, Acesso ao estúdio, Observações — seção vazia não aparece) e as 3
+  saídas: **Imprimir / Salvar PDF** (`imprimirComoPdf`, `@media print` limpa a
+  página), **⤓ Baixar em Excel** e **Copiar texto** (`textoDoCliente`, com
+  `*negrito*` do WhatsApp). O documento reflete o que está NA TELA (inclui
+  edições ainda não salvas). Na LISTA de clientes, acima dos nomes, há **"⤓
+  Baixar em Excel"**, que baixa todos os cadastros filtrados pela busca
+  (`clientes-AAAA-MM-DD.xlsx`) — backup e envio ao contador.
+- **Planilha .xlsx DE VERDADE (`src/lib/xlsx.ts`, ago/2026):** um `.xlsx` é um
+  zip de XMLs, então o arquivo é montado com o **JSZip que o app já usa** (zero
+  dependência nova): `gerarXlsx(cabecalhos, linhas, aba)` / `baixarXlsx(...)`.
+  Cabeçalho em negrito e congelado, larguras automáticas, número entra como
+  NÚMERO (dá pra somar) e texto como `inlineStr` escapado. Trocou o CSV, que no
+  Excel dependia do separador/codificação da máquina (acento errado, tudo numa
+  coluna só). Validado abrindo o arquivo com o openpyxl.
 - **EDITAR orçamento:** botão "Editar" em TODOS os orçamentos (não só rascunho)
   + clicar no título abre o editor (`setEditando`).
 - **EDITAR no Financeiro:** cada item do painel Financeiro é um botão que leva
