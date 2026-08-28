@@ -62,6 +62,15 @@ export function GestaoCobrancas() {
   const [busca, setBusca] = useState('')
   const [filtroStatus, setFiltroStatus] = useState<'todos' | CobrancaStatus>('todos')
   const [agrupar, setAgrupar] = useState<'mes' | 'cliente'>('mes')
+  // Meses/grupos recolhidos (expandir/recolher). Guardado por chave do grupo.
+  const [mesesRecolhidos, setMesesRecolhidos] = useState<Set<string>>(new Set())
+  const toggleMes = (chave: string) =>
+    setMesesRecolhidos((p) => {
+      const n = new Set(p)
+      if (n.has(chave)) n.delete(chave)
+      else n.add(chave)
+      return n
+    })
   // Formulário de cobrança avulsa (criar OU editar) — sem window.prompt.
   const [criando, setCriando] = useState(false)
   const [editandoId, setEditandoId] = useState<string | null>(null)
@@ -636,15 +645,34 @@ export function GestaoCobrancas() {
         <p className="ativ-vazio">Nenhuma cobrança encontrada para “{busca}”.</p>
       )}
 
-      {grupos.map((g) => (
+      {pendentes.length > 0 && (
+        <div className="cob-total">
+          <span className="cob-total__rot">Total a receber</span>
+          <span className="cob-total__valor">{formatarBRL(totalPendente)}</span>
+          {totalAtrasado > 0 && (
+            <span className="cob-total__atras">{formatarBRL(totalAtrasado)} atrasado</span>
+          )}
+        </div>
+      )}
+
+      {grupos.map((g) => {
+        const recolhido = mesesRecolhidos.has(g.chave)
+        return (
         <section key={g.chave} className="cob-grupo">
-          <div className="mes-grupo__cab">
+          <button
+            type="button"
+            className="mes-grupo__cab mes-grupo__cab--btn"
+            onClick={() => toggleMes(g.chave)}
+            aria-expanded={!recolhido}
+          >
+            <span className="mes-grupo__seta">{recolhido ? '▸' : '▾'}</span>
             <span className="mes-grupo__nome">{g.rotulo}</span>
             <span className="mes-grupo__total">
               {g.itens.length} {g.itens.length === 1 ? 'cobrança' : 'cobranças'}
               {totalEmAberto(g.itens) > 0 && <> · {formatarBRL(totalEmAberto(g.itens))} em aberto</>}
             </span>
-          </div>
+          </button>
+          {!recolhido && (
           <div className="cob-lista">
             {g.itens.map((c) => {
               const s = statusEfetivo(c)
@@ -757,8 +785,10 @@ export function GestaoCobrancas() {
               )
             })}
           </div>
+          )}
         </section>
-      ))}
+        )
+      })}
     </>
   )
 }
