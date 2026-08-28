@@ -2,9 +2,11 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   orderBy,
   query,
+  setDoc,
   updateDoc,
 } from 'firebase/firestore'
 import { db } from './firebase'
@@ -84,9 +86,31 @@ export async function criarAtividade(dados: {
   return { id: ref.id, ...nova }
 }
 
-/** Salva a nova ordem: cada id recebe `ordem` = sua posição na lista. */
-export async function reordenarAtividades(ids: string[]): Promise<void> {
-  await Promise.all(ids.map((id, i) => updateDoc(doc(db, 'atividades', id), { ordem: i })))
+/** Salva a nova ordem: cada id recebe a `ordem` (posição) informada. */
+export async function definirOrdens(pares: { id: string; ordem: number }[]): Promise<void> {
+  await Promise.all(pares.map((p) => updateDoc(doc(db, 'atividades', p.id), { ordem: p.ordem })))
+}
+
+// ---- Ordem das ETAPAS DE PROJETO dentro da lista -------------------------
+// As pendências que vêm dos projetos não são documentos de `atividades` (são
+// derivadas das fases), então não têm onde guardar a posição. Guardamos a
+// ordem delas num único doc (`preferencias/ordem_atividades`), como um mapa
+// chave da pendência → posição. Assim a Kelly arrasta um "Bloco 01" para onde
+// quiser, junto das tarefas normais.
+const REF_ORDEM = () => doc(db, 'preferencias', 'ordem_atividades')
+
+export async function carregarOrdemPendencias(): Promise<Record<string, number>> {
+  try {
+    const d = await getDoc(REF_ORDEM())
+    return (d.data()?.mapa ?? {}) as Record<string, number>
+  } catch {
+    // Sem o doc (ou sem permissão) a lista só perde a ordem manual das etapas.
+    return {}
+  }
+}
+
+export async function salvarOrdemPendencias(mapa: Record<string, number>): Promise<void> {
+  await setDoc(REF_ORDEM(), { mapa }, { merge: true })
 }
 
 export async function alternarAtividade(id: string, feito: boolean): Promise<void> {

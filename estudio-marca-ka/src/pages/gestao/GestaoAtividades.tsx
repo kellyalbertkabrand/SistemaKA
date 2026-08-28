@@ -18,14 +18,16 @@ import {
 } from '../../lib/projetos'
 import {
   alternarAtividade,
+  carregarOrdemPendencias,
   CATEGORIAS,
   criarAtividade,
+  definirOrdens,
   duplicarAtividade,
   editarAtividade,
   excluirAtividade,
   listarAtividades,
-  reordenarAtividades,
   ROTULO_CATEGORIA,
+  salvarOrdemPendencias,
   type Atividade,
   type CategoriaAtividade,
 } from '../../lib/atividades'
@@ -35,27 +37,85 @@ import {
 //
 // Junta, num só lugar: as pendências de TRABALHO que vêm dos projetos dos
 // clientes (etapas em aberto que são da KA) + tarefas que a Kelly adiciona à
-// mão. Tudo separado em Trabalho, BIA e Pessoal.
+// mão. Tudo separado em KA, VM, BIA e Pessoal.
+//
+// Duas VISÕES da mesma lista (a escolha fica guardada no aparelho):
+//   • Painéis — uma coluna por categoria, lado a lado (estilo quadro).
+//   • Lista   — as categorias uma embaixo da outra.
+// Em qualquer uma delas TUDO é arrastável, inclusive as etapas de projeto
+// (a posição delas vive em `preferencias/ordem_atividades`), e as tarefas
+// concluídas ficam recolhidas num bloco que abre e fecha.
 // ============================================================================
 
 const ORDEM: CategoriaAtividade[] = CATEGORIAS
+
+type Visao = 'paineis' | 'lista'
+
+/** Item da lista: etapa de projeto (derivada) ou tarefa da Kelly (documento). */
+type Item =
+  | {
+      tipo: 'pend'
+      chave: string
+      ordem: number
+      feito: boolean
+      data: string | null
+      cliente: string
+      pd: Pendencia
+    }
+  | {
+      tipo: 'ativ'
+      chave: string
+      ordem: number
+      feito: boolean
+      data: string | null
+      cliente: string
+      a: Atividade
+    }
+
+const chaveDaPendencia = (pd: Pendencia) => `p-${pd.projeto_id}-${pd.fase_idx}`
+
+// Preferências simples de tela (visão e blocos de concluídas), por aparelho.
+function lerPref<T>(chave: string, padrao: T): T {
+  try {
+    const bruto = localStorage.getItem(chave)
+    return bruto ? (JSON.parse(bruto) as T) : padrao
+  } catch {
+    return padrao
+  }
+}
+function gravarPref(chave: string, valor: unknown) {
+  try {
+    localStorage.setItem(chave, JSON.stringify(valor))
+  } catch {
+    /* aparelho sem armazenamento: a tela funciona igual, só não lembra */
+  }
+}
 
 export function GestaoAtividades() {
   const { mostrar } = useToast()
   const [projetos, setProjetos] = useState<Projeto[]>([])
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [atividades, setAtividades] = useState<Atividade[]>([])
+  const [ordemPend, setOrdemPend] = useState<Record<string, number>>({})
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
   const [salvando, setSalvando] = useState(false)
   const [filtro, setFiltro] = useState<'tudo' | CategoriaAtividade>('tudo')
   const [ordenar, setOrdenar] = useState<'padrao' | 'data' | 'cliente'>('padrao')
+  const [visao, setVisao] = useState<Visao>(() => lerPref<Visao>('ka.ativ.visao', 'paineis'))
+  const [feitasAbertas, setFeitasAbertas] = useState<Record<string, boolean>>(() =>
+    lerPref<Record<string, boolean>>('ka.ativ.feitas', {}),
+  )
+  const [formAberto, setFormAberto] = useState(false)
+
+  useEffect(() => gravarPref('ka.ativ.visao', visao), [visao])
+  useEffect(() => gravarPref('ka.ativ.feitas', feitasAbertas), [feitasAbertas])
 
   // Nova atividade
   const [novoTitulo, setNovoTitulo] = useState('')
   const [novaCategoria, setNovaCategoria] = useState<CategoriaAtividade>('pessoal')
   const [novaData, setNovaData] = useState('')
-  const [novoClienteId, setNovoClienteId] = useState('') // só p/ categoria 'cliente'
+  const [novoClienteId, setNovoClienteId] = useState('') // só p/ categoria 'cliente'/'vm'
   // Modo "colar várias" (uma por linha) e ditado por voz
   const [modoColar, setModoColar] = useState(false)
   const [textoColar, setTextoColar] = useState('')
@@ -68,31 +128,48 @@ export function GestaoAtividades() {
   const [editCategoria, setEditCategoria] = useState<CategoriaAtividade>('pessoal')
   const [editData, setEditData] = useState('')
 
-  // Arrastar para reordenar (Pointer Events — funciona no toque do iPhone)
-  const [dragId, setDragId] = useState<string | null>(null)
-  const [overId, setOverId] = useState<string | null>(null)
-  const [dragY, setDragY] = useState(0) // deslocamento vertical do item arrastado
-  const [movidoId, setMovidoId] = useState<string | null>(null) // item que acabou de mudar (flash)
+  // Arrastar (Pointer Events — funciona no toque do iPhone). Vale para TUDO:
+  // tarefas e etapas de projeto, dentro da coluna ou entre colunas.
+  const [dragChave, setDragChave] = useState<string | null>(null)
+  const [overChave, setOverChave] = useState<string | null>(null)
+  const [overCat, setOverCat] = useState<CategoriaAtividade | null>(null)
+  const [dragXY, setDragXY] = useState({ x: 0, y: 0 })
+  const [movidoChave, setMovidoChave] = useState<string | null>(null) // flash dourado
   const rowsRef = useRef<Map<string, HTMLElement>>(new Map())
-  const dragRef = useRef<{ cat: CategoriaAtividade; de: string; para: string } | null>(null)
+  const colsRef = useRef<Map<CategoriaAtividade, HTMLElement>>(new Map())
+  const dragRef = useRef<{
+    cat: CategoriaAtividade
+    de: string
+    paraCat: CategoriaAtividade
+    para: string | null
+  } | null>(null)
   const movidoTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  function marcarMovido(id: string) {
-    setMovidoId(id)
+  function marcarMovido(chave: string) {
+    setMovidoChave(chave)
     if (movidoTimer.current) clearTimeout(movidoTimer.current)
-    movidoTimer.current = setTimeout(() => setMovidoId(null), 1300)
+    movidoTimer.current = setTimeout(() => setMovidoChave(null), 1300)
   }
-  useEffect(() => () => {
-    if (movidoTimer.current) clearTimeout(movidoTimer.current)
-  }, [])
+  useEffect(
+    () => () => {
+      if (movidoTimer.current) clearTimeout(movidoTimer.current)
+    },
+    [],
+  )
 
   async function recarregar() {
     try {
       setCarregando(true)
-      const [ps, as, cs] = await Promise.all([listarProjetos(), listarAtividades(), listarClientes()])
+      const [ps, as, cs, om] = await Promise.all([
+        listarProjetos(),
+        listarAtividades(),
+        listarClientes(),
+        carregarOrdemPendencias(),
+      ])
       setProjetos(ps)
       setAtividades(as)
       setClientes(cs)
+      setOrdemPend(om)
       setErro(null)
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
@@ -109,6 +186,51 @@ export function GestaoAtividades() {
   const pendKA = pendenciasDeProjetos(projetos, 'KA')
   // Pendências do CLIENTE (etapas que o cliente precisa fazer — a KA cobra).
   const pendCliente = pendenciasDeProjetos(projetos, 'CLIENTE')
+
+  // ---- Montagem da lista de uma categoria ---------------------------------
+  // Etapas de projeto e tarefas ficam na MESMA lista, ordenadas pela posição
+  // manual (arrastar). Etapa nova, que ainda não foi arrastada, nasce no topo.
+  function itensDe(cat: CategoriaAtividade): Item[] {
+    const pendencias = cat === 'trabalho' ? pendKA : cat === 'cliente' ? pendCliente : []
+    const itens: Item[] = [
+      ...pendencias.map((pd): Item => {
+        const chave = chaveDaPendencia(pd)
+        return {
+          tipo: 'pend',
+          chave,
+          ordem: ordemPend[chave] ?? -1,
+          feito: false,
+          data: pd.data ?? null,
+          cliente: pd.cliente_nome ?? '',
+          pd,
+        }
+      }),
+      ...atividades
+        .filter((a) => a.categoria === cat)
+        .map(
+          (a): Item => ({
+            tipo: 'ativ',
+            chave: `a-${a.id}`,
+            ordem: a.ordem ?? 0,
+            feito: a.feito,
+            data: a.data ?? null,
+            cliente: a.cliente_nome ?? '',
+            a,
+          }),
+        ),
+    ]
+    const FIM = '￿' // vazios (sem data / sem cliente) vão para o fim
+    itens.sort((x, y) => {
+      if (x.feito !== y.feito) return Number(x.feito) - Number(y.feito) // feitas por último
+      if (ordenar === 'data') return (x.data || FIM).localeCompare(y.data || FIM)
+      if (ordenar === 'cliente') {
+        const c = (x.cliente || FIM).localeCompare(y.cliente || FIM)
+        return c !== 0 ? c : (x.data || FIM).localeCompare(y.data || FIM)
+      }
+      return x.ordem - y.ordem
+    })
+    return itens
+  }
 
   // Pendência de projeto do cliente OU atividade manual da categoria 'cliente'
   // → cobra no WhatsApp (usa o telefone do cliente, se houver).
@@ -142,7 +264,7 @@ export function GestaoAtividades() {
 
   // Menor `ordem` de uma categoria (para novos itens nascerem no topo).
   function menorOrdem(cat: CategoriaAtividade): number {
-    return Math.min(0, ...atividades.filter((a) => a.categoria === cat).map((a) => a.ordem ?? 0))
+    return Math.min(0, ...itensDe(cat).map((it) => it.ordem))
   }
 
   async function addNovo(e: FormEvent) {
@@ -212,7 +334,9 @@ export function GestaoAtividades() {
       setNovaData('')
       setModoColar(false)
       setFiltro(novaCategoria)
-      mostrar(`${criadas.length} ${criadas.length === 1 ? 'tarefa adicionada' : 'tarefas adicionadas'} em ${ROTULO_CATEGORIA[novaCategoria]}`)
+      mostrar(
+        `${criadas.length} ${criadas.length === 1 ? 'tarefa adicionada' : 'tarefas adicionadas'} em ${ROTULO_CATEGORIA[novaCategoria]}`,
+      )
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
     } finally {
@@ -256,92 +380,171 @@ export function GestaoAtividades() {
     }
   }
 
-  // ---- Arrastar para reordenar (só no modo "Padrão") ----
-  // Atividades pessoais de uma categoria, na ordem em que aparecem (não feitas
-  // primeiro, depois por `ordem`). É a mesma ordem usada no render.
-  function pessoaisOrdenadas(cat: CategoriaAtividade): Atividade[] {
-    return atividades
-      .filter((a) => a.categoria === cat)
-      .sort((a, b) => Number(a.feito) - Number(b.feito) || (a.ordem ?? 0) - (b.ordem ?? 0))
-  }
-
-  async function aplicarReordem(cat: CategoriaAtividade, deId: string, paraId: string) {
-    const arr = pessoaisOrdenadas(cat)
-    const de = arr.findIndex((a) => a.id === deId)
-    const para = arr.findIndex((a) => a.id === paraId)
-    if (de < 0 || para < 0 || de === para) return
-    const [item] = arr.splice(de, 1)
-    arr.splice(para, 0, item)
-    const pos = new Map(arr.map((a, i) => [a.id, i]))
-    setAtividades((l) => l.map((a) => (pos.has(a.id) ? { ...a, ordem: pos.get(a.id) } : a)))
-    marcarMovido(deId) // flash no item que mudou
+  // ---- Reordenar (só no modo "Padrão") ------------------------------------
+  // Grava a posição de cada item da coluna: tarefas no próprio documento
+  // (`ordem`), etapas de projeto no mapa `preferencias/ordem_atividades`.
+  async function gravarPosicoes(lista: Item[]) {
+    const pares: { id: string; ordem: number }[] = []
+    const mapa: Record<string, number> = {}
+    lista.forEach((it, i) => {
+      if (it.tipo === 'ativ') pares.push({ id: it.a.id, ordem: i })
+      else mapa[it.chave] = i
+    })
+    // Estado local já reflete a nova ordem (a tela não "pisca" esperando o banco).
+    setAtividades((l) => {
+      const pos = new Map(pares.map((p) => [p.id, p.ordem]))
+      return l.map((a) => (pos.has(a.id) ? { ...a, ordem: pos.get(a.id) } : a))
+    })
+    if (Object.keys(mapa).length > 0) setOrdemPend((o) => ({ ...o, ...mapa }))
     try {
-      await reordenarAtividades(arr.map((a) => a.id))
+      await Promise.all([
+        pares.length > 0 ? definirOrdens(pares) : Promise.resolve(),
+        Object.keys(mapa).length > 0 ? salvarOrdemPendencias(mapa) : Promise.resolve(),
+      ])
     } catch {
-      mostrar('Não deu para reordenar, tente de novo.', 'erro')
+      mostrar('Não deu para salvar a nova ordem, tente de novo.', 'erro')
       void recarregar()
     }
   }
 
-  // Botões ↑/↓ — reordenar SEM arrastar (o arraste falha em alguns aparelhos/
-  // toques; os botões funcionam em qualquer lugar). Move dentro do mesmo grupo
-  // (não-feitas / feitas), trocando com o vizinho.
-  function moverAtividade(cat: CategoriaAtividade, a: Atividade, dir: -1 | 1) {
-    const arr = pessoaisOrdenadas(cat).filter((x) => x.feito === a.feito)
-    const i = arr.findIndex((x) => x.id === a.id)
-    const j = i + dir
-    if (i < 0 || j < 0 || j >= arr.length) return
-    void aplicarReordem(cat, a.id, arr[j].id)
+  /** Move `deChave` para a posição de `paraChave` (ou para o fim, se null). */
+  async function aplicarReordem(
+    cat: CategoriaAtividade,
+    deChave: string,
+    paraChave: string | null,
+  ) {
+    const arr = itensDe(cat)
+    const de = arr.findIndex((it) => it.chave === deChave)
+    if (de < 0) return
+    const para = paraChave ? arr.findIndex((it) => it.chave === paraChave) : arr.length - 1
+    if (para < 0 || de === para) return
+    const [item] = arr.splice(de, 1)
+    arr.splice(para, 0, item)
+    marcarMovido(deChave)
+    await gravarPosicoes(arr)
   }
 
-  function iniciarArraste(e: React.PointerEvent, cat: CategoriaAtividade, id: string) {
+  /** Arrastou para OUTRA coluna: muda a categoria da tarefa e reposiciona. */
+  async function mudarCategoria(
+    a: Atividade,
+    novaCat: CategoriaAtividade,
+    paraChave: string | null,
+  ) {
+    const chave = `a-${a.id}`
+    const destino = itensDe(novaCat).filter((it) => it.chave !== chave)
+    const item: Item = {
+      tipo: 'ativ',
+      chave,
+      ordem: 0,
+      feito: a.feito,
+      data: a.data ?? null,
+      cliente: a.cliente_nome ?? '',
+      a: { ...a, categoria: novaCat },
+    }
+    const idx = paraChave ? destino.findIndex((it) => it.chave === paraChave) : -1
+    if (idx >= 0) destino.splice(idx, 0, item)
+    else destino.push(item)
+    setAtividades((l) => l.map((x) => (x.id === a.id ? { ...x, categoria: novaCat } : x)))
+    marcarMovido(chave)
+    try {
+      await editarAtividade(a.id, { categoria: novaCat })
+    } catch {
+      mostrar('Não deu para mudar de coluna, tente de novo.', 'erro')
+      void recarregar()
+      return
+    }
+    await gravarPosicoes(destino)
+    mostrar(`Movida para ${ROTULO_CATEGORIA[novaCat]}`)
+  }
+
+  // Setas ↑/↓ — reordenar SEM arrastar (o arraste falha em alguns toques).
+  // Troca com o vizinho do mesmo grupo (em aberto / concluídas).
+  function moverItem(cat: CategoriaAtividade, it: Item, dir: -1 | 1) {
+    const arr = itensDe(cat).filter((x) => x.feito === it.feito)
+    const i = arr.findIndex((x) => x.chave === it.chave)
+    const j = i + dir
+    if (i < 0 || j < 0 || j >= arr.length) return
+    void aplicarReordem(cat, it.chave, arr[j].chave)
+  }
+
+  function iniciarArraste(e: React.PointerEvent, cat: CategoriaAtividade, chave: string) {
     e.preventDefault()
-    const startY = e.clientY
-    // Mantém os eventos do ponteiro mesmo se o dedo/cursor sair da alça.
+    const inicio = { x: e.clientX, y: e.clientY }
     try {
       ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
     } catch {
       /* ignora */
     }
-    dragRef.current = { cat, de: id, para: id }
-    setDragId(id)
-    setOverId(id)
-    setDragY(0)
+    dragRef.current = { cat, de: chave, paraCat: cat, para: chave }
+    setDragChave(chave)
+    setOverChave(chave)
+    setOverCat(cat)
+    setDragXY({ x: 0, y: 0 })
+
     const mover = (ev: PointerEvent) => {
       const st = dragRef.current
       if (!st) return
-      // A linha arrastada SEGUE o ponteiro (sobe/desce junto) — o movimento visível.
-      setDragY(ev.clientY - startY)
-      const y = ev.clientY
-      // Alvo = a tarefa cujo CENTRO está mais perto do dedo/cursor (sem "zona
-      // morta" entre linhas — antes só movia se soltasse exatamente na linha).
-      let alvo = st.de
-      let melhor = Infinity
-      for (const a of pessoaisOrdenadas(st.cat)) {
-        if (a.id === st.de) continue
-        const el = rowsRef.current.get(a.id)
+      // O cartão arrastado segue o ponteiro (é o movimento que se vê).
+      setDragXY({ x: ev.clientX - inicio.x, y: ev.clientY - inicio.y })
+
+      // 1) Em qual coluna está o ponteiro? (na visão em lista há uma só por vez)
+      let colunaAlvo = st.paraCat
+      let melhorCol = Infinity
+      for (const c of colunasVisiveis) {
+        const el = colsRef.current.get(c)
         if (!el) continue
         const r = el.getBoundingClientRect()
-        const dist = Math.abs(y - (r.top + r.bottom) / 2)
-        if (dist < melhor) {
-          melhor = dist
-          alvo = a.id
+        const dentro = ev.clientX >= r.left && ev.clientX <= r.right
+        const dist = dentro ? 0 : Math.min(Math.abs(ev.clientX - r.left), Math.abs(ev.clientX - r.right))
+        const distY = ev.clientY < r.top ? r.top - ev.clientY : ev.clientY > r.bottom ? ev.clientY - r.bottom : 0
+        const total = dist + distY
+        if (total < melhorCol) {
+          melhorCol = total
+          colunaAlvo = c
         }
       }
+
+      // 2) Qual item dessa coluna está mais perto do dedo/cursor?
+      let alvo: string | null = null
+      let melhor = Infinity
+      for (const it of itensDe(colunaAlvo)) {
+        if (it.chave === st.de) continue
+        const el = rowsRef.current.get(it.chave)
+        if (!el) continue
+        const r = el.getBoundingClientRect()
+        const dist = Math.abs(ev.clientY - (r.top + r.bottom) / 2)
+        if (dist < melhor) {
+          melhor = dist
+          alvo = it.chave
+        }
+      }
+      st.paraCat = colunaAlvo
       st.para = alvo
-      setOverId(alvo)
+      setOverCat(colunaAlvo)
+      setOverChave(alvo)
     }
+
     const soltar = () => {
       window.removeEventListener('pointermove', mover)
       window.removeEventListener('pointerup', soltar)
       window.removeEventListener('pointercancel', soltar)
       const st = dragRef.current
       dragRef.current = null
-      setDragId(null)
-      setOverId(null)
-      setDragY(0)
-      if (st && st.de !== st.para) void aplicarReordem(st.cat, st.de, st.para)
+      setDragChave(null)
+      setOverChave(null)
+      setOverCat(null)
+      setDragXY({ x: 0, y: 0 })
+      if (!st) return
+      if (st.paraCat === st.cat) {
+        if (st.para && st.para !== st.de) void aplicarReordem(st.cat, st.de, st.para)
+        return
+      }
+      // Soltou em outra coluna
+      const item = itensDe(st.cat).find((it) => it.chave === st.de)
+      if (item?.tipo === 'ativ') void mudarCategoria(item.a, st.paraCat, st.para)
+      else mostrar('Etapa de projeto fica na coluna do responsável.', 'info')
     }
+
     window.addEventListener('pointermove', mover)
     window.addEventListener('pointerup', soltar)
     window.addEventListener('pointercancel', soltar)
@@ -389,26 +592,292 @@ export function GestaoAtividades() {
     }
   }
 
-  // Quantidade em aberto por categoria (trabalho conta as pendências de projeto).
+  // Quantidade em aberto por categoria (KA conta as etapas de projeto).
   function abertosDe(cat: CategoriaAtividade): number {
-    const pessoais = atividades.filter((a) => a.categoria === cat && !a.feito).length
-    if (cat === 'trabalho') return pessoais + pendKA.length
-    if (cat === 'cliente') return pessoais + pendCliente.length
-    return pessoais
+    return itensDe(cat).filter((it) => !it.feito).length
   }
   const totalAberto = ORDEM.reduce((s, c) => s + abertosDe(c), 0)
+  const colunasVisiveis = ORDEM.filter((c) => filtro === 'tudo' || filtro === c)
+  const podeArrastar = ordenar === 'padrao'
 
-  const categoriasVisiveis = ORDEM.filter((c) => filtro === 'tudo' || filtro === c)
+  // ---- Um item da lista (cartão compacto) ---------------------------------
+  function cartao(it: Item, cat: CategoriaAtividade) {
+    const arrastando = dragChave === it.chave
+    const alvo = overChave === it.chave && dragChave && dragChave !== it.chave
+    const classes = [
+      'ativ',
+      it.tipo === 'pend' ? 'ativ--projeto' : '',
+      it.tipo === 'pend' && cat === 'cliente' ? 'ativ--cliente' : '',
+      it.feito ? 'ativ--feito' : '',
+      arrastando ? 'ativ--arrastando' : '',
+      alvo ? 'ativ--alvo' : '',
+      movidoChave === it.chave ? 'ativ--movido' : '',
+    ]
+      .filter(Boolean)
+      .join(' ')
+
+    const grupo = itensDe(cat).filter((x) => x.feito === it.feito)
+    const pos = grupo.findIndex((x) => x.chave === it.chave)
+
+    return (
+      <div
+        key={it.chave}
+        ref={(el) => {
+          if (el) rowsRef.current.set(it.chave, el)
+          else rowsRef.current.delete(it.chave)
+        }}
+        className={classes}
+        style={
+          arrastando
+            ? { transform: `translate(${dragXY.x}px, ${dragXY.y}px)`, zIndex: 30 }
+            : undefined
+        }
+      >
+        {podeArrastar && (
+          <span
+            className="ativ__alca"
+            title="Segure e arraste para mover"
+            onPointerDown={(e) => iniciarArraste(e, cat, it.chave)}
+          >
+            ⠿
+          </span>
+        )}
+
+        {it.tipo === 'pend' ? (
+          <button
+            className="ativ__check"
+            disabled={salvando}
+            title="Marcar etapa como concluída"
+            onClick={() => void concluirPendencia(it.pd)}
+          >
+            {it.pd.status === 'andamento' ? '●' : '○'}
+          </button>
+        ) : (
+          <button
+            className="ativ__check"
+            title={it.feito ? 'Marcar como não feita' : 'Marcar como feita'}
+            onClick={() => void toggle(it.a)}
+          >
+            {it.feito ? '✓' : '○'}
+          </button>
+        )}
+
+        {it.tipo === 'pend' ? (
+          <div className="ativ__corpo">
+            <div className="ativ__titulo">{it.pd.fase_nome}</div>
+            <div className="ativ__meta">
+              <span className="ativ__tag">projeto</span>
+              <span className="ativ__meta-txt">
+                {it.pd.projeto_nome}
+                {it.pd.cliente_nome ? ` · ${it.pd.cliente_nome}` : ''}
+              </span>
+              {it.pd.data && <span className="data-chip">📅 {formatarData(it.pd.data)}</span>}
+            </div>
+          </div>
+        ) : (
+          <button
+            className="ativ__corpo ativ__corpo--btn"
+            onClick={() => iniciarEdicao(it.a)}
+            title="Editar"
+          >
+            <div className="ativ__titulo">{it.a.titulo}</div>
+            {(it.a.cliente_nome || it.a.data) && (
+              <div className="ativ__meta">
+                {it.a.cliente_nome && <span className="ativ__meta-txt">{it.a.cliente_nome}</span>}
+                {it.a.data && <span className="data-chip">📅 {formatarData(it.a.data)}</span>}
+              </div>
+            )}
+          </button>
+        )}
+
+        <div className="ativ__acoes">
+          {podeArrastar && (
+            <div className="ativ__setas">
+              <button
+                type="button"
+                className="ativ__seta"
+                disabled={pos <= 0}
+                title="Mover para cima"
+                aria-label="Mover para cima"
+                onClick={() => moverItem(cat, it, -1)}
+              >
+                ▲
+              </button>
+              <button
+                type="button"
+                className="ativ__seta"
+                disabled={pos < 0 || pos >= grupo.length - 1}
+                title="Mover para baixo"
+                aria-label="Mover para baixo"
+                onClick={() => moverItem(cat, it, 1)}
+              >
+                ▼
+              </button>
+            </div>
+          )}
+          {(it.tipo === 'pend' ? cat === 'cliente' : it.a.categoria === 'cliente') && (
+            <button
+              className="btn-mini btn-mini--whats"
+              title="Cobrar o cliente no WhatsApp"
+              onClick={() =>
+                it.tipo === 'pend' ? cobrarProjetoCliente(it.pd) : cobrarAtividadeCliente(it.a)
+              }
+            >
+              Cobrar
+            </button>
+          )}
+          {it.tipo === 'ativ' && (
+            <button
+              className="btn-mini btn-mini--perigo"
+              title="Excluir"
+              aria-label="Excluir"
+              onClick={() => void excluir(it.a)}
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // Edição inline de uma tarefa (substitui o cartão enquanto edita).
+  function cartaoEdicao(chave: string, a: Atividade) {
+    return (
+      <div key={chave} className="ativ ativ--edit">
+        <textarea
+          autoFocus
+          rows={2}
+          className="ativ__edit-txt"
+          value={editTitulo}
+          ref={autoAltura}
+          onChange={(e) => {
+            setEditTitulo(e.target.value)
+            autoAltura(e.currentTarget)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault()
+              void salvarEdicao()
+            }
+            if (e.key === 'Escape') setEditId(null)
+          }}
+        />
+        <div className="ativ__edit-linha">
+          <select
+            value={editCategoria}
+            onChange={(e) => setEditCategoria(e.target.value as CategoriaAtividade)}
+          >
+            {ORDEM.map((c) => (
+              <option key={c} value={c}>
+                {ROTULO_CATEGORIA[c]}
+              </option>
+            ))}
+          </select>
+          <input type="date" value={editData} onChange={(e) => setEditData(e.target.value)} />
+          <button className="btn-mini" disabled={!editTitulo.trim()} onClick={() => void salvarEdicao()}>
+            Salvar
+          </button>
+          <button className="btn-mini" onClick={() => setEditId(null)}>
+            Cancelar
+          </button>
+          <button
+            className="btn-mini"
+            disabled={salvando}
+            title="Criar uma cópia desta tarefa"
+            onClick={() => {
+              setEditId(null)
+              void duplicar(a)
+            }}
+          >
+            Duplicar
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  // ---- Uma categoria (coluna do quadro OU bloco da lista) -----------------
+  function coluna(cat: CategoriaAtividade) {
+    const itens = itensDe(cat)
+    const abertos = itens.filter((it) => !it.feito)
+    const feitos = itens.filter((it) => it.feito)
+    const mostrarFeitas = !!feitasAbertas[cat]
+    const recebendo = overCat === cat && dragChave !== null
+
+    return (
+      <section
+        key={cat}
+        className={`ativ-col cat--${cat} ${recebendo ? 'ativ-col--recebendo' : ''}`}
+        ref={(el) => {
+          if (el) colsRef.current.set(cat, el)
+          else colsRef.current.delete(cat)
+        }}
+      >
+        <header className="ativ-col__cab">
+          <h3 className={`ativ-col__tit cat--${cat}`}>{ROTULO_CATEGORIA[cat]}</h3>
+          <span className="ativ-col__n">{abertos.length}</span>
+        </header>
+
+        <div className="ativ-col__corpo">
+          {abertos.length === 0 && feitos.length === 0 && (
+            <p className="ativ-vazio">Nada por aqui ainda.</p>
+          )}
+
+          {abertos.map((it) =>
+            it.tipo === 'ativ' && editId === it.a.id
+              ? cartaoEdicao(it.chave, it.a)
+              : cartao(it, cat),
+          )}
+
+          {feitos.length > 0 && (
+            <>
+              <button
+                className={`feitas-tog ${mostrarFeitas ? 'feitas-tog--on' : ''}`}
+                onClick={() => setFeitasAbertas((f) => ({ ...f, [cat]: !f[cat] }))}
+              >
+                <span className="feitas-tog__seta" aria-hidden>
+                  {mostrarFeitas ? '▾' : '▸'}
+                </span>
+                Concluídas <span className="feitas-tog__n">{feitos.length}</span>
+              </button>
+              {mostrarFeitas &&
+                feitos.map((it) =>
+                  it.tipo === 'ativ' && editId === it.a.id
+                    ? cartaoEdicao(it.chave, it.a)
+                    : cartao(it, cat),
+                )}
+            </>
+          )}
+        </div>
+      </section>
+    )
+  }
 
   return (
     <>
-      <div className="gestao-acoes">
+      <div className="gestao-acoes ativ-barra">
+        <div className="seg seg--visao">
+          <button className={visao === 'paineis' ? 'seg__on' : ''} onClick={() => setVisao('paineis')}>
+            ▦ Painéis
+          </button>
+          <button className={visao === 'lista' ? 'seg__on' : ''} onClick={() => setVisao('lista')}>
+            ☰ Lista
+          </button>
+        </div>
         <div className="chips">
-          <button className={`chip ${filtro === 'tudo' ? 'chip--on' : ''}`} onClick={() => setFiltro('tudo')}>
+          <button
+            className={`chip ${filtro === 'tudo' ? 'chip--on' : ''}`}
+            onClick={() => setFiltro('tudo')}
+          >
             Tudo <span className="chip__n">{totalAberto}</span>
           </button>
           {ORDEM.map((c) => (
-            <button key={c} className={`chip ${filtro === c ? 'chip--on' : ''}`} onClick={() => setFiltro(c)}>
+            <button
+              key={c}
+              className={`chip ${filtro === c ? 'chip--on' : ''}`}
+              onClick={() => setFiltro(c)}
+            >
               {ROTULO_CATEGORIA[c]} <span className="chip__n">{abertosDe(c)}</span>
             </button>
           ))}
@@ -416,91 +885,58 @@ export function GestaoAtividades() {
         <label className="ordenar">
           Ordenar por:
           <select value={ordenar} onChange={(e) => setOrdenar(e.target.value as typeof ordenar)}>
-            <option value="padrao">Padrão</option>
+            <option value="padrao">Minha ordem</option>
             <option value="data">Data</option>
             <option value="cliente">Cliente</option>
           </select>
         </label>
+        <button className="btn" onClick={() => setFormAberto((v) => !v)}>
+          {formAberto ? '✕ Fechar' : '+ Nova tarefa'}
+        </button>
         <BotaoLinkVM rotulo="Link da VM" />
       </div>
-      <p className="editor__hint" style={{ margin: '0 0 0.6rem' }}>
-        Para criar tarefa da parceira, escolha a categoria <strong>VM Rocks</strong> — ela aparece no
-        painel dela (o <strong>Link da VM</strong> acima).
-      </p>
 
       {erro && <div className="erro-msg">{erro}</div>}
 
       {/* Nova atividade — uma tarefa OU colar/ditar várias */}
-      <div className="card add-ativ-card">
-        <div className="seg add-ativ-seg">
-          <button className={!modoColar ? 'seg__on' : ''} onClick={() => setModoColar(false)}>
-            Uma tarefa
-          </button>
-          <button className={modoColar ? 'seg__on' : ''} onClick={() => setModoColar(true)}>
-            Colar / ditar várias
-          </button>
-        </div>
-
-        {!modoColar ? (
-          <form className="add-ativ" onSubmit={(e) => void addNovo(e)}>
-            <div className="campo-mic campo-mic--cresce">
-              <textarea
-                rows={1}
-                value={novoTitulo}
-                ref={autoAltura}
-                onChange={(e) => {
-                  setNovoTitulo(e.target.value)
-                  autoAltura(e.currentTarget)
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault()
-                    void criarUma()
-                  }
-                }}
-                placeholder="O que precisa fazer?"
-              />
-              {ditadoUm.suportado && (
-                <BotaoMic gravando={ditadoUm.gravando} onClick={ditadoUm.alternar} />
-              )}
-            </div>
-            <select value={novaCategoria} onChange={(e) => setNovaCategoria(e.target.value as CategoriaAtividade)}>
-              {ORDEM.map((c) => (
-                <option key={c} value={c}>
-                  {ROTULO_CATEGORIA[c]}
-                </option>
-              ))}
-            </select>
-            {usaCliente && (
-              <select value={novoClienteId} onChange={(e) => setNovoClienteId(e.target.value)} title="Cliente">
-                <option value="">{novaCategoria === 'vm' ? 'Cliente (opcional)…' : 'Cliente (p/ cobrar)…'}</option>
-                {clientes.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.nome_marca}
-                  </option>
-                ))}
-              </select>
-            )}
-            <input type="date" value={novaData} onChange={(e) => setNovaData(e.target.value)} title="Data (opcional)" />
-            <button className="btn" type="submit" disabled={salvando || !novoTitulo.trim()}>
-              + Adicionar
+      {formAberto && (
+        <div className="card add-ativ-card">
+          <div className="seg add-ativ-seg">
+            <button className={!modoColar ? 'seg__on' : ''} onClick={() => setModoColar(false)}>
+              Uma tarefa
             </button>
-          </form>
-        ) : (
-          <div className="add-ativ-colar">
-            <div className="campo-mic campo-mic--area">
-              <textarea
-                rows={5}
-                value={textoColar}
-                onChange={(e) => setTextoColar(e.target.value)}
-                placeholder={'Cole ou dite várias tarefas — uma por linha.\nEx.:\nFalar com a fornecedora\nEnviar arte da Boba Joy\nMarcar reunião'}
-              />
-              {ditadoVarias.suportado && (
-                <BotaoMic gravando={ditadoVarias.gravando} onClick={ditadoVarias.alternar} titulo="Ditar (cada frase vira uma linha)" />
-              )}
-            </div>
-            <div className="add-ativ-colar__baixo">
-              <select value={novaCategoria} onChange={(e) => setNovaCategoria(e.target.value as CategoriaAtividade)}>
+            <button className={modoColar ? 'seg__on' : ''} onClick={() => setModoColar(true)}>
+              Colar / ditar várias
+            </button>
+          </div>
+
+          {!modoColar ? (
+            <form className="add-ativ" onSubmit={(e) => void addNovo(e)}>
+              <div className="campo-mic campo-mic--cresce">
+                <textarea
+                  rows={1}
+                  value={novoTitulo}
+                  ref={autoAltura}
+                  onChange={(e) => {
+                    setNovoTitulo(e.target.value)
+                    autoAltura(e.currentTarget)
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault()
+                      void criarUma()
+                    }
+                  }}
+                  placeholder="O que precisa fazer?"
+                />
+                {ditadoUm.suportado && (
+                  <BotaoMic gravando={ditadoUm.gravando} onClick={ditadoUm.alternar} />
+                )}
+              </div>
+              <select
+                value={novaCategoria}
+                onChange={(e) => setNovaCategoria(e.target.value as CategoriaAtividade)}
+              >
                 {ORDEM.map((c) => (
                   <option key={c} value={c}>
                     {ROTULO_CATEGORIA[c]}
@@ -508,8 +944,14 @@ export function GestaoAtividades() {
                 ))}
               </select>
               {usaCliente && (
-                <select value={novoClienteId} onChange={(e) => setNovoClienteId(e.target.value)} title="Cliente">
-                  <option value="">{novaCategoria === 'vm' ? 'Cliente (opcional)…' : 'Cliente (p/ cobrar)…'}</option>
+                <select
+                  value={novoClienteId}
+                  onChange={(e) => setNovoClienteId(e.target.value)}
+                  title="Cliente"
+                >
+                  <option value="">
+                    {novaCategoria === 'vm' ? 'Cliente (opcional)…' : 'Cliente (p/ cobrar)…'}
+                  </option>
                   {clientes.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.nome_marca}
@@ -517,261 +959,105 @@ export function GestaoAtividades() {
                   ))}
                 </select>
               )}
-              <input type="date" value={novaData} onChange={(e) => setNovaData(e.target.value)} title="Data (opcional)" />
-              <span className="add-ativ__conta">
-                {linhasColar.length} {linhasColar.length === 1 ? 'tarefa' : 'tarefas'}
-              </span>
-              <button
-                className="btn"
-                onClick={() => void adicionarVarias()}
-                disabled={salvando || linhasColar.length === 0}
-              >
-                + Adicionar todas
+              <input
+                type="date"
+                value={novaData}
+                onChange={(e) => setNovaData(e.target.value)}
+                title="Data (opcional)"
+              />
+              <button className="btn" type="submit" disabled={salvando || !novoTitulo.trim()}>
+                + Adicionar
               </button>
+            </form>
+          ) : (
+            <div className="add-ativ-colar">
+              <div className="campo-mic campo-mic--area">
+                <textarea
+                  rows={5}
+                  value={textoColar}
+                  onChange={(e) => setTextoColar(e.target.value)}
+                  placeholder={
+                    'Cole ou dite várias tarefas — uma por linha.\nEx.:\nFalar com a fornecedora\nEnviar arte da Boba Joy\nMarcar reunião'
+                  }
+                />
+                {ditadoVarias.suportado && (
+                  <BotaoMic
+                    gravando={ditadoVarias.gravando}
+                    onClick={ditadoVarias.alternar}
+                    titulo="Ditar (cada frase vira uma linha)"
+                  />
+                )}
+              </div>
+              <div className="add-ativ-colar__baixo">
+                <select
+                  value={novaCategoria}
+                  onChange={(e) => setNovaCategoria(e.target.value as CategoriaAtividade)}
+                >
+                  {ORDEM.map((c) => (
+                    <option key={c} value={c}>
+                      {ROTULO_CATEGORIA[c]}
+                    </option>
+                  ))}
+                </select>
+                {usaCliente && (
+                  <select
+                    value={novoClienteId}
+                    onChange={(e) => setNovoClienteId(e.target.value)}
+                    title="Cliente"
+                  >
+                    <option value="">
+                      {novaCategoria === 'vm' ? 'Cliente (opcional)…' : 'Cliente (p/ cobrar)…'}
+                    </option>
+                    {clientes.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.nome_marca}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                <input
+                  type="date"
+                  value={novaData}
+                  onChange={(e) => setNovaData(e.target.value)}
+                  title="Data (opcional)"
+                />
+                <span className="add-ativ__conta">
+                  {linhasColar.length} {linhasColar.length === 1 ? 'tarefa' : 'tarefas'}
+                </span>
+                <button
+                  className="btn"
+                  onClick={() => void adicionarVarias()}
+                  disabled={salvando || linhasColar.length === 0}
+                >
+                  + Adicionar todas
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {!ditadoUm.suportado && (
-          <p className="dica-voz">
-            O ditado por voz 🎤 aparece no Chrome e no Safari do iPhone (o navegador pede permissão do microfone).
-          </p>
-        )}
-      </div>
+          {!ditadoUm.suportado && (
+            <p className="dica-voz">
+              O ditado por voz 🎤 aparece no Chrome e no Safari do iPhone (o navegador pede permissão
+              do microfone).
+            </p>
+          )}
+        </div>
+      )}
 
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
 
-      {!carregando && ordenar === 'padrao' && atividades.length > 0 && (
+      {!carregando && !podeArrastar && (
         <p className="dica-voz" style={{ marginTop: 0 }}>
-          Use as setas <span aria-hidden>▲▼</span> para mover suas tarefas, ou segure a alça{' '}
-          <span aria-hidden>⠿</span> e arraste. O item que muda de lugar pisca em dourado.
+          Ordenado por {ordenar === 'data' ? 'data' : 'cliente'}. Volte para{' '}
+          <strong>Minha ordem</strong> para poder arrastar.
         </p>
       )}
 
-      {!carregando &&
-        categoriasVisiveis.map((cat) => {
-          const pessoais = atividades.filter((a) => a.categoria === cat)
-          const pendencias = cat === 'trabalho' ? pendKA : cat === 'cliente' ? pendCliente : []
-          const vazio = pessoais.length === 0 && pendencias.length === 0
-
-          // Junta pendências de projeto + atividades pessoais numa lista só e
-          // ordena conforme a escolha (Padrão / Data / Cliente).
-          type Item =
-            | { tipo: 'pend'; chave: string; data: string | null; cliente: string; feito: boolean; pd: Pendencia }
-            | { tipo: 'ativ'; chave: string; data: string | null; cliente: string; feito: boolean; a: Atividade }
-          const itens: Item[] = [
-            ...pendencias.map(
-              (pd): Item => ({
-                tipo: 'pend',
-                chave: `p-${pd.projeto_id}-${pd.fase_idx}`,
-                data: pd.data ?? null,
-                cliente: pd.cliente_nome ?? '',
-                feito: false,
-                pd,
-              }),
-            ),
-            ...pessoais.map(
-              (a): Item => ({ tipo: 'ativ', chave: `a-${a.id}`, data: a.data ?? null, cliente: '', feito: a.feito, a }),
-            ),
-          ]
-          const FIM = '￿' // vazios (sem data / sem cliente) vão para o fim
-          itens.sort((x, y) => {
-            // feitas sempre por último
-            if (x.feito !== y.feito) return Number(x.feito) - Number(y.feito)
-            if (ordenar === 'data') return (x.data || FIM).localeCompare(y.data || FIM)
-            if (ordenar === 'cliente') {
-              const c = (x.cliente || FIM).localeCompare(y.cliente || FIM)
-              return c !== 0 ? c : (x.data || FIM).localeCompare(y.data || FIM)
-            }
-            // padrão: pendências de projeto primeiro, depois pessoais por ordem
-            if ((x.tipo === 'pend') !== (y.tipo === 'pend')) return x.tipo === 'pend' ? -1 : 1
-            if (x.tipo === 'ativ' && y.tipo === 'ativ') return (x.a.ordem ?? 0) - (y.a.ordem ?? 0)
-            return 0
-          })
-
-          return (
-            <div key={cat} className="ativ-grupo">
-              <h3 className={`ativ-grupo__tit cat--${cat}`}>{ROTULO_CATEGORIA[cat]}</h3>
-
-              {vazio && <p className="ativ-vazio">Nada por aqui ainda.</p>}
-
-              {itens.map((it) =>
-                it.tipo === 'pend' ? (
-                  <div key={it.chave} className={`ativ ativ--projeto ${cat === 'cliente' ? 'ativ--cliente' : ''}`}>
-                    <button
-                      className="ativ__check"
-                      disabled={salvando}
-                      title="Marcar etapa como concluída"
-                      onClick={() => void concluirPendencia(it.pd)}
-                    >
-                      {it.pd.status === 'andamento' ? '●' : '○'}
-                    </button>
-                    <div className="ativ__corpo">
-                      <div className="ativ__titulo">{it.pd.fase_nome}</div>
-                      <div className="ativ__sub">
-                        <span className="ativ__tag">projeto</span>
-                        {it.pd.projeto_nome}
-                        {it.pd.cliente_nome ? ` · ${it.pd.cliente_nome}` : ''}
-                      </div>
-                      {it.pd.data && (
-                        <div className="ativ__data">
-                          <span className="data-chip">📅 {formatarData(it.pd.data)}</span>
-                        </div>
-                      )}
-                    </div>
-                    {cat === 'cliente' && (
-                      <div className="ativ__acoes">
-                        <button
-                          className="btn-mini btn-mini--whats"
-                          title="Cobrar o cliente no WhatsApp"
-                          onClick={() => cobrarProjetoCliente(it.pd)}
-                        >
-                          Cobrar
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ) : (() => {
-                  const a = it.a
-                  // Posição entre as pessoais do MESMO grupo (feito/não-feito),
-                  // para habilitar/desabilitar as setas ↑/↓ nas pontas.
-                  const grupo = pessoaisOrdenadas(cat).filter((x) => x.feito === a.feito)
-                  const posGrupo = grupo.findIndex((x) => x.id === a.id)
-                  const podeSubir = posGrupo > 0
-                  const podeDescer = posGrupo >= 0 && posGrupo < grupo.length - 1
-                  return editId === a.id ? (
-                  <div key={a.id} className="ativ ativ--edit">
-                    <textarea
-                      autoFocus
-                      rows={2}
-                      className="ativ__edit-txt"
-                      value={editTitulo}
-                      ref={autoAltura}
-                      onChange={(e) => {
-                        setEditTitulo(e.target.value)
-                        autoAltura(e.currentTarget)
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault()
-                          void salvarEdicao()
-                        }
-                        if (e.key === 'Escape') setEditId(null)
-                      }}
-                    />
-                    <div className="ativ__edit-linha">
-                      <select value={editCategoria} onChange={(e) => setEditCategoria(e.target.value as CategoriaAtividade)}>
-                        {ORDEM.map((c) => (
-                          <option key={c} value={c}>
-                            {ROTULO_CATEGORIA[c]}
-                          </option>
-                        ))}
-                      </select>
-                      <input type="date" value={editData} onChange={(e) => setEditData(e.target.value)} />
-                      <button className="btn-mini" disabled={!editTitulo.trim()} onClick={() => void salvarEdicao()}>
-                        Salvar
-                      </button>
-                      <button className="btn-mini" onClick={() => setEditId(null)}>
-                        Cancelar
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    key={a.id}
-                    ref={(el) => {
-                      if (el) rowsRef.current.set(a.id, el)
-                      else rowsRef.current.delete(a.id)
-                    }}
-                    className={`ativ ${a.feito ? 'ativ--feito' : ''} ${dragId === a.id ? 'ativ--arrastando' : ''} ${
-                      overId === a.id && dragId && dragId !== a.id ? 'ativ--alvo' : ''
-                    } ${movidoId === a.id ? 'ativ--movido' : ''}`}
-                    style={dragId === a.id ? { transform: `translateY(${dragY}px)`, zIndex: 20 } : undefined}
-                  >
-                    {ordenar === 'padrao' && (
-                      <div className="ativ__reordenar">
-                        <span
-                          className="fase__handle"
-                          title="Segure e arraste para reordenar"
-                          onPointerDown={(e) => iniciarArraste(e, cat, a.id)}
-                        >
-                          ⠿
-                        </span>
-                        <div className="ativ__setas">
-                          <button
-                            type="button"
-                            className="ativ__seta"
-                            disabled={!podeSubir}
-                            title="Mover para cima"
-                            aria-label="Mover para cima"
-                            onClick={() => moverAtividade(cat, a, -1)}
-                          >
-                            ▲
-                          </button>
-                          <button
-                            type="button"
-                            className="ativ__seta"
-                            disabled={!podeDescer}
-                            title="Mover para baixo"
-                            aria-label="Mover para baixo"
-                            onClick={() => moverAtividade(cat, a, 1)}
-                          >
-                            ▼
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                    <button
-                      className="ativ__check"
-                      title={a.feito ? 'Marcar como não feita' : 'Marcar como feita'}
-                      onClick={() => void toggle(a)}
-                    >
-                      {a.feito ? '✓' : '○'}
-                    </button>
-                    <button className="ativ__corpo ativ__corpo--btn" onClick={() => iniciarEdicao(a)} title="Editar">
-                      <div className="ativ__titulo">{a.titulo}</div>
-                      <div className="ativ__sub">
-                        {a.categoria === 'cliente' && a.cliente_nome && (
-                          <>
-                            <span className="ativ__tag">cliente</span>
-                            {a.cliente_nome}
-                          </>
-                        )}
-                      </div>
-                      {a.data && (
-                        <div className="ativ__data">
-                          <span className="data-chip">📅 {formatarData(a.data)}</span>
-                        </div>
-                      )}
-                    </button>
-                    <div className="ativ__acoes">
-                      {a.categoria === 'cliente' && (
-                        <button
-                          className="btn-mini btn-mini--whats"
-                          title="Cobrar o cliente no WhatsApp"
-                          onClick={() => cobrarAtividadeCliente(a)}
-                        >
-                          Cobrar
-                        </button>
-                      )}
-                      <button className="btn-mini" disabled={salvando} title="Duplicar" onClick={() => void duplicar(a)}>
-                        Duplicar
-                      </button>
-                      <button
-                        className="btn-mini btn-mini--perigo"
-                        title="Excluir"
-                        onClick={() => void excluir(a)}
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  </div>
-                  )
-                })(),
-              )}
-            </div>
-          )
-        })}
+      {!carregando && (
+        <div className={visao === 'paineis' ? 'ativ-quadro' : 'ativ-pilha'}>
+          {colunasVisiveis.map((cat) => coluna(cat))}
+        </div>
+      )}
     </>
   )
 }

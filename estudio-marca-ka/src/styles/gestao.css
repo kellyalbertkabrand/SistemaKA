@@ -2011,36 +2011,23 @@
   color: var(--t-400);
   line-height: 1.5;
 }
-.ativ-grupo {
-  margin-bottom: 1.6rem;
-}
-.ativ-grupo__tit {
-  font-family: var(--body);
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.6rem;
-  border-bottom: 2px solid;
-}
-.ativ-grupo__tit.cat--trabalho {
+.ativ-col__tit.cat--trabalho {
   color: var(--essencia);
   border-color: rgba(61, 107, 126, 0.4);
 }
-.ativ-grupo__tit.cat--bia {
+.ativ-col__tit.cat--bia {
   color: #7a5099;
   border-color: rgba(122, 80, 153, 0.4);
 }
-.ativ-grupo__tit.cat--pessoal {
+.ativ-col__tit.cat--pessoal {
   color: #8a4b1f;
   border-color: rgba(196, 120, 48, 0.4);
 }
-.ativ-grupo__tit.cat--cliente {
+.ativ-col__tit.cat--cliente {
   color: #2e6b45;
   border-color: rgba(46, 107, 69, 0.4);
 }
-.ativ-grupo__tit.cat--vm {
+.ativ-col__tit.cat--vm {
   color: #b5451f;
   border-color: rgba(181, 69, 31, 0.4);
 }
@@ -2050,14 +2037,16 @@
   padding: 0.2rem 0 0.6rem;
 }
 .ativ {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  min-height: 36px;
+  gap: 0.45rem;
   border: 1px solid rgba(15, 25, 35, 0.08);
-  border-radius: 12px;
-  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  padding: 0.3rem 0.45rem;
   background: var(--bg-1);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.3rem;
 }
 .ativ--projeto {
   background: rgba(61, 107, 126, 0.05);
@@ -2070,8 +2059,8 @@
 }
 .ativ__check {
   flex: none;
-  width: 30px;
-  height: 30px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   border: 2px solid rgba(15, 25, 35, 0.2);
   background: #fff;
@@ -2108,15 +2097,27 @@
 }
 .ativ__titulo {
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  line-height: 1.35;
 }
 .ativ--feito .ativ__titulo {
   text-decoration: line-through;
   color: var(--t-400);
 }
-.ativ__sub {
-  font-size: 0.74rem;
+.ativ__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
   color: var(--t-500);
+}
+.ativ__meta-txt {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 /* Data em DESTAQUE (chip caramelo) — usado nas atividades e nas fases dos
    projetos, para a data "saltar aos olhos". */
@@ -2135,9 +2136,6 @@
   letter-spacing: 0;
   white-space: nowrap;
 }
-.ativ__data {
-  margin-top: 0.25rem;
-}
 .ativ__tag {
   display: inline-block;
   font-size: 0.62rem;
@@ -2152,7 +2150,8 @@
 }
 .ativ__acoes {
   display: flex;
-  gap: 0.25rem;
+  align-items: center;
+  gap: 0.2rem;
   flex: none;
 }
 .ativ--edit {
@@ -2194,16 +2193,6 @@
   padding: 0.45rem 0.55rem;
   background: var(--bg-1);
 }
-@media (max-width: 640px) {
-  .ativ {
-    flex-wrap: wrap;
-  }
-  .ativ__acoes {
-    width: 100%;
-    justify-content: flex-end;
-  }
-}
-
 /* ---- Modernização: alvos de toque maiores no celular (guia iOS ≥44px) ---- */
 @media (max-width: 640px) {
   .btn-mini {
@@ -2211,16 +2200,20 @@
     padding: 0.5rem 0.85rem;
     font-size: 0.75rem;
   }
-  .fase__status,
-  .ativ__check {
+  .fase__status {
     width: 38px;
     height: 38px;
   }
   /* Ações de linha com mais respiro entre os botões */
   .acoes .btn-mini,
-  .fase__acoes .btn-mini,
-  .ativ__acoes .btn-mini {
+  .fase__acoes .btn-mini {
     margin: 0.15rem 0 0.15rem 0.3rem;
+  }
+  /* No cartão de atividade os botões são pequenos de propósito (flutuam
+     sobre o cartão); o alvo de toque vem do próprio quadradinho. */
+  .ativ__acoes .btn-mini {
+    min-height: 26px;
+    padding: 0.2rem 0.45rem;
   }
 }
 
@@ -3297,12 +3290,6 @@
 
 /* Reordenar: alça de arraste + setas ↑/↓ (as setas funcionam em qualquer
    aparelho, mesmo quando o arraste falha no toque). */
-.ativ__reordenar {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex: none;
-}
 .ativ__setas {
   display: flex;
   flex-direction: column;
@@ -3312,8 +3299,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 24px;
+  width: 22px;
+  height: 15px;
   padding: 0;
   border: 1px solid rgba(184, 155, 106, 0.5);
   border-radius: 7px;
@@ -3385,4 +3372,165 @@
 .acesso-expirado p {
   color: var(--t-600);
   line-height: 1.6;
+}
+
+/* ---- Atividades: quadro (painéis) x lista, cartões enxutos --------------- */
+.ativ-barra {
+  align-items: center;
+  gap: 0.5rem;
+}
+.seg--visao button {
+  white-space: nowrap;
+}
+
+/* Painéis: uma coluna por categoria, lado a lado (rola de lado se faltar espaço) */
+.ativ-quadro {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  overflow-x: auto;
+  padding-bottom: 0.6rem;
+  scroll-snap-type: x proximity;
+}
+.ativ-quadro .ativ-col {
+  /* As colunas dividem a largura por igual; abaixo de ~1000px o quadro rola
+     de lado em vez de espremer o texto. */
+  flex: 1 1 0;
+  min-width: 230px;
+  scroll-snap-align: start;
+}
+/* Lista: as categorias uma embaixo da outra, em coluna única */
+.ativ-pilha {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  max-width: 760px;
+}
+
+.ativ-col {
+  background: rgba(15, 25, 35, 0.025);
+  border: 1px solid rgba(15, 25, 35, 0.07);
+  border-radius: 14px;
+  padding: 0.6rem 0.6rem 0.7rem;
+}
+/* Coluna que vai receber o cartão arrastado */
+.ativ-col--recebendo {
+  border-color: var(--dourado);
+  background: rgba(184, 155, 106, 0.09);
+}
+.ativ-col__cab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 0.15rem 0.45rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(15, 25, 35, 0.1);
+}
+.ativ-col__tit {
+  font-family: var(--body);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0;
+  border: none;
+}
+.ativ-col__n {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--t-500);
+  background: rgba(15, 25, 35, 0.07);
+  border-radius: 100px;
+  padding: 0.05rem 0.45rem;
+}
+.ativ-col__corpo {
+  min-height: 42px;
+}
+
+/* Alça de arraste enxuta, à esquerda do cartão */
+.ativ__alca {
+  flex: none;
+  width: 14px;
+  color: var(--dourado);
+  font-size: 0.85rem;
+  line-height: 1;
+  text-align: center;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  opacity: 0.55;
+}
+.ativ__alca:hover {
+  opacity: 1;
+}
+.ativ__alca:active {
+  cursor: grabbing;
+}
+
+/* As ações só aparecem ao passar o mouse (no toque ficam sempre visíveis) */
+/* As ações ficam FORA do fluxo (flutuando à direita) — assim o título usa a
+   largura toda do cartão. No mouse elas aparecem ao passar por cima; no toque
+   ficam sempre visíveis e o texto reserva o espaço delas. */
+.ativ__acoes {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--bg-1);
+  border-radius: 9px;
+  padding: 2px 3px;
+  box-shadow: 0 2px 10px rgba(15, 25, 35, 0.14);
+}
+@media (hover: hover) {
+  .ativ__acoes {
+    display: none;
+  }
+  .ativ:hover .ativ__acoes,
+  .ativ:focus-within .ativ__acoes {
+    display: flex;
+  }
+}
+@media (hover: none) {
+  .ativ__corpo {
+    padding-right: 58px;
+  }
+}
+
+/* Bloco das concluídas: recolhe e expande */
+.feitas-tog {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  margin: 0.5rem 0 0.35rem;
+  padding: 0.3rem 0.4rem;
+  border: none;
+  border-radius: 8px;
+  background: none;
+  font-family: var(--body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--t-500);
+  cursor: pointer;
+}
+.feitas-tog:hover {
+  background: rgba(15, 25, 35, 0.05);
+}
+.feitas-tog__seta {
+  font-size: 0.7rem;
+}
+.feitas-tog__n {
+  background: rgba(15, 25, 35, 0.08);
+  border-radius: 100px;
+  padding: 0.02rem 0.4rem;
+}
+
+@media (max-width: 640px) {
+  /* No celular o quadro vira uma coluna por tela (arrasta de lado) */
+  .ativ-quadro .ativ-col {
+    min-width: 84vw;
+  }
 }
