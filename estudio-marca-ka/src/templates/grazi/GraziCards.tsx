@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import type { RenderProps } from '../types'
 import { hexFundoGrazi, corFonteGrazi } from './cores'
+import { estiloImagem } from '../imagem'
 import './grazi.css'
 
 // Destaque: "aspas" ou *asteriscos* viram negrito (mesma cor). \n vira quebra.
@@ -211,5 +212,103 @@ export function GraziMistaCard({ valores, formato }: RenderProps) {
       {botao && <div className="rodape-txt">{botao}</div>}
       <div className="grazi-faixa" />
     </div>
+  )
+}
+
+// Frase + foto: título em cima, foto (ou vídeo) numa janela arredondada no
+// meio (tamanho pelo slider "Tamanho da foto") e uma frase de fecho embaixo.
+export function GraziFraseFotoCard({ valores, formato }: RenderProps) {
+  const fundo = String(valores.cor_fundo || 'vinho')
+  const cor = corFonteGrazi(valores.cor_fonte, fundo)
+  const titulo = String(valores.titulo || '')
+  const legenda = String(valores.legenda || '')
+  const foto = String(valores.foto || '')
+  const ehVideo = String(valores.foto_kind) === 'video' || foto.startsWith('data:video')
+  // Altura da janela: 60–120% de uma base proporcional ao formato.
+  const area = Math.min(120, Math.max(50, Number(valores.foto_area) || 92)) / 100
+  const baseH = Math.round(formato.altura * 0.42)
+  const h = Math.round(baseH * area)
+  const est = { ...estiloImagem(valores, 'foto'), width: '100%', height: '100%' } as const
+  return (
+    <GraziFrame fundo={fundo} cor={cor} classe="grazi-frasefoto" formato={formato}>
+      {titulo && <div className="titulo">{comDestaque(titulo)}</div>}
+      <div className="foto-janela" style={{ height: h }}>
+        {foto ? (
+          ehVideo ? (
+            <video src={foto} style={est} autoPlay muted loop playsInline />
+          ) : (
+            <img src={foto} alt="" style={est} crossOrigin="anonymous" />
+          )
+        ) : (
+          <div className="foto-ph">foto / vídeo aqui</div>
+        )}
+      </div>
+      {legenda && <div className="legenda">{comDestaque(legenda)}</div>}
+    </GraziFrame>
+  )
+}
+
+// Comparativo: duas colunas — o que "pesa" × o que "inspira" (ou o rótulo que a
+// KA quiser). Cada coluna tem um cabeçalho e uma lista (uma linha por item).
+export function GraziComparativoCard({ valores, formato }: RenderProps) {
+  const fundo = String(valores.cor_fundo || 'verde')
+  const cor = corFonteGrazi(valores.cor_fonte, fundo)
+  const titulo = String(valores.titulo || '')
+  const rotA = String(valores.rotulo_a || '')
+  const rotB = String(valores.rotulo_b || '')
+  const itensA = String(valores.itens_a || '').split('\n').filter((l) => l.trim() !== '')
+  const itensB = String(valores.itens_b || '').split('\n').filter((l) => l.trim() !== '')
+  return (
+    <GraziFrame fundo={fundo} cor={cor} classe="grazi-comp" formato={formato}>
+      {titulo && <div className="titulo">{comDestaque(titulo)}</div>}
+      <div className="comp-grade">
+        <div className="comp-col comp-col--a">
+          {rotA && <div className="comp-cab">{rotA}</div>}
+          {itensA.map((l, i) => (
+            <div className="comp-item" key={i}>
+              <span className="comp-mk">✕</span>
+              <span>{comDestaque(l.trim())}</span>
+            </div>
+          ))}
+        </div>
+        <div className="comp-linha" />
+        <div className="comp-col comp-col--b">
+          {rotB && <div className="comp-cab">{rotB}</div>}
+          {itensB.map((l, i) => (
+            <div className="comp-item" key={i}>
+              <span className="comp-mk comp-mk--ok">✓</span>
+              <span>{comDestaque(l.trim())}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </GraziFrame>
+  )
+}
+
+// Bloco de notas: cartão estilo "Notas" do iPhone (título + linhas), sobre o
+// fundo da marca. Bom para listas/reflexões com um ar pessoal.
+export function GraziNotasCard({ valores, formato }: RenderProps) {
+  const fundo = String(valores.cor_fundo || 'bege-dourado')
+  const cor = corFonteGrazi(valores.cor_fonte, fundo)
+  const chamada = String(valores.chamada || '')
+  const titulo = String(valores.titulo || '')
+  const corpo = String(valores.corpo || '')
+  return (
+    <GraziFrame fundo={fundo} cor={cor} classe="grazi-notas" formato={formato}>
+      {chamada && <div className="chamada">{comDestaque(chamada)}</div>}
+      <div className="nota-card">
+        <div className="nota-barra">
+          <span className="nota-ponto" />
+          <span className="nota-ponto" />
+          <span className="nota-ponto" />
+          <span className="nota-tit-barra">Notas</span>
+        </div>
+        <div className="nota-corpo">
+          {titulo && <div className="nota-tit">{comDestaque(titulo)}</div>}
+          {corpo && <div className="nota-txt">{comDestaque(corpo)}</div>}
+        </div>
+      </div>
+    </GraziFrame>
   )
 }
