@@ -1,0 +1,119 @@
+/* Fontes da Grazi Martini (auto-hospedadas em /public/clientes/grazi/fonts).
+   - Poppins  → títulos e corpo (sans)
+   - Allura   → script de destaque (aproxima a "Slight" da marca; OFL/uso comercial)
+   - Outfit   → wordmark "Método The One" */
+@font-face {
+  font-family: 'Poppins Grazi';
+  font-weight: 400;
+  font-style: normal;
+  src: url('/clientes/grazi/fonts/poppins-400.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Poppins Grazi';
+  font-weight: 500;
+  font-style: italic;
+  src: url('/clientes/grazi/fonts/poppins-500i.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Poppins Grazi';
+  font-weight: 600;
+  font-style: normal;
+  src: url('/clientes/grazi/fonts/poppins-600.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Poppins Grazi';
+  font-weight: 700;
+  font-style: normal;
+  src: url('/clientes/grazi/fonts/poppins-700.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Allura Grazi';
+  font-weight: 400;
+  font-style: normal;
+  src: url('/clientes/grazi/fonts/allura.woff2') format('woff2');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Outfit Grazi';
+  font-weight: 100 900;
+  font-style: normal;
+  src: url('/clientes/grazi/fonts/outfit-500.woff2') format('woff2');
+  font-display: swap;
+}
+
+/* ---- Moldura Grazi: card 1080×1350, conteúdo centralizado, faixa verde ---- */
+.grazi-card {
+  --sans: 'Poppins Grazi', 'Poppins', sans-serif;
+  --script: 'Allura Grazi', cursive;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 108px;
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+.grazi-card .grazi-faixa {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 52px;
+  background: var(--faixa, #1e3a2c);
+}
+.grazi-card .grazi-handle {
+  font-size: 24px;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  opacity: 0.92;
+  margin-bottom: 16px;
+}
+
+/* ---- Frase editorial (título sans + palavra em script + botão) ---- */
+.grazi-frase .titulo {
+  font-weight: 700;
+  font-size: 104px;
+  line-height: 1.02;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+}
+.grazi-frase .titulo .script {
+  font-family: var(--script);
+  font-weight: 400;
+  font-size: 150px;
+  line-height: 0.7;
+  letter-spacing: 0;
+  text-transform: none;
+  margin-left: 14px;
+  vertical-align: -0.24em;
+  white-space: nowrap;
+}
+.grazi-card .grazi-btn {
+  margin-top: 56px;
+  display: inline-flex;
+  align-items: center;
+  gap: 28px;
+  align-self: flex-start;
+  border: 2px solid currentColor;
+  border-radius: 999px;
+  padding: 20px 50px;
+  font-size: 33px;
+  font-weight: 400;
+}
+.grazi-card .grazi-btn .seta {
+  font-size: 28px;
+}
+
+/* Story 9:16 e Quadrado 1:1 (mais/menos altura): título um pouco menor. */
+.grazi-card.fmt-card .titulo {
+  font-size: 88px;
+}
+.grazi-card.fmt-card .titulo .script {
+  font-size: 128px;
+}

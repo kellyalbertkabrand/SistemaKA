@@ -21,7 +21,12 @@ export function DemoStudio() {
   useEffect(() => {
     let vivo = true
     setAcesso('verificando')
-    acessoEstudioPorSlug(slug)
+    // Não travar o cliente se o Firestore demorar: após 4s, libera (fail-open).
+    const comTimeout = Promise.race([
+      acessoEstudioPorSlug(slug),
+      new Promise<null>((res) => setTimeout(() => res(null), 4000)),
+    ])
+    comTimeout
       .then((a) => {
         if (!vivo) return
         if (!a) {

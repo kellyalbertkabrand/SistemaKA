@@ -6,6 +6,7 @@
 import { CORES_PRIMARIAS, CORES_SECUNDARIAS } from './shapes/cores'
 import { PALETA_KA, COR_MARINHO } from './ka/cores'
 import { PALETA_CONECTA, COR_NAVY as COR_NAVY_CONECTA } from './conecta/cores'
+import { PALETA_GRAZI } from './grazi/cores'
 
 export interface MarcaVisual {
   /** Cor principal da marca (fallback da capa e detalhes). */
@@ -42,6 +43,11 @@ const MARCAS: Record<string, MarcaVisual> = {
     logo: '/clientes/conecta/conecta-simbolo.png',
     paleta: PALETA_CONECTA,
     tagline: 'Núcleo de Negócios ACIGRA — conexões que geram oportunidades.',
+  },
+  grazi: {
+    corPrincipal: '#AF7632',
+    paleta: PALETA_GRAZI,
+    tagline: 'Comportamento Humano · Método The One© — @sougrazimartini.',
   },
 }
 
