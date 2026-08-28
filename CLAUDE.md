@@ -1159,6 +1159,19 @@ publish `dist`, Node 20, redirect SPA `/* → /index.html 200`.
 > colar em GitHub → Settings → Secrets → Actions). Site id do app:
 > `620d408e-bb8a-49fb-a1da-ccf602320142`.
 >
+> ✅ **28/08/2026:** o site voltou a publicar **sozinho a partir do push** na
+> branch `estudiodemarca` — o commit `18466e4` entrou no ar ~5 min depois do
+> push (deploy `ready`, branch `estudiodemarca`, alias
+> `estudiodemarca.kellyalbert.com.br`). Confirmar sempre pela API
+> (`get-deploy-for-site` no conector Netlify, site id
+> `620d408e-bb8a-49fb-a1da-ccf602320142`): o campo `commit_ref` diz qual commit
+> está no ar. O **`deploy-site` do conector continua dando `403 Forbidden`** na
+> fase de upload (`zipAndBuild`) — não é o proxy do sandbox (o
+> `recentRelayFailures` fica vazio), é o próprio Netlify. Ou seja: **publicar =
+> dar push**; o "Trigger deploy" no painel é só o plano B. O domínio do site é
+> bloqueado pela política de saída do sandbox, então a IA não consegue abrir a
+> página no ar — a checagem é pela API.
+
 > ⚠️ **Em 30/07/2026 o deploy pelo conector Netlify (deploy-site) falhou com
 > `403 Forbidden`** na fase de upload (`zipAndBuild`). Ou seja: nem o conector
 > nem o workflow (token vencido) publicam sozinhos hoje. **Fluxo confiável
