@@ -2567,6 +2567,14 @@
   border-left-color: #c47830;
   background: rgba(196, 120, 48, 0.04);
 }
+/* Parcela já paga (visão VM) — verde */
+.mov--paga {
+  border-left-color: #2e6b45;
+  background: rgba(46, 107, 69, 0.06);
+}
+.mes-grupo__total--pago {
+  color: #2e6b45;
+}
 /* Conta a pagar (saída ainda não realizada) */
 .mov--pagar {
   border-left-color: var(--erro);
@@ -3046,6 +3054,13 @@
   border-radius: 100px;
   padding: 0.03rem 0.4rem;
 }
+/* etiqueta "✓ paga" (visão VM) — verde. Depois da base p/ vencer no cascade. */
+.mov__tag--paga {
+  margin-left: 0.4rem;
+  color: #2e6b45;
+  background: rgba(46, 107, 69, 0.16);
+  vertical-align: middle;
+}
 .mov__escopo {
   display: inline-block;
   font-size: 0.62rem;
@@ -3111,6 +3126,57 @@
   font-family: var(--heading);
   font-size: 1rem;
   color: #8a4b1f;
+  margin-left: auto;
+}
+/* Cabeçalho de mês clicável (expandir/recolher) */
+.mes-grupo__cab--btn {
+  width: 100%;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+  align-items: center;
+  border-radius: 8px;
+}
+.mes-grupo__cab--btn:hover {
+  background: rgba(15, 25, 35, 0.03);
+}
+.mes-grupo__seta {
+  color: var(--dourado, #b98a3e);
+  font-size: 0.72rem;
+  line-height: 1;
+  flex: none;
+}
+/* Total a receber (topo das Cobranças) */
+.cob-total {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.7rem;
+  background: rgba(196, 120, 48, 0.08);
+  border: 1px solid rgba(196, 120, 48, 0.25);
+  border-radius: 12px;
+  padding: 0.7rem 1rem;
+  margin: 0.2rem 0 0.9rem;
+}
+.cob-total__rot {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--t-500);
+}
+.cob-total__valor {
+  font-family: var(--heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #8a4b1f;
+}
+.cob-total__atras {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--erro);
+  margin-left: auto;
 }
 
 .fin-detalhes {

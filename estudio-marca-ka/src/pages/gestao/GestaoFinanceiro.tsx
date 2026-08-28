@@ -142,6 +142,15 @@ export function GestaoFinanceiro() {
   // Visão: "Meu caixa" (pessoal da KA) OU "A receber da VM Rocks" (só o que é
   // dela — é a prévia do que a VM verá quando entrar com o login por papel).
   const [visao, setVisao] = useState<'caixa' | 'vm'>('caixa')
+  // Meses recolhidos na visão VM (expandir/recolher por mês).
+  const [vmRecolhidos, setVmRecolhidos] = useState<Set<string>>(new Set())
+  const toggleVmMes = (chave: string) =>
+    setVmRecolhidos((p) => {
+      const n = new Set(p)
+      if (n.has(chave)) n.delete(chave)
+      else n.add(chave)
+      return n
+    })
 
   // Formulário de entrada/saída (à mão)
   const [formTipo, setFormTipo] = useState<TipoLancamento | null>(null)
@@ -304,6 +313,14 @@ export function GestaoFinanceiro() {
   const vmCobrancasPorMes = agruparPorMes(vmOcor, (o) => o.venc, (o) => valorDaVM(o.c))
   const totalVMCobrancas = somarDinheiro(vmCobrancas.map(valorDaVM))
   const totalVMGeral = arredondar(totalVMUnico + totalVMCobrancas)
+
+  // Parcelas da VM JÁ PAGAS (aparecem em verde na visão VM) — por mês do
+  // pagamento (ou do vencimento, se faltar a data), da mais recente p/ a antiga.
+  const vmPagas = cobrancas.filter((c) => c.vm_participa && statusEfetivo(c) === 'paga')
+  const vmPagasPorMes = agruparPorMes(vmPagas, (c) => c.pago_em || c.vencimento, (c) => valorDaVM(c))
+    .slice()
+    .reverse()
+  const totalVMPago = somarDinheiro(vmPagas.map(valorDaVM))
 
   function abrirForm(tipo: TipoLancamento) {
     setFormTipo(tipo)
@@ -478,7 +495,7 @@ export function GestaoFinanceiro() {
             avisar que a gente troca.
           </p>
 
-          {vmCobrancas.length === 0 && linhasVM.length === 0 ? (
+          {vmCobrancas.length === 0 && linhasVM.length === 0 && vmPagas.length === 0 ? (
             <div className="card">
               <h3>Nada a receber para a VM Rocks ainda.</h3>
               <p>
@@ -489,16 +506,25 @@ export function GestaoFinanceiro() {
             </div>
           ) : (
             <>
-              {/* Cobranças da VM, por mês */}
+              {/* Cobranças da VM, por mês (expandir/recolher) */}
               {vmCobrancasPorMes.length > 0 && (
                 <section className="fin-secao">
                   <h3 className="fin-secao__tit">A receber — por mês (cobranças)</h3>
-                  {vmCobrancasPorMes.map((g) => (
+                  {vmCobrancasPorMes.map((g) => {
+                    const recolhido = vmRecolhidos.has('r-' + g.chave)
+                    return (
                     <div key={g.chave} className="mes-grupo">
-                      <div className="mes-grupo__cab">
+                      <button
+                        type="button"
+                        className="mes-grupo__cab mes-grupo__cab--btn"
+                        onClick={() => toggleVmMes('r-' + g.chave)}
+                        aria-expanded={!recolhido}
+                      >
+                        <span className="mes-grupo__seta">{recolhido ? '▸' : '▾'}</span>
                         <span className="mes-grupo__nome">{rotuloMes(g.chave)}</span>
                         <span className="mes-grupo__total">{formatarBRL(g.total)}</span>
-                      </div>
+                      </button>
+                      {!recolhido && (
                       <div className="fin-lista">
                         {g.itens.map((o, i) => (
                           <div key={`${o.c.id}-${i}`} className={`mov mov--receber ${o.projetada ? 'mov--previsto' : ''}`}>
@@ -515,8 +541,53 @@ export function GestaoFinanceiro() {
                           </div>
                         ))}
                       </div>
+                      )}
                     </div>
-                  ))}
+                    )
+                  })}
+                </section>
+              )}
+
+              {/* Parcelas da VM JÁ PAGAS — em verde, por mês (expandir/recolher) */}
+              {vmPagasPorMes.length > 0 && (
+                <section className="fin-secao">
+                  <h3 className="fin-secao__tit">Já pagas — VM Rocks · {formatarBRL(totalVMPago)}</h3>
+                  {vmPagasPorMes.map((g) => {
+                    const recolhido = vmRecolhidos.has('p-' + g.chave)
+                    return (
+                    <div key={g.chave} className="mes-grupo">
+                      <button
+                        type="button"
+                        className="mes-grupo__cab mes-grupo__cab--btn"
+                        onClick={() => toggleVmMes('p-' + g.chave)}
+                        aria-expanded={!recolhido}
+                      >
+                        <span className="mes-grupo__seta">{recolhido ? '▸' : '▾'}</span>
+                        <span className="mes-grupo__nome">{rotuloMes(g.chave)}</span>
+                        <span className="mes-grupo__total mes-grupo__total--pago">{formatarBRL(g.total)}</span>
+                      </button>
+                      {!recolhido && (
+                      <div className="fin-lista">
+                        {g.itens.map((c, i) => (
+                          <div key={`${c.id}-${i}`} className="mov mov--paga">
+                            <div className="mov__corpo">
+                              <div className="mov__desc">
+                                {c.descricao}
+                                <span className="mov__tag mov__tag--paga">✓ paga</span>
+                              </div>
+                              <div className="mov__meta">
+                                {nomeCliente(c.cliente_id) || 'sem cliente'}
+                                {c.pago_em ? ` · paga em ${formatarData(c.pago_em)}` : ''}
+                              </div>
+                            </div>
+                            <div className="mov__valor mov__valor--entrada">{formatarBRL(valorDaVM(c))}</div>
+                          </div>
+                        ))}
+                      </div>
+                      )}
+                    </div>
+                    )
+                  })}
                 </section>
               )}
 
