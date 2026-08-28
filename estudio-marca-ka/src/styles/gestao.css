@@ -3545,6 +3545,11 @@
   padding: 0.4rem 0.9rem;
   font-size: 0.8rem;
 }
+/* Enquanto a KA não escolher, o campo fica marcado como pendente. */
+.seg--faltando {
+  border-color: var(--dourado);
+  box-shadow: 0 0 0 3px rgba(184, 155, 106, 0.18);
+}
 /* Etiqueta "com nota" no cartão da cobrança (a "sem nota" usa badge--cinza). */
 .badge--nota {
   background: rgba(61, 107, 126, 0.16);

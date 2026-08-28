@@ -55,11 +55,6 @@ export const PIX_VM_PESSOAL: DadosPix = {
   linhaPix: 'Pix: gabriela.lucato@gmail.com',
 }
 
-/** A conta da VM que combina com a nota fiscal da cobrança. */
-export function pixVmPorNota(comNota?: boolean | null): DadosPix {
-  return comNota === true ? PIX_VM_EMPRESA : PIX_VM_PESSOAL
-}
-
 export const PIX_OPCOES: DadosPix[] = [PIX_PESSOAL, PIX_EMPRESA]
 
 /**

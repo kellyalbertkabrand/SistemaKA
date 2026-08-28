@@ -587,20 +587,26 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
     cobrança tipo `mensalidade`. No modo editar, parcelado transforma a atual na
     1ª parcela e cria as demais.
   - **COM NOTA × SEM NOTA (ago/2026):** a cobrança tem o campo `com_nota`
-    (segmento "Sem nota / Com nota" no formulário; etiqueta no cartão). Ele
-    decide qual PIX já vem escrito na mensagem do WhatsApp: **com nota** → conta
-    da EMPRESA (chave CNPJ); **sem nota** → conta PESSOAL. `pixPorNota()` em
-    `src/lib/pagamento.ts` devolve as contas na ordem certa (a 1ª é a que entra
-    na mensagem; as outras continuam como chips, dá para trocar na hora).
-    Cobrança antiga (sem o campo) mantém a ordem padrão.
+    (segmento "Sem nota / Com nota" no formulário; etiqueta no cartão). A
+    escolha é **OBRIGATÓRIA** ao criar/editar: o campo nasce sem nada marcado
+    (`novaComNota = null`, moldura dourada `.seg--faltando`) e salvar sem
+    responder dá o aviso "Diga se esta cobrança sai COM ou SEM nota fiscal" —
+    são muitas cobranças, e um padrão silencioso fazia a KA esquecer de marcar.
+    Ele decide qual PIX já vem escrito na mensagem do WhatsApp: **com nota** →
+    conta da EMPRESA (chave CNPJ); **sem nota** → conta PESSOAL. `pixPorNota()`
+    em `src/lib/pagamento.ts` devolve as contas na ordem certa. Cobrança antiga
+    (sem o campo) mantém a ordem padrão e não mostra etiqueta.
   - **PIX da VM junto (ago/2026):** quando a cobrança tem `vm_participa`, o
-    popup do WhatsApp ganha o chip **"KA + VM (2 PIX)"**: a mensagem sai com o
-    valor dividido — a parte da KA (`valor − valor_vm`) no PIX dela e a parte da
-    VM (`valor_vm`) no PIX da VM —, cada uma com o banco e o favorecido. A conta
-    da VM segue a MESMA regra da nota: com nota → **Serena Market Ltda** (PIX
-    CNPJ); sem nota → **Gabriela Lucato Serra** (PIX por e-mail). Só os dados do
-    PIX ficam no código (`PIX_VM_EMPRESA`/`PIX_VM_PESSOAL`) — agência, conta e
-    CPF NÃO entram, porque o JavaScript do site é público.
+    popup do WhatsApp ganha **duas duplas** — **"KA + VM · pessoal"** (as duas
+    pessoas físicas: Kelly Albert + Gabriela Lucato Serra) e **"KA + VM ·
+    empresa"** (os dois CNPJ: KA + Serena Market Ltda). A mensagem sai com o
+    valor dividido — a parte da KA (`valor − valor_vm`) no PIX dela e a parte
+    da VM (`valor_vm`) no PIX da VM —, cada uma com banco e favorecido. As duas
+    contas andam SEMPRE juntas (nunca uma PF com uma PJ). A dupla que combina
+    com a nota vem primeiro (é o texto já escrito); os chips só-da-KA (PIX
+    pessoal / PIX empresa) continuam abaixo. Só os dados do PIX ficam no código
+    (`PIX_PESSOAL`/`PIX_EMPRESA`/`PIX_VM_PESSOAL`/`PIX_VM_EMPRESA`) — agência,
+    conta e CPF NÃO entram, porque o JavaScript do site é público.
   - **Cobranças em CARTÕES agrupados (jul/2026):** a tabela virou **cards** com
     faixa colorida por status (pendente azul, atrasada vermelha, paga verde,
     cancelada cinza), valor em destaque e ações que quebram linha (desktop e

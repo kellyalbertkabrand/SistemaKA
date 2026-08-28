@@ -15,7 +15,15 @@ import {
 } from '../../lib/gestao'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import { linkPortalVM } from '../../lib/vm'
-import { blocoPix, pixPorNota, pixVmPorNota, type DadosPix } from '../../lib/pagamento'
+import {
+  blocoPix,
+  pixPorNota,
+  PIX_EMPRESA,
+  PIX_PESSOAL,
+  PIX_VM_EMPRESA,
+  PIX_VM_PESSOAL,
+  type DadosPix,
+} from '../../lib/pagamento'
 import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
 import { arredondar, autoAltura, hojeLocal, parseValorBR, somarDinheiro } from '../../lib/ui'
@@ -90,7 +98,9 @@ export function GestaoCobrancas() {
   const [novaVM, setNovaVM] = useState(false)
   const [novoValorVM, setNovoValorVM] = useState('')
   // Sai com nota fiscal? Define qual PIX vai na mensagem (empresa x pessoal).
-  const [novaComNota, setNovaComNota] = useState(false)
+  // Começa SEM resposta (null) e é obrigatório escolher — são muitas cobranças,
+  // e um padrão silencioso faria a KA esquecer de marcar.
+  const [novaComNota, setNovaComNota] = useState<boolean | null>(null)
   // Colar link de pagamento (inline, por linha)
   const [linkPara, setLinkPara] = useState<string | null>(null)
   const [linkTemp, setLinkTemp] = useState('')
@@ -178,10 +188,10 @@ export function GestaoCobrancas() {
       linhas.push('', '_Mensagem automática enviada pelo sistema._')
       return linhas.join('\n')
     }
-    // Cobrança da KA E da VM: mensagem com os DOIS PIX e o valor de cada uma
-    // (o cliente paga cada parte direto para quem recebe).
-    const montarComVM = (pix: DadosPix) => {
-      const pixVM = pixVmPorNota(c.com_nota)
+    // Cobrança da KA E da VM: a mensagem sai com os DOIS PIX e o valor de cada
+    // uma (o cliente paga cada parte direto para quem recebe). As duas contas
+    // andam juntas: ou as duas PESSOAIS, ou as duas da EMPRESA.
+    const montarComVM = (pixKA: DadosPix, pixVM: DadosPix) => {
       const vm = arredondar(Number(c.valor_vm ?? c.valor))
       const ka = arredondar(Number(c.valor) - vm)
       const linhas = [
@@ -193,7 +203,7 @@ export function GestaoCobrancas() {
         'O pagamento é dividido em dois PIX:',
       ]
       if (ka > 0) {
-        linhas.push('', `*${formatarBRL(ka)}* — ${pix.favorecido}`, pix.banco, pix.linhaPix)
+        linhas.push('', `*${formatarBRL(ka)}* — ${pixKA.favorecido}`, pixKA.banco, pixKA.linhaPix)
       }
       linhas.push('', `*${formatarBRL(vm)}* — ${pixVM.favorecido}`, pixVM.banco, pixVM.linhaPix)
       if (c.link_pagamento) {
@@ -203,15 +213,23 @@ export function GestaoCobrancas() {
       return linhas.join('\n')
     }
 
-    // Com nota → PIX da empresa (CNPJ); sem nota → PIX pessoal. O 1º da lista
-    // já vem escrito; os outros ficam como botões, se ela quiser trocar.
-    const contas = pixPorNota(c.com_nota)
-    const opcoes = contas.map((p) => ({ rotulo: p.chip, mensagem: montar(p) }))
-    // Cobrança que também é da VM: opção com os dois PIX (o cliente paga cada
-    // parte para quem recebe).
-    if (c.vm_participa) {
-      opcoes.push({ rotulo: 'KA + VM (2 PIX)', mensagem: montarComVM(contas[0]) })
+    // Botões de dados de pagamento. Só da KA: o PIX pessoal e o da empresa.
+    // Com a VM: também as duas duplas (as duas pessoais OU as duas empresas).
+    // O que combina com a nota da cobrança vem PRIMEIRO — é o texto que já
+    // aparece escrito; os outros ficam como botões para trocar na hora.
+    const comNota = c.com_nota === true
+    const soKA = pixPorNota(c.com_nota).map((p) => ({ rotulo: p.chip, mensagem: montar(p) }))
+    const duplaPessoal = {
+      rotulo: 'KA + VM · pessoal',
+      mensagem: montarComVM(PIX_PESSOAL, PIX_VM_PESSOAL),
     }
+    const duplaEmpresa = {
+      rotulo: 'KA + VM · empresa',
+      mensagem: montarComVM(PIX_EMPRESA, PIX_VM_EMPRESA),
+    }
+    const opcoes = c.vm_participa
+      ? [...(comNota ? [duplaEmpresa, duplaPessoal] : [duplaPessoal, duplaEmpresa]), ...soKA]
+      : soKA
     abrirWhatsApp(
       // O telefone atual da ficha vem primeiro; `||` garante que vazio/nulo
       // caia para o próximo (o `??` deixava passar string vazia antiga).
@@ -276,7 +294,7 @@ export function GestaoCobrancas() {
     setNovaVezes('2')
     setNovaVM(false)
     setNovoValorVM('')
-    setNovaComNota(false)
+    setNovaComNota(null)
     setErro(null)
     setCriando(true)
   }
@@ -294,7 +312,7 @@ export function GestaoCobrancas() {
     setNovaForma(c.tipo === 'mensalidade' ? 'mensal' : 'avista')
     setNovaVezes('2')
     setNovaVM(c.vm_participa ?? false)
-    setNovaComNota(c.com_nota === true)
+    setNovaComNota(c.com_nota ?? null)
     setNovoValorVM(c.valor_vm != null ? String(c.valor_vm).replace('.', ',') : '')
     setErro(null)
     setCriando(true)
@@ -317,6 +335,10 @@ export function GestaoCobrancas() {
     const tipo = novaForma === 'mensal' ? 'mensalidade' : 'avulsa'
     const descBase = novaDesc.trim()
     // Valor da VM: se ela participa e o campo ficou vazio, herda o valor total.
+    if (novaComNota === null) {
+      setErro('Diga se esta cobrança sai COM ou SEM nota fiscal.')
+      return
+    }
     const valorVM = novaVM ? (novoValorVM.trim() ? parseValorBR(novoValorVM) : valor) : null
     if (valorVM != null && valorVM > valor) {
       setErro('O valor da VM Rocks não pode ser maior que o valor cobrado do cliente.')
@@ -564,16 +586,28 @@ export function GestaoCobrancas() {
 
         <div className="field">
           <label>Nota fiscal</label>
-          <div className="seg seg--nota">
-            <button type="button" className={!novaComNota ? 'seg__on' : ''} onClick={() => setNovaComNota(false)}>
+          <div className={`seg seg--nota ${novaComNota === null ? 'seg--faltando' : ''}`}>
+            <button
+              type="button"
+              className={novaComNota === false ? 'seg__on' : ''}
+              onClick={() => setNovaComNota(false)}
+            >
               Sem nota
             </button>
-            <button type="button" className={novaComNota ? 'seg__on' : ''} onClick={() => setNovaComNota(true)}>
+            <button
+              type="button"
+              className={novaComNota === true ? 'seg__on' : ''}
+              onClick={() => setNovaComNota(true)}
+            >
               Com nota
             </button>
           </div>
           <span className="campo-ajuda">
-            Com nota, a mensagem já vai com o PIX da empresa (CNPJ); sem nota, com o PIX pessoal.
+            {novaComNota === null
+              ? 'Escolha uma das duas — fica registrado na cobrança.'
+              : novaComNota
+                ? 'Com nota: a mensagem já vai com o PIX da empresa (CNPJ).'
+                : 'Sem nota: a mensagem já vai com o PIX pessoal.'}
           </span>
         </div>
 
