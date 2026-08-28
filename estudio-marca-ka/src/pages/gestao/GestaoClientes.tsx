@@ -463,6 +463,60 @@ function FichaDoCliente({ cliente, aoVoltar }: { cliente: Cliente | null; aoVolt
               />
             </div>
             <div className="field">
+              <label>Estúdio liberado?</label>
+              <select
+                value={f.estudio_ativo === false ? 'nao' : 'sim'}
+                onChange={(e) => campo('estudio_ativo', e.target.value === 'sim')}
+              >
+                <option value="sim">sim, liberado</option>
+                <option value="nao">não (bloqueado)</option>
+              </select>
+            </div>
+            <div className="field">
+              <label>Acesso até (opcional)</label>
+              <input
+                type="date"
+                value={f.estudio_ate ?? ''}
+                onChange={(e) => campo('estudio_ate', e.target.value || null)}
+              />
+            </div>
+            {f.slug && (
+              <div className="field campo-toda">
+                <label>Link do estúdio (para o cliente)</label>
+                <div className="estudio-link">
+                  <code>/ver/{f.slug}</code>
+                  <button
+                    type="button"
+                    className="btn-mini"
+                    onClick={() => {
+                      void navigator.clipboard.writeText(`${window.location.origin}/ver/${f.slug}`)
+                      mostrar('Link do estúdio copiado ✓', 'ok')
+                    }}
+                  >
+                    Copiar link
+                  </button>
+                  {f.estudio_ativo === false ? (
+                    <span className="estudio-link__st estudio-link__st--off">bloqueado</span>
+                  ) : f.estudio_ate ? (
+                    <span
+                      className={
+                        'estudio-link__st' +
+                        (f.estudio_ate < new Date().toISOString().slice(0, 10)
+                          ? ' estudio-link__st--off'
+                          : '')
+                      }
+                    >
+                      {f.estudio_ate < new Date().toISOString().slice(0, 10)
+                        ? 'expirado'
+                        : `liberado até ${f.estudio_ate.split('-').reverse().join('/')}`}
+                    </span>
+                  ) : (
+                    <span className="estudio-link__st">liberado (sem validade)</span>
+                  )}
+                </div>
+              </div>
+            )}
+            <div className="field">
               <label>Status</label>
               <select value={f.status ?? 'ativo'} onChange={(e) => campo('status', e.target.value as Cliente['status'])}>
                 <option value="ativo">ativo</option>

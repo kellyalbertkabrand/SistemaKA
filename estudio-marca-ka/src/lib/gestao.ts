@@ -132,6 +132,8 @@ export type FichaCliente = Partial<
     | 'valor_mensalidade'
     | 'dia_vencimento'
     | 'cobranca_ativa'
+    | 'estudio_ativo'
+    | 'estudio_ate'
     | 'razao_social'
     | 'fundador_nome'
     | 'fundador_cpf'
@@ -148,6 +150,30 @@ export async function salvarFichaCliente(id: string, dados: FichaCliente): Promi
   await updateDoc(doc(db, 'clientes', id), limpar({ ...dados }))
   const d = await getDoc(doc(db, 'clientes', id))
   return comId<Cliente>(d.id, d.data() ?? {})
+}
+
+// Acesso ao estúdio de uma marca (por slug), para o gate por validade.
+export interface AcessoEstudio {
+  nome: string
+  ativo: boolean
+  ate: string | null
+}
+/**
+ * Retorna o acesso do estúdio da marca (por slug), ou `null` quando NÃO existe
+ * cliente com esse slug — nesse caso a marca é "aberta" (ex.: shapes/ka) e o
+ * estúdio segue liberado. Só bloqueia quando a KA desligou (estudio_ativo=false)
+ * ou a validade (estudio_ate) já passou.
+ */
+export async function acessoEstudioPorSlug(slug: string): Promise<AcessoEstudio | null> {
+  const snap = await getDocs(query(collection(db, 'clientes'), where('slug', '==', slug)))
+  const d = snap.docs.find((x) => !x.data().excluido_em)
+  if (!d) return null
+  const c = d.data() as Cliente
+  return {
+    nome: c.nome_marca,
+    ativo: c.estudio_ativo !== false, // undefined/true = liberado
+    ate: c.estudio_ate ?? null,
+  }
 }
 
 /**

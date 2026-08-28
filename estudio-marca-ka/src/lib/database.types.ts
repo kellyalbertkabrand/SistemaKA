@@ -31,6 +31,11 @@ export interface Cliente {
   valor_mensalidade: number | null
   dia_vencimento: number
   cobranca_ativa: boolean
+  // Acesso ao estúdio por período (cliente pontual, ex.: Lucas)
+  /** Estúdio liberado? undefined/true = liberado; false = bloqueado. */
+  estudio_ativo?: boolean | null
+  /** Acesso ao estúdio até esta data (YYYY-MM-DD). Vazio = sem validade. */
+  estudio_ate?: string | null
   // Dados para o CONTRATO (preenchidos no cadastro ou pela KA)
   /** Razão social / nome jurídico da empresa (se diferente da marca). */
   razao_social?: string | null
