@@ -759,6 +759,25 @@ padrão).
   só as etapas dela; não move projeto de coluna nem muda prioridade (decisão da
   KA).
 
+### Projetos — REVISÃO DA SEMANA (ago/2026)
+
+4ª visão da aba Projetos (**🗓 Semana**, ao lado de Quadro/Lista/Pendências):
+o retrato de segunda-feira, calculado por `revisaoSemana(projetos, hoje)` em
+`projetos.ts` (função pura — sem campo novo no banco; usa a entrega prevista do
+projeto, as datas e o `concluida_em` das fases).
+
+- **Semana = segunda a domingo** da data atual. Blocos: **⚠️ Atrasado** (entrega
+  ou etapa vencida, com os dias), **📅 Vence até domingo**, **⏳ Esperando o
+  cliente** (projetos na coluna "Com o cliente", com há quantos dias estão
+  parados — usa `atualizado_em`), **✅ O que andou** (etapas concluídas nos
+  últimos 7 dias), **▶️ Próximos da fila** (na ordem da KA) e **🕐 Em andamento
+  sem entrega prevista**. Rodapé: etapas em aberto por responsável.
+- 4 cards no topo com os números; clicar em qualquer linha abre o projeto.
+- **Imprimir / Salvar PDF** (`imprimirComoPdf`) e **Copiar resumo**
+  (`resumoSemanaTexto`, com `*negrito*` do WhatsApp) — é o texto que a KA manda
+  para a VM na segunda.
+- Estilos `.sem-*` em gestao.css.
+
 ### Projetos — datas, responsável (KA/VM) e pendências (jul/2026)
 
 - **Data de início do projeto** (`Projeto.inicio`, YYYY-MM-DD, opcional):
