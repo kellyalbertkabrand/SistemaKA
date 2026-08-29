@@ -1187,17 +1187,24 @@ publish `dist`, Node 20, redirect SPA `/* → /index.html 200`.
 > colar em GitHub → Settings → Secrets → Actions). Site id do app:
 > `620d408e-bb8a-49fb-a1da-ccf602320142`.
 >
-> ❌ **28/08/2026 — o deploy NÃO é automático (testado):** os commits `d0d47aa`
-> e `e48c903` foram enviados sem ninguém tocar no painel e, mais de uma hora
-> depois, o site continuava no `18466e4` (o deploy das 19:57, que foi a KA
-> clicando em Trigger deploy). Ou seja: **push não publica**; é preciso clicar
-> em **Trigger deploy** no painel do Netlify. O **`deploy-site` do conector
-> continua dando `403 Forbidden`** na fase de upload (`zipAndBuild`) — não é o
-> proxy do sandbox (o `recentRelayFailures` fica vazio), é o próprio Netlify.
-> Conferir o que está no ar pela API (`get-deploy-for-site` no conector, site id
-> `620d408e-bb8a-49fb-a1da-ccf602320142`): o campo `commit_ref` diz o commit
-> publicado. O domínio do site é bloqueado pela política de saída do sandbox,
-> então a IA não abre a página no ar — a checagem é sempre pela API.
+> ✅ **28/08/2026 — publicar É dar push (mas só conta o que muda dentro de
+> `estudio-marca-ka/`).** O site builda sozinho ~1 min depois do push na branch
+> `estudiodemarca`: confirmado nos commits `18466e4`, `6943c37` e `f1c8b44`
+> (todos mexeram no app). Os commits `d0d47aa` e `e48c903` NÃO geraram deploy
+> porque só alteraram o `CLAUDE.md`, que está na RAIZ do repo — com "base
+> directory" configurado, o Netlify pula o build quando nada muda dentro da
+> pasta base. Ou seja: commit só de documentação não publica, e isso é o
+> esperado (não é bug). Antes de concluir "o deploy não está funcionando",
+> conferir se o commit tocou em `estudio-marca-ka/`.
+>
+> ⚠️ O **`deploy-site` do conector Netlify continua dando `403 Forbidden`** na
+> fase de upload (`zipAndBuild`) — não é o proxy do sandbox (o
+> `recentRelayFailures` fica vazio), é o próprio Netlify. Como o push publica,
+> esse caminho não é necessário. Conferir o que está no ar pela API
+> (`get-deploy-for-site`, site id `620d408e-bb8a-49fb-a1da-ccf602320142`): o
+> campo `commit_ref` diz o commit publicado. O domínio do site é bloqueado pela
+> política de saída do sandbox, então a IA não abre a página no ar — a checagem
+> é sempre pela API.
 
 > ⚠️ **Em 30/07/2026 o deploy pelo conector Netlify (deploy-site) falhou com
 > `403 Forbidden`** na fase de upload (`zipAndBuild`). Ou seja: nem o conector
