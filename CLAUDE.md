@@ -724,6 +724,41 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
   ~1,3s). Mesmo padrão nas Atividades (`.ativ--movido`). Sem botões ↑/↓ (a KA
   preferiu só o arraste).
 
+### Projetos — QUADRO por estágio (gestão de projetos, ago/2026)
+
+A aba Projetos ganhou a camada de cima ("quantos projetos eu tenho, qual entra
+primeiro, onde cada um travou") — antes só existia a lista com as fases dentro
+de cada projeto. Segmento: **▦ Quadro / ☰ Lista / Pendências** (Quadro é o
+padrão).
+
+- **Estágio = coluna do quadro** (`EstagioProjeto` em `projetos.ts`, campo
+  `Projeto.estagio`): **Na fila · Em andamento · Com o cliente · Em revisão ·
+  Entregue** (as 5 que a KA escolheu). É diferente da FASE (a etapa do método).
+  Projeto antigo, sem o campo, é encaixado por `estagioDoProjeto()`: concluído →
+  Entregue; pausado ou nada começado → Na fila; resto → Em andamento. Assim o
+  quadro nasce cheio, sem arrumação manual.
+- **Ordem por arrasto** (`Projeto.ordem`): arrastar para cima muda quem começa
+  antes; arrastar para o lado muda de coluna (`moverProjeto` +
+  `definirOrdensProjetos`). Mover para Entregue grava `status:'concluido'` (some
+  das pendências); sair de lá volta para `ativo`.
+- **Cartão** (`.quadro-card*` — NÃO usar `.proj-card`, que já é da página
+  pública do projeto): cliente, nome, **fase atual** (`faseAtual()` = 1ª etapa
+  não concluída) com a etiqueta do responsável, % de progresso e a **entrega
+  prevista** (`Projeto.entrega_prevista`) com chip dourado (≤7 dias) ou vermelho
+  (`diasParaEntrega()` negativo = atrasado).
+- **Sem limite de WIP** (a KA dispensou) e **projeto novo nasce Na fila**, no
+  fim — é ela quem arrasta para a posição.
+- **`src/hooks/useArrastarCartoes.ts`**: a mecânica de arrastar (segurar ~0,3s,
+  travar a rolagem no toque, achar coluna/alvo pelo ponteiro) virou hook
+  genérico, usado pelo quadro de Projetos. Marcadores no DOM:
+  `[data-alca]` pega na hora, `[data-nao-arrasta]` não arrasta. As Atividades
+  ainda usam a cópia interna delas — **migrar para o hook** quando mexer lá.
+- **VM Rocks:** o portal `/vm-rocks` ganhou **"Fila dos projetos"** (só leitura,
+  `.vm-fila*`) com os projetos em que ela participa, agrupados por estágio e na
+  ordem da KA — ela se planeja pelo que vem. Continua podendo concluir/ajustar
+  só as etapas dela; não move projeto de coluna nem muda prioridade (decisão da
+  KA).
+
 ### Projetos — datas, responsável (KA/VM) e pendências (jul/2026)
 
 - **Data de início do projeto** (`Projeto.inicio`, YYYY-MM-DD, opcional):

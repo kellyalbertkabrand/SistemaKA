@@ -29,6 +29,27 @@ export type FaseStatus = 'pendente' | 'andamento' | 'concluida'
 export type ProjetoStatus = 'ativo' | 'pausado' | 'concluido'
 
 /**
+ * ESTÁGIO do projeto = a coluna do quadro (onde ele está no fluxo da KA).
+ * É diferente da FASE (a etapa interna do método, ex.: "Base Estratégica").
+ *   fila      → fechado, ainda não começou (aqui a ordem diz quem entra antes)
+ *   andamento → KA/VM trabalhando
+ *   cliente   → parado esperando material, resposta ou aprovação do cliente
+ *   revisao   → ajustes finais
+ *   entregue  → fechado, sai da frente
+ */
+export type EstagioProjeto = 'fila' | 'andamento' | 'cliente' | 'revisao' | 'entregue'
+
+export const ESTAGIOS: EstagioProjeto[] = ['fila', 'andamento', 'cliente', 'revisao', 'entregue']
+
+export const ROTULO_ESTAGIO: Record<EstagioProjeto, string> = {
+  fila: 'Na fila',
+  andamento: 'Em andamento',
+  cliente: 'Com o cliente',
+  revisao: 'Em revisão',
+  entregue: 'Entregue',
+}
+
+/**
  * Quem é responsável pela etapa. Valores especiais: 'KA' (a Kelly), 'VM'
  * (a parceira VM Rocks) e 'CLIENTE' (o próprio cliente do projeto — tarefa que
  * ELE precisa fazer, para a KA cobrar). Usados nos filtros de pendências.
@@ -82,8 +103,14 @@ export interface Projeto {
   descricao: string | null
   /** Data de início do projeto (YYYY-MM-DD). Opcional. */
   inicio?: string | null
+  /** Entrega prevista do projeto inteiro (YYYY-MM-DD). Opcional. */
+  entrega_prevista?: string | null
   fases: FaseProjeto[]
   status: ProjetoStatus
+  /** Coluna do quadro. Ausente em projetos antigos → ver `estagioDoProjeto`. */
+  estagio?: EstagioProjeto | null
+  /** Posição dentro da coluna (arrastar). Menor = mais em cima. */
+  ordem?: number | null
   token: string
   criado_em: string
   atualizado_em: string
@@ -173,6 +200,33 @@ function novoToken(): string {
   return Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('')
 }
 
+/**
+ * Coluna do projeto. Projeto antigo (sem `estagio`) é encaixado pelo que já se
+ * sabe: concluído → Entregue; pausado ou nada começado → Na fila; o resto →
+ * Em andamento. Assim o quadro nasce preenchido, sem precisar arrumar à mão.
+ */
+export function estagioDoProjeto(p: Projeto): EstagioProjeto {
+  if (p.estagio) return p.estagio
+  if (p.status === 'concluido') return 'entregue'
+  const comecou = p.fases.some((f) => f.status !== 'pendente')
+  if (p.status === 'pausado' || !comecou) return 'fila'
+  return 'andamento'
+}
+
+/** A fase ATUAL: a primeira etapa que ainda não foi concluída. */
+export function faseAtual(p: Projeto): { fase: FaseProjeto; idx: number } | null {
+  const idx = p.fases.findIndex((f) => f.status !== 'concluida')
+  return idx < 0 ? null : { fase: p.fases[idx], idx }
+}
+
+/** Dias até a entrega prevista (negativo = atrasado). null = sem data. */
+export function diasParaEntrega(p: Projeto, hoje = new Date()): number | null {
+  if (!p.entrega_prevista) return null
+  const alvo = new Date(`${p.entrega_prevista}T12:00:00`)
+  const base = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 12)
+  return Math.round((alvo.getTime() - base.getTime()) / 86400000)
+}
+
 /** % de fases concluídas (0–100). */
 export function progressoProjeto(p: Pick<Projeto, 'fases'>): number {
   if (!p.fases.length) return 0
@@ -246,6 +300,9 @@ export async function criarProjeto(dados: {
   cliente_nome: string | null
   descricao: string | null
   inicio?: string | null
+  entrega_prevista?: string | null
+  /** Posição na fila (fim da lista). */
+  ordem?: number
   fases: ModeloFaseItem[]
 }): Promise<Projeto> {
   const novo = {
@@ -254,6 +311,10 @@ export async function criarProjeto(dados: {
     cliente_nome: dados.cliente_nome,
     descricao: dados.descricao,
     inicio: dados.inicio ?? null,
+    entrega_prevista: dados.entrega_prevista ?? null,
+    // Projeto novo entra NA FILA (decisão da KA) — a ordem manda quem começa.
+    estagio: 'fila' as EstagioProjeto,
+    ordem: dados.ordem ?? 0,
     fases: dados.fases.map<FaseProjeto>((fase) => ({
       nome: fase.nome,
       descricao: fase.descricao ?? null,
@@ -273,11 +334,49 @@ export async function criarProjeto(dados: {
 
 export async function salvarProjeto(
   id: string,
-  dados: Partial<Pick<Projeto, 'nome' | 'cliente_nome' | 'descricao' | 'inicio' | 'fases' | 'status'>>,
+  dados: Partial<
+    Pick<
+      Projeto,
+      | 'nome'
+      | 'cliente_nome'
+      | 'descricao'
+      | 'inicio'
+      | 'entrega_prevista'
+      | 'fases'
+      | 'status'
+      | 'estagio'
+      | 'ordem'
+    >
+  >,
 ): Promise<Projeto> {
   await updateDoc(doc(db, 'projetos', id), { ...dados, atualizado_em: agora() })
   const d = await getDoc(doc(db, 'projetos', id))
   return comId<Projeto>(d.id, d.data() ?? {})
+}
+
+/**
+ * Move o projeto de coluna (e grava a posição). O `status` antigo continua
+ * coerente: Entregue = concluído (some das pendências), o resto = ativo.
+ */
+export async function moverProjeto(
+  id: string,
+  estagio: EstagioProjeto,
+  ordem: number,
+): Promise<Projeto> {
+  return salvarProjeto(id, {
+    estagio,
+    ordem,
+    status: estagio === 'entregue' ? 'concluido' : 'ativo',
+  })
+}
+
+/** Grava a posição de vários projetos de uma vez (depois de arrastar). */
+export async function definirOrdensProjetos(
+  pares: { id: string; ordem: number }[],
+): Promise<void> {
+  await Promise.all(
+    pares.map((x) => updateDoc(doc(db, 'projetos', x.id), { ordem: x.ordem })),
+  )
 }
 
 export async function excluirProjeto(id: string): Promise<void> {

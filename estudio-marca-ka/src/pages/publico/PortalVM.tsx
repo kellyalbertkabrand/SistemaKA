@@ -1,7 +1,20 @@
 import { useEffect, useState } from 'react'
 import { listarClientes } from '../../lib/api'
 import { formatarBRL, formatarData, listarCobrancas, statusEfetivo } from '../../lib/gestao'
-import { listarProjetos, salvarProjeto, type FaseProjeto, type Projeto } from '../../lib/projetos'
+import {
+  diasParaEntrega,
+  ESTAGIOS,
+  estagioDoProjeto,
+  faseAtual,
+  listarProjetos,
+  progressoProjeto,
+  ROTULO_ESTAGIO,
+  rotuloResp,
+  respClasse,
+  salvarProjeto,
+  type FaseProjeto,
+  type Projeto,
+} from '../../lib/projetos'
 import { linhasFinanceiro, rotuloForma, type LinhaFinanceiro } from '../../lib/financeiro'
 import {
   listarAtividades,
@@ -391,6 +404,70 @@ export function PortalVM() {
           </div>
         )}
       </div>
+
+      {/* ===== FILA DOS PROJETOS (só leitura) — a VM se planeja pelo que vem ===== */}
+      {projetosVM.length > 0 && (
+        <div className="proj-card">
+          <div className="proj-card__titulo">Fila dos projetos</div>
+          <p className="ativ-vazio" style={{ marginTop: 0 }}>
+            Onde está cada projeto em que você participa — a ordem é a que a Kelly definiu.
+          </p>
+          <div className="vm-fila">
+            {ESTAGIOS.filter((est) =>
+              projetosVM.some(({ projeto }) => estagioDoProjeto(projeto) === est),
+            ).map((est) => (
+              <section key={est} className="vm-fila__col">
+                <h3 className={`vm-fila__tit est--${est}`}>{ROTULO_ESTAGIO[est]}</h3>
+                {projetosVM
+                  .filter(({ projeto }) => estagioDoProjeto(projeto) === est)
+                  .sort((a, b) => (a.projeto.ordem ?? 0) - (b.projeto.ordem ?? 0))
+                  .map(({ projeto }) => {
+                    const atual = faseAtual(projeto)
+                    const dias = diasParaEntrega(projeto)
+                    return (
+                      <article key={projeto.id} className="vm-fila__card">
+                        <div className="quadro-card__cliente">
+                          {projeto.cliente_nome || nomeCliente(projeto.cliente_id)}
+                        </div>
+                        <div className="quadro-card__nome">{projeto.nome}</div>
+                        {atual && (
+                          <div className="quadro-card__fase">
+                            <span className={`resp-badge resp--${respClasse(atual.fase.responsavel)}`}>
+                              {rotuloResp(atual.fase.responsavel)}
+                            </span>
+                            <span className="quadro-card__fase-nome">{atual.fase.nome}</span>
+                          </div>
+                        )}
+                        <div className="progresso">
+                          <div className="progresso__barra">
+                            <span style={{ width: `${progressoProjeto(projeto)}%` }} />
+                          </div>
+                          <span className="progresso__pct">{progressoProjeto(projeto)}%</span>
+                        </div>
+                        {projeto.entrega_prevista && (
+                          <div className="quadro-card__entrega">
+                            <span
+                              className={`data-chip ${
+                                dias != null && dias < 0
+                                  ? 'data-chip--atrasado'
+                                  : dias != null && dias <= 7
+                                    ? 'data-chip--perto'
+                                    : ''
+                              }`}
+                            >
+                              📅 {formatarData(projeto.entrega_prevista)}
+                              {dias != null && dias < 0 ? ` · ${Math.abs(dias)}d atrasado` : ''}
+                            </span>
+                          </div>
+                        )}
+                      </article>
+                    )
+                  })}
+              </section>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* ===== ATIVIDADES DA VM NOS PROJETOS (muda status + adiciona) ===== */}
       <div className="proj-card">

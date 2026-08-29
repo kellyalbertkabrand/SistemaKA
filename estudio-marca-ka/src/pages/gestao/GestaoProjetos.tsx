@@ -2,9 +2,17 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import type { Cliente } from '../../lib/database.types'
 import { listarClientes } from '../../lib/api'
 import { formatarData } from '../../lib/gestao'
+import { useArrastarCartoes } from '../../hooks/useArrastarCartoes'
 import {
   criarProjeto,
+  definirOrdensProjetos,
+  diasParaEntrega,
+  ESTAGIOS,
+  estagioDoProjeto,
   excluirProjeto,
+  faseAtual,
+  moverProjeto,
+  ROTULO_ESTAGIO,
   linkPublicoProjeto,
   listarFasesSalvas,
   listarProjetos,
@@ -19,6 +27,7 @@ import {
   salvarProjeto,
   type FaseProjeto,
   type FaseSalva,
+  type EstagioProjeto,
   type FaseStatus,
   type Projeto,
   type ProjetoStatus,
@@ -64,7 +73,7 @@ export function GestaoProjetos() {
   const sel: Projeto | null =
     idAberto && idAberto !== 'novo' ? (lista.find((p) => p.id === idAberto) ?? null) : null
   // Visão: lista de projetos OU painel de pendências (com filtro por responsável)
-  const [vista, setVista] = useState<'projetos' | 'pendencias'>('projetos')
+  const [vista, setVista] = useState<'quadro' | 'projetos' | 'pendencias'>('quadro')
   const [filtroResp, setFiltroResp] = useState<Responsavel | 'todas'>('todas')
 
   async function recarregar() {
@@ -97,6 +106,61 @@ export function GestaoProjetos() {
       setErro(e instanceof Error ? e.message : String(e))
     }
   }
+
+  // ---- QUADRO: um projeto por cartão, uma coluna por estágio ---------------
+  // A ordem dentro da coluna é manual (arrastar). Projeto sem ordem entra pelo
+  // nome, para a lista nunca sair embaralhada.
+  function projetosDe(estagio: EstagioProjeto): Projeto[] {
+    return lista
+      .filter((p) => estagioDoProjeto(p) === estagio)
+      .sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0) || a.nome.localeCompare(b.nome))
+  }
+
+  async function soltarProjeto(
+    de: string,
+    origem: EstagioProjeto,
+    paraColuna: EstagioProjeto,
+    antesDe: string | null,
+  ) {
+    const movido = lista.find((p) => p.id === de)
+    if (!movido) return
+    const destino = projetosDe(paraColuna).filter((p) => p.id !== de)
+    const idx = antesDe ? destino.findIndex((p) => p.id === antesDe) : -1
+    if (idx >= 0) destino.splice(idx, 0, movido)
+    else destino.push(movido)
+
+    // Aplica na tela na hora (sem esperar o banco).
+    const posicao = new Map(destino.map((p, i) => [p.id, i]))
+    setLista((l) =>
+      l.map((p) => {
+        if (p.id === de) {
+          return {
+            ...p,
+            estagio: paraColuna,
+            status: paraColuna === 'entregue' ? 'concluido' : 'ativo',
+            ordem: posicao.get(p.id) ?? 0,
+          }
+        }
+        return posicao.has(p.id) ? { ...p, ordem: posicao.get(p.id) } : p
+      }),
+    )
+    try {
+      if (origem !== paraColuna) {
+        await moverProjeto(de, paraColuna, posicao.get(de) ?? 0)
+        mostrar(`"${movido.nome}" → ${ROTULO_ESTAGIO[paraColuna]}`)
+      }
+      await definirOrdensProjetos(destino.map((p, i) => ({ id: p.id, ordem: i })))
+    } catch {
+      mostrar('Não deu para salvar a mudança, tente de novo.', 'erro')
+      void recarregar()
+    }
+  }
+
+  const arrastar = useArrastarCartoes<EstagioProjeto>({
+    colunas: ESTAGIOS,
+    itensDaColuna: (col) => projetosDe(col).map((p) => p.id),
+    aoSoltar: (de, origem, para, antes) => void soltarProjeto(de, origem, para, antes),
+  })
 
   if (criando) {
     return (
@@ -142,8 +206,11 @@ export function GestaoProjetos() {
     <>
       <div className="gestao-acoes">
         <div className="seg">
+          <button className={vista === 'quadro' ? 'seg__on' : ''} onClick={() => setVista('quadro')}>
+            ▦ Quadro
+          </button>
           <button className={vista === 'projetos' ? 'seg__on' : ''} onClick={() => setVista('projetos')}>
-            Projetos ({lista.length})
+            ☰ Lista ({lista.length})
           </button>
           <button className={vista === 'pendencias' ? 'seg__on' : ''} onClick={() => setVista('pendencias')}>
             Pendências ({pendTodas.length})
@@ -204,6 +271,122 @@ export function GestaoProjetos() {
             </div>
           )}
         </>
+      )}
+
+      {vista === 'quadro' && !carregando && lista.length > 0 && (
+        <>
+          <p className="dica-voz" style={{ marginTop: 0 }}>
+            Segure um projeto e arraste: <strong>para cima</strong> muda a ordem da fila,{' '}
+            <strong>para o lado</strong> muda de coluna.
+          </p>
+          <div className="ativ-quadro proj-quadro">
+            {ESTAGIOS.map((est) => {
+              const daColuna = projetosDe(est)
+              const recebendo = arrastar.colunaAlvo === est && arrastar.arrastando !== null
+              return (
+                <section
+                  key={est}
+                  className={`ativ-col est--${est} ${recebendo ? 'ativ-col--recebendo' : ''}`}
+                  ref={(el) => arrastar.registrarColuna(est, el)}
+                >
+                  <header className="ativ-col__cab">
+                    <h3 className={`ativ-col__tit est--${est}`}>{ROTULO_ESTAGIO[est]}</h3>
+                    <span className="ativ-col__n">{daColuna.length}</span>
+                  </header>
+                  <div className="ativ-col__corpo">
+                    {daColuna.length === 0 && <p className="ativ-vazio">—</p>}
+                    {daColuna.map((p) => {
+                      const pct = progressoProjeto(p)
+                      const atual = faseAtual(p)
+                      const dias = diasParaEntrega(p)
+                      const arrastando = arrastar.arrastando === p.id
+                      const alvo =
+                        arrastar.alvo === p.id && arrastar.arrastando && arrastar.arrastando !== p.id
+                      return (
+                        <article
+                          key={p.id}
+                          ref={(el) => arrastar.registrarCartao(p.id, el)}
+                          className={`quadro-card ${arrastando ? 'quadro-card--arrastando' : ''} ${
+                            alvo ? 'quadro-card--alvo' : ''
+                          }`}
+                          onPointerDown={(e) => arrastar.aoPressionar(e, est, p.id)}
+                          style={
+                            arrastando
+                              ? {
+                                  transform: `translate(${arrastar.desloc.x}px, ${arrastar.desloc.y}px) scale(1.03)`,
+                                  zIndex: 30,
+                                }
+                              : undefined
+                          }
+                        >
+                          <button
+                            className="quadro-card__abrir"
+                            onClick={() => {
+                              if (arrastar.acabouDeArrastar()) return
+                              abrirUrl(p.id)
+                            }}
+                            title="Abrir projeto"
+                          >
+                            {p.cliente_nome && <div className="quadro-card__cliente">{p.cliente_nome}</div>}
+                            <div className="quadro-card__nome">{p.nome}</div>
+                            {atual ? (
+                              <div className="quadro-card__fase">
+                                <span className={`resp-badge resp--${respClasse(atual.fase.responsavel)}`}>
+                                  {rotuloResp(atual.fase.responsavel)}
+                                </span>
+                                <span className="quadro-card__fase-nome">{atual.fase.nome}</span>
+                              </div>
+                            ) : (
+                              <div className="quadro-card__fase">
+                                <span className="quadro-card__fase-nome">Todas as etapas concluídas</span>
+                              </div>
+                            )}
+                            <div className="progresso">
+                              <div className="progresso__barra">
+                                <span style={{ width: `${pct}%` }} />
+                              </div>
+                              <span className="progresso__pct">{pct}%</span>
+                            </div>
+                            {p.entrega_prevista && (
+                              <div className="quadro-card__entrega">
+                                <span
+                                  className={`data-chip ${
+                                    dias != null && dias < 0
+                                      ? 'data-chip--atrasado'
+                                      : dias != null && dias <= 7
+                                        ? 'data-chip--perto'
+                                        : ''
+                                  }`}
+                                >
+                                  📅 {formatarData(p.entrega_prevista)}
+                                  {dias != null && dias < 0
+                                    ? ` · ${Math.abs(dias)}d atrasado`
+                                    : dias != null && dias <= 7
+                                      ? ` · faltam ${dias}d`
+                                      : ''}
+                                </span>
+                              </div>
+                            )}
+                          </button>
+                        </article>
+                      )
+                    })}
+                  </div>
+                </section>
+              )
+            })}
+          </div>
+        </>
+      )}
+
+      {vista === 'quadro' && !carregando && lista.length === 0 && !erro && (
+        <div className="card">
+          <h3>Nenhum projeto ainda.</h3>
+          <p>
+            Crie o primeiro em “+ Novo projeto”. Ele entra em <strong>Na fila</strong> — depois é só
+            arrastar para “Em andamento” quando começar.
+          </p>
+        </div>
       )}
 
       {vista === 'projetos' && !carregando && lista.length === 0 && !erro && (
@@ -290,6 +473,7 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
   const [clienteNome, setClienteNome] = useState('')
   const [descricao, setDescricao] = useState('')
   const [inicio, setInicio] = useState('')
+  const [entrega, setEntrega] = useState('')
   const [modelo, setModelo] = useState(MODELOS_FASES[0].id)
   const [gerando, setGerando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
@@ -313,6 +497,7 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
         cliente_nome: c?.nome_marca ?? (clienteNome.trim() || null),
         descricao: descricao.trim() || null,
         inicio: inicio || null,
+        entrega_prevista: entrega || null,
         fases,
       })
       aoCriar(p)
@@ -380,6 +565,11 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
             <div className="field">
               <label>Início do projeto (opcional)</label>
               <input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} />
+            </div>
+            <div className="field">
+              <label>Entrega prevista (opcional)</label>
+              <input type="date" value={entrega} onChange={(e) => setEntrega(e.target.value)} />
+              <span className="campo-ajuda">Aparece no cartão do quadro e avisa quando atrasa.</span>
             </div>
             <div className="field campo-toda">
               <label>Descrição (opcional, o cliente vê)</label>
@@ -532,7 +722,21 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     )
   }
 
-  async function aplicar(dados: Partial<Pick<Projeto, 'nome' | 'descricao' | 'fases' | 'status' | 'cliente_nome' | 'inicio'>>) {
+  async function aplicar(
+    dados: Partial<
+      Pick<
+        Projeto,
+        | 'nome'
+        | 'descricao'
+        | 'fases'
+        | 'status'
+        | 'cliente_nome'
+        | 'inicio'
+        | 'entrega_prevista'
+        | 'estagio'
+      >
+    >,
+  ) {
     setSalvando(true)
     setErro(null)
     try {
@@ -827,15 +1031,45 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
           </p>
         )}
 
-        <label className="proj-inicio">
-          <span>Início do projeto</span>
-          <input
-            type="date"
-            value={p.inicio ?? ''}
-            disabled={salvando}
-            onChange={(e) => void aplicar({ inicio: e.target.value || null })}
-          />
-        </label>
+        <div className="proj-datas">
+          <label className="proj-inicio">
+            <span>Início do projeto</span>
+            <input
+              type="date"
+              value={p.inicio ?? ''}
+              disabled={salvando}
+              onChange={(e) => void aplicar({ inicio: e.target.value || null })}
+            />
+          </label>
+          <label className="proj-inicio">
+            <span>Entrega prevista</span>
+            <input
+              type="date"
+              value={p.entrega_prevista ?? ''}
+              disabled={salvando}
+              onChange={(e) => void aplicar({ entrega_prevista: e.target.value || null })}
+            />
+          </label>
+          <label className="proj-inicio">
+            <span>Onde está</span>
+            <select
+              value={estagioDoProjeto(p)}
+              disabled={salvando}
+              onChange={(e) =>
+                void aplicar({
+                  estagio: e.target.value as EstagioProjeto,
+                  status: e.target.value === 'entregue' ? 'concluido' : 'ativo',
+                })
+              }
+            >
+              {ESTAGIOS.map((est) => (
+                <option key={est} value={est}>
+                  {ROTULO_ESTAGIO[est]}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
 
         <div className="progresso" style={{ margin: '0.9rem 0 1.2rem' }}>
           <div className="progresso__barra progresso__barra--grande">

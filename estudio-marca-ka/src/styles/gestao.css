@@ -3614,3 +3614,144 @@
 .ativ__alca {
   cursor: grab;
 }
+
+/* ---- QUADRO DE PROJETOS (aba Projetos → ▦ Quadro) ----------------------- */
+/* Reaproveita o layout de colunas das Atividades (.ativ-quadro/.ativ-col) e
+   traz cartões próprios, com cliente, fase atual, progresso e entrega. */
+.proj-quadro .ativ-col {
+  min-width: 250px;
+}
+.ativ-col__tit.est--fila {
+  color: #8a4b1f;
+}
+.ativ-col__tit.est--andamento {
+  color: var(--essencia);
+}
+.ativ-col__tit.est--cliente {
+  color: #2e6b45;
+}
+.ativ-col__tit.est--revisao {
+  color: #7a5099;
+}
+.ativ-col__tit.est--entregue {
+  color: var(--t-500);
+}
+
+.quadro-card {
+  position: relative;
+  border: 1px solid rgba(15, 25, 35, 0.1);
+  border-radius: 12px;
+  background: var(--bg-1);
+  margin-bottom: 0.5rem;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.quadro-card__abrir {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  padding: 0.6rem 0.7rem;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.quadro-card__cliente {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--t-400);
+}
+.quadro-card__nome {
+  font-family: var(--heading);
+  font-size: 1rem;
+  line-height: 1.25;
+  margin: 0.1rem 0 0.35rem;
+}
+.quadro-card__fase {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.45rem;
+  font-size: 0.76rem;
+  color: var(--t-500);
+}
+.quadro-card__fase-nome {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.quadro-card__entrega {
+  margin-top: 0.45rem;
+}
+/* Cartão na mão: dourado sólido, como nas Atividades. */
+.quadro-card--arrastando {
+  background: #f7ecd6;
+  border: 2px solid var(--dourado);
+  box-shadow: 0 16px 34px rgba(15, 25, 35, 0.28);
+  cursor: grabbing;
+}
+.quadro-card--alvo {
+  border-color: rgba(184, 155, 106, 0.55);
+  background: rgba(184, 155, 106, 0.1);
+  box-shadow: 0 -4px 0 0 var(--dourado) inset;
+}
+/* Entrega: perto do prazo (dourado) e atrasada (vermelho). */
+.data-chip--perto {
+  color: #8a5b12;
+  background: rgba(224, 178, 74, 0.24);
+  border-color: rgba(184, 155, 106, 0.5);
+}
+.data-chip--atrasado {
+  color: #93231b;
+  background: rgba(190, 60, 45, 0.16);
+  border-color: rgba(190, 60, 45, 0.4);
+}
+/* Datas + estágio no detalhe do projeto */
+.proj-datas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Fila dos projetos no portal da VM (só leitura, colunas simples) */
+.vm-fila {
+  display: flex;
+  gap: 0.8rem;
+  overflow-x: auto;
+  padding-bottom: 0.4rem;
+  margin-top: 0.6rem;
+}
+.vm-fila__col {
+  flex: 1 1 0;
+  min-width: 210px;
+}
+.vm-fila__tit {
+  font-family: var(--body);
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 0.5rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid rgba(15, 25, 35, 0.1);
+}
+.vm-fila__card {
+  border: 1px solid rgba(15, 25, 35, 0.1);
+  border-radius: 12px;
+  background: var(--bg-1);
+  padding: 0.6rem 0.7rem;
+  margin-bottom: 0.5rem;
+}
+@media (max-width: 640px) {
+  .vm-fila__col {
+    min-width: 82vw;
+  }
+}
