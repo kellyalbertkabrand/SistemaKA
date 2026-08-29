@@ -234,6 +234,193 @@ export function progressoProjeto(p: Pick<Projeto, 'fases'>): number {
   return Math.round((feitas / p.fases.length) * 100)
 }
 
+// ---- REVISÃO DA SEMANA ------------------------------------------------------
+// Um retrato do que importa numa segunda-feira: o que atrasou, o que vence até
+// domingo, o que está parado esperando o cliente, o que andou nos últimos 7
+// dias e o que entra em seguida. Tudo derivado do que já existe (entrega
+// prevista do projeto, data e status das fases) — não há campo novo.
+
+export interface ItemSemana {
+  projeto_id: string
+  projeto_nome: string
+  cliente_nome: string | null
+  /** Nome da etapa, quando o item é uma etapa; null quando é o projeto todo. */
+  fase_nome: string | null
+  responsavel: Responsavel
+  /** Data de referência (entrega do projeto ou data da etapa), YYYY-MM-DD. */
+  data: string | null
+  /** Dias até a data (negativo = atrasado). */
+  dias: number | null
+}
+
+export interface RevisaoSemana {
+  /** Segunda a domingo da semana atual (YYYY-MM-DD). */
+  inicio: string
+  fim: string
+  /** Vencidos: entrega do projeto ou data de etapa já passou. */
+  atrasados: ItemSemana[]
+  /** Vence de hoje até domingo. */
+  estaSemana: ItemSemana[]
+  /** Projetos parados na coluna "Com o cliente" (com dias parados). */
+  comCliente: { projeto: Projeto; diasParado: number | null; fase: string | null }[]
+  /** Etapas concluídas nos últimos 7 dias — o que andou. */
+  concluidas: ItemSemana[]
+  /** Os próximos da fila, na ordem definida pela KA. */
+  proximos: Projeto[]
+  /** Em andamento sem entrega prevista (a KA decide a data). */
+  semData: Projeto[]
+  /** Contagem de etapas em aberto por responsável. */
+  porResponsavel: { responsavel: Responsavel; total: number }[]
+}
+
+const DIA = 86400000
+const soData = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+
+/** Diferença em dias entre uma data YYYY-MM-DD e hoje (negativo = passou). */
+function diasAte(data: string, hoje: Date): number {
+  const alvo = new Date(`${data}T12:00:00`)
+  const base = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate(), 12)
+  return Math.round((alvo.getTime() - base.getTime()) / DIA)
+}
+
+export function revisaoSemana(projetos: Projeto[], hoje = new Date()): RevisaoSemana {
+  // Semana de segunda a domingo (domingo = 0 no JS, por isso o ajuste).
+  const diaSemana = (hoje.getDay() + 6) % 7
+  const segunda = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate() - diaSemana, 12)
+  const domingo = new Date(segunda.getTime() + 6 * DIA)
+  const inicio = soData(segunda)
+  const fim = soData(domingo)
+
+  const atrasados: ItemSemana[] = []
+  const estaSemana: ItemSemana[] = []
+  const concluidas: ItemSemana[] = []
+  const comCliente: RevisaoSemana['comCliente'] = []
+  const semData: Projeto[] = []
+  const abertasPorResp = new Map<Responsavel, number>()
+
+  const ativos = projetos.filter((p) => estagioDoProjeto(p) !== 'entregue')
+
+  for (const p of projetos) {
+    const estagio = estagioDoProjeto(p)
+    const atual = faseAtual(p)
+    const base = {
+      projeto_id: p.id,
+      projeto_nome: p.nome,
+      cliente_nome: p.cliente_nome,
+    }
+
+    // Etapas concluídas nos últimos 7 dias (vale até para projeto entregue).
+    for (const f of p.fases) {
+      if (f.status === 'concluida' && f.concluida_em) {
+        const quando = new Date(f.concluida_em)
+        const dias = Math.round((hoje.getTime() - quando.getTime()) / DIA)
+        if (dias >= 0 && dias <= 7) {
+          concluidas.push({
+            ...base,
+            fase_nome: f.nome,
+            responsavel: f.responsavel ?? 'KA',
+            data: soData(quando),
+            dias: -dias,
+          })
+        }
+      }
+    }
+
+    if (estagio === 'entregue') continue
+
+    // Entrega prevista do projeto
+    if (p.entrega_prevista) {
+      const dias = diasAte(p.entrega_prevista, hoje)
+      const item: ItemSemana = {
+        ...base,
+        fase_nome: null,
+        responsavel: atual?.fase.responsavel ?? 'KA',
+        data: p.entrega_prevista,
+        dias,
+      }
+      if (dias < 0) atrasados.push(item)
+      else if (p.entrega_prevista <= fim) estaSemana.push(item)
+    } else if (estagio === 'andamento') {
+      semData.push(p)
+    }
+
+    // Etapas em aberto: contagem por responsável + datas vencidas/da semana
+    for (const f of p.fases) {
+      if (f.status === 'concluida') continue
+      const resp = f.responsavel ?? 'KA'
+      abertasPorResp.set(resp, (abertasPorResp.get(resp) ?? 0) + 1)
+      if (!f.data) continue
+      const dias = diasAte(f.data, hoje)
+      const item: ItemSemana = { ...base, fase_nome: f.nome, responsavel: resp, data: f.data, dias }
+      if (dias < 0) atrasados.push(item)
+      else if (f.data <= fim) estaSemana.push(item)
+    }
+
+    if (estagio === 'cliente') {
+      const desde = p.atualizado_em ? new Date(p.atualizado_em) : null
+      const diasParado = desde ? Math.max(0, Math.round((hoje.getTime() - desde.getTime()) / DIA)) : null
+      comCliente.push({ projeto: p, diasParado, fase: atual?.fase.nome ?? null })
+    }
+  }
+
+  const porData = (a: ItemSemana, b: ItemSemana) => (a.data ?? '').localeCompare(b.data ?? '')
+  atrasados.sort(porData)
+  estaSemana.sort(porData)
+  concluidas.sort((a, b) => (b.data ?? '').localeCompare(a.data ?? ''))
+  comCliente.sort((a, b) => (b.diasParado ?? 0) - (a.diasParado ?? 0))
+
+  return {
+    inicio,
+    fim,
+    atrasados,
+    estaSemana,
+    comCliente,
+    concluidas,
+    proximos: ativos
+      .filter((p) => estagioDoProjeto(p) === 'fila')
+      .sort((a, b) => (a.ordem ?? 0) - (b.ordem ?? 0) || a.nome.localeCompare(b.nome)),
+    semData,
+    porResponsavel: [...abertasPorResp.entries()]
+      .map(([responsavel, total]) => ({ responsavel, total }))
+      .sort((a, b) => b.total - a.total),
+  }
+}
+
+/** A revisão da semana em texto (para copiar / mandar no WhatsApp). */
+export function resumoSemanaTexto(r: RevisaoSemana, formatar: (d: string) => string): string {
+  const linhas: string[] = [
+    `*Revisão da semana* (${formatar(r.inicio)} a ${formatar(r.fim)})`,
+  ]
+  const bloco = (titulo: string, itens: string[]) => {
+    if (itens.length === 0) return
+    linhas.push('', `*${titulo}*`, ...itens.map((i) => `• ${i}`))
+  }
+  const rotulo = (i: ItemSemana) =>
+    `${i.projeto_nome}${i.fase_nome ? ` · ${i.fase_nome}` : ' · entrega'}` +
+    `${i.data ? ` (${formatar(i.data)})` : ''}`
+
+  bloco(
+    `Atrasado (${r.atrasados.length})`,
+    r.atrasados.map((i) => `${rotulo(i)} — ${Math.abs(i.dias ?? 0)}d`),
+  )
+  bloco(`Vence até domingo (${r.estaSemana.length})`, r.estaSemana.map(rotulo))
+  bloco(
+    `Esperando o cliente (${r.comCliente.length})`,
+    r.comCliente.map(
+      (c) =>
+        `${c.projeto.nome}${c.fase ? ` · ${c.fase}` : ''}` +
+        `${c.diasParado != null ? ` — parado há ${c.diasParado}d` : ''}`,
+    ),
+  )
+  bloco(`Concluído nos últimos 7 dias (${r.concluidas.length})`, r.concluidas.map(rotulo))
+  bloco(
+    `Próximos da fila (${r.proximos.length})`,
+    r.proximos.slice(0, 5).map((p) => `${p.nome}${p.cliente_nome ? ` · ${p.cliente_nome}` : ''}`),
+  )
+  return linhas.join('\n')
+}
+
 // ---- Pendências (visão geral de tudo que falta) -----------------------------
 
 /** Uma etapa em aberto (pendente ou em andamento) de algum projeto. */

@@ -12,6 +12,8 @@ import {
   excluirProjeto,
   faseAtual,
   moverProjeto,
+  resumoSemanaTexto,
+  revisaoSemana,
   ROTULO_ESTAGIO,
   linkPublicoProjeto,
   listarFasesSalvas,
@@ -37,7 +39,8 @@ import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
 import { BotaoLinkVM } from '../../components/BotaoLinkVM'
-import { autoAltura } from '../../lib/ui'
+import { autoAltura, imprimirComoPdf } from '../../lib/ui'
+import { useCopiar } from '../../hooks/useCopiar'
 import { rotuloStatus } from '../../lib/rotulos'
 import { useFichaUrl } from '../../hooks/useFichaUrl'
 
@@ -63,6 +66,7 @@ const BADGE_FASE: Record<FaseStatus, string> = {
 // o cliente acompanha o andamento em tempo real.
 export function GestaoProjetos() {
   const { mostrar } = useToast()
+  const copiar = useCopiar()
   const { idAberto, abrir: abrirUrl, fechar } = useFichaUrl('id')
   const [lista, setLista] = useState<Projeto[]>([])
   const [erro, setErro] = useState<string | null>(null)
@@ -73,7 +77,7 @@ export function GestaoProjetos() {
   const sel: Projeto | null =
     idAberto && idAberto !== 'novo' ? (lista.find((p) => p.id === idAberto) ?? null) : null
   // Visão: lista de projetos OU painel de pendências (com filtro por responsável)
-  const [vista, setVista] = useState<'quadro' | 'projetos' | 'pendencias'>('quadro')
+  const [vista, setVista] = useState<'quadro' | 'semana' | 'projetos' | 'pendencias'>('quadro')
   const [filtroResp, setFiltroResp] = useState<Responsavel | 'todas'>('todas')
 
   async function recarregar() {
@@ -209,6 +213,9 @@ export function GestaoProjetos() {
           <button className={vista === 'quadro' ? 'seg__on' : ''} onClick={() => setVista('quadro')}>
             ▦ Quadro
           </button>
+          <button className={vista === 'semana' ? 'seg__on' : ''} onClick={() => setVista('semana')}>
+            🗓 Semana
+          </button>
           <button className={vista === 'projetos' ? 'seg__on' : ''} onClick={() => setVista('projetos')}>
             ☰ Lista ({lista.length})
           </button>
@@ -271,6 +278,14 @@ export function GestaoProjetos() {
             </div>
           )}
         </>
+      )}
+
+      {vista === 'semana' && !carregando && (
+        <RevisaoDaSemana
+          projetos={lista}
+          aoAbrir={abrirUrl}
+          aoCopiar={(txt) => void copiar(txt, 'Resumo da semana copiado ✓')}
+        />
       )}
 
       {vista === 'quadro' && !carregando && lista.length > 0 && (
@@ -460,6 +475,219 @@ export function GestaoProjetos() {
         </div>
       )}
     </>
+  )
+}
+
+// ---------------------------------------------------------------------------
+// REVISÃO DA SEMANA — o retrato de segunda-feira: o que atrasou, o que vence
+// até domingo, o que está parado com o cliente, o que andou e o que entra
+// depois. Tudo sai do que já está cadastrado (entregas e datas das etapas).
+// ---------------------------------------------------------------------------
+function RevisaoDaSemana({
+  projetos,
+  aoAbrir,
+  aoCopiar,
+}: {
+  projetos: Projeto[]
+  aoAbrir: (id: string) => void
+  aoCopiar: (texto: string) => void
+}) {
+  const r = revisaoSemana(projetos)
+
+  const linha = (
+    chave: string,
+    projetoId: string,
+    titulo: string,
+    sub: string,
+    resp: Responsavel,
+    direita?: React.ReactNode,
+  ) => (
+    <button key={chave} className="sem-item" onClick={() => aoAbrir(projetoId)} title="Abrir projeto">
+      <span className={`resp-badge resp--${respClasse(resp)}`}>{rotuloResp(resp)}</span>
+      <span className="sem-item__corpo">
+        <span className="sem-item__tit">{titulo}</span>
+        <span className="sem-item__sub">{sub}</span>
+      </span>
+      {direita}
+    </button>
+  )
+
+  const secao = (titulo: string, n: number, vazio: string, conteudo: React.ReactNode) => (
+    <section className="sem-secao">
+      <h3 className="sem-secao__tit">
+        {titulo} <span className="sem-secao__n">{n}</span>
+      </h3>
+      {n === 0 ? <p className="ativ-vazio">{vazio}</p> : conteudo}
+    </section>
+  )
+
+  return (
+    <div className="sem-doc">
+      <div className="gestao-acoes nao-imprimir" style={{ marginTop: 0 }}>
+        <span className="espaco" />
+        <button
+          className="btn--voltar"
+          onClick={() => aoCopiar(resumoSemanaTexto(r, formatarData))}
+          title="Copiar em texto (dá para colar no WhatsApp da VM)"
+        >
+          Copiar resumo
+        </button>
+        <button className="btn--voltar" onClick={() => imprimirComoPdf('Revisão da semana')}>
+          Imprimir / Salvar PDF
+        </button>
+      </div>
+
+      <header className="sem-cab">
+        <h2>Revisão da semana</h2>
+        <p>
+          {formatarData(r.inicio)} a {formatarData(r.fim)}
+        </p>
+      </header>
+
+      <div className="sem-cards">
+        <div className={`sem-card ${r.atrasados.length > 0 ? 'sem-card--alerta' : ''}`}>
+          <span className="sem-card__n">{r.atrasados.length}</span>
+          <span className="sem-card__rot">Atrasado</span>
+        </div>
+        <div className="sem-card">
+          <span className="sem-card__n">{r.estaSemana.length}</span>
+          <span className="sem-card__rot">Vence até domingo</span>
+        </div>
+        <div className="sem-card">
+          <span className="sem-card__n">{r.comCliente.length}</span>
+          <span className="sem-card__rot">Com o cliente</span>
+        </div>
+        <div className="sem-card sem-card--ok">
+          <span className="sem-card__n">{r.concluidas.length}</span>
+          <span className="sem-card__rot">Concluído em 7 dias</span>
+        </div>
+      </div>
+
+      {secao(
+        '⚠️ Atrasado',
+        r.atrasados.length,
+        'Nada atrasado — respira ✨',
+        <div className="sem-lista">
+          {r.atrasados.map((i) =>
+            linha(
+              `a-${i.projeto_id}-${i.fase_nome ?? 'entrega'}`,
+              i.projeto_id,
+              i.fase_nome ?? 'Entrega do projeto',
+              `${i.projeto_nome}${i.cliente_nome ? ` · ${i.cliente_nome}` : ''}`,
+              i.responsavel,
+              <span className="data-chip data-chip--atrasado">{Math.abs(i.dias ?? 0)}d</span>,
+            ),
+          )}
+        </div>,
+      )}
+
+      {secao(
+        '📅 Vence até domingo',
+        r.estaSemana.length,
+        'Nada com data nesta semana.',
+        <div className="sem-lista">
+          {r.estaSemana.map((i) =>
+            linha(
+              `s-${i.projeto_id}-${i.fase_nome ?? 'entrega'}`,
+              i.projeto_id,
+              i.fase_nome ?? 'Entrega do projeto',
+              `${i.projeto_nome}${i.cliente_nome ? ` · ${i.cliente_nome}` : ''}`,
+              i.responsavel,
+              <span className="data-chip data-chip--perto">{i.data ? formatarData(i.data) : ''}</span>,
+            ),
+          )}
+        </div>,
+      )}
+
+      {secao(
+        '⏳ Esperando o cliente',
+        r.comCliente.length,
+        'Nenhum projeto parado com cliente.',
+        <div className="sem-lista">
+          {r.comCliente.map((c) =>
+            linha(
+              `c-${c.projeto.id}`,
+              c.projeto.id,
+              c.projeto.nome,
+              `${c.projeto.cliente_nome ?? ''}${c.fase ? ` · ${c.fase}` : ''}`,
+              'CLIENTE',
+              c.diasParado != null ? (
+                <span className="data-chip">parado {c.diasParado}d</span>
+              ) : undefined,
+            ),
+          )}
+        </div>,
+      )}
+
+      {secao(
+        '✅ O que andou (últimos 7 dias)',
+        r.concluidas.length,
+        'Nenhuma etapa concluída nos últimos 7 dias.',
+        <div className="sem-lista">
+          {r.concluidas.map((i) =>
+            linha(
+              `k-${i.projeto_id}-${i.fase_nome}`,
+              i.projeto_id,
+              i.fase_nome ?? '',
+              `${i.projeto_nome}${i.cliente_nome ? ` · ${i.cliente_nome}` : ''}`,
+              i.responsavel,
+              <span className="data-chip">{i.data ? formatarData(i.data) : ''}</span>,
+            ),
+          )}
+        </div>,
+      )}
+
+      {secao(
+        '▶️ Próximos da fila',
+        r.proximos.length,
+        'A fila está vazia.',
+        <div className="sem-lista">
+          {r.proximos.map((p, i) =>
+            linha(
+              `f-${p.id}`,
+              p.id,
+              `${i + 1}º · ${p.nome}`,
+              p.cliente_nome ?? '',
+              faseAtual(p)?.fase.responsavel ?? 'KA',
+              p.entrega_prevista ? (
+                <span className="data-chip">{formatarData(p.entrega_prevista)}</span>
+              ) : undefined,
+            ),
+          )}
+        </div>,
+      )}
+
+      {r.semData.length > 0 &&
+        secao(
+          '🕐 Em andamento sem entrega prevista',
+          r.semData.length,
+          '',
+          <div className="sem-lista">
+            {r.semData.map((p) =>
+              linha(
+                `d-${p.id}`,
+                p.id,
+                p.nome,
+                p.cliente_nome ?? '',
+                faseAtual(p)?.fase.responsavel ?? 'KA',
+                <span className="sem-item__acao">definir data</span>,
+              ),
+            )}
+          </div>,
+        )}
+
+      {r.porResponsavel.length > 0 && (
+        <p className="sem-rodape">
+          Etapas em aberto:{' '}
+          {r.porResponsavel.map((x, i) => (
+            <span key={x.responsavel}>
+              {i > 0 ? ' · ' : ''}
+              <strong>{rotuloResp(x.responsavel)}</strong> {x.total}
+            </span>
+          ))}
+        </p>
+      )}
+    </div>
   )
 }
 
