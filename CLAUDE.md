@@ -759,6 +759,25 @@ padrão).
   só as etapas dela; não move projeto de coluna nem muda prioridade (decisão da
   KA).
 
+### Projetos — PAINEL DE FASES (⛭ Fases, ago/2026)
+
+A visão que a KA pediu para **controlar as fases sem abrir projeto por projeto**:
+**uma coluna por PROJETO e as fases dele como cartões dentro**, na ordem do
+método. Reaproveita o layout de colunas (`.ativ-quadro`/`.ativ-col`).
+
+- **Cabeçalho da coluna:** cliente + nome do projeto (abre o projeto ao clicar),
+  a etiqueta do estágio (`.est-badge`) e o contador `feitas/total`.
+- **Cartão da fase** (`.fase-item`): bolinha de status + nome + etiqueta do
+  responsável (KA/VM/Cliente) + data, quando houver. Fase em andamento fica
+  destacada; concluída fica riscada e apagada.
+- **Um toque na bolinha avança** pendente → em andamento → concluída
+  (`avancarFaseDoPainel` usa `proximoStatusFase` e grava `concluida_em`), igual
+  ao que já existia dentro do projeto. Foi a única ação que a KA quis aqui —
+  responsável, data e reordenar continuam no detalhe do projeto.
+- **Ordem das colunas:** Em andamento → Com o cliente → Em revisão → Na fila
+  (o trabalho em curso primeiro). Projetos **entregues** ficam escondidos, com o
+  checkbox "mostrar entregues" para trazê-los.
+
 ### Projetos — REVISÃO DA SEMANA (ago/2026)
 
 4ª visão da aba Projetos (**🗓 Semana**, ao lado de Quadro/Lista/Pendências):
