@@ -3556,3 +3556,20 @@
   color: var(--essencia);
   border: 1px solid rgba(61, 107, 126, 0.3);
 }
+
+/* Cobrança com a VM: o valor digitado é a parte da KA; o total que o cliente
+   paga é a soma das duas partes (mostrado no formulário e no cartão). */
+.cob-soma {
+  margin: 0;
+  padding: 0.5rem 0.7rem;
+  border-radius: 10px;
+  background: rgba(61, 107, 126, 0.08);
+  border: 1px solid rgba(61, 107, 126, 0.18);
+  font-size: 0.82rem;
+  color: var(--t-700, var(--t-900));
+}
+.cob-card__soma {
+  font-size: 0.76rem;
+  color: var(--t-500);
+  white-space: nowrap;
+}

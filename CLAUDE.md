@@ -596,6 +596,15 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
     conta da EMPRESA (chave CNPJ); **sem nota** → conta PESSOAL. `pixPorNota()`
     em `src/lib/pagamento.ts` devolve as contas na ordem certa. Cobrança antiga
     (sem o campo) mantém a ordem padrão e não mostra etiqueta.
+  - **CONTA DA COBRANÇA COM A VM (ago/2026) — corrigido:** `valor` é a **parte
+    da KA** e `valor_vm` a **parte da VM**; o que o cliente paga é a **SOMA das
+    duas**. Antes o código fazia `KA = valor − valor_vm` (uma cobrança de 600
+    com 400 da VM virava "200 p/ KA + 400 p/ VM" na mensagem — errado). Por
+    isso, quando a VM participa: o valor dela é **obrigatório** (não "herda o
+    total"), pode ser MAIOR que o da KA (a validação antiga saiu), o rótulo do
+    campo vira "Valor — parte da KA", o formulário mostra o resumo "o cliente
+    paga R$ X no total" (`.cob-soma`) e o cartão da cobrança mostra
+    "+ R$ Y VM · cliente paga R$ X" (`.cob-card__soma`).
   - **PIX da VM junto (ago/2026):** quando a cobrança tem `vm_participa`, o
     popup do WhatsApp ganha **duas duplas** — **"KA + VM · pessoal"** (as duas
     pessoas físicas: Kelly Albert + Gabriela Lucato Serra) e **"KA + VM ·

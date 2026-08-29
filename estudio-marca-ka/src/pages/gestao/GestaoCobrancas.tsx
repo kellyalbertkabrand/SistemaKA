@@ -191,14 +191,17 @@ export function GestaoCobrancas() {
     // Cobrança da KA E da VM: a mensagem sai com os DOIS PIX e o valor de cada
     // uma (o cliente paga cada parte direto para quem recebe). As duas contas
     // andam juntas: ou as duas PESSOAIS, ou as duas da EMPRESA.
+    // ATENÇÃO à conta: `valor` é a parte da KA e `valor_vm` é a parte da VM —
+    // o total que o cliente paga é a SOMA das duas. (Antes o código descontava
+    // a VM do valor, e a mensagem saía com a parte da KA errada.)
     const montarComVM = (pixKA: DadosPix, pixVM: DadosPix) => {
-      const vm = arredondar(Number(c.valor_vm ?? c.valor))
-      const ka = arredondar(Number(c.valor) - vm)
+      const ka = arredondar(Number(c.valor))
+      const vm = arredondar(Number(c.valor_vm ?? 0))
       const linhas = [
         `Oi${nome ? `, ${nome}` : ''}! Tudo bem? 😊`,
         '',
         `Segue a cobrança: *${c.descricao}*`,
-        `Valor: ${formatarBRL(c.valor)} · vencimento: ${formatarData(c.vencimento)}`,
+        `Valor: ${formatarBRL(arredondar(ka + vm))} · vencimento: ${formatarData(c.vencimento)}`,
         '',
         'O pagamento é dividido em dois PIX:',
       ]
@@ -334,16 +337,17 @@ export function GestaoCobrancas() {
     const parcelas = novaForma === 'parcelado' ? Math.min(24, Math.max(2, Number(novaVezes) || 2)) : 1
     const tipo = novaForma === 'mensal' ? 'mensalidade' : 'avulsa'
     const descBase = novaDesc.trim()
-    // Valor da VM: se ela participa e o campo ficou vazio, herda o valor total.
     if (novaComNota === null) {
       setErro('Diga se esta cobrança sai COM ou SEM nota fiscal.')
       return
     }
-    const valorVM = novaVM ? (novoValorVM.trim() ? parseValorBR(novoValorVM) : valor) : null
-    if (valorVM != null && valorVM > valor) {
-      setErro('O valor da VM Rocks não pode ser maior que o valor cobrado do cliente.')
+    // `valor` é a parte da KA e `valor_vm` a parte da VM (o cliente paga a
+    // soma), então o valor dela é obrigatório e pode ser maior que o da KA.
+    if (novaVM && !novoValorVM.trim()) {
+      setErro('Informe quanto é a parte da VM Rocks nesta cobrança.')
       return
     }
+    const valorVM = novaVM ? parseValorBR(novoValorVM) : null
     setOcupado('nova')
     setErro(null)
     try {
@@ -570,6 +574,7 @@ export function GestaoCobrancas() {
               : novaForma === 'mensal'
                 ? 'Valor por mês (R$)'
                 : 'Valor (R$)'}
+            {novaVM && ' — parte da KA'}
           </label>
           <input
             type="text"
@@ -627,9 +632,20 @@ export function GestaoCobrancas() {
               inputMode="decimal"
               value={novoValorVM}
               onChange={(e) => setNovoValorVM(e.target.value)}
-              placeholder={`igual ao total (${novoValor || '0'})`}
+              placeholder="0,00"
             />
-            <span className="campo-ajuda">Deixe vazio se for o mesmo valor cobrado do cliente.</span>
+            <span className="campo-ajuda">
+              O que a VM recebe — soma ao seu valor, não sai dele.
+            </span>
+          </div>
+        )}
+        {novaVM && (
+          <div className="field campo-toda">
+            <p className="cob-soma">
+              O cliente paga <strong>{formatarBRL(valorNum + parseValorBR(novoValorVM))}</strong> no
+              total: {formatarBRL(valorNum)} para a KA + {formatarBRL(parseValorBR(novoValorVM))}{' '}
+              para a VM Rocks.
+            </p>
           </div>
         )}
       </div>
@@ -817,6 +833,12 @@ export function GestaoCobrancas() {
                   </div>
                   <div className="cob-card__meta">
                     <span className="cob-card__valor">{formatarBRL(c.valor)}</span>
+                    {c.vm_participa && c.valor_vm != null && (
+                      <span className="cob-card__soma">
+                        + {formatarBRL(c.valor_vm)} VM · cliente paga{' '}
+                        {formatarBRL(arredondar(Number(c.valor) + Number(c.valor_vm)))}
+                      </span>
+                    )}
                     <span className="cob-card__venc">
                       {agrupar === 'cliente' ? nomeCliente(c.cliente_id) : `vence ${formatarData(c.vencimento)}`}
                     </span>
