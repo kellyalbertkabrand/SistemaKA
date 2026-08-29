@@ -3886,3 +3886,157 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ---- PAINEL DE FASES (Projetos → ⛭ Fases) ------------------------------- */
+/* Uma coluna por projeto, com TODAS as fases dentro. A bolinha avança o status
+   sem precisar abrir o projeto. */
+.fases-quadro .fases-col {
+  min-width: 260px;
+}
+.fases-col__cab {
+  padding: 0 0.15rem 0.5rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(15, 25, 35, 0.1);
+}
+.fases-col__abrir {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.fases-col__abrir:hover .fases-col__nome {
+  text-decoration: underline;
+}
+.fases-col__nome {
+  display: block;
+  font-family: var(--heading);
+  font-size: 1rem;
+  line-height: 1.25;
+  margin-top: 0.05rem;
+}
+.fases-col__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.35rem;
+}
+.fases-col__n {
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--t-500);
+  background: rgba(15, 25, 35, 0.07);
+  border-radius: 100px;
+  padding: 0.05rem 0.45rem;
+}
+.est-badge {
+  font-size: 0.6rem;
+  background: rgba(15, 25, 35, 0.06);
+  color: var(--t-500);
+  border: 1px solid rgba(15, 25, 35, 0.12);
+}
+.est-badge.est--andamento {
+  color: var(--essencia);
+  border-color: rgba(61, 107, 126, 0.35);
+  background: rgba(61, 107, 126, 0.1);
+}
+.est-badge.est--cliente {
+  color: #2e6b45;
+  border-color: rgba(46, 107, 69, 0.35);
+  background: rgba(46, 107, 69, 0.1);
+}
+.est-badge.est--revisao {
+  color: #7a5099;
+  border-color: rgba(122, 80, 153, 0.35);
+  background: rgba(122, 80, 153, 0.1);
+}
+
+.fase-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  border: 1px solid rgba(15, 25, 35, 0.08);
+  border-radius: 10px;
+  background: var(--bg-1);
+  padding: 0.45rem 0.55rem;
+  margin-bottom: 0.35rem;
+}
+.fase-item--andamento {
+  border-color: rgba(61, 107, 126, 0.35);
+  background: rgba(61, 107, 126, 0.06);
+}
+.fase-item--concluida {
+  opacity: 0.62;
+}
+.fase-item--concluida .fase-item__nome {
+  text-decoration: line-through;
+}
+.fase-item__corpo {
+  flex: 1;
+  min-width: 0;
+}
+.fase-item__nome {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.fase-item__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.25rem;
+}
+.fase-bolinha {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid rgba(15, 25, 35, 0.2);
+  background: #fff;
+  color: var(--essencia);
+  font-size: 0.8rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.fase-bolinha:hover {
+  transform: scale(1.08);
+  border-color: var(--essencia);
+}
+.fase-bolinha--andamento {
+  border-color: var(--essencia);
+  background: rgba(61, 107, 126, 0.15);
+}
+.fase-bolinha--ok {
+  background: #2e6b45;
+  border-color: #2e6b45;
+  color: #fff;
+}
+.fase-bolinha--exemplo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  font-size: 0.62rem;
+  vertical-align: middle;
+  cursor: default;
+}
+.fases-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--t-500);
+}
+@media (max-width: 640px) {
+  .fases-quadro .fases-col {
+    min-width: 84vw;
+  }
+}

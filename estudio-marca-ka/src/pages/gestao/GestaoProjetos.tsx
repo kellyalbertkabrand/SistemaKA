@@ -77,7 +77,11 @@ export function GestaoProjetos() {
   const sel: Projeto | null =
     idAberto && idAberto !== 'novo' ? (lista.find((p) => p.id === idAberto) ?? null) : null
   // Visão: lista de projetos OU painel de pendências (com filtro por responsável)
-  const [vista, setVista] = useState<'quadro' | 'semana' | 'projetos' | 'pendencias'>('quadro')
+  const [vista, setVista] = useState<'quadro' | 'fases' | 'semana' | 'projetos' | 'pendencias'>(
+    'quadro',
+  )
+  // Mostrar também os projetos já entregues no painel de fases?
+  const [verEntregues, setVerEntregues] = useState(false)
   const [filtroResp, setFiltroResp] = useState<Responsavel | 'todas'>('todas')
 
   async function recarregar() {
@@ -160,6 +164,25 @@ export function GestaoProjetos() {
     }
   }
 
+  /** Avança o status de uma fase (pendente → andamento → concluída) direto do
+   *  painel de fases, sem abrir o projeto. */
+  async function avancarFaseDoPainel(projetoId: string, idx: number) {
+    const proj = lista.find((x) => x.id === projetoId)
+    if (!proj) return
+    const fases = proj.fases.map<FaseProjeto>((f, i) => {
+      if (i !== idx) return f
+      const status = proximoStatusFase(f.status)
+      return { ...f, status, concluida_em: status === 'concluida' ? new Date().toISOString() : null }
+    })
+    setLista((l) => l.map((x) => (x.id === projetoId ? { ...x, fases } : x)))
+    try {
+      await salvarProjeto(projetoId, { fases })
+    } catch {
+      mostrar('Não deu para salvar, tente de novo.', 'erro')
+      void recarregar()
+    }
+  }
+
   const arrastar = useArrastarCartoes<EstagioProjeto>({
     colunas: ESTAGIOS,
     itensDaColuna: (col) => projetosDe(col).map((p) => p.id),
@@ -212,6 +235,9 @@ export function GestaoProjetos() {
         <div className="seg">
           <button className={vista === 'quadro' ? 'seg__on' : ''} onClick={() => setVista('quadro')}>
             ▦ Quadro
+          </button>
+          <button className={vista === 'fases' ? 'seg__on' : ''} onClick={() => setVista('fases')}>
+            ⛭ Fases
           </button>
           <button className={vista === 'semana' ? 'seg__on' : ''} onClick={() => setVista('semana')}>
             🗓 Semana
@@ -277,6 +303,94 @@ export function GestaoProjetos() {
               ))}
             </div>
           )}
+        </>
+      )}
+
+      {vista === 'fases' && !carregando && lista.length > 0 && (
+        <>
+          <div className="gestao-acoes" style={{ marginTop: 0 }}>
+            <p className="dica-voz" style={{ margin: 0 }}>
+              Uma coluna por projeto, com todas as fases. Toque na bolinha para avançar:{' '}
+              <span className="fase-bolinha fase-bolinha--exemplo">○</span> pendente →{' '}
+              <span className="fase-bolinha fase-bolinha--exemplo fase-bolinha--andamento">●</span>{' '}
+              em andamento → <span className="fase-bolinha fase-bolinha--exemplo fase-bolinha--ok">✓</span>{' '}
+              concluída.
+            </p>
+            <span className="espaco" />
+            <label className="fases-toggle">
+              <input
+                type="checkbox"
+                checked={verEntregues}
+                onChange={(e) => setVerEntregues(e.target.checked)}
+              />
+              <span>mostrar entregues</span>
+            </label>
+          </div>
+
+          <div className="ativ-quadro fases-quadro">
+            {/* No painel de fases o trabalho em curso vem primeiro; a fila, no fim. */}
+            {(['andamento', 'cliente', 'revisao', 'fila', 'entregue'] as EstagioProjeto[])
+              .flatMap((est) => (est === 'entregue' && !verEntregues ? [] : projetosDe(est)))
+              .map(
+              (p) => {
+                const feitas = p.fases.filter((f) => f.status === 'concluida').length
+                const est = estagioDoProjeto(p)
+                return (
+                  <section key={p.id} className="ativ-col fases-col">
+                    <header className="fases-col__cab">
+                      <button
+                        className="fases-col__abrir"
+                        onClick={() => abrirUrl(p.id)}
+                        title="Abrir o projeto"
+                      >
+                        {p.cliente_nome && <span className="quadro-card__cliente">{p.cliente_nome}</span>}
+                        <span className="fases-col__nome">{p.nome}</span>
+                      </button>
+                      <div className="fases-col__meta">
+                        <span className={`badge est-badge est--${est}`}>{ROTULO_ESTAGIO[est]}</span>
+                        <span className="fases-col__n">
+                          {feitas}/{p.fases.length}
+                        </span>
+                      </div>
+                    </header>
+
+                    <div className="ativ-col__corpo">
+                      {p.fases.length === 0 && <p className="ativ-vazio">Sem fases cadastradas.</p>}
+                      {p.fases.map((f, idx) => (
+                        <div
+                          key={`${p.id}-${idx}`}
+                          className={`fase-item fase-item--${f.status}`}
+                        >
+                          <button
+                            className={`fase-bolinha ${
+                              f.status === 'concluida'
+                                ? 'fase-bolinha--ok'
+                                : f.status === 'andamento'
+                                  ? 'fase-bolinha--andamento'
+                                  : ''
+                            }`}
+                            title={`${ROTULO_FASE[f.status]} — tocar para avançar`}
+                            onClick={() => void avancarFaseDoPainel(p.id, idx)}
+                          >
+                            {f.status === 'concluida' ? '✓' : f.status === 'andamento' ? '●' : '○'}
+                          </button>
+                          <div className="fase-item__corpo">
+                            <div className="fase-item__nome">{f.nome}</div>
+                            <div className="fase-item__meta">
+                              <span className={`resp-badge resp--${respClasse(f.responsavel)}`}>
+                                {rotuloResp(f.responsavel)}
+                              </span>
+                              {f.data && <span className="data-chip">📅 {formatarData(f.data)}</span>}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )
+              },
+            )}
+          </div>
         </>
       )}
 
