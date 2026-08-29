@@ -1168,20 +1168,17 @@ publish `dist`, Node 20, redirect SPA `/* → /index.html 200`.
 > colar em GitHub → Settings → Secrets → Actions). Site id do app:
 > `620d408e-bb8a-49fb-a1da-ccf602320142`.
 >
-> ℹ️ **28/08/2026:** o commit `18466e4` entrou no ar ~5 min depois do push
-> (deploy `ready`, branch `estudiodemarca`, alias
-> `estudiodemarca.kellyalbert.com.br`), sem ninguém pedir nada à IA — mas não
-> dá para afirmar se foi automático ou se a KA clicou em Trigger deploy no
-> mesmo minuto. Testar de novo no próximo push e anotar aqui. Confirmar sempre
-> pela API
-> (`get-deploy-for-site` no conector Netlify, site id
-> `620d408e-bb8a-49fb-a1da-ccf602320142`): o campo `commit_ref` diz qual commit
-> está no ar. O **`deploy-site` do conector continua dando `403 Forbidden`** na
-> fase de upload (`zipAndBuild`) — não é o proxy do sandbox (o
-> `recentRelayFailures` fica vazio), é o próprio Netlify. Ou seja: **publicar =
-> dar push**; o "Trigger deploy" no painel é só o plano B. O domínio do site é
-> bloqueado pela política de saída do sandbox, então a IA não consegue abrir a
-> página no ar — a checagem é pela API.
+> ❌ **28/08/2026 — o deploy NÃO é automático (testado):** os commits `d0d47aa`
+> e `e48c903` foram enviados sem ninguém tocar no painel e, mais de uma hora
+> depois, o site continuava no `18466e4` (o deploy das 19:57, que foi a KA
+> clicando em Trigger deploy). Ou seja: **push não publica**; é preciso clicar
+> em **Trigger deploy** no painel do Netlify. O **`deploy-site` do conector
+> continua dando `403 Forbidden`** na fase de upload (`zipAndBuild`) — não é o
+> proxy do sandbox (o `recentRelayFailures` fica vazio), é o próprio Netlify.
+> Conferir o que está no ar pela API (`get-deploy-for-site` no conector, site id
+> `620d408e-bb8a-49fb-a1da-ccf602320142`): o campo `commit_ref` diz o commit
+> publicado. O domínio do site é bloqueado pela política de saída do sandbox,
+> então a IA não abre a página no ar — a checagem é sempre pela API.
 
 > ⚠️ **Em 30/07/2026 o deploy pelo conector Netlify (deploy-site) falhou com
 > `403 Forbidden`** na fase de upload (`zipAndBuild`). Ou seja: nem o conector
