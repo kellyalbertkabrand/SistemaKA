@@ -1141,6 +1141,25 @@ teste; upsert por ID determinístico) está em `BRIEFING-NOTICIAS-NO-SAAS.md`
 
 ---
 
+### Ícone na tela de início do celular (ago/2026)
+
+Salvar o link do app no iPhone/Android agora mostra o **monograma KA** (preto
+sobre o creme da marca) em vez do print da página:
+
+- `public/icones/` — `apple-touch-icon.png` (180, iPhone), `icone-192.png`,
+  `icone-512.png`, `icone-512-maskable.png` (Android corta as bordas, então
+  esse tem o monograma menor) e `favicon-32.png` (aba do navegador). Gerados
+  com PIL a partir de `public/clientes/ka/ka-preto.png`, recortando o espaço
+  vazio e centralizando sobre `#E7E0CD`.
+- `index.html` traz os `<link rel="apple-touch-icon">`/`icon`/`manifest` e o
+  `apple-mobile-web-app-title` = **"Estúdio KA"** (nome embaixo do ícone).
+- `public/site.webmanifest`: `display: "browser"` **de propósito** — o app
+  depende do "voltar" do navegador para fechar fichas, então continua abrindo
+  no Safari. Para virar "app de verdade" (tela cheia, sem barra do Safari), é
+  trocar para `standalone` e testar a navegação de novo.
+- ⚠️ Depois de publicar, o iPhone só mostra o ícone novo se o atalho for
+  **removido e salvo de novo** (ele guarda a imagem de quando foi salvo).
+
 ## 6. Como rodar / publicar
 
 ```bash
