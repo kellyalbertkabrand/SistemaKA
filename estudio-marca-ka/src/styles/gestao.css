@@ -3579,3 +3579,38 @@
   opacity: 0.55;
   pointer-events: none;
 }
+
+/* ---- Arrastar tarefas: o CARTÃO INTEIRO é a alça ------------------------- */
+/* Segure ~0,3s em qualquer parte do cartão (ou pegue pela alça ⠿) e mova.
+   Enquanto arrasta, o cartão muda de cor (dourado) para ficar claro o que
+   está na mão. Sem seleção de texto/lupa no toque longo do iPhone. */
+.ativ {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.ativ--arrastando,
+.ativ--arrastando.ativ--projeto,
+.ativ--arrastando.ativ--feito {
+  /* Fundo SÓLIDO (não translúcido): o cartão na mão precisa cobrir o que está
+     embaixo, senão os dois textos se misturam. */
+  background: #f7ecd6;
+  border-color: var(--dourado);
+  border-width: 2px;
+  box-shadow: 0 16px 34px rgba(15, 25, 35, 0.28);
+  opacity: 1;
+  cursor: grabbing;
+}
+.ativ--arrastando .ativ__titulo {
+  color: #6b5220;
+}
+/* Onde a tarefa vai cair: linha dourada e fundo levemente marcado. */
+.ativ--alvo,
+.ativ--alvo.ativ--projeto {
+  border-color: rgba(184, 155, 106, 0.5);
+  background: rgba(184, 155, 106, 0.1);
+  box-shadow: 0 -4px 0 0 var(--dourado) inset;
+}
+.ativ__alca {
+  cursor: grab;
+}

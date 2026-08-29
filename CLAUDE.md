@@ -782,10 +782,17 @@ coloridos).
   várias", um textão (uma tarefa por linha, ou ditado — cada frase vira uma
   linha) cria todas de uma vez na categoria escolhida. Onde o navegador não
   suporta voz, o botão some e aparece uma dica.
-- **Arrastar para reordenar** (jul/2026): cada cartão tem a alça `⠿` e usa
-  **Pointer Events** (`iniciarArraste`) — funciona no toque do iPhone. Campo
-  `Atividade.ordem` (menor = mais em cima); novos itens nascem no topo
-  (`menorOrdem-1`); `definirOrdens([{id,ordem}])` grava a posição.
+- **Arrastar para reordenar (ago/2026 — o CARTÃO INTEIRO é a alça):** segurar
+  ~0,3s em qualquer parte do cartão pega a tarefa (`aoPressionarCartao` →
+  `comecarArraste`); a alça `⠿` continua pegando na hora. Se o dedo desliza mais
+  de 10px antes disso, é rolagem e o arraste é cancelado. Durante o arraste, um
+  listener `touchmove` **não passivo** dá `preventDefault` (sem isso o iPhone
+  rola junto e a tarefa escapa do dedo) e o cartão fica **dourado sólido**
+  (`.ativ--arrastando`, fundo `#f7ecd6` + borda dourada + sombra) — o destino
+  mostra a linha dourada (`.ativ--alvo`). O clique que vem ao soltar é ignorado
+  por ~350ms (`arrastouRef`), senão abriria a edição. As **setas ▲▼ saíram** (a
+  KA pediu para arrastar, não clicar). Campo `Atividade.ordem` (menor = mais em
+  cima); novos itens nascem no topo (`menorOrdem-1`); `definirOrdens` grava.
 - **VISÃO EM PAINÉIS OU LISTA (ago/2026) — reforma da aba:** segmento
   **▦ Painéis / ☰ Lista** (a escolha fica no `localStorage`, `ka.ativ.visao`).
   *Painéis* = uma coluna por categoria, lado a lado (`.ativ-quadro`, rola de

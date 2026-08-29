@@ -144,6 +144,11 @@ export function GestaoAtividades() {
     para: string | null
   } | null>(null)
   const movidoTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Momento em que o último arraste terminou — o clique que vem logo depois é
+  // ignorado (senão soltar a tarefa abriria a caixa de edição).
+  const arrastouRef = useRef(0)
+  // "Segurar para pegar": timer + cancelamento quando o dedo rola a página.
+  const segurarRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   function marcarMovido(chave: string) {
     setMovidoChave(chave)
@@ -153,6 +158,7 @@ export function GestaoAtividades() {
   useEffect(
     () => () => {
       if (movidoTimer.current) clearTimeout(movidoTimer.current)
+      if (segurarRef.current) clearTimeout(segurarRef.current)
     },
     [],
   )
@@ -457,24 +463,25 @@ export function GestaoAtividades() {
     mostrar(`Movida para ${ROTULO_CATEGORIA[novaCat]}`)
   }
 
-  // Setas ↑/↓ — reordenar SEM arrastar (o arraste falha em alguns toques).
-  // Troca com o vizinho do mesmo grupo (em aberto / concluídas).
-  function moverItem(cat: CategoriaAtividade, it: Item, dir: -1 | 1) {
-    const arr = itensDe(cat).filter((x) => x.feito === it.feito)
-    const i = arr.findIndex((x) => x.chave === it.chave)
-    const j = i + dir
-    if (i < 0 || j < 0 || j >= arr.length) return
-    void aplicarReordem(cat, it.chave, arr[j].chave)
-  }
-
-  function iniciarArraste(e: React.PointerEvent, cat: CategoriaAtividade, chave: string) {
-    e.preventDefault()
-    const inicio = { x: e.clientX, y: e.clientY }
+  /**
+   * Começa a arrastar de fato. Chamado pela alça (na hora) ou por segurar o
+   * cartão (~0,3s). Enquanto arrasta, bloqueia a rolagem da página no toque —
+   * sem isso o iPhone rola junto e a tarefa "escapa" do dedo.
+   */
+  function comecarArraste(
+    alvo: HTMLElement,
+    pointerId: number,
+    inicio: { x: number; y: number },
+    cat: CategoriaAtividade,
+    chave: string,
+  ) {
     try {
-      ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+      alvo.setPointerCapture(pointerId)
     } catch {
       /* ignora */
     }
+    const segurarRolagem = (ev: TouchEvent) => ev.preventDefault()
+    window.addEventListener('touchmove', segurarRolagem, { passive: false })
     dragRef.current = { cat, de: chave, paraCat: cat, para: chave }
     setDragChave(chave)
     setOverChave(chave)
@@ -528,6 +535,9 @@ export function GestaoAtividades() {
       window.removeEventListener('pointermove', mover)
       window.removeEventListener('pointerup', soltar)
       window.removeEventListener('pointercancel', soltar)
+      window.removeEventListener('touchmove', segurarRolagem)
+      // Segura o clique que vem logo depois de soltar (senão abre a edição).
+      arrastouRef.current = Date.now()
       const st = dragRef.current
       dragRef.current = null
       setDragChave(null)
@@ -548,6 +558,53 @@ export function GestaoAtividades() {
     window.addEventListener('pointermove', mover)
     window.addEventListener('pointerup', soltar)
     window.addEventListener('pointercancel', soltar)
+  }
+
+  /**
+   * Toque/clique no cartão: a alça (⠿) pega na hora; no resto do cartão vale
+   * "segurar para pegar" (~0,3s parado). Se o dedo desliza antes disso, é
+   * rolagem da página e o arraste é cancelado. Botões (check, excluir, cobrar)
+   * seguem funcionando normalmente.
+   */
+  function aoPressionarCartao(
+    e: React.PointerEvent<HTMLElement>,
+    cat: CategoriaAtividade,
+    chave: string,
+  ) {
+    if (!podeArrastar || dragRef.current) return
+    const alvo = e.target as HTMLElement
+    // Ações de verdade (marcar feita, excluir, cobrar) não arrastam.
+    if (alvo.closest('.ativ__acoes, .ativ__check')) return
+
+    const cartao = e.currentTarget
+    const inicio = { x: e.clientX, y: e.clientY }
+    const pointerId = e.pointerId
+    const naAlca = !!alvo.closest('.ativ__alca')
+
+    if (naAlca) {
+      e.preventDefault()
+      comecarArraste(cartao, pointerId, inicio, cat, chave)
+      return
+    }
+
+    // Segurar para pegar: cancela se o dedo andar (rolagem) ou soltar antes.
+    const cancelar = () => {
+      if (segurarRef.current) clearTimeout(segurarRef.current)
+      segurarRef.current = null
+      window.removeEventListener('pointermove', vigiar)
+      window.removeEventListener('pointerup', cancelar)
+      window.removeEventListener('pointercancel', cancelar)
+    }
+    const vigiar = (ev: PointerEvent) => {
+      if (Math.abs(ev.clientX - inicio.x) > 10 || Math.abs(ev.clientY - inicio.y) > 10) cancelar()
+    }
+    window.addEventListener('pointermove', vigiar)
+    window.addEventListener('pointerup', cancelar)
+    window.addEventListener('pointercancel', cancelar)
+    segurarRef.current = setTimeout(() => {
+      cancelar()
+      comecarArraste(cartao, pointerId, inicio, cat, chave)
+    }, 300)
   }
 
   function iniciarEdicao(a: Atividade) {
@@ -616,9 +673,6 @@ export function GestaoAtividades() {
       .filter(Boolean)
       .join(' ')
 
-    const grupo = itensDe(cat).filter((x) => x.feito === it.feito)
-    const pos = grupo.findIndex((x) => x.chave === it.chave)
-
     return (
       <div
         key={it.chave}
@@ -627,18 +681,18 @@ export function GestaoAtividades() {
           else rowsRef.current.delete(it.chave)
         }}
         className={classes}
+        onPointerDown={(e) => aoPressionarCartao(e, cat, it.chave)}
         style={
           arrastando
-            ? { transform: `translate(${dragXY.x}px, ${dragXY.y}px)`, zIndex: 30 }
+            ? {
+                transform: `translate(${dragXY.x}px, ${dragXY.y}px) scale(1.03)`,
+                zIndex: 30,
+              }
             : undefined
         }
       >
         {podeArrastar && (
-          <span
-            className="ativ__alca"
-            title="Segure e arraste para mover"
-            onPointerDown={(e) => iniciarArraste(e, cat, it.chave)}
-          >
+          <span className="ativ__alca" title="Segure e arraste para mover" aria-hidden>
             ⠿
           </span>
         )}
@@ -677,7 +731,11 @@ export function GestaoAtividades() {
         ) : (
           <button
             className="ativ__corpo ativ__corpo--btn"
-            onClick={() => iniciarEdicao(it.a)}
+            onClick={() => {
+              // Soltar a tarefa dispara um clique — esse não abre a edição.
+              if (Date.now() - arrastouRef.current < 350) return
+              iniciarEdicao(it.a)
+            }}
             title="Editar"
           >
             <div className="ativ__titulo">{it.a.titulo}</div>
@@ -691,30 +749,6 @@ export function GestaoAtividades() {
         )}
 
         <div className="ativ__acoes">
-          {podeArrastar && (
-            <div className="ativ__setas">
-              <button
-                type="button"
-                className="ativ__seta"
-                disabled={pos <= 0}
-                title="Mover para cima"
-                aria-label="Mover para cima"
-                onClick={() => moverItem(cat, it, -1)}
-              >
-                ▲
-              </button>
-              <button
-                type="button"
-                className="ativ__seta"
-                disabled={pos < 0 || pos >= grupo.length - 1}
-                title="Mover para baixo"
-                aria-label="Mover para baixo"
-                onClick={() => moverItem(cat, it, 1)}
-              >
-                ▼
-              </button>
-            </div>
-          )}
           {(it.tipo === 'pend' ? cat === 'cliente' : it.a.categoria === 'cliente') && (
             <button
               className="btn-mini btn-mini--whats"
