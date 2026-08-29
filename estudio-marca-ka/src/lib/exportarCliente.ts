@@ -4,7 +4,7 @@
 import type { Cliente, PagamentoContrato, Socio } from './database.types'
 import { formatarBRL, formatarData } from './gestao'
 import { formatarDocumento, rotuloTipoDocumento } from './documento'
-import { baixarXlsx, type Celula } from './xlsx'
+import type { Celula } from './xlsx'
 
 export interface ItemCadastro {
   rotulo: string
@@ -192,11 +192,6 @@ export function cabecalhosDeClientes(): string[] {
 
 export function linhasDeClientes(lista: Cliente[]): Celula[][] {
   return lista.map((cli) => COLUNAS.map((c) => c.valor(cli)))
-}
-
-/** Baixa a planilha (.xlsx) com os clientes informados. */
-export async function baixarPlanilhaClientes(lista: Cliente[], nome: string): Promise<void> {
-  await baixarXlsx(nome, cabecalhosDeClientes(), linhasDeClientes(lista), 'Clientes')
 }
 
 /** Nome de arquivo seguro a partir do nome da marca. */

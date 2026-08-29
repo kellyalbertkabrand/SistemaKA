@@ -641,6 +641,15 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
   edições ainda não salvas). Na LISTA de clientes, acima dos nomes, há **"⤓
   Baixar em Excel"**, que baixa todos os cadastros filtrados pela busca
   (`clientes-AAAA-MM-DD.xlsx`) — backup e envio ao contador.
+- **Download no iPhone (ago/2026) — `src/hooks/useArquivoXlsx.ts`:** o Safari do
+  iPhone **ignora** um download disparado por JS depois de um `await` (perde o
+  "gesto" do toque) — por isso o "Baixar em Excel" não fazia nada no celular. A
+  planilha passou a ser montada ANTES do clique e o botão virou um **link de
+  verdade** (`<a download href={blob}>`, estilo `a.btn--voltar`; enquanto monta,
+  mostra "Preparando planilha…" com `.btn--esperando`). Vale para o botão da
+  lista (refaz quando a busca filtra) e o do cadastro. Regra geral p/ o app:
+  **nada de `a.click()` programático depois de `await`** — no iPhone não
+  funciona.
 - **Planilha .xlsx DE VERDADE (`src/lib/xlsx.ts`, ago/2026):** um `.xlsx` é um
   zip de XMLs, então o arquivo é montado com o **JSZip que o app já usa** (zero
   dependência nova): `gerarXlsx(cabecalhos, linhas, aba)` / `baixarXlsx(...)`.

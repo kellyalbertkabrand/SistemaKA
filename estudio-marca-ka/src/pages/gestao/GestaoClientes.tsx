@@ -7,11 +7,13 @@ import { useToast } from '../../components/Toast'
 import { useCopiar } from '../../hooks/useCopiar'
 import { imprimirComoPdf, parseValorBR } from '../../lib/ui'
 import {
-  baixarPlanilhaClientes,
+  cabecalhosDeClientes,
+  linhasDeClientes,
   nomeArquivo,
   secoesDoCliente,
   textoDoCliente,
 } from '../../lib/exportarCliente'
+import { useArquivoXlsx } from '../../hooks/useArquivoXlsx'
 import { rotuloStatus } from '../../lib/rotulos'
 import type { Cliente, Usuario, PagamentoContrato } from '../../lib/database.types'
 import {
@@ -47,7 +49,6 @@ export function GestaoClientes() {
   const [erro, setErro] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
   const [busca, setBusca] = useState('')
-  const [baixando, setBaixando] = useState(false)
 
   const clientesFiltrados = (() => {
     const q = normalizar(busca).trim()
@@ -150,26 +151,13 @@ export function GestaoClientes() {
     }
   }
 
-  // Baixa a planilha do Excel com os cadastros que estão na lista — respeita a
-  // busca, então dá para exportar só um grupo de clientes se quiser.
-  async function exportarPlanilha() {
-    if (clientesFiltrados.length === 0 || baixando) return
-    setBaixando(true)
-    try {
-      const hoje = new Date().toISOString().slice(0, 10)
-      await baixarPlanilhaClientes(clientesFiltrados, `clientes-${hoje}`)
-      mostrar(
-        clientesFiltrados.length === 1
-          ? 'Planilha baixada ✓'
-          : `Planilha com ${clientesFiltrados.length} cadastros baixada ✓`,
-        'ok',
-      )
-    } catch (err) {
-      mostrar(err instanceof Error ? err.message : 'Não consegui gerar a planilha.', 'erro')
-    } finally {
-      setBaixando(false)
-    }
-  }
+  // Planilha dos cadastros que estão na lista (a busca filtra) — fica pronta
+  // antes do clique, para o link funcionar também no iPhone.
+  const { url: planilhaLista } = useArquivoXlsx(
+    cabecalhosDeClientes(),
+    linhasDeClientes(clientesFiltrados),
+    'Clientes',
+  )
 
   const novos = clientes.filter(ehNovo).length
 
@@ -218,14 +206,17 @@ export function GestaoClientes() {
         <button className="btn--voltar" onClick={() => void copiarLinkCadastro()}>
           Copiar link de cadastro
         </button>
-        <button
-          className="btn--voltar"
-          onClick={() => void exportarPlanilha()}
-          disabled={baixando || clientesFiltrados.length === 0}
+        {/* Link de verdade (o arquivo já vem pronto): no iPhone um download
+            disparado por JS depois de um await é ignorado pelo Safari. */}
+        <a
+          className={`btn--voltar ${planilhaLista ? '' : 'btn--esperando'}`}
+          href={planilhaLista ?? undefined}
+          download={`clientes-${new Date().toISOString().slice(0, 10)}.xlsx`}
+          aria-disabled={!planilhaLista}
           title="Baixar todos os cadastros numa planilha do Excel"
         >
-          {baixando ? 'Gerando…' : '⤓ Baixar em Excel'}
-        </button>
+          {planilhaLista ? '⤓ Baixar em Excel' : 'Preparando planilha…'}
+        </a>
         <button className="btn" onClick={() => abrirUrl('novo')}>
           + Novo cliente
         </button>
@@ -698,11 +689,15 @@ function CadastroExport({
   aoVoltar: () => void
   imprimirAoAbrir?: boolean
 }) {
-  const { mostrar } = useToast()
   const copiar = useCopiar()
   const secoes = secoesDoCliente(cliente)
   const hoje = new Date().toLocaleDateString('pt-BR')
-  const [baixando, setBaixando] = useState(false)
+  // Planilha deste cadastro, pronta antes do clique (ver useArquivoXlsx).
+  const { url: planilha } = useArquivoXlsx(
+    cabecalhosDeClientes(),
+    linhasDeClientes([cliente]),
+    'Cadastro',
+  )
 
   // Veio do botão "Baixar PDF": já abre a caixa de impressão (Salvar como PDF).
   useEffect(() => {
@@ -711,19 +706,6 @@ function CadastroExport({
     const t = window.setTimeout(() => imprimirComoPdf('Cadastro', cliente.nome_marca), 250)
     return () => window.clearTimeout(t)
   }, [imprimirAoAbrir, cliente.nome_marca])
-
-  async function baixarPlanilha() {
-    if (baixando) return
-    setBaixando(true)
-    try {
-      await baixarPlanilhaClientes([cliente], `cadastro-${nomeArquivo(cliente.nome_marca)}`)
-      mostrar('Planilha baixada ✓', 'ok')
-    } catch (err) {
-      mostrar(err instanceof Error ? err.message : 'Não consegui gerar a planilha.', 'erro')
-    } finally {
-      setBaixando(false)
-    }
-  }
 
   return (
     <>
@@ -737,9 +719,14 @@ function CadastroExport({
         <button className="btn" onClick={() => imprimirComoPdf('Cadastro', cliente.nome_marca)}>
           Imprimir / Salvar PDF
         </button>
-        <button className="btn--voltar" onClick={() => void baixarPlanilha()} disabled={baixando}>
-          {baixando ? 'Gerando…' : '⤓ Baixar em Excel'}
-        </button>
+        <a
+          className={`btn--voltar ${planilha ? '' : 'btn--esperando'}`}
+          href={planilha ?? undefined}
+          download={`cadastro-${nomeArquivo(cliente.nome_marca)}.xlsx`}
+          aria-disabled={!planilha}
+        >
+          {planilha ? '⤓ Baixar em Excel' : 'Preparando planilha…'}
+        </a>
         <button
           className="btn--voltar"
           onClick={() => void copiar(textoDoCliente(cliente), 'Cadastro copiado ✓')}

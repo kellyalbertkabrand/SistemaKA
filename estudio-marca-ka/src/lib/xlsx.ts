@@ -144,20 +144,3 @@ export async function gerarXlsx(
     mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
   })
 }
-
-/** Gera e baixa a planilha do Excel. */
-export async function baixarXlsx(
-  nomeArquivo: string,
-  cabecalhos: string[],
-  linhas: Celula[][],
-  nomeAba = 'Planilha',
-): Promise<void> {
-  const blob = await gerarXlsx(cabecalhos, linhas, nomeAba)
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = nomeArquivo.endsWith('.xlsx') ? nomeArquivo : `${nomeArquivo}.xlsx`
-  a.click()
-  // Espera o navegador iniciar o download antes de soltar o arquivo da memória.
-  window.setTimeout(() => URL.revokeObjectURL(url), 4000)
-}

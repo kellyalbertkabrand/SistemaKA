@@ -3573,3 +3573,9 @@
   color: var(--t-500);
   white-space: nowrap;
 }
+
+/* Link de download enquanto o arquivo ainda está sendo montado. */
+.btn--esperando {
+  opacity: 0.55;
+  pointer-events: none;
+}

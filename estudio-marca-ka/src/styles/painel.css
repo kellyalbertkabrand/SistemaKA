@@ -21,6 +21,13 @@
   background: rgba(61, 107, 126, 0.08);
   border-color: var(--essencia);
 }
+/* Quando o "botão" é um link de download (<a download>), fica igual ao botão. */
+a.btn--voltar {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  line-height: 1.2;
+}
 
 /* ---- Grade de clientes (Painel KA) ---- */
 .grade-clientes {
