@@ -16,6 +16,7 @@ import {
 import { metaPadrao } from '../lib/assinatura'
 import { confirmar } from '../lib/confirmar'
 import { useToast } from './Toast'
+import { useArrastarCartoes } from '../hooks/useArrastarCartoes'
 import './carrossel.css'
 import './editor.css'
 
@@ -134,8 +135,6 @@ export function Carrossel({ templates }: { templates: Template[] }) {
   const ocupado = acao !== null
   // Permite CANCELAR uma exportação travada sem perder o carrossel.
   const abortRef = useRef<AbortController | null>(null)
-  // Índice do slide sendo arrastado (reordenar).
-  const arrastandoRef = useRef<number | null>(null)
 
   // Salva o carrossel automaticamente (com um pequeno atraso para não pesar a
   // cada tecla). Assim, se travar/recarregar, o trabalho continua lá.
@@ -271,19 +270,8 @@ export function Carrossel({ templates }: { templates: Template[] }) {
     setRecuperado(false)
   }
 
-  function mover(i: number, dir: -1 | 1) {
-    if (ocupado) return
-    const j = i + dir
-    if (j < 0 || j >= slides.length) return
-    setSlides((s) => {
-      const c = [...s]
-      ;[c[i], c[j]] = [c[j], c[i]]
-      return c
-    })
-    setSel((cur) => (cur === i ? j : cur === j ? i : cur))
-  }
-
-  // Reordena arrastando (do índice `de` para o índice `para`).
+  // Reordena arrastando (do índice `de` para o índice `para`). Sem setas: a
+  // pessoa segura o slide com o dedo e leva para o lugar novo.
   function reordenar(de: number, para: number) {
     if (ocupado || de === para || de < 0 || para < 0 || de >= slides.length || para >= slides.length) return
     setSlides((s) => {
@@ -294,6 +282,17 @@ export function Carrossel({ templates }: { templates: Template[] }) {
     })
     setSel(para)
   }
+
+  // Arrastar os slides da tira: segurar ~0,3s em cima do slide (ou pegar na
+  // alça ⠿) e levar para o lugar novo. Usa Pointer Events, então funciona no
+  // toque do iPhone — o `draggable` do HTML só funciona com mouse.
+  const arrastarSlides = useArrastarCartoes<'tira'>({
+    colunas: ['tira'],
+    itensDaColuna: () => slides.map((_, i) => String(i)),
+    aoSoltar: (de, _origem, _para, antesDe) =>
+      reordenar(Number(de), antesDe === null ? slides.length - 1 : Number(antesDe)),
+    ativo: !ocupado,
+  })
 
   // Troca o template do slide APROVEITANDO o conteúdo (textos e imagens migram).
   // Assim a pessoa vê o mesmo conteúdo em outro modelo sem redigitar.
@@ -515,7 +514,8 @@ export function Carrossel({ templates }: { templates: Template[] }) {
 
       <div className="carrossel__body">
         {/* Filmstrip de slides */}
-        <div className="carrossel__strip">
+        <div className="carrossel__tira">
+        <div className="carrossel__strip" ref={(el) => arrastarSlides.registrarColuna('tira', el)}>
           {slides.map((s, i) => {
             const t = porId(s.templateId)
             const R = t.render
@@ -524,23 +524,28 @@ export function Carrossel({ templates }: { templates: Template[] }) {
             return (
               <div
                 key={s.key}
-                className={`thumb ${i === sel ? 'on' : ''} ${ocupado ? 'thumb--travado' : ''}`}
-                draggable={!ocupado}
+                ref={(el) => arrastarSlides.registrarCartao(String(i), el)}
+                className={`thumb ${i === sel ? 'on' : ''} ${ocupado ? 'thumb--travado' : ''} ${
+                  arrastarSlides.arrastando === String(i) ? 'thumb--arrastando' : ''
+                } ${
+                  arrastarSlides.alvo === String(i) &&
+                  arrastarSlides.arrastando !== null &&
+                  arrastarSlides.arrastando !== String(i)
+                    ? 'thumb--alvo'
+                    : ''
+                }`}
+                style={
+                  arrastarSlides.arrastando === String(i)
+                    ? {
+                        transform: `translate(${arrastarSlides.desloc.x}px, ${arrastarSlides.desloc.y}px) scale(1.04)`,
+                        zIndex: 20,
+                      }
+                    : undefined
+                }
+                onPointerDown={(e) => arrastarSlides.aoPressionar(e, 'tira', String(i))}
                 onClick={() => {
-                  if (!ocupado) setSel(i)
-                }}
-                onDragStart={() => {
-                  arrastandoRef.current = i
-                }}
-                onDragOver={(e) => {
-                  if (arrastandoRef.current !== null) e.preventDefault()
-                }}
-                onDrop={() => {
-                  if (arrastandoRef.current !== null) reordenar(arrastandoRef.current, i)
-                  arrastandoRef.current = null
-                }}
-                onDragEnd={() => {
-                  arrastandoRef.current = null
+                  // O clique que vem logo depois de soltar não deve trocar de slide.
+                  if (!ocupado && !arrastarSlides.acabouDeArrastar()) setSel(i)
                 }}
               >
                 <div className="thumb__scaler" style={{ width: tw, height: th }}>
@@ -558,31 +563,18 @@ export function Carrossel({ templates }: { templates: Template[] }) {
                 <span className="thumb__n">{i + 1}</span>
                 {slides.length > 1 && (
                   <>
-                    <div className="thumb__move">
-                      <button
-                        title="Mover para cima"
-                        disabled={i === 0}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          mover(i, -1)
-                        }}
-                      >
-                        ▲
-                      </button>
-                      <button
-                        title="Mover para baixo"
-                        disabled={i === slides.length - 1}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          mover(i, 1)
-                        }}
-                      >
-                        ▼
-                      </button>
-                    </div>
+                    <span
+                      className="thumb__alca"
+                      title="Segure e arraste para mudar a ordem"
+                      data-alca
+                      aria-hidden
+                    >
+                      ⠿
+                    </span>
                     <button
                       className="thumb__x"
                       title="Remover slide"
+                      data-nao-arrasta
                       onClick={(e) => {
                         e.stopPropagation()
                         removeSlide(i)
@@ -596,6 +588,7 @@ export function Carrossel({ templates }: { templates: Template[] }) {
                   <button
                     className="thumb__dup"
                     title="Duplicar slide"
+                    data-nao-arrasta
                     onClick={(e) => {
                       e.stopPropagation()
                       duplicarSlide(i)
@@ -612,6 +605,10 @@ export function Carrossel({ templates }: { templates: Template[] }) {
               +
             </button>
           )}
+        </div>
+        {slides.length > 1 && (
+          <p className="strip__dica">Segure um slide e arraste para mudar a ordem.</p>
+        )}
         </div>
 
         {/* Editor do slide selecionado */}

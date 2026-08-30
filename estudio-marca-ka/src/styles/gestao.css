@@ -308,9 +308,14 @@
 }
 .item-orcamento {
   display: grid;
-  grid-template-columns: 1fr 70px 120px 34px;
+  /* 1ª coluna = alça de arraste (a ordem dos itens vai para a proposta). */
+  grid-template-columns: 26px 1fr 70px 120px 34px;
   gap: 0.5rem;
   align-items: center;
+  border-radius: 10px;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 .item-orcamento input {
   width: 100%;
@@ -4228,4 +4233,105 @@
 /* A bolinha de status é botão (um toque avança) — nunca arrasta. */
 .fase-item .fase-bolinha {
   touch-action: manipulation;
+}
+
+/* ---- Arrastar os ITENS do orçamento (sem setas: segurar e arrastar) ---- */
+.item-orcamento__alca {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--dourado);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: grab;
+  touch-action: none;
+  border-radius: 7px;
+  background: rgba(184, 155, 106, 0.14);
+  padding: 0.4rem 0;
+}
+.item-orcamento__alca:active {
+  cursor: grabbing;
+}
+.item-orcamento--arrastando {
+  background: #f7ecd6;
+  box-shadow: 0 14px 30px rgba(15, 25, 35, 0.25);
+  outline: 2px solid var(--dourado);
+  cursor: grabbing;
+  position: relative;
+}
+.item-orcamento--alvo {
+  background: rgba(184, 155, 106, 0.12);
+  box-shadow: 0 -4px 0 0 var(--dourado) inset;
+}
+/* Dica curta embaixo de listas que se arrastam. */
+.dica-arrastar {
+  margin: 0.45rem 0 0.8rem;
+  font-size: 0.72rem;
+  color: var(--t-400);
+  line-height: 1.4;
+}
+
+/* ============================================================
+   LISTA QUE SE ARRASTA — visual comum (useListaArrastavel).
+   Vale para sócios, pagamentos do contrato, etapas do novo projeto e
+   qualquer lista futura: segurar o item e levar para cima/baixo.
+   ============================================================ */
+.arr-item {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.arr--puxando {
+  background: #f7ecd6 !important;
+  outline: 2px solid var(--dourado);
+  box-shadow: 0 16px 34px rgba(15, 25, 35, 0.28);
+  cursor: grabbing;
+  position: relative;
+  z-index: 5;
+}
+.arr--alvo {
+  background: rgba(184, 155, 106, 0.1);
+  box-shadow: 0 -4px 0 0 var(--dourado) inset;
+}
+.arr-alca {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 26px;
+  color: var(--dourado);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: grab;
+  touch-action: none;
+  border-radius: 7px;
+  background: rgba(184, 155, 106, 0.14);
+}
+.arr-alca:active {
+  cursor: grabbing;
+}
+/* Cabeçalho do bloco arrastável: a alça à esquerda e o "nº" do item. */
+.arr-cab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.arr-cab__n {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--t-400);
+}
+
+/* A alcinha dentro da lista de etapas do "Novo projeto" (a linha alinha pelo
+   topo, então a alça acompanha a primeira linha do texto). */
+.etapa-op .arr-alca {
+  flex: none;
+  margin-top: 0.05rem;
+}
+.etapa-op__corpo {
+  cursor: pointer;
+  flex: 1;
 }

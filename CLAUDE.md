@@ -750,9 +750,9 @@ padrão).
   fim — é ela quem arrasta para a posição.
 - **`src/hooks/useArrastarCartoes.ts`**: a mecânica de arrastar (segurar ~0,3s,
   travar a rolagem no toque, achar coluna/alvo pelo ponteiro) virou hook
-  genérico, usado pelo quadro de Projetos. Marcadores no DOM:
-  `[data-alca]` pega na hora, `[data-nao-arrasta]` não arrasta. As Atividades
-  ainda usam a cópia interna delas — **migrar para o hook** quando mexer lá.
+  genérico, usado por TODAS as telas que arrastam (ver "ARRASTAR EM TODO O
+  SISTEMA"). Marcadores no DOM: `[data-alca]` pega na hora, `[data-nao-arrasta]`
+  não arrasta.
 - **VM Rocks:** o portal `/vm-rocks` ganhou **"Fila dos projetos"** (só leitura,
   `.vm-fila*`) com os projetos em que ela participa, agrupados por estágio e na
   ordem da KA — ela se planeja pelo que vem. Continua podendo concluir/ajustar
@@ -845,7 +845,53 @@ da mecânica própria que exigia acertar a alça:
   `.fase-item--alvo`) — estilos no FIM de `gestao.css`.
 - botões de verdade (status, editar, excluir) levam `data-nao-arrasta`.
 
-Falta migrar só a cópia interna do `GestaoAtividades.tsx` para o hook.
+### ARRASTAR EM TODO O SISTEMA (ago/2026) — revisão completa
+
+A pedido da KA ("em todo o sistema tem que ter a opção de arrastar; não quero
+setinha pra cima e pra baixo, eu seguro com o dedo e arrasto"), TODA lista com
+ordem manual passou a se arrastar, com o mesmo gesto e o mesmo visual. **As
+setas ▲▼ foram removidas do sistema** (não existe mais nenhuma).
+
+O gesto, em todo lugar: **segurar ~0,3s** em qualquer parte do item (a alça
+`⠿` pega na hora) → o item fica **dourado sólido** e segue o dedo, o destino
+mostra a **linha/anel dourado** → soltar reordena. Deslizar antes de pegar é
+rolagem (cancela). No toque a rolagem trava enquanto arrasta. Botões e campos
+de texto levam `data-nao-arrasta` (continuam funcionando com um toque).
+
+**Dois hooks, um gesto:**
+- **`src/hooks/useArrastarCartoes.ts`** — o motor. Serve para quadros com
+  VÁRIAS colunas (Atividades, Quadro de projetos, painel ⛭ Fases) e listas
+  únicas. O alvo passou a ser escolhido por **distância em 2D** (`Math.hypot`),
+  então vale também para listas **deitadas** — a tira de slides do carrossel
+  fica lado a lado no celular. Marcadores no DOM: `[data-alca]` pega na hora,
+  `[data-nao-arrasta]` nunca arrasta.
+- **`src/hooks/useListaArrastavel.ts`** (novo) — açúcar para o caso comum
+  "uma lista em pé". `useListaArrastavel(total, aoReordenar)` devolve
+  `lista()`, `item(i)` (`ref`/`onPointerDown`/`classe`/`style`), `alca()` e
+  `acabouDeArrastar()`. ⚠️ `item(i)` **não** se espalha com `{...}` — `classe`
+  e `style` entram à mão, junto com as classes da tela. Visual comum em
+  `gestao.css`: `.arr-item`, `.arr--puxando`, `.arr--alvo`, `.arr-alca`,
+  `.arr-cab`.
+
+**Onde se arrasta hoje:**
+
+| Tela | O que se arrasta |
+| --- | --- |
+| Estúdio → Montar carrossel | os **slides** da tira (as setas ▲▼ saíram; o `draggable` do HTML5, que não funcionava no toque do iPhone, saiu junto) |
+| Atividades | tarefas e etapas de projeto, dentro da coluna e **entre** colunas |
+| Projetos → detalhe | as fases do projeto |
+| Projetos → painel ⛭ Fases | as etapas dentro de cada projeto |
+| Projetos → Quadro | os cartões de projeto (ordem e coluna) |
+| Projetos → + Novo projeto | as **etapas escolhidas** (modelo + extras numa lista só) |
+| Orçamentos → editor | os **itens** (é a ordem que sai na proposta) |
+| Ficha do cliente | **sócios** e **pagamentos do contrato** |
+
+**Novo projeto — uma lista só (ago/2026):** as etapas do modelo e as "outras
+etapas deste contrato" viraram UMA lista (`EtapaEscolha {f, on, extra}` em
+`GestaoProjetos.tsx`), em vez de `marcadas: Set<number>` + `extras: []`. Assim
+a etapa escrita à mão entra no fim e **pode ser arrastada** até o lugar certo
+antes de criar o projeto. Clicar no texto liga/desliga a etapa (o clique que
+vem depois de arrastar é ignorado); a numeração 01, 02… se refaz sozinha.
 
 ### Projetos — REVISÃO DA SEMANA (ago/2026)
 
@@ -926,14 +972,14 @@ coloridos).
   linha) cria todas de uma vez na categoria escolhida. Onde o navegador não
   suporta voz, o botão some e aparece uma dica.
 - **Arrastar para reordenar (ago/2026 — o CARTÃO INTEIRO é a alça):** segurar
-  ~0,3s em qualquer parte do cartão pega a tarefa (`aoPressionarCartao` →
-  `comecarArraste`); a alça `⠿` continua pegando na hora. Se o dedo desliza mais
-  de 10px antes disso, é rolagem e o arraste é cancelado. Durante o arraste, um
-  listener `touchmove` **não passivo** dá `preventDefault` (sem isso o iPhone
-  rola junto e a tarefa escapa do dedo) e o cartão fica **dourado sólido**
+  ~0,3s em qualquer parte do cartão pega a tarefa (hoje via
+  `useArrastarCartoes`); a alça `⠿` continua pegando na hora. Se o dedo desliza
+  mais de 10px antes disso, é rolagem e o arraste é cancelado. Durante o
+  arraste, um listener `touchmove` **não passivo** dá `preventDefault` (sem isso
+  o iPhone rola junto e a tarefa escapa do dedo) e o cartão fica **dourado sólido**
   (`.ativ--arrastando`, fundo `#f7ecd6` + borda dourada + sombra) — o destino
   mostra a linha dourada (`.ativ--alvo`). O clique que vem ao soltar é ignorado
-  por ~350ms (`arrastouRef`), senão abriria a edição. As **setas ▲▼ saíram** (a
+  por ~350ms (`acabouDeArrastar()`), senão abriria a edição. As **setas ▲▼ saíram** (a
   KA pediu para arrastar, não clicar). Campo `Atividade.ordem` (menor = mais em
   cima); novos itens nascem no topo (`menorOrdem-1`); `definirOrdens` grava.
 - **VISÃO EM PAINÉIS OU LISTA (ago/2026) — reforma da aba:** segmento
@@ -1481,7 +1527,9 @@ estudio-marca-ka/
     │   ├── painel.css              # grades do painel (clientes + templates)
     │   └── gestao.css              # abas, tabelas, fichas, páginas públicas
     ├── hooks/
-    │   └── useDitado.ts            # ditado por voz (Web Speech API, pt-BR)
+    │   ├── useDitado.ts            # ditado por voz (Web Speech API, pt-BR)
+    │   ├── useArrastarCartoes.ts   # arrastar (motor; colunas + toque do iPhone)
+    │   └── useListaArrastavel.ts   # arrastar numa lista simples (em pé)
     ├── components/
     │   ├── Toast.tsx               # avisos flutuantes (ToastProvider/useToast)
     │   ├── BotaoMic.tsx            # botão de microfone (ditado)

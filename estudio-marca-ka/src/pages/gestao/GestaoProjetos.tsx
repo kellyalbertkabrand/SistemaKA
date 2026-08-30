@@ -3,6 +3,7 @@ import type { Cliente } from '../../lib/database.types'
 import { listarClientes } from '../../lib/api'
 import { formatarData } from '../../lib/gestao'
 import { useArrastarCartoes } from '../../hooks/useArrastarCartoes'
+import { useListaArrastavel } from '../../hooks/useListaArrastavel'
 import {
   criarProjeto,
   definirOrdensProjetos,
@@ -939,6 +940,13 @@ function RevisaoDaSemana({
 // ---------------------------------------------------------------------------
 // Novo projeto: nome + cliente + modelo de fases. Simples.
 // ---------------------------------------------------------------------------
+/** Uma etapa na hora de criar o projeto: a fase, se entra e se foi escrita à mão. */
+interface EtapaEscolha {
+  f: ModeloFaseItem
+  on: boolean
+  extra?: boolean
+}
+
 function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p: Projeto) => void }) {
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [nome, setNome] = useState('')
@@ -948,19 +956,18 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
   const [inicio, setInicio] = useState('')
   const [entrega, setEntrega] = useState('')
   const [modelo, setModelo] = useState(MODELOS_FASES[0].id)
-  // Etapas MARCADAS do modelo (por índice). Nem todo contrato tem tudo — a KA
-  // desmarca o que não faz parte daquele projeto.
+  // ETAPAS deste projeto: as do modelo + as que a KA escrever na hora, numa
+  // lista só — dá para desmarcar o que não entra no contrato e ARRASTAR para
+  // mudar a ordem antes de criar.
   const fasesDoModelo = MODELOS_FASES.find((m) => m.id === modelo)?.fases ?? []
-  const [marcadas, setMarcadas] = useState<Set<number>>(new Set())
-  // Ao trocar de modelo, marca todas de novo (o padrão é o contrato completo).
+  const [etapas, setEtapas] = useState<EtapaEscolha[]>([])
+  // Ao trocar de modelo, monta a lista de novo (o padrão é o contrato completo;
+  // etapas `opcional` — ex.: Análise Estratégica de Mercado — nascem desmarcadas).
   useEffect(() => {
-    // Etapas `opcional` (ex.: Análise Estratégica de Mercado) nascem desmarcadas.
-    setMarcadas(new Set(fasesDoModelo.map((f, i) => (f.opcional ? -1 : i)).filter((i) => i >= 0)))
-    setExtras([])
+    setEtapas(fasesDoModelo.map((f) => ({ f, on: !f.opcional })))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modelo])
-  // Etapas EXTRAS, escritas na hora (o que não está no modelo).
-  const [extras, setExtras] = useState<ModeloFaseItem[]>([])
+  const marcadas = etapas.filter((e) => e.on).length
   const [extraNome, setExtraNome] = useState('')
   const [extraDesc, setExtraDesc] = useState('')
   const [extraResp, setExtraResp] = useState<Responsavel>('KA')
@@ -980,11 +987,25 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
   function adicionarExtra() {
     const nome = extraNome.trim()
     if (!nome) return
-    setExtras((l) => [...l, { nome, descricao: extraDesc.trim() || undefined, responsavel: extraResp }])
+    setEtapas((l) => [
+      ...l,
+      { f: { nome, descricao: extraDesc.trim() || undefined, responsavel: extraResp }, on: true, extra: true },
+    ])
     setExtraNome('')
     setExtraDesc('')
     setExtraResp('KA')
   }
+
+  /** Muda a ordem das etapas antes de criar o projeto (arrastando). */
+  function reordenarEtapas(de: number, para: number) {
+    setEtapas((l) => {
+      const c = [...l]
+      const [x] = c.splice(de, 1)
+      c.splice(para, 0, x)
+      return c
+    })
+  }
+  const arrEtapas = useListaArrastavel(etapas.length, reordenarEtapas)
 
   async function criar(e: FormEvent) {
     e.preventDefault()
@@ -992,9 +1013,14 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
     setErro(null)
     try {
       const c = clientes.find((x) => x.id === clienteId) ?? null
-      const fases = [...fasesDoModelo.filter((_, i) => marcadas.has(i)), ...extras]
+      const escolhidas = etapas.filter((e) => e.on)
+      const fases = escolhidas.map((e) => e.f)
       // Etapa escrita à mão vira sugestão na próxima vez.
-      await Promise.all(extras.map((f) => salvarFaseSalva(f.nome, f.descricao ?? null).catch(() => {})))
+      await Promise.all(
+        escolhidas
+          .filter((e) => e.extra)
+          .map((e) => salvarFaseSalva(e.f.nome, e.f.descricao ?? null).catch(() => {})),
+      )
       const p = await criarProjeto({
         nome: nome.trim(),
         cliente_id: c?.id ?? null,
@@ -1066,48 +1092,72 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
                 ))}
               </select>
             </div>
-            {fasesDoModelo.length > 0 && (
+            {etapas.length > 0 && (
               <div className="field campo-toda">
                 <label>
                   Etapas deste projeto{' '}
                   <span className="etapas-conta">
-                    {marcadas.size} de {fasesDoModelo.length}
+                    {marcadas} de {etapas.length}
                   </span>
                 </label>
                 <span className="campo-ajuda">
                   Desmarque o que não faz parte deste contrato — dá para adicionar depois.
+                  <strong> Segure uma etapa e arraste</strong> para mudar a ordem.
                 </span>
-                <div className="etapas-escolha">
-                  {fasesDoModelo.map((f, i) => {
-                    const on = marcadas.has(i)
+                <div className="etapas-escolha" {...arrEtapas.lista()}>
+                  {etapas.map((e, i) => {
+                    const f = e.f
+                    const it = arrEtapas.item(i)
+                    const resp = f.responsavel ?? responsavelPadrao(f.nome)
                     return (
-                      <label key={`${f.nome}-${i}`} className={`etapa-op ${on ? 'etapa-op--on' : ''}`}>
+                      <div
+                        key={`${f.nome}-${i}`}
+                        ref={it.ref}
+                        onPointerDown={it.onPointerDown}
+                        className={`etapa-op ${e.on ? 'etapa-op--on' : ''} ${
+                          e.extra ? 'etapa-extra' : ''
+                        } ${it.classe}`}
+                        style={it.style}
+                      >
+                        <span {...arrEtapas.alca()}>⠿</span>
                         <input
                           type="checkbox"
-                          checked={on}
+                          checked={e.on}
+                          data-nao-arrasta
+                          title={e.on ? 'Tirar do projeto' : 'Colocar no projeto'}
                           onChange={() =>
-                            setMarcadas((antes) => {
-                              const novo = new Set(antes)
-                              if (novo.has(i)) novo.delete(i)
-                              else novo.add(i)
-                              return novo
-                            })
+                            setEtapas((l) => l.map((x, k) => (k === i ? { ...x, on: !x.on } : x)))
                           }
                         />
-                        <span className="etapa-op__corpo">
+                        <span
+                          className="etapa-op__corpo"
+                          onClick={() => {
+                            // Clicar no texto liga/desliga a etapa — menos o
+                            // clique que vem logo depois de arrastar.
+                            if (arrEtapas.acabouDeArrastar()) return
+                            setEtapas((l) => l.map((x, k) => (k === i ? { ...x, on: !x.on } : x)))
+                          }}
+                        >
                           <span className="etapa-op__nome">
                             {String(i + 1).padStart(2, '0')} · {f.nome}
-                            <span
-                              className={`resp-badge resp--${respClasse(
-                                f.responsavel ?? responsavelPadrao(f.nome),
-                              )}`}
-                            >
-                              {rotuloResp(f.responsavel ?? responsavelPadrao(f.nome))}
+                            <span className={`resp-badge resp--${respClasse(resp)}`}>
+                              {rotuloResp(resp)}
                             </span>
                           </span>
                           {f.descricao && <span className="etapa-op__desc">{f.descricao}</span>}
                         </span>
-                      </label>
+                        {e.extra && (
+                          <button
+                            type="button"
+                            className="btn-mini btn-mini--perigo"
+                            title="Tirar esta etapa"
+                            data-nao-arrasta
+                            onClick={() => setEtapas((l) => l.filter((_, x) => x !== i))}
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
                     )
                   })}
                 </div>
@@ -1115,11 +1165,15 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
                   <button
                     type="button"
                     className="btn-mini"
-                    onClick={() => setMarcadas(new Set(fasesDoModelo.map((_, i) => i)))}
+                    onClick={() => setEtapas((l) => l.map((x) => ({ ...x, on: true })))}
                   >
                     Marcar todas
                   </button>
-                  <button type="button" className="btn-mini" onClick={() => setMarcadas(new Set())}>
+                  <button
+                    type="button"
+                    className="btn-mini"
+                    onClick={() => setEtapas((l) => l.map((x) => ({ ...x, on: false })))}
+                  >
                     Desmarcar todas
                   </button>
                 </p>
@@ -1128,40 +1182,12 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
 
             {/* Etapas que não estão no modelo — a KA escreve na hora. */}
             <div className="field campo-toda">
-              <label>
-                Outras etapas deste contrato{' '}
-                {extras.length > 0 && <span className="etapas-conta">+{extras.length}</span>}
-              </label>
+              <label>Outras etapas deste contrato</label>
               <span className="campo-ajuda">
-                O que este cliente contratou e não está na lista acima. Fica salvo como sugestão
-                para os próximos projetos.
+                O que este cliente contratou e não está na lista acima. Entra no fim da lista (e
+                dá para arrastar até o lugar certo). Fica salvo como sugestão para os próximos
+                projetos.
               </span>
-
-              {extras.length > 0 && (
-                <div className="etapas-escolha">
-                  {extras.map((f, i) => (
-                    <div key={`${f.nome}-${i}`} className="etapa-op etapa-op--on etapa-extra">
-                      <span className="etapa-op__corpo">
-                        <span className="etapa-op__nome">
-                          {f.nome}
-                          <span className={`resp-badge resp--${respClasse(f.responsavel)}`}>
-                            {rotuloResp(f.responsavel)}
-                          </span>
-                        </span>
-                        {f.descricao && <span className="etapa-op__desc">{f.descricao}</span>}
-                      </span>
-                      <button
-                        type="button"
-                        className="btn-mini btn-mini--perigo"
-                        title="Tirar esta etapa"
-                        onClick={() => setExtras((l) => l.filter((_, x) => x !== i))}
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
 
               <div className="etapa-nova">
                 <input

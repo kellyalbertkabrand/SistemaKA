@@ -17,6 +17,16 @@ export interface Novidade {
 
 export const NOVIDADES: Novidade[] = [
   {
+    data: '30/08/2026',
+    titulo: 'Arrastar em todo o sistema',
+    itens: [
+      'As setas ▲▼ saíram: agora é segurar o item com o dedo e arrastar para cima ou para baixo.',
+      'Vale nos slides do carrossel, nas etapas dos projetos, nas atividades, nos itens do orçamento, nos sócios e nos pagamentos do contrato.',
+      'O item que está na mão fica dourado e o lugar onde ele vai cair aparece marcado.',
+      'No celular a rolagem trava enquanto se arrasta, então o item não escapa do dedo.',
+    ],
+  },
+  {
     data: '11/08/2026',
     titulo: 'Vídeos, carrossel e organização',
     itens: [
@@ -25,7 +35,7 @@ export const NOVIDADES: Novidade[] = [
       'No carrossel, os modelos ficaram idênticos aos de fora (o CTA volta a abrir com “ACESSE A LOJA”).',
       'Mais respiro no texto do botão “acesse a loja”.',
       'Portal da VM Rocks: dá para apagar tarefas e atividades, e o campo de adicionar subiu para cima da lista.',
-      'Atividades: botões ↑/↓ para reordenar as tarefas (além de arrastar).',
+      'Atividades: dá para reordenar as tarefas arrastando.',
       'Este bloco de “Novidades” no painel, para acompanhar o que muda no sistema.',
     ],
   },

@@ -23,6 +23,7 @@ import {
 } from '../../lib/gestao'
 import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import { rotuloStatus } from '../../lib/rotulos'
+import { useArrastarCartoes } from '../../hooks/useArrastarCartoes'
 import { useFichaUrl } from '../../hooks/useFichaUrl'
 import { Busca, normalizar } from '../../components/Busca'
 
@@ -290,6 +291,23 @@ function EditorOrcamento({
     )
   }
 
+  /** Muda a ordem dos itens (é a ordem que sai na proposta e no contrato). */
+  function reordenarItens(de: number, para: number) {
+    if (de === para || de < 0 || para < 0 || para >= f.itens.length) return
+    const itens = [...f.itens]
+    const [item] = itens.splice(de, 1)
+    itens.splice(para, 0, item)
+    campo('itens', itens)
+  }
+
+  // Segurar ~0,3s no item (ou pegar na alça ⠿) e arrastar para cima/baixo.
+  const arrastarItens = useArrastarCartoes<'itens'>({
+    colunas: ['itens'],
+    itensDaColuna: () => f.itens.map((_, i) => String(i)),
+    aoSoltar: (de, _o, _p, antesDe) =>
+      reordenarItens(Number(de), antesDe === null ? f.itens.length - 1 : Number(antesDe)),
+  })
+
   async function salvar(e: FormEvent) {
     e.preventDefault()
     const itens = f.itens.filter((i) => i.descricao.trim())
@@ -427,42 +445,75 @@ function EditorOrcamento({
           <h3 style={{ margin: '0.4rem 0 0.7rem' }}>Itens</h3>
           <div className="itens-orcamento">
             <div className="item-orcamento" style={{ color: 'var(--t-400)', fontSize: '0.62rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>
+              <span />
               <span>Descrição</span>
               <span>Qtd</span>
               <span>Valor unit. (R$)</span>
               <span />
             </div>
-            {f.itens.map((item, i) => (
-              <div className="item-orcamento" key={i}>
-                <input
-                  value={item.descricao}
-                  onChange={(e) => mudarItem(i, { descricao: e.target.value })}
-                  placeholder="ex.: Template de post de produto"
-                />
-                <input
-                  type="number"
-                  min={1}
-                  value={item.qtd}
-                  onChange={(e) => mudarItem(i, { qtd: Number(e.target.value) || 1 })}
-                />
-                <input
-                  type="number"
-                  min={0}
-                  step="0.01"
-                  value={item.valor}
-                  onChange={(e) => mudarItem(i, { valor: Number(e.target.value) || 0 })}
-                />
-                <button
-                  type="button"
-                  className="remover"
-                  title="Remover item"
-                  onClick={() => campo('itens', f.itens.filter((_, idx) => idx !== i))}
+            {f.itens.map((item, i) => {
+              const puxando = arrastarItens.arrastando === String(i)
+              const alvo =
+                arrastarItens.alvo === String(i) &&
+                arrastarItens.arrastando !== null &&
+                arrastarItens.arrastando !== String(i)
+              return (
+                <div
+                  className={`item-orcamento ${puxando ? 'item-orcamento--arrastando' : ''} ${
+                    alvo ? 'item-orcamento--alvo' : ''
+                  }`}
+                  key={i}
+                  ref={(el) => arrastarItens.registrarCartao(String(i), el)}
+                  onPointerDown={(e) => arrastarItens.aoPressionar(e, 'itens', String(i))}
+                  style={
+                    puxando
+                      ? {
+                          transform: `translate(${arrastarItens.desloc.x}px, ${arrastarItens.desloc.y}px)`,
+                          zIndex: 20,
+                        }
+                      : undefined
+                  }
                 >
-                  ✕
-                </button>
-              </div>
-            ))}
+                  <span className="item-orcamento__alca" title="Segure e arraste para mudar a ordem" data-alca aria-hidden>
+                    ⠿
+                  </span>
+                  <input
+                    value={item.descricao}
+                    data-nao-arrasta
+                    onChange={(e) => mudarItem(i, { descricao: e.target.value })}
+                    placeholder="ex.: Template de post de produto"
+                  />
+                  <input
+                    type="number"
+                    min={1}
+                    data-nao-arrasta
+                    value={item.qtd}
+                    onChange={(e) => mudarItem(i, { qtd: Number(e.target.value) || 1 })}
+                  />
+                  <input
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    data-nao-arrasta
+                    value={item.valor}
+                    onChange={(e) => mudarItem(i, { valor: Number(e.target.value) || 0 })}
+                  />
+                  <button
+                    type="button"
+                    className="remover"
+                    title="Remover item"
+                    data-nao-arrasta
+                    onClick={() => campo('itens', f.itens.filter((_, idx) => idx !== i))}
+                  >
+                    ✕
+                  </button>
+                </div>
+              )
+            })}
           </div>
+          <p className="dica-arrastar">
+            Segure um item e arraste para mudar a ordem (é a ordem que sai na proposta).
+          </p>
           <p style={{ marginBottom: '0.8rem' }}>
             <button
               type="button"

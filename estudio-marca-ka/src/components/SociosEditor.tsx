@@ -1,4 +1,5 @@
 import type { Socio } from '../lib/database.types'
+import { useListaArrastavel } from '../hooks/useListaArrastavel'
 
 // ---------------------------------------------------------------------------
 // Editor de SÓCIOS (opcional): lista com nome/CPF/RG/e-mail e "assina o
@@ -15,19 +16,45 @@ export function SociosEditor({ lista, onChange }: { lista: Socio[]; onChange: (l
   function remover(i: number) {
     onChange(lista.filter((_, x) => x !== i))
   }
+  // Muda a ordem dos sócios arrastando (é a ordem que sai no contrato).
+  function reordenar(de: number, para: number) {
+    const l = [...lista]
+    const [s] = l.splice(de, 1)
+    l.splice(para, 0, s)
+    onChange(l)
+  }
+  const arr = useListaArrastavel(lista.length, reordenar)
+
   return (
-    <div>
+    <div {...arr.lista()}>
       {lista.length === 0 && (
         <p style={{ fontSize: '0.82rem', color: '#837b6c', margin: '0 0 0.6rem' }}>
           Nenhum sócio adicionado (deixe assim se a empresa tem só o responsável).
         </p>
       )}
-      {lista.map((s, i) => (
+      {lista.map((s, i) => {
+        const it = arr.item(i)
+        return (
         <div
           key={i}
-          style={{ border: '1px solid rgba(21,37,53,0.14)', borderRadius: 10, padding: '0.8rem', marginBottom: '0.7rem' }}
+          ref={it.ref}
+          onPointerDown={it.onPointerDown}
+          className={it.classe}
+          style={{
+            border: '1px solid rgba(21,37,53,0.14)',
+            borderRadius: 10,
+            padding: '0.8rem',
+            marginBottom: '0.7rem',
+            ...it.style,
+          }}
         >
-          <div className="form-grade">
+          {lista.length > 1 && (
+            <div className="arr-cab">
+              <span {...arr.alca()}>⠿</span>
+              <span className="arr-cab__n">Sócio {i + 1}</span>
+            </div>
+          )}
+          <div className="form-grade" data-nao-arrasta>
             <div className="field campo-toda">
               <label>Nome completo do sócio</label>
               <input value={s.nome} onChange={(e) => atualizar(i, { nome: e.target.value })} />
@@ -58,13 +85,18 @@ export function SociosEditor({ lista, onChange }: { lista: Socio[]; onChange: (l
           </div>
           <button
             type="button"
+            data-nao-arrasta
             onClick={() => remover(i)}
             style={{ background: 'none', border: 'none', color: '#b4462f', fontSize: '0.8rem', cursor: 'pointer', padding: '0.3rem 0', marginTop: '0.3rem' }}
           >
             Remover sócio
           </button>
         </div>
-      ))}
+        )
+      })}
+      {lista.length > 1 && (
+        <p className="dica-arrastar">Segure um sócio e arraste para mudar a ordem.</p>
+      )}
       <button type="button" className="btn btn--ghost" onClick={adicionar}>
         + Adicionar sócio
       </button>

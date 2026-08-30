@@ -14,6 +14,7 @@ import {
   textoDoCliente,
 } from '../../lib/exportarCliente'
 import { useArquivoXlsx } from '../../hooks/useArquivoXlsx'
+import { useListaArrastavel } from '../../hooks/useListaArrastavel'
 import { rotuloStatus } from '../../lib/rotulos'
 import type { Cliente, Usuario, PagamentoContrato } from '../../lib/database.types'
 import {
@@ -813,6 +814,14 @@ function PagamentosContrato({
   function remover(i: number) {
     onChange(lista.filter((_, x) => x !== i))
   }
+  // Muda a ordem dos pagamentos arrastando (a ordem em que a KA quer ver).
+  function reordenar(de: number, para: number) {
+    const l = [...lista]
+    const [x] = l.splice(de, 1)
+    l.splice(para, 0, x)
+    onChange(l)
+  }
+  const arr = useListaArrastavel(lista.length, reordenar)
 
   // Resumo: quanto cada um (KA, VM Rocks, cliente…) tem a receber neste contrato.
   const resumo = new Map<string, { unico: number; mensal: number }>()
@@ -825,7 +834,7 @@ function PagamentosContrato({
   }
 
   return (
-    <div>
+    <div {...arr.lista()}>
       {lista.length === 0 && (
         <p style={{ fontSize: '0.82rem', color: '#837b6c', margin: '0 0 0.6rem' }}>
           Nenhum pagamento cadastrado ainda.
@@ -833,12 +842,28 @@ function PagamentosContrato({
       )}
       {lista.map((p, i) => {
         const forma = p.forma ?? 'avista'
+        const it = arr.item(i)
         return (
           <div
             key={i}
-            style={{ border: '1px solid rgba(21,37,53,0.14)', borderRadius: 10, padding: '0.8rem', marginBottom: '0.7rem' }}
+            ref={it.ref}
+            onPointerDown={it.onPointerDown}
+            className={it.classe}
+            style={{
+              border: '1px solid rgba(21,37,53,0.14)',
+              borderRadius: 10,
+              padding: '0.8rem',
+              marginBottom: '0.7rem',
+              ...it.style,
+            }}
           >
-            <div className="form-grade">
+            {lista.length > 1 && (
+              <div className="arr-cab">
+                <span {...arr.alca()}>⠿</span>
+                <span className="arr-cab__n">Pagamento {i + 1}</span>
+              </div>
+            )}
+            <div className="form-grade" data-nao-arrasta>
               <div className="field">
                 <label>Quem deve ser pago</label>
                 <select value={p.quem} onChange={(e) => atualizar(i, { quem: e.target.value })}>
@@ -927,6 +952,7 @@ function PagamentosContrato({
 
             <button
               type="button"
+              data-nao-arrasta
               onClick={() => remover(i)}
               style={{ background: 'none', border: 'none', color: '#b4462f', fontSize: '0.8rem', cursor: 'pointer', padding: '0.3rem 0', marginTop: '0.3rem' }}
             >
@@ -935,6 +961,9 @@ function PagamentosContrato({
           </div>
         )
       })}
+      {lista.length > 1 && (
+        <p className="dica-arrastar">Segure um pagamento e arraste para mudar a ordem.</p>
+      )}
       <button type="button" className="btn btn--ghost" onClick={adicionar}>
         + Adicionar pagamento
       </button>

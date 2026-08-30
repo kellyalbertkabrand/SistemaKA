@@ -113,7 +113,10 @@ export function useArrastarCartoes<C extends string>(cfg: ArrastarConfig<C>): Ar
         }
       }
 
-      // 2) cartão dessa coluna mais perto do dedo (null = coluna vazia/fim)
+      // 2) cartão dessa coluna mais perto do dedo (null = coluna vazia/fim).
+      // A distância é em DUAS dimensões para valer também nas listas deitadas
+      // (a tira de slides do carrossel fica lado a lado no celular). Numa lista
+      // em pé o X é igual para todos, então a ordem sai pela altura, como antes.
       let sobre: string | null = null
       let melhor = Infinity
       for (const k of cfgRef.current.itensDaColuna(colDestino)) {
@@ -121,7 +124,10 @@ export function useArrastarCartoes<C extends string>(cfg: ArrastarConfig<C>): Ar
         const el = cartoesRef.current.get(k)
         if (!el) continue
         const r = el.getBoundingClientRect()
-        const dist = Math.abs(ev.clientY - (r.top + r.bottom) / 2)
+        const dist = Math.hypot(
+          ev.clientX - (r.left + r.right) / 2,
+          ev.clientY - (r.top + r.bottom) / 2,
+        )
         if (dist < melhor) {
           melhor = dist
           sobre = k

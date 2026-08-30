@@ -7,6 +7,7 @@ import { BotaoMic } from '../../components/BotaoMic'
 import { BotaoLinkVM } from '../../components/BotaoLinkVM'
 import { useToast } from '../../components/Toast'
 import { useDitado } from '../../hooks/useDitado'
+import { useArrastarCartoes } from '../../hooks/useArrastarCartoes'
 import { confirmar } from '../../lib/confirmar'
 import { autoAltura } from '../../lib/ui'
 import {
@@ -128,27 +129,11 @@ export function GestaoAtividades() {
   const [editCategoria, setEditCategoria] = useState<CategoriaAtividade>('pessoal')
   const [editData, setEditData] = useState('')
 
-  // Arrastar (Pointer Events — funciona no toque do iPhone). Vale para TUDO:
-  // tarefas e etapas de projeto, dentro da coluna ou entre colunas.
-  const [dragChave, setDragChave] = useState<string | null>(null)
-  const [overChave, setOverChave] = useState<string | null>(null)
-  const [overCat, setOverCat] = useState<CategoriaAtividade | null>(null)
-  const [dragXY, setDragXY] = useState({ x: 0, y: 0 })
-  const [movidoChave, setMovidoChave] = useState<string | null>(null) // flash dourado
-  const rowsRef = useRef<Map<string, HTMLElement>>(new Map())
-  const colsRef = useRef<Map<CategoriaAtividade, HTMLElement>>(new Map())
-  const dragRef = useRef<{
-    cat: CategoriaAtividade
-    de: string
-    paraCat: CategoriaAtividade
-    para: string | null
-  } | null>(null)
+  // O arraste em si é o hook compartilhado (`useArrastarCartoes`) — o mesmo
+  // gesto dos Projetos e do Carrossel. Aqui fica só o "flash" dourado do item
+  // que acabou de mudar de lugar.
+  const [movidoChave, setMovidoChave] = useState<string | null>(null)
   const movidoTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  // Momento em que o último arraste terminou — o clique que vem logo depois é
-  // ignorado (senão soltar a tarefa abriria a caixa de edição).
-  const arrastouRef = useRef(0)
-  // "Segurar para pegar": timer + cancelamento quando o dedo rola a página.
-  const segurarRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   function marcarMovido(chave: string) {
     setMovidoChave(chave)
@@ -158,7 +143,6 @@ export function GestaoAtividades() {
   useEffect(
     () => () => {
       if (movidoTimer.current) clearTimeout(movidoTimer.current)
-      if (segurarRef.current) clearTimeout(segurarRef.current)
     },
     [],
   )
@@ -463,150 +447,6 @@ export function GestaoAtividades() {
     mostrar(`Movida para ${ROTULO_CATEGORIA[novaCat]}`)
   }
 
-  /**
-   * Começa a arrastar de fato. Chamado pela alça (na hora) ou por segurar o
-   * cartão (~0,3s). Enquanto arrasta, bloqueia a rolagem da página no toque —
-   * sem isso o iPhone rola junto e a tarefa "escapa" do dedo.
-   */
-  function comecarArraste(
-    alvo: HTMLElement,
-    pointerId: number,
-    inicio: { x: number; y: number },
-    cat: CategoriaAtividade,
-    chave: string,
-  ) {
-    try {
-      alvo.setPointerCapture(pointerId)
-    } catch {
-      /* ignora */
-    }
-    const segurarRolagem = (ev: TouchEvent) => ev.preventDefault()
-    window.addEventListener('touchmove', segurarRolagem, { passive: false })
-    dragRef.current = { cat, de: chave, paraCat: cat, para: chave }
-    setDragChave(chave)
-    setOverChave(chave)
-    setOverCat(cat)
-    setDragXY({ x: 0, y: 0 })
-
-    const mover = (ev: PointerEvent) => {
-      const st = dragRef.current
-      if (!st) return
-      // O cartão arrastado segue o ponteiro (é o movimento que se vê).
-      setDragXY({ x: ev.clientX - inicio.x, y: ev.clientY - inicio.y })
-
-      // 1) Em qual coluna está o ponteiro? (na visão em lista há uma só por vez)
-      let colunaAlvo = st.paraCat
-      let melhorCol = Infinity
-      for (const c of colunasVisiveis) {
-        const el = colsRef.current.get(c)
-        if (!el) continue
-        const r = el.getBoundingClientRect()
-        const dentro = ev.clientX >= r.left && ev.clientX <= r.right
-        const dist = dentro ? 0 : Math.min(Math.abs(ev.clientX - r.left), Math.abs(ev.clientX - r.right))
-        const distY = ev.clientY < r.top ? r.top - ev.clientY : ev.clientY > r.bottom ? ev.clientY - r.bottom : 0
-        const total = dist + distY
-        if (total < melhorCol) {
-          melhorCol = total
-          colunaAlvo = c
-        }
-      }
-
-      // 2) Qual item dessa coluna está mais perto do dedo/cursor?
-      let alvo: string | null = null
-      let melhor = Infinity
-      for (const it of itensDe(colunaAlvo)) {
-        if (it.chave === st.de) continue
-        const el = rowsRef.current.get(it.chave)
-        if (!el) continue
-        const r = el.getBoundingClientRect()
-        const dist = Math.abs(ev.clientY - (r.top + r.bottom) / 2)
-        if (dist < melhor) {
-          melhor = dist
-          alvo = it.chave
-        }
-      }
-      st.paraCat = colunaAlvo
-      st.para = alvo
-      setOverCat(colunaAlvo)
-      setOverChave(alvo)
-    }
-
-    const soltar = () => {
-      window.removeEventListener('pointermove', mover)
-      window.removeEventListener('pointerup', soltar)
-      window.removeEventListener('pointercancel', soltar)
-      window.removeEventListener('touchmove', segurarRolagem)
-      // Segura o clique que vem logo depois de soltar (senão abre a edição).
-      arrastouRef.current = Date.now()
-      const st = dragRef.current
-      dragRef.current = null
-      setDragChave(null)
-      setOverChave(null)
-      setOverCat(null)
-      setDragXY({ x: 0, y: 0 })
-      if (!st) return
-      if (st.paraCat === st.cat) {
-        if (st.para && st.para !== st.de) void aplicarReordem(st.cat, st.de, st.para)
-        return
-      }
-      // Soltou em outra coluna
-      const item = itensDe(st.cat).find((it) => it.chave === st.de)
-      if (item?.tipo === 'ativ') void mudarCategoria(item.a, st.paraCat, st.para)
-      else mostrar('Etapa de projeto fica na coluna do responsável.', 'info')
-    }
-
-    window.addEventListener('pointermove', mover)
-    window.addEventListener('pointerup', soltar)
-    window.addEventListener('pointercancel', soltar)
-  }
-
-  /**
-   * Toque/clique no cartão: a alça (⠿) pega na hora; no resto do cartão vale
-   * "segurar para pegar" (~0,3s parado). Se o dedo desliza antes disso, é
-   * rolagem da página e o arraste é cancelado. Botões (check, excluir, cobrar)
-   * seguem funcionando normalmente.
-   */
-  function aoPressionarCartao(
-    e: React.PointerEvent<HTMLElement>,
-    cat: CategoriaAtividade,
-    chave: string,
-  ) {
-    if (!podeArrastar || dragRef.current) return
-    const alvo = e.target as HTMLElement
-    // Ações de verdade (marcar feita, excluir, cobrar) não arrastam.
-    if (alvo.closest('.ativ__acoes, .ativ__check')) return
-
-    const cartao = e.currentTarget
-    const inicio = { x: e.clientX, y: e.clientY }
-    const pointerId = e.pointerId
-    const naAlca = !!alvo.closest('.ativ__alca')
-
-    if (naAlca) {
-      e.preventDefault()
-      comecarArraste(cartao, pointerId, inicio, cat, chave)
-      return
-    }
-
-    // Segurar para pegar: cancela se o dedo andar (rolagem) ou soltar antes.
-    const cancelar = () => {
-      if (segurarRef.current) clearTimeout(segurarRef.current)
-      segurarRef.current = null
-      window.removeEventListener('pointermove', vigiar)
-      window.removeEventListener('pointerup', cancelar)
-      window.removeEventListener('pointercancel', cancelar)
-    }
-    const vigiar = (ev: PointerEvent) => {
-      if (Math.abs(ev.clientX - inicio.x) > 10 || Math.abs(ev.clientY - inicio.y) > 10) cancelar()
-    }
-    window.addEventListener('pointermove', vigiar)
-    window.addEventListener('pointerup', cancelar)
-    window.addEventListener('pointercancel', cancelar)
-    segurarRef.current = setTimeout(() => {
-      cancelar()
-      comecarArraste(cartao, pointerId, inicio, cat, chave)
-    }, 300)
-  }
-
   function iniciarEdicao(a: Atividade) {
     setEditId(a.id)
     setEditTitulo(a.titulo)
@@ -657,10 +497,28 @@ export function GestaoAtividades() {
   const colunasVisiveis = ORDEM.filter((c) => filtro === 'tudo' || filtro === c)
   const podeArrastar = ordenar === 'padrao'
 
+  // Arrastar: mesmo gesto do resto do sistema (segurar ~0,3s em qualquer parte
+  // do cartão, ou pegar na alça ⠿). Soltar em outra coluna muda a categoria.
+  const arrastar = useArrastarCartoes<CategoriaAtividade>({
+    colunas: colunasVisiveis,
+    itensDaColuna: (cat) => itensDe(cat).map((it) => it.chave),
+    ativo: podeArrastar,
+    aoSoltar: (de, origem, para, antesDe) => {
+      if (para === origem) {
+        void aplicarReordem(origem, de, antesDe)
+        return
+      }
+      const item = itensDe(origem).find((it) => it.chave === de)
+      if (item?.tipo === 'ativ') void mudarCategoria(item.a, para, antesDe)
+      else mostrar('Etapa de projeto fica na coluna do responsável.', 'info')
+    },
+  })
+
   // ---- Um item da lista (cartão compacto) ---------------------------------
   function cartao(it: Item, cat: CategoriaAtividade) {
-    const arrastando = dragChave === it.chave
-    const alvo = overChave === it.chave && dragChave && dragChave !== it.chave
+    const arrastando = arrastar.arrastando === it.chave
+    const alvo =
+      arrastar.alvo === it.chave && arrastar.arrastando && arrastar.arrastando !== it.chave
     const classes = [
       'ativ',
       it.tipo === 'pend' ? 'ativ--projeto' : '',
@@ -676,23 +534,20 @@ export function GestaoAtividades() {
     return (
       <div
         key={it.chave}
-        ref={(el) => {
-          if (el) rowsRef.current.set(it.chave, el)
-          else rowsRef.current.delete(it.chave)
-        }}
+        ref={(el) => arrastar.registrarCartao(it.chave, el)}
         className={classes}
-        onPointerDown={(e) => aoPressionarCartao(e, cat, it.chave)}
+        onPointerDown={(e) => arrastar.aoPressionar(e, cat, it.chave)}
         style={
           arrastando
             ? {
-                transform: `translate(${dragXY.x}px, ${dragXY.y}px) scale(1.03)`,
+                transform: `translate(${arrastar.desloc.x}px, ${arrastar.desloc.y}px) scale(1.03)`,
                 zIndex: 30,
               }
             : undefined
         }
       >
         {podeArrastar && (
-          <span className="ativ__alca" title="Segure e arraste para mover" aria-hidden>
+          <span className="ativ__alca" title="Segure e arraste para mover" data-alca aria-hidden>
             ⠿
           </span>
         )}
@@ -700,6 +555,7 @@ export function GestaoAtividades() {
         {it.tipo === 'pend' ? (
           <button
             className="ativ__check"
+            data-nao-arrasta
             disabled={salvando}
             title="Marcar etapa como concluída"
             onClick={() => void concluirPendencia(it.pd)}
@@ -709,6 +565,7 @@ export function GestaoAtividades() {
         ) : (
           <button
             className="ativ__check"
+            data-nao-arrasta
             title={it.feito ? 'Marcar como não feita' : 'Marcar como feita'}
             onClick={() => void toggle(it.a)}
           >
@@ -733,7 +590,7 @@ export function GestaoAtividades() {
             className="ativ__corpo ativ__corpo--btn"
             onClick={() => {
               // Soltar a tarefa dispara um clique — esse não abre a edição.
-              if (Date.now() - arrastouRef.current < 350) return
+              if (arrastar.acabouDeArrastar()) return
               iniciarEdicao(it.a)
             }}
             title="Editar"
@@ -748,7 +605,7 @@ export function GestaoAtividades() {
           </button>
         )}
 
-        <div className="ativ__acoes">
+        <div className="ativ__acoes" data-nao-arrasta>
           {(it.tipo === 'pend' ? cat === 'cliente' : it.a.categoria === 'cliente') && (
             <button
               className="btn-mini btn-mini--whats"
@@ -837,16 +694,13 @@ export function GestaoAtividades() {
     const abertos = itens.filter((it) => !it.feito)
     const feitos = itens.filter((it) => it.feito)
     const mostrarFeitas = !!feitasAbertas[cat]
-    const recebendo = overCat === cat && dragChave !== null
+    const recebendo = arrastar.colunaAlvo === cat && arrastar.arrastando !== null
 
     return (
       <section
         key={cat}
         className={`ativ-col cat--${cat} ${recebendo ? 'ativ-col--recebendo' : ''}`}
-        ref={(el) => {
-          if (el) colsRef.current.set(cat, el)
-          else colsRef.current.delete(cat)
-        }}
+        ref={(el) => arrastar.registrarColuna(cat, el)}
       >
         <header className="ativ-col__cab">
           <h3 className={`ativ-col__tit cat--${cat}`}>{ROTULO_CATEGORIA[cat]}</h3>

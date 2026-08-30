@@ -77,7 +77,10 @@
   }
 }
 
-/* filmstrip */
+/* filmstrip (a coluna da esquerda: a tira + a dica de arrastar) */
+.carrossel__tira {
+  min-width: 0;
+}
 .carrossel__strip {
   display: flex;
   flex-direction: column;
@@ -151,29 +154,44 @@
   cursor: pointer;
   padding: 0;
 }
-.thumb__move {
+/* Alça de arraste do slide (pega na hora). Segurar o slide inteiro ~0,3s
+   também pega — as setas ▲▼ saíram: aqui se arrasta. */
+.thumb__alca {
   position: absolute;
   top: 3px;
   left: 3px;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.thumb__move button {
-  width: 20px;
-  height: 18px;
-  border: none;
-  border-radius: 5px;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
   background: rgba(15, 25, 35, 0.6);
   color: #fff;
-  font-size: 0.55rem;
+  font-size: 0.85rem;
   line-height: 1;
-  cursor: pointer;
-  padding: 0;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
 }
-.thumb__move button:disabled {
-  opacity: 0.3;
-  cursor: default;
+.thumb__alca:active {
+  cursor: grabbing;
+}
+/* Enquanto o dedo segura, o slide fica dourado e acompanha o movimento. */
+.thumb {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.thumb--arrastando {
+  border-color: var(--dourado, #b89b6a);
+  box-shadow: 0 16px 34px rgba(15, 25, 35, 0.32);
+  cursor: grabbing;
+}
+/* Onde o slide vai cair. */
+.thumb--alvo {
+  border-color: var(--dourado, #b89b6a);
+  box-shadow: 0 0 0 3px rgba(184, 155, 106, 0.45);
 }
 .thumb--add {
   min-height: 60px;
@@ -250,4 +268,12 @@
   .btn--salvar-rolo {
     animation: none;
   }
+}
+
+/* Dica embaixo da tira de slides (substituiu as setas ▲▼). */
+.strip__dica {
+  margin: 0.45rem 0 0;
+  font-size: 0.7rem;
+  color: var(--t-400, #837b6c);
+  line-height: 1.4;
 }
