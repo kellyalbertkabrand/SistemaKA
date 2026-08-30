@@ -4162,3 +4162,31 @@
   font-size: 0.85rem;
   padding: 0.5rem 0.6rem;
 }
+
+/* Concluir projeto: botão no cartão do quadro e no detalhe */
+.quadro-card__acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.3rem;
+  padding: 0 0.6rem 0.55rem;
+}
+@media (hover: hover) {
+  .quadro-card__acoes {
+    display: none;
+  }
+  .quadro-card:hover .quadro-card__acoes,
+  .quadro-card:focus-within .quadro-card__acoes {
+    display: flex;
+  }
+}
+.btn-mini--ok {
+  color: #2e6b45;
+  border-color: rgba(46, 107, 69, 0.4);
+}
+.btn-mini--ok:hover {
+  background: rgba(46, 107, 69, 0.1);
+  border-color: #2e6b45;
+}
+.proj-concluir {
+  margin: 0.2rem 0 0.9rem;
+}

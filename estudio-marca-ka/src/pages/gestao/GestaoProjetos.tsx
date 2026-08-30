@@ -165,6 +165,43 @@ export function GestaoProjetos() {
     }
   }
 
+  /**
+   * Concluir o projeto: ele vai para "Entregue" e some do quadro (a coluna dos
+   * entregues fica escondida até a KA pedir para ver). Reabrir traz de volta
+   * para "Em andamento".
+   */
+  async function concluirProjeto(p: Projeto, concluir: boolean) {
+    if (concluir) {
+      const faltam = p.fases.filter((f) => f.status !== 'concluida').length
+      if (faltam > 0) {
+        const ok = await confirmar(
+          `Ainda ${faltam === 1 ? 'falta 1 etapa' : `faltam ${faltam} etapas`} em "${p.nome}". Concluir o projeto mesmo assim?`,
+          { confirmar: 'Concluir' },
+        )
+        if (!ok) return
+      }
+    }
+    const estagio: EstagioProjeto = concluir ? 'entregue' : 'andamento'
+    setLista((l) =>
+      l.map((x) =>
+        x.id === p.id
+          ? { ...x, estagio, status: concluir ? 'concluido' : 'ativo' }
+          : x,
+      ),
+    )
+    try {
+      await moverProjeto(p.id, estagio, p.ordem ?? 0)
+      mostrar(
+        concluir
+          ? `"${p.nome}" concluído ✓ — está em Entregue`
+          : `"${p.nome}" voltou para Em andamento`,
+      )
+    } catch {
+      mostrar('Não deu para salvar, tente de novo.', 'erro')
+      void recarregar()
+    }
+  }
+
   /** Avança o status de uma fase (pendente → andamento → concluída) direto do
    *  painel de fases, sem abrir o projeto. */
   async function avancarFaseDoPainel(projetoId: string, idx: number) {
@@ -405,12 +442,24 @@ export function GestaoProjetos() {
 
       {vista === 'quadro' && !carregando && lista.length > 0 && (
         <>
-          <p className="dica-voz" style={{ marginTop: 0 }}>
-            Segure um projeto e arraste: <strong>para cima</strong> muda a ordem da fila,{' '}
-            <strong>para o lado</strong> muda de coluna.
-          </p>
+          <div className="gestao-acoes" style={{ marginTop: 0 }}>
+            <p className="dica-voz" style={{ margin: 0 }}>
+              Segure um projeto e arraste: <strong>para cima</strong> muda a ordem da fila,{' '}
+              <strong>para o lado</strong> muda de coluna. Terminou? Toque em{' '}
+              <strong>✓ Concluir</strong> — ele sai do quadro.
+            </p>
+            <span className="espaco" />
+            <label className="fases-toggle">
+              <input
+                type="checkbox"
+                checked={verEntregues}
+                onChange={(e) => setVerEntregues(e.target.checked)}
+              />
+              <span>mostrar entregues</span>
+            </label>
+          </div>
           <div className="ativ-quadro proj-quadro">
-            {ESTAGIOS.map((est) => {
+            {ESTAGIOS.filter((est) => est !== 'entregue' || verEntregues).map((est) => {
               const daColuna = projetosDe(est)
               const recebendo = arrastar.colunaAlvo === est && arrastar.arrastando !== null
               return (
@@ -498,6 +547,28 @@ export function GestaoProjetos() {
                               </div>
                             )}
                           </button>
+
+                          {/* Concluir sem precisar arrastar até a coluna Entregue.
+                              `data-nao-arrasta` para o toque no botão não virar arraste. */}
+                          <div className="quadro-card__acoes" data-nao-arrasta>
+                            {est === 'entregue' ? (
+                              <button
+                                className="btn-mini"
+                                title="Voltar para Em andamento"
+                                onClick={() => void concluirProjeto(p, false)}
+                              >
+                                ↩ Reabrir
+                              </button>
+                            ) : (
+                              <button
+                                className="btn-mini btn-mini--ok"
+                                title="Concluir o projeto (vai para Entregue)"
+                                onClick={() => void concluirProjeto(p, true)}
+                              >
+                                ✓ Concluir
+                              </button>
+                            )}
+                          </div>
                         </article>
                       )
                     })}
@@ -1263,6 +1334,19 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     }
   }
 
+  /** Conclui o projeto: vai para "Entregue" e sai do quadro. */
+  async function concluir() {
+    const faltam = p.fases.filter((f) => f.status !== 'concluida').length
+    if (faltam > 0) {
+      const ok = await confirmar(
+        `Ainda ${faltam === 1 ? 'falta 1 etapa' : `faltam ${faltam} etapas`} neste projeto. Concluir mesmo assim?`,
+        { confirmar: 'Concluir' },
+      )
+      if (!ok) return
+    }
+    await aplicar({ estagio: 'entregue', status: 'concluido' })
+  }
+
   function avancarFase(i: number) {
     const fases = p.fases.map<FaseProjeto>((f, idx) => {
       if (idx !== i) return f
@@ -1544,6 +1628,27 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
             </button>
           </p>
         )}
+
+        <p className="proj-concluir">
+          {estagioDoProjeto(p) === 'entregue' ? (
+            <button
+              className="btn--voltar"
+              disabled={salvando}
+              onClick={() => void aplicar({ estagio: 'andamento', status: 'ativo' })}
+            >
+              ↩ Reabrir projeto
+            </button>
+          ) : (
+            <button
+              className="btn"
+              disabled={salvando}
+              title="Marca como entregue e tira do quadro"
+              onClick={() => void concluir()}
+            >
+              ✓ Concluir projeto
+            </button>
+          )}
+        </p>
 
         <div className="proj-datas">
           <label className="proj-inicio">
