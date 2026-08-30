@@ -818,11 +818,34 @@ método. Reaproveita o layout de colunas (`.ativ-quadro`/`.ativ-col`).
   destacada; concluída fica riscada e apagada.
 - **Um toque na bolinha avança** pendente → em andamento → concluída
   (`avancarFaseDoPainel` usa `proximoStatusFase` e grava `concluida_em`), igual
-  ao que já existia dentro do projeto. Foi a única ação que a KA quis aqui —
-  responsável, data e reordenar continuam no detalhe do projeto.
+  ao que já existia dentro do projeto. Responsável e data continuam no detalhe.
 - **Ordem das colunas:** Em andamento → Com o cliente → Em revisão → Na fila
   (o trabalho em curso primeiro). Projetos **entregues** ficam escondidos, com o
   checkbox "mostrar entregues" para trazê-los.
+- **Arrastar etapa no painel (ago/2026):** segurar ~0,3s em qualquer parte do
+  cartão da etapa (ou pegar na alça) e arrastar reordena as fases DAQUELE projeto
+  (`arrastarEtapas` = `useArrastarCartoes`, chave `<projetoId>#<idx>`;
+  `soltarFase` reordena e grava com `salvarProjeto`, atualizando a tela na hora).
+  Cada projeto é uma "coluna": soltar em OUTRO projeto não move (a etapa pertence
+  ao projeto dela) — avisa por toast. A bolinha de status tem `data-nao-arrasta`,
+  então um toque nela continua avançando o status.
+
+### Arrastar etapas — o MESMO gesto em todo lugar (ago/2026)
+
+A pedido da KA ("quero arrastar pra cima e pra baixo com facilidade"), as fases
+do **detalhe do projeto** também passaram a usar o hook
+`src/hooks/useArrastarCartoes.ts` (o mesmo das Atividades e do Quadro), no lugar
+da mecânica própria que exigia acertar a alça:
+
+- pega **segurando ~0,3s em qualquer parte da linha** (a alça `⠿` pega na hora);
+- deslizar antes disso é rolagem e cancela o arraste;
+- enquanto arrasta, a rolagem trava (iPhone) e o cartão fica **dourado sólido**
+  (`.fase--arrastando` / `.fase-item--arrastando`, `#f7ecd6` + borda dourada +
+  sombra), com o destino marcado pela linha dourada (`.fase--alvo` /
+  `.fase-item--alvo`) — estilos no FIM de `gestao.css`.
+- botões de verdade (status, editar, excluir) levam `data-nao-arrasta`.
+
+Falta migrar só a cópia interna do `GestaoAtividades.tsx` para o hook.
 
 ### Projetos — REVISÃO DA SEMANA (ago/2026)
 

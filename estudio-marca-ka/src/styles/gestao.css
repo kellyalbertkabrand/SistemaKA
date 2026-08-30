@@ -4190,3 +4190,42 @@
 .proj-concluir {
   margin: 0.2rem 0 0.9rem;
 }
+
+/* ============================================================
+   ARRASTAR ETAPAS (fases) — detalhe do projeto e painel ⛭ Fases
+   Mesmo gesto/cor das Atividades: segurar ~0,3s pega o cartão (a alça ⠿ pega
+   na hora), o cartão fica DOURADO SÓLIDO na mão e o destino mostra a linha
+   dourada. Sem seleção de texto/lupa no toque longo do iPhone.
+   ============================================================ */
+.fase,
+.fase-item {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+/* Cartão na mão: fundo SÓLIDO para cobrir o que está embaixo (senão os textos
+   se misturam), borda dourada e sombra alta. */
+.fase--arrastando,
+.fase-item--arrastando,
+.fase-item--arrastando.fase-item--andamento,
+.fase-item--arrastando.fase-item--concluida {
+  background: #f7ecd6;
+  border-color: var(--dourado);
+  border-width: 2px;
+  box-shadow: 0 16px 34px rgba(15, 25, 35, 0.28);
+  opacity: 1;
+  cursor: grabbing;
+  position: relative;
+  z-index: 5;
+}
+/* Onde a etapa vai cair. */
+.fase-item--alvo,
+.fase-item--alvo.fase-item--andamento {
+  border-color: var(--dourado);
+  background: rgba(184, 155, 106, 0.12);
+  box-shadow: 0 -4px 0 0 var(--dourado) inset;
+}
+/* A bolinha de status é botão (um toque avança) — nunca arrasta. */
+.fase-item .fase-bolinha {
+  touch-action: manipulation;
+}

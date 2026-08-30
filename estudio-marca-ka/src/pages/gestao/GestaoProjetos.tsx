@@ -221,6 +221,39 @@ export function GestaoProjetos() {
     }
   }
 
+  /** Reordena as etapas de um projeto arrastando no painel de fases. */
+  async function soltarFase(de: string, origem: string, para: string, antesDe: string | null) {
+    if (para !== origem) {
+      mostrar('A etapa fica no projeto dela — arraste dentro da mesma coluna.', 'info')
+      return
+    }
+    const proj = lista.find((x) => x.id === origem)
+    if (!proj) return
+    const idxDe = Number(de.split('#')[1])
+    const idxPara = antesDe ? Number(antesDe.split('#')[1]) : proj.fases.length - 1
+    if (Number.isNaN(idxDe) || Number.isNaN(idxPara) || idxDe === idxPara) return
+    const fases = [...proj.fases]
+    const [f] = fases.splice(idxDe, 1)
+    fases.splice(idxPara, 0, f)
+    setLista((l) => l.map((x) => (x.id === proj.id ? { ...x, fases } : x)))
+    try {
+      await salvarProjeto(proj.id, { fases })
+    } catch {
+      mostrar('Não deu para salvar a nova ordem, tente de novo.', 'erro')
+      void recarregar()
+    }
+  }
+
+  // Arrastar etapas no painel ⛭ Fases: cada projeto é uma "coluna".
+  const arrastarEtapas = useArrastarCartoes<string>({
+    colunas: lista.map((x) => x.id),
+    itensDaColuna: (projetoId) => {
+      const proj = lista.find((x) => x.id === projetoId)
+      return (proj?.fases ?? []).map((_, i) => `${projetoId}#${i}`)
+    },
+    aoSoltar: (de, origem, para, antes) => void soltarFase(de, origem, para, antes),
+  })
+
   const arrastar = useArrastarCartoes<EstagioProjeto>({
     colunas: ESTAGIOS,
     itensDaColuna: (col) => projetosDe(col).map((p) => p.id),
@@ -352,7 +385,8 @@ export function GestaoProjetos() {
               <span className="fase-bolinha fase-bolinha--exemplo">○</span> pendente →{' '}
               <span className="fase-bolinha fase-bolinha--exemplo fase-bolinha--andamento">●</span>{' '}
               em andamento → <span className="fase-bolinha fase-bolinha--exemplo fase-bolinha--ok">✓</span>{' '}
-              concluída.
+              concluída. <strong>Segure e arraste</strong> uma etapa para mudar a ordem dentro do
+              projeto.
             </p>
             <span className="espaco" />
             <label className="fases-toggle">
@@ -374,7 +408,11 @@ export function GestaoProjetos() {
                 const feitas = p.fases.filter((f) => f.status === 'concluida').length
                 const est = estagioDoProjeto(p)
                 return (
-                  <section key={p.id} className="ativ-col fases-col">
+                  <section
+                    key={p.id}
+                    className="ativ-col fases-col"
+                    ref={(el) => arrastarEtapas.registrarColuna(p.id, el)}
+                  >
                     <header className="fases-col__cab">
                       <button
                         className="fases-col__abrir"
@@ -394,10 +432,29 @@ export function GestaoProjetos() {
 
                     <div className="ativ-col__corpo">
                       {p.fases.length === 0 && <p className="ativ-vazio">Sem fases cadastradas.</p>}
-                      {p.fases.map((f, idx) => (
+                      {p.fases.map((f, idx) => {
+                        const chave = `${p.id}#${idx}`
+                        const puxando = arrastarEtapas.arrastando === chave
+                        const alvoEtapa =
+                          arrastarEtapas.alvo === chave &&
+                          arrastarEtapas.arrastando !== null &&
+                          arrastarEtapas.arrastando !== chave
+                        return (
                         <div
                           key={`${p.id}-${idx}`}
-                          className={`fase-item fase-item--${f.status}`}
+                          ref={(el) => arrastarEtapas.registrarCartao(chave, el)}
+                          onPointerDown={(e) => arrastarEtapas.aoPressionar(e, p.id, chave)}
+                          className={`fase-item fase-item--${f.status} ${
+                            puxando ? 'fase-item--arrastando' : ''
+                          } ${alvoEtapa ? 'fase-item--alvo' : ''}`}
+                          style={
+                            puxando
+                              ? {
+                                  transform: `translate(${arrastarEtapas.desloc.x}px, ${arrastarEtapas.desloc.y}px) scale(1.03)`,
+                                  zIndex: 30,
+                                }
+                              : undefined
+                          }
                         >
                           <button
                             className={`fase-bolinha ${
@@ -407,6 +464,7 @@ export function GestaoProjetos() {
                                   ? 'fase-bolinha--andamento'
                                   : ''
                             }`}
+                            data-nao-arrasta
                             title={`${ROTULO_FASE[f.status]} — tocar para avançar`}
                             onClick={() => void avancarFaseDoPainel(p.id, idx)}
                           >
@@ -422,7 +480,8 @@ export function GestaoProjetos() {
                             </div>
                           </div>
                         </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   </section>
                 )
@@ -1248,14 +1307,8 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
   const [editDesc, setEditDesc] = useState('')
   const [editResp, setEditResp] = useState<Responsavel>('KA')
   const [editData, setEditData] = useState('')
-  // Arrastar para reordenar (Pointer Events — funciona no dedo E no mouse;
-  // o "draggable" nativo do HTML não dispara no toque do iPhone)
-  const [dragIdx, setDragIdx] = useState<number | null>(null)
-  const [overIdx, setOverIdx] = useState<number | null>(null)
-  const [dragY, setDragY] = useState(0) // deslocamento vertical da fase arrastada
-  const [movidoIdx, setMovidoIdx] = useState<number | null>(null) // fase que acabou de mudar de lugar (flash)
-  const rowsRef = useRef<(HTMLDivElement | null)[]>([])
-  const dragState = useRef<{ de: number; para: number } | null>(null)
+  // Fase que acabou de mudar de lugar (pisca em dourado por ~1,3s).
+  const [movidoIdx, setMovidoIdx] = useState<number | null>(null)
   const movidoTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Destaca (flash) a fase que acabou de mudar de lugar, por ~1,3s.
@@ -1411,55 +1464,14 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
 
   // Começa a arrastar pela alça. Usa Pointer Events (dedo ou mouse) e escuta
   // no window até soltar — assim funciona no toque do celular.
-  function iniciarArraste(e: React.PointerEvent, i: number) {
-    e.preventDefault()
-    const startY = e.clientY
-    try {
-      ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
-    } catch {
-      /* ignora */
-    }
-    dragState.current = { de: i, para: i }
-    setDragIdx(i)
-    setOverIdx(i)
-    setDragY(0)
-    const mover = (ev: PointerEvent) => {
-      if (!dragState.current) return
-      setDragY(ev.clientY - startY)
-      const y = ev.clientY
-      // Alvo = a fase cujo CENTRO está mais perto do dedo/cursor. Assim não há
-      // "zona morta" entre as linhas (antes só mudava se soltasse exatamente
-      // dentro da linha — por isso alguns itens "não moviam").
-      let alvo = dragState.current.de
-      let melhor = Infinity
-      rowsRef.current.forEach((el, idx) => {
-        if (!el) return
-        const r = el.getBoundingClientRect()
-        const centro = (r.top + r.bottom) / 2
-        const dist = Math.abs(y - centro)
-        if (dist < melhor) {
-          melhor = dist
-          alvo = idx
-        }
-      })
-      dragState.current.para = alvo
-      setOverIdx(alvo)
-    }
-    const soltar = () => {
-      window.removeEventListener('pointermove', mover)
-      window.removeEventListener('pointerup', soltar)
-      window.removeEventListener('pointercancel', soltar)
-      const st = dragState.current
-      dragState.current = null
-      setDragIdx(null)
-      setOverIdx(null)
-      setDragY(0)
-      if (st) reordenar(st.de, st.para)
-    }
-    window.addEventListener('pointermove', mover)
-    window.addEventListener('pointerup', soltar)
-    window.addEventListener('pointercancel', soltar)
-  }
+  // Arrastar as etapas: mesmo gesto do resto do sistema (segurar ~0,3s em
+  // qualquer parte da linha, ou pegar na alça ⠿; a rolagem trava no toque).
+  const arrastarFases = useArrastarCartoes<'fases'>({
+    colunas: ['fases'],
+    itensDaColuna: () => p.fases.map((_, i) => String(i)),
+    aoSoltar: (de, _origem, _para, antesDe) =>
+      reordenar(Number(de), antesDe === null ? p.fases.length - 1 : Number(antesDe)),
+  })
 
   async function adicionarFase() {
     const nome = novaNome.trim()
@@ -1735,7 +1747,8 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
         </div>
 
         <p style={{ margin: '0.2rem 0 0.9rem', fontSize: '0.75rem', color: 'var(--t-400)' }}>
-          Arraste pela alça <span aria-hidden>⠿</span> para reordenar. Concluída fica{' '}
+          <strong>Segure e arraste</strong> a etapa (em qualquer parte dela, ou pela alça{' '}
+          <span aria-hidden>⠿</span>) para mudar a ordem. Concluída fica{' '}
           <strong style={{ color: '#2e6b45' }}>verde</strong>, em andamento{' '}
           <strong style={{ color: 'var(--essencia)' }}>azul</strong>, pendente cinza. Cada etapa tem
           um <strong>responsável</strong> (KA, VM Rocks, o cliente ou outro que você escrever) e
@@ -1747,23 +1760,31 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
           {p.fases.map((f, i) => (
             <div
               key={i}
-              ref={(el) => {
-                rowsRef.current[i] = el
-              }}
-              className={`fase fase--${f.status} ${dragIdx === i ? 'fase--arrastando' : ''} ${
-                overIdx === i && dragIdx !== null && dragIdx !== i ? 'fase--alvo' : ''
+              ref={(el) => arrastarFases.registrarCartao(String(i), el)}
+              onPointerDown={(e) => arrastarFases.aoPressionar(e, 'fases', String(i))}
+              className={`fase fase--${f.status} ${
+                arrastarFases.arrastando === String(i) ? 'fase--arrastando' : ''
+              } ${
+                arrastarFases.alvo === String(i) && arrastarFases.arrastando !== null &&
+                arrastarFases.arrastando !== String(i)
+                  ? 'fase--alvo'
+                  : ''
               } ${movidoIdx === i ? 'fase--movido' : ''}`}
-              style={dragIdx === i ? { transform: `translateY(${dragY}px)`, zIndex: 20 } : undefined}
+              style={
+                arrastarFases.arrastando === String(i)
+                  ? {
+                      transform: `translate(${arrastarFases.desloc.x}px, ${arrastarFases.desloc.y}px) scale(1.02)`,
+                      zIndex: 20,
+                    }
+                  : undefined
+              }
             >
-              <span
-                className="fase__handle"
-                title="Segure e arraste para reordenar"
-                onPointerDown={(e) => iniciarArraste(e, i)}
-              >
+              <span className="fase__handle" title="Segure e arraste para reordenar" data-alca>
                 ⠿
               </span>
               <button
                 className="fase__status"
+                data-nao-arrasta
                 disabled={salvando}
                 title="Clique para avançar: pendente → em andamento → concluída"
                 onClick={() => avancarFase(i)}
