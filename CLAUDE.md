@@ -777,6 +777,21 @@ entra. Detalhes:
   `input` (largura 100%) — por isso o CSS tem overrides explícitos
   (`.field label.etapa-op` e `.field .etapa-op input[type='checkbox']`).
 
+### Projetos — CONCLUIR O PROJETO (ago/2026)
+
+Antes só dava para concluir arrastando o cartão até a coluna "Entregue" (ruim no
+celular). Agora:
+
+- **✓ Concluir** no cartão do quadro (aparece no hover no computador, fixo no
+  toque; `data-nao-arrasta` para o toque não virar arraste) e **✓ Concluir
+  projeto** no detalhe. Ambos gravam `estagio:'entregue'` + `status:'concluido'`
+  (`concluirProjeto`/`concluir`), então o projeto some das pendências também.
+- Se ainda houver etapas em aberto, pergunta antes ("Ainda faltam 3 etapas.
+  Concluir mesmo assim?").
+- **A coluna Entregue fica escondida** no quadro (como no painel de fases), com
+  o checkbox **"mostrar entregues"** para trazê-la; lá o cartão mostra
+  **↩ Reabrir**, que devolve o projeto para "Em andamento".
+
 ### Projetos — ETAPAS EXTRAS E OPCIONAIS AO CRIAR (ago/2026)
 
 Além das caixinhas do modelo (acima), o "+ Novo projeto" tem:
