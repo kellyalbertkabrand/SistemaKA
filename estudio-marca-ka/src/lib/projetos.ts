@@ -140,7 +140,10 @@ export const MODELOS_FASES: ModeloFases[] = [
       { nome: 'Revelação de Essência', descricao: 'IKIGAI Empresarial + Escuta Estratégica com os fundadores.' },
       { nome: 'Base Estratégica + Identidade Verbal', descricao: 'Toda a inteligência da marca em um documento estratégico.' },
       { nome: 'Identidade Visual', descricao: 'Tradução da essência em expressão estética. Parceria VM Rocks Design (Gabi Lucato).', responsavel: 'VM' },
-      { nome: 'Personalização Instagram e WhatsApp', descricao: 'Canais de contato alinhados à identidade da marca. Parceria VM Rocks Design (Gabi Lucato).', responsavel: 'VM' },
+      // Instagram e WhatsApp SEPARADOS (ago/2026): tem contrato que fecha só um
+      // dos dois, então cada um é uma etapa própria (dá para desmarcar ao criar).
+      { nome: 'Personalização do Instagram', descricao: 'Perfil alinhado à identidade da marca. Parceria VM Rocks Design (Gabi Lucato).', responsavel: 'VM' },
+      { nome: 'Personalização do WhatsApp', descricao: 'Canal de contato alinhado à identidade da marca. Parceria VM Rocks Design (Gabi Lucato).', responsavel: 'VM' },
       { nome: 'Linha de Produtos e Serviços', descricao: 'Reorganização estratégica da oferta, nomeação e proposta de valor.' },
       { nome: 'Plano de Comunicação + Agente de IA', descricao: 'Pilares, calendário editorial e 01 agente de inteligência artificial personalizado no ChatGPT, treinado com a essência da sua marca.' },
     ],

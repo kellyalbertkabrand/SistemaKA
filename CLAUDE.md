@@ -702,8 +702,8 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
   padrão Kelly Albert. Projeto só-KA mantém o logo e o rodapé normais.
 - **Regras:** `projetos` = leitura pública (token no doc, como orçamentos),
   escrita só a KA.
-- **Modelos de fases** em `MODELOS_FASES`: **Marca com Essência©** (6 etapas
-  COM descrição), Identidade visual, Social media, Site, Personalizado. Cada
+- **Modelos de fases** em `MODELOS_FASES`: **Marca com Essência©** (7 etapas
+  COM descrição — Instagram e WhatsApp são etapas separadas desde ago/2026), Identidade visual, Social media, Site, Personalizado. Cada
   fase tem `nome` + `descricao` opcional (o cliente vê a descrição sob o nome,
   no admin e na linha do tempo pública).
 - **Biblioteca de fases (reuso):** toda fase que a KA escreve (nome+descrição)
@@ -841,8 +841,9 @@ projeto, as datas e o `concluida_em` das fases).
   o texto ('VM'→"VM Rocks"); `respClasse(v)` a cor da etiqueta (KA azul, VM
   laranja, resto roxo). `responsavelPadrao(nome)` põe **visual**/**instagram**
   como VM por padrão (regex), o resto KA — sempre editável. No modelo Marca com
-  Essência©, "Identidade Visual" e "Personalização Instagram e WhatsApp" já vêm
-  VM. O responsável **aparece na página do cliente** (etiqueta colorida em cada
+  Essência©, "Identidade Visual", "Personalização do Instagram" e
+  "Personalização do WhatsApp" já vêm VM (Instagram e WhatsApp viraram etapas
+  SEPARADAS em ago/2026 — tem contrato que fecha só um dos dois). O responsável **aparece na página do cliente** (etiqueta colorida em cada
   fase, `rotuloResp`/`respClasse` importados no `ProjetoPublico.tsx`).
 - **Visão de Pendências:** no topo da aba Projetos, um segmento
   **Projetos / Pendências**. Em Pendências, `pendenciasDeProjetos(projetos,
