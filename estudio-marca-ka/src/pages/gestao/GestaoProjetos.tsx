@@ -817,6 +817,15 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
   const [inicio, setInicio] = useState('')
   const [entrega, setEntrega] = useState('')
   const [modelo, setModelo] = useState(MODELOS_FASES[0].id)
+  // Etapas MARCADAS do modelo (por índice). Nem todo contrato tem tudo — a KA
+  // desmarca o que não faz parte daquele projeto.
+  const fasesDoModelo = MODELOS_FASES.find((m) => m.id === modelo)?.fases ?? []
+  const [marcadas, setMarcadas] = useState<Set<number>>(new Set())
+  // Ao trocar de modelo, marca todas de novo (o padrão é o contrato completo).
+  useEffect(() => {
+    setMarcadas(new Set(fasesDoModelo.map((_, i) => i)))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modelo])
   const [gerando, setGerando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
@@ -832,7 +841,7 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
     setErro(null)
     try {
       const c = clientes.find((x) => x.id === clienteId) ?? null
-      const fases = MODELOS_FASES.find((m) => m.id === modelo)?.fases ?? []
+      const fases = fasesDoModelo.filter((_, i) => marcadas.has(i))
       const p = await criarProjeto({
         nome: nome.trim(),
         cliente_id: c?.id ?? null,
@@ -904,6 +913,66 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
                 ))}
               </select>
             </div>
+            {fasesDoModelo.length > 0 && (
+              <div className="field campo-toda">
+                <label>
+                  Etapas deste projeto{' '}
+                  <span className="etapas-conta">
+                    {marcadas.size} de {fasesDoModelo.length}
+                  </span>
+                </label>
+                <span className="campo-ajuda">
+                  Desmarque o que não faz parte deste contrato — dá para adicionar depois.
+                </span>
+                <div className="etapas-escolha">
+                  {fasesDoModelo.map((f, i) => {
+                    const on = marcadas.has(i)
+                    return (
+                      <label key={`${f.nome}-${i}`} className={`etapa-op ${on ? 'etapa-op--on' : ''}`}>
+                        <input
+                          type="checkbox"
+                          checked={on}
+                          onChange={() =>
+                            setMarcadas((antes) => {
+                              const novo = new Set(antes)
+                              if (novo.has(i)) novo.delete(i)
+                              else novo.add(i)
+                              return novo
+                            })
+                          }
+                        />
+                        <span className="etapa-op__corpo">
+                          <span className="etapa-op__nome">
+                            {String(i + 1).padStart(2, '0')} · {f.nome}
+                            <span
+                              className={`resp-badge resp--${respClasse(
+                                f.responsavel ?? responsavelPadrao(f.nome),
+                              )}`}
+                            >
+                              {rotuloResp(f.responsavel ?? responsavelPadrao(f.nome))}
+                            </span>
+                          </span>
+                          {f.descricao && <span className="etapa-op__desc">{f.descricao}</span>}
+                        </span>
+                      </label>
+                    )
+                  })}
+                </div>
+                <p className="etapas-acoes">
+                  <button
+                    type="button"
+                    className="btn-mini"
+                    onClick={() => setMarcadas(new Set(fasesDoModelo.map((_, i) => i)))}
+                  >
+                    Marcar todas
+                  </button>
+                  <button type="button" className="btn-mini" onClick={() => setMarcadas(new Set())}>
+                    Desmarcar todas
+                  </button>
+                </p>
+              </div>
+            )}
+
             <div className="field">
               <label>Início do projeto (opcional)</label>
               <input type="date" value={inicio} onChange={(e) => setInicio(e.target.value)} />

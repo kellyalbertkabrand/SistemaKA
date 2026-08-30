@@ -759,6 +759,24 @@ padrão).
   só as etapas dela; não move projeto de coluna nem muda prioridade (decisão da
   KA).
 
+### Projetos — ESCOLHER AS ETAPAS AO CRIAR (ago/2026)
+
+No "+ Novo projeto", depois do **Modelo de fases**, aparece a lista das etapas
+daquele modelo com **caixinhas** (`.etapas-escolha`/`.etapa-op`): nem todo
+contrato tem as 6 etapas do Marca com Essência©, então a KA desmarca o que não
+entra. Detalhes:
+
+- Todas nascem **marcadas** (o padrão é o contrato completo) e trocar de modelo
+  remarca tudo (`useEffect` no `modelo`); o rótulo mostra "4 de 6" e há
+  **Marcar todas / Desmarcar todas**.
+- Cada linha traz número, nome, a etiqueta do responsável (KA/VM/Cliente, via
+  `responsavelPadrao` quando o modelo não define) e a descrição; a desmarcada
+  fica apagada. Só as marcadas viram fases do projeto.
+- Modelo "Personalizado (começa vazio)" não mostra a lista.
+- ⚠️ O bloco fica dentro de um `.field`, que estiliza `label` (maiúsculas) e
+  `input` (largura 100%) — por isso o CSS tem overrides explícitos
+  (`.field label.etapa-op` e `.field .etapa-op input[type='checkbox']`).
+
 ### Projetos — PAINEL DE FASES (⛭ Fases, ago/2026)
 
 A visão que a KA pediu para **controlar as fases sem abrir projeto por projeto**:

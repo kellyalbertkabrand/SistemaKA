@@ -4040,3 +4040,99 @@
     min-width: 84vw;
   }
 }
+
+/* ---- Escolher as etapas ao criar o projeto ------------------------------ */
+/* Nem todo contrato tem todas as etapas do método: a KA desmarca o que não
+   entra naquele projeto. */
+.etapas-conta {
+  font-weight: 700;
+  color: var(--t-500);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.etapas-escolha {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+/* O bloco fica dentro de um .field, então precisa desfazer o estilo de rótulo
+   (maiúsculas, negrito, display block) que vem do formulário. */
+.field label.etapa-op {
+  display: flex;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  font-size: 0.88rem;
+  color: var(--t-900);
+  margin-bottom: 0;
+}
+.field .etapa-op__nome,
+.field .etapa-op__desc {
+  text-transform: none;
+  letter-spacing: 0;
+  color: inherit;
+}
+.field .etapa-op__desc {
+  font-weight: 400;
+  color: var(--t-500);
+}
+.etapa-op {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  border: 1px solid rgba(15, 25, 35, 0.1);
+  border-radius: 10px;
+  background: var(--bg-1);
+  padding: 0.55rem 0.7rem;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.etapa-op:hover {
+  border-color: rgba(61, 107, 126, 0.4);
+}
+.etapa-op--on {
+  border-color: rgba(61, 107, 126, 0.35);
+  background: rgba(61, 107, 126, 0.05);
+}
+/* A caixinha herda o estilo de campo do formulário (width:100%, padding) —
+   aqui ela volta a ser uma caixinha. */
+.field .etapa-op input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  flex: none;
+  margin-top: 0.15rem;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  accent-color: #3d6b7e;
+}
+.etapa-op__corpo {
+  min-width: 0;
+}
+.etapa-op__nome {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.etapa-op__desc {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.76rem;
+  color: var(--t-500);
+  line-height: 1.35;
+}
+/* Etapa desmarcada fica apagada, para a escolha ficar óbvia */
+.etapa-op:not(.etapa-op--on) .etapa-op__corpo {
+  opacity: 0.5;
+}
+.etapas-acoes {
+  display: flex;
+  gap: 0.4rem;
+  margin: 0.5rem 0 0;
+}
