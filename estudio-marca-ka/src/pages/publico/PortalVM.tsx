@@ -480,9 +480,12 @@ export function PortalVM() {
         ) : (
           projetosVM.map(({ projeto, fases }) => (
             <section key={projeto.id} className="vm-grupo">
+              {/* O CLIENTE vem primeiro e em destaque; o nome do projeto embaixo. */}
               <h3 className="vm-grupo__cli">
-                {projeto.nome}{' '}
-                <span className="vm-grupo__n">{nomeCliente(projeto.cliente_id) || projeto.cliente_nome}</span>
+                <span className="vm-grupo__marca">
+                  {nomeCliente(projeto.cliente_id) || projeto.cliente_nome || 'Sem cliente'}
+                </span>
+                <span className="vm-grupo__proj">{projeto.nome}</span>
               </h3>
               <form
                 className="vm-add"

@@ -404,7 +404,9 @@ export function resumoSemanaTexto(r: RevisaoSemana, formatar: (d: string) => str
     if (itens.length === 0) return
     linhas.push('', `*${titulo}*`, ...itens.map((i) => `• ${i}`))
   }
+  // O CLIENTE vem primeiro e em negrito — é o que a VM/a KA procura na mensagem.
   const rotulo = (i: ItemSemana) =>
+    `${i.cliente_nome ? `*${i.cliente_nome}* · ` : ''}` +
     `${i.projeto_nome}${i.fase_nome ? ` · ${i.fase_nome}` : ' · entrega'}` +
     `${i.data ? ` (${formatar(i.data)})` : ''}`
 
@@ -417,6 +419,7 @@ export function resumoSemanaTexto(r: RevisaoSemana, formatar: (d: string) => str
     `Esperando o cliente (${r.comCliente.length})`,
     r.comCliente.map(
       (c) =>
+        `${c.projeto.cliente_nome ? `*${c.projeto.cliente_nome}* · ` : ''}` +
         `${c.projeto.nome}${c.fase ? ` · ${c.fase}` : ''}` +
         `${c.diasParado != null ? ` — parado há ${c.diasParado}d` : ''}`,
     ),
@@ -424,7 +427,7 @@ export function resumoSemanaTexto(r: RevisaoSemana, formatar: (d: string) => str
   bloco(`Concluído nos últimos 7 dias (${r.concluidas.length})`, r.concluidas.map(rotulo))
   bloco(
     `Próximos da fila (${r.proximos.length})`,
-    r.proximos.slice(0, 5).map((p) => `${p.nome}${p.cliente_nome ? ` · ${p.cliente_nome}` : ''}`),
+    r.proximos.slice(0, 5).map((p) => `${p.cliente_nome ? `*${p.cliente_nome}* · ` : ''}${p.nome}`),
   )
   return linhas.join('\n')
 }

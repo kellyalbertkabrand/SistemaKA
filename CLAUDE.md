@@ -893,6 +893,26 @@ a etapa escrita à mão entra no fim e **pode ser arrastada** até o lugar certo
 antes de criar o projeto. Clicar no texto liga/desliga a etapa (o clique que
 vem depois de arrastar é ignorado); a numeração 01, 02… se refaz sozinha.
 
+### NOME DO CLIENTE EM DESTAQUE nas fases (ago/2026)
+
+A KA toca muitos projetos ao mesmo tempo — numa lista de etapas, o que ela
+procura primeiro é **de quem** é aquela fase. Por isso o cliente saiu do cinza
+discreto e virou destaque em **caramelo** (`#8a5a1f`) em TODA tela que lista
+fases:
+
+- **Painel ⛭ Fases** — o cliente encabeça a coluna, maior que antes e acima do
+  nome do projeto (`.quadro-card__cliente`, com reforço em `.fases-col__cab`).
+- **Quadro** e **Fila dos projetos (portal da VM)** — mesmo `.quadro-card__cliente`.
+- **Pendências**, **Revisão da semana** e **Atividades** — o cliente virou uma
+  etiqueta `.cliente-chip` (caramelo, maiúsculas) no lugar do "· cliente" solto
+  no meio do texto cinza. Em Pendências a etiqueta **não** repete quando o
+  próprio cliente é o responsável da etapa (a etiqueta de responsável já diz).
+- **Portal da VM** — o grupo de atividades passou a ser encabeçado pelo
+  **cliente** (`.vm-grupo__marca`), com o nome do projeto embaixo
+  (`.vm-grupo__proj`); antes era o contrário.
+- **Resumo da semana copiado p/ o WhatsApp** (`resumoSemanaTexto`) começa cada
+  linha com o cliente em `*negrito*`.
+
 ### Projetos — REVISÃO DA SEMANA (ago/2026)
 
 4ª visão da aba Projetos (**🗓 Semana**, ao lado de Quadro/Lista/Pendências):

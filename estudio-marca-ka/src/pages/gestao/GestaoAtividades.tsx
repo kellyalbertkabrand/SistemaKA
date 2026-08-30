@@ -577,11 +577,9 @@ export function GestaoAtividades() {
           <div className="ativ__corpo">
             <div className="ativ__titulo">{it.pd.fase_nome}</div>
             <div className="ativ__meta">
+              {it.pd.cliente_nome && <span className="cliente-chip">{it.pd.cliente_nome}</span>}
               <span className="ativ__tag">projeto</span>
-              <span className="ativ__meta-txt">
-                {it.pd.projeto_nome}
-                {it.pd.cliente_nome ? ` · ${it.pd.cliente_nome}` : ''}
-              </span>
+              <span className="ativ__meta-txt">{it.pd.projeto_nome}</span>
               {it.pd.data && <span className="data-chip">📅 {formatarData(it.pd.data)}</span>}
             </div>
           </div>
@@ -598,7 +596,7 @@ export function GestaoAtividades() {
             <div className="ativ__titulo">{it.a.titulo}</div>
             {(it.a.cliente_nome || it.a.data) && (
               <div className="ativ__meta">
-                {it.a.cliente_nome && <span className="ativ__meta-txt">{it.a.cliente_nome}</span>}
+                {it.a.cliente_nome && <span className="cliente-chip">{it.a.cliente_nome}</span>}
                 {it.a.data && <span className="data-chip">📅 {formatarData(it.a.data)}</span>}
               </div>
             )}

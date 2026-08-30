@@ -1858,6 +1858,10 @@
   font-size: 0.9rem;
 }
 .pend-item__proj {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
   font-size: 0.75rem;
   color: var(--t-500);
 }
@@ -2888,8 +2892,9 @@
 }
 .vm-grupo__cli {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.55rem;
   font-family: var(--heading);
   font-size: 1.05rem;
   color: var(--marinho);
@@ -3665,12 +3670,15 @@
   border-radius: 12px;
   cursor: pointer;
 }
+/* O NOME DO CLIENTE é o que a KA procura primeiro em qualquer lista de fases
+   (são muitos projetos ao mesmo tempo) — por isso vem em caramelo e forte, e
+   não em cinza discreto. */
 .quadro-card__cliente {
-  font-size: 0.68rem;
-  font-weight: 700;
+  font-size: 0.74rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: var(--t-400);
+  letter-spacing: 0.08em;
+  color: #8a5a1f;
 }
 .quadro-card__nome {
   font-family: var(--heading);
@@ -3866,12 +3874,14 @@
   font-weight: 600;
 }
 .sem-item__sub {
-  display: block;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
   font-size: 0.72rem;
   color: var(--t-500);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 .sem-item__acao {
   font-size: 0.7rem;
@@ -4334,4 +4344,50 @@
 .etapa-op__corpo {
   cursor: pointer;
   flex: 1;
+}
+
+/* ============================================================
+   NOME DO CLIENTE EM DESTAQUE (ago/2026)
+   A KA toca muitos projetos ao mesmo tempo: numa lista de fases, o que ela
+   procura primeiro é DE QUEM é aquela etapa. Por isso o cliente aparece como
+   uma etiqueta em caramelo, e não perdido no meio do texto cinza.
+   ============================================================ */
+.cliente-chip {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #8a5a1f;
+  background: rgba(196, 120, 48, 0.13);
+  border: 1px solid rgba(196, 120, 48, 0.3);
+  border-radius: 100px;
+  padding: 0.06rem 0.45rem;
+}
+/* No cabeçalho da coluna do painel de Fases o cliente ganha ainda mais peso. */
+.fases-col__cab .quadro-card__cliente {
+  display: block;
+  font-size: 0.8rem;
+  margin-bottom: 0.1rem;
+}
+
+/* Portal da VM: o nome do CLIENTE lidera o grupo; o projeto vem embaixo. */
+.vm-grupo__marca {
+  font-family: var(--body);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #8a5a1f;
+  flex-basis: 100%;
+}
+.vm-grupo__proj {
+  font-family: var(--heading);
+  font-size: 1.05rem;
+  color: var(--marinho);
 }

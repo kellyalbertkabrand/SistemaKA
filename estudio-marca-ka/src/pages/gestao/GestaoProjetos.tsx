@@ -363,8 +363,14 @@ export function GestaoProjetos() {
                   <div className="pend-item__corpo">
                     <div className="pend-item__fase">{pd.fase_nome}</div>
                     <div className="pend-item__proj">
+                      {/* Não repete o cliente quando ELE é o responsável (a
+                          etiqueta ao lado já diz o nome). */}
+                      {pd.cliente_nome &&
+                        rotuloResp(pd.responsavel).toLowerCase().trim() !==
+                          pd.cliente_nome.toLowerCase().trim() && (
+                          <span className="cliente-chip">{pd.cliente_nome}</span>
+                        )}
                       {pd.projeto_nome}
-                      {pd.cliente_nome ? ` · ${pd.cliente_nome}` : ''}
                     </div>
                   </div>
                   <div className="pend-item__dir">
@@ -747,12 +753,17 @@ function RevisaoDaSemana({
     sub: string,
     resp: Responsavel,
     direita?: React.ReactNode,
+    /** Nome do cliente — sai em destaque (é o que a KA procura primeiro). */
+    cliente?: string | null,
   ) => (
     <button key={chave} className="sem-item" onClick={() => aoAbrir(projetoId)} title="Abrir projeto">
       <span className={`resp-badge resp--${respClasse(resp)}`}>{rotuloResp(resp)}</span>
       <span className="sem-item__corpo">
         <span className="sem-item__tit">{titulo}</span>
-        <span className="sem-item__sub">{sub}</span>
+        <span className="sem-item__sub">
+          {cliente && <span className="cliente-chip">{cliente}</span>}
+          {sub}
+        </span>
       </span>
       {direita}
     </button>
@@ -819,9 +830,10 @@ function RevisaoDaSemana({
               `a-${i.projeto_id}-${i.fase_nome ?? 'entrega'}`,
               i.projeto_id,
               i.fase_nome ?? 'Entrega do projeto',
-              `${i.projeto_nome}${i.cliente_nome ? ` · ${i.cliente_nome}` : ''}`,
+              i.projeto_nome,
               i.responsavel,
               <span className="data-chip data-chip--atrasado">{Math.abs(i.dias ?? 0)}d</span>,
+              i.cliente_nome,
             ),
           )}
         </div>,
@@ -837,9 +849,10 @@ function RevisaoDaSemana({
               `s-${i.projeto_id}-${i.fase_nome ?? 'entrega'}`,
               i.projeto_id,
               i.fase_nome ?? 'Entrega do projeto',
-              `${i.projeto_nome}${i.cliente_nome ? ` · ${i.cliente_nome}` : ''}`,
+              i.projeto_nome,
               i.responsavel,
               <span className="data-chip data-chip--perto">{i.data ? formatarData(i.data) : ''}</span>,
+              i.cliente_nome,
             ),
           )}
         </div>,
@@ -855,11 +868,12 @@ function RevisaoDaSemana({
               `c-${c.projeto.id}`,
               c.projeto.id,
               c.projeto.nome,
-              `${c.projeto.cliente_nome ?? ''}${c.fase ? ` · ${c.fase}` : ''}`,
+              c.fase ?? '',
               'CLIENTE',
               c.diasParado != null ? (
                 <span className="data-chip">parado {c.diasParado}d</span>
               ) : undefined,
+              c.projeto.cliente_nome,
             ),
           )}
         </div>,
@@ -875,9 +889,10 @@ function RevisaoDaSemana({
               `k-${i.projeto_id}-${i.fase_nome}`,
               i.projeto_id,
               i.fase_nome ?? '',
-              `${i.projeto_nome}${i.cliente_nome ? ` · ${i.cliente_nome}` : ''}`,
+              i.projeto_nome,
               i.responsavel,
               <span className="data-chip">{i.data ? formatarData(i.data) : ''}</span>,
+              i.cliente_nome,
             ),
           )}
         </div>,
@@ -893,11 +908,12 @@ function RevisaoDaSemana({
               `f-${p.id}`,
               p.id,
               `${i + 1}º · ${p.nome}`,
-              p.cliente_nome ?? '',
+              '',
               faseAtual(p)?.fase.responsavel ?? 'KA',
               p.entrega_prevista ? (
                 <span className="data-chip">{formatarData(p.entrega_prevista)}</span>
               ) : undefined,
+              p.cliente_nome,
             ),
           )}
         </div>,
@@ -914,9 +930,10 @@ function RevisaoDaSemana({
                 `d-${p.id}`,
                 p.id,
                 p.nome,
-                p.cliente_nome ?? '',
+                '',
                 faseAtual(p)?.fase.responsavel ?? 'KA',
                 <span className="sem-item__acao">definir data</span>,
+                p.cliente_nome,
               ),
             )}
           </div>,
