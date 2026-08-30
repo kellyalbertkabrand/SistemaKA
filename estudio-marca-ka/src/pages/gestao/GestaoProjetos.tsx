@@ -29,6 +29,7 @@ import {
   salvarProjeto,
   type FaseProjeto,
   type FaseSalva,
+  type ModeloFaseItem,
   type EstagioProjeto,
   type FaseStatus,
   type Projeto,
@@ -823,9 +824,17 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
   const [marcadas, setMarcadas] = useState<Set<number>>(new Set())
   // Ao trocar de modelo, marca todas de novo (o padrão é o contrato completo).
   useEffect(() => {
-    setMarcadas(new Set(fasesDoModelo.map((_, i) => i)))
+    // Etapas `opcional` (ex.: Análise Estratégica de Mercado) nascem desmarcadas.
+    setMarcadas(new Set(fasesDoModelo.map((f, i) => (f.opcional ? -1 : i)).filter((i) => i >= 0)))
+    setExtras([])
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modelo])
+  // Etapas EXTRAS, escritas na hora (o que não está no modelo).
+  const [extras, setExtras] = useState<ModeloFaseItem[]>([])
+  const [extraNome, setExtraNome] = useState('')
+  const [extraDesc, setExtraDesc] = useState('')
+  const [extraResp, setExtraResp] = useState<Responsavel>('KA')
+  const [fasesSalvas, setFasesSalvas] = useState<FaseSalva[]>([])
   const [gerando, setGerando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
@@ -833,7 +842,19 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
     listarClientes()
       .then(setClientes)
       .catch(() => setClientes([]))
+    listarFasesSalvas()
+      .then(setFasesSalvas)
+      .catch(() => setFasesSalvas([]))
   }, [])
+
+  function adicionarExtra() {
+    const nome = extraNome.trim()
+    if (!nome) return
+    setExtras((l) => [...l, { nome, descricao: extraDesc.trim() || undefined, responsavel: extraResp }])
+    setExtraNome('')
+    setExtraDesc('')
+    setExtraResp('KA')
+  }
 
   async function criar(e: FormEvent) {
     e.preventDefault()
@@ -841,7 +862,9 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
     setErro(null)
     try {
       const c = clientes.find((x) => x.id === clienteId) ?? null
-      const fases = fasesDoModelo.filter((_, i) => marcadas.has(i))
+      const fases = [...fasesDoModelo.filter((_, i) => marcadas.has(i)), ...extras]
+      // Etapa escrita à mão vira sugestão na próxima vez.
+      await Promise.all(extras.map((f) => salvarFaseSalva(f.nome, f.descricao ?? null).catch(() => {})))
       const p = await criarProjeto({
         nome: nome.trim(),
         cliente_id: c?.id ?? null,
@@ -972,6 +995,86 @@ function NovoProjeto({ aoVoltar, aoCriar }: { aoVoltar: () => void; aoCriar: (p:
                 </p>
               </div>
             )}
+
+            {/* Etapas que não estão no modelo — a KA escreve na hora. */}
+            <div className="field campo-toda">
+              <label>
+                Outras etapas deste contrato{' '}
+                {extras.length > 0 && <span className="etapas-conta">+{extras.length}</span>}
+              </label>
+              <span className="campo-ajuda">
+                O que este cliente contratou e não está na lista acima. Fica salvo como sugestão
+                para os próximos projetos.
+              </span>
+
+              {extras.length > 0 && (
+                <div className="etapas-escolha">
+                  {extras.map((f, i) => (
+                    <div key={`${f.nome}-${i}`} className="etapa-op etapa-op--on etapa-extra">
+                      <span className="etapa-op__corpo">
+                        <span className="etapa-op__nome">
+                          {f.nome}
+                          <span className={`resp-badge resp--${respClasse(f.responsavel)}`}>
+                            {rotuloResp(f.responsavel)}
+                          </span>
+                        </span>
+                        {f.descricao && <span className="etapa-op__desc">{f.descricao}</span>}
+                      </span>
+                      <button
+                        type="button"
+                        className="btn-mini btn-mini--perigo"
+                        title="Tirar esta etapa"
+                        onClick={() => setExtras((l) => l.filter((_, x) => x !== i))}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="etapa-nova">
+                <input
+                  list="fases-salvas-novo"
+                  value={extraNome}
+                  onChange={(e) => {
+                    setExtraNome(e.target.value)
+                    const achou = fasesSalvas.find((x) => x.nome === e.target.value)
+                    if (achou?.descricao) setExtraDesc(achou.descricao)
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      adicionarExtra()
+                    }
+                  }}
+                  placeholder="Nome da etapa (ex.: Análise de concorrência)"
+                />
+                <datalist id="fases-salvas-novo">
+                  {fasesSalvas.map((f) => (
+                    <option key={f.id} value={f.nome} />
+                  ))}
+                </datalist>
+                <input
+                  value={extraDesc}
+                  onChange={(e) => setExtraDesc(e.target.value)}
+                  placeholder="Descrição (opcional — o cliente vê)"
+                />
+                <SeletorResponsavel
+                  value={extraResp}
+                  onChange={setExtraResp}
+                  clienteNome={clientes.find((c) => c.id === clienteId)?.nome_marca ?? clienteNome}
+                />
+                <button
+                  type="button"
+                  className="btn-mini"
+                  onClick={adicionarExtra}
+                  disabled={!extraNome.trim()}
+                >
+                  + Adicionar etapa
+                </button>
+              </div>
+            </div>
 
             <div className="field">
               <label>Início do projeto (opcional)</label>

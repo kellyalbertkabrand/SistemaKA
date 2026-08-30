@@ -122,6 +122,9 @@ export interface ModeloFaseItem {
   nome: string
   descricao?: string
   responsavel?: Responsavel
+  /** Etapa que NÃO entra em todo contrato: aparece na lista ao criar o projeto,
+   *  mas já vem desmarcada (a KA marca quando aquele cliente contratou). */
+  opcional?: boolean
 }
 
 export interface ModeloFases {
@@ -137,6 +140,8 @@ export const MODELOS_FASES: ModeloFases[] = [
     id: 'marca-essencia',
     nome: 'Marca com Essência©',
     fases: [
+      // Entra ANTES do IKIGAI, e só em parte dos contratos — por isso `opcional`.
+      { nome: 'Análise Estratégica de Mercado', descricao: 'Leitura do mercado, do público e da concorrência — base para o IKIGAI.', opcional: true },
       { nome: 'Revelação de Essência', descricao: 'IKIGAI Empresarial + Escuta Estratégica com os fundadores.' },
       { nome: 'Base Estratégica + Identidade Verbal', descricao: 'Toda a inteligência da marca em um documento estratégico.' },
       { nome: 'Identidade Visual', descricao: 'Tradução da essência em expressão estética. Parceria VM Rocks Design (Gabi Lucato).', responsavel: 'VM' },

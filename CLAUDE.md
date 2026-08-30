@@ -777,6 +777,19 @@ entra. Detalhes:
   `input` (largura 100%) — por isso o CSS tem overrides explícitos
   (`.field label.etapa-op` e `.field .etapa-op input[type='checkbox']`).
 
+### Projetos — ETAPAS EXTRAS E OPCIONAIS AO CRIAR (ago/2026)
+
+Além das caixinhas do modelo (acima), o "+ Novo projeto" tem:
+
+- **Etapa `opcional`** (`ModeloFaseItem.opcional`): aparece na lista mas nasce
+  **desmarcada**. É o caso da **Análise Estratégica de Mercado**, que entra
+  ANTES do IKIGAI e só em parte dos contratos — a KA marca quando tem.
+- **"Outras etapas deste contrato"**: campo para escrever uma etapa que não está
+  no modelo (nome + descrição + responsável), com `datalist` das fases já usadas
+  (`fases_biblioteca`) e autopreenchimento da descrição. As extras entram no fim
+  da lista de fases e são salvas na biblioteca (`salvarFaseSalva`) para virarem
+  sugestão nos próximos projetos.
+
 ### Projetos — PAINEL DE FASES (⛭ Fases, ago/2026)
 
 A visão que a KA pediu para **controlar as fases sem abrir projeto por projeto**:

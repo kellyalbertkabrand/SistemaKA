@@ -4136,3 +4136,29 @@
   gap: 0.4rem;
   margin: 0.5rem 0 0;
 }
+
+/* Etapa extra (escrita na hora, fora do modelo) na criação do projeto */
+.etapa-extra {
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.etapa-nova {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+.field .etapa-nova input {
+  width: auto;
+  flex: 1 1 200px;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.6rem;
+}
+.field .etapa-nova select {
+  width: auto;
+  flex: 0 0 auto;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.6rem;
+}
