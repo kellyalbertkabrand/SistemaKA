@@ -86,14 +86,6 @@ function IconeAtalho({ nome }: { nome: string }) {
           <path d="M12 3l1.7 6.3L20 12l-6.3 1.7L12 20l-1.7-6.3L4 12l6.3-1.7z" />
         </svg>
       )
-    case 'calendario':
-      return (
-        <svg {...p}>
-          <rect x="4" y="5" width="16" height="16" rx="2" />
-          <path d="M4 9.5h16M8 3v4M16 3v4" />
-          <path d="M8 13h2M12 13h2M8 16.5h2" />
-        </svg>
-      )
     case 'clientes':
       return (
         <svg {...p}>
@@ -318,20 +310,6 @@ export function AdminPanel() {
                     </div>
                   </div>
                 ))}
-                {/* Ferramentas: links para páginas fora do app React (ex.: o
-                    calendário estático em /calendario) — <a> faz navegação real. */}
-                <div className="atalho-grupo">
-                  <div className="atalho-grupo__tit">Ferramentas</div>
-                  <div className="grade-atalhos">
-                    <a className="atalho-card" href="/calendario/" style={{ textDecoration: 'none' }}>
-                      <span className="atalho-card__ico">
-                        <IconeAtalho nome="calendario" />
-                      </span>
-                      <span className="atalho-card__nome">Calendário de marcas</span>
-                    </a>
-                  </div>
-                </div>
-
                 <div className="atalho-grupo">
                   <div className="atalho-grupo__tit">Backup e segurança</div>
                   <BackupBotao />

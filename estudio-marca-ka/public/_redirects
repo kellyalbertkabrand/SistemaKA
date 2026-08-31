@@ -2,5 +2,10 @@
 # (título/descrição). Precisa vir ANTES da regra geral do SPA.
 /formulario/*   /formulario.html   200
 
+# O calendário estático saiu do sistema (ago/2026). Quem abrir o link antigo vai
+# para a home, em vez de cair na rota dinâmica de marca e ficar em "Carregando…".
+/calendario     /   301
+/calendario/*   /   301
+
 # SPA: todas as outras rotas caem no index.html (o React Router cuida do resto).
 /*    /index.html   200
