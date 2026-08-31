@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
+import type { ReactNode, CSSProperties } from 'react'
 import type { RenderProps } from '../types'
-import { hexFundoGrazi, corFonteGrazi } from './cores'
+import { hexFundoGrazi, corFonteGrazi, ehFundoEscuroGrazi } from './cores'
 import { estiloImagem } from '../imagem'
 import './grazi.css'
 
@@ -21,43 +21,70 @@ function comDestaque(texto: string): ReactNode[] {
   return nos
 }
 
+// Controles comuns a todos os cards: posição vertical (topo/meio/base) e
+// escala do texto (--e). O cliente ajusta pelos campos "Posição do texto" e
+// "Tamanho do texto".
+function posClasse(v: unknown): string {
+  const p = String(v || 'meio')
+  return p === 'topo' || p === 'base' ? p : 'meio'
+}
+function escalaFrac(v: unknown, padrao = 1): number {
+  const n = Number(v)
+  return Number.isFinite(n) && n > 0 ? Math.min(180, Math.max(50, n)) / 100 : padrao
+}
+// Estilo do card com a variável de escala (--e).
+function estiloCard(formato: RenderProps['formato'], fundo: string, cor: string | undefined, escala: number): CSSProperties {
+  const s: Record<string, unknown> = {
+    width: formato.largura,
+    height: formato.altura,
+    background: hexFundoGrazi(fundo),
+    '--e': escala,
+  }
+  if (cor) s.color = cor
+  return s as CSSProperties
+}
+
 // ============================================================================
 // Cards da Grazi Martini — Mentora e Estrategista do Comportamento Humano.
 // Padrão visual: fundos quentes (mostarda, terracota, vinho, verde), texto
 // creme, título em Poppins caixa-alta + palavra de destaque em script (Allura),
-// botão pílula "Leia a Legenda" e uma faixa verde no rodapé. @sougrazimartini.
+// botão pílula "Leia a Legenda" e uma faixa verde no rodapé. @sougrazimartini
+// aparece SEMPRE centralizado no rodapé (acima da faixa verde).
 // ============================================================================
 
 const HANDLE = '@sougrazimartini'
 
-// Moldura comum: fundo, cor de texto derivada, @handle e faixa verde.
+// Moldura comum: fundo, cor de texto derivada, posição/escala, @handle no
+// rodapé e faixa verde.
 function GraziFrame({
   fundo,
   cor,
   classe,
   formato,
+  pos,
+  escala,
   children,
 }: {
   fundo: string
   cor: string
   classe: string
   formato: RenderProps['formato']
+  pos: string
+  escala: number
   children: React.ReactNode
 }) {
   return (
-    <div
-      className={`grazi-card ${classe} fmt-${formato.formato}`}
-      style={{ width: formato.largura, height: formato.altura, background: hexFundoGrazi(fundo), color: cor }}
-    >
-      <div className="grazi-handle">{HANDLE}</div>
+    <div className={`grazi-card ${classe} fmt-${formato.formato} pos-${pos}`} style={estiloCard(formato, fundo, cor, escala)}>
       {children}
+      <div className="grazi-handle">{HANDLE}</div>
       <div className="grazi-faixa" />
     </div>
   )
 }
 
 // Depoimento: review estilo Google (card branco) sobre a marca d'água
-// "depoimento", com @sougrazimartini em dourado no rodapé.
+// "depoimento", com @sougrazimartini em dourado no rodapé. A marca d'água
+// contrasta com o fundo (creme sobre escuro, verde sobre claro).
 export function GraziDepoimentoCard({ valores, formato }: RenderProps) {
   const fundo = String(valores.cor_fundo || 'verde-escuro')
   const nome = String(valores.nome || '')
@@ -66,12 +93,13 @@ export function GraziDepoimentoCard({ valores, formato }: RenderProps) {
   const n = Math.max(0, Math.min(5, Number(valores.estrelas ?? 5)))
   const inicial = (String(valores.avatar || '').trim() || nome.trim().charAt(0) || '?').toUpperCase()
   const corAvatar = String(valores.cor_avatar || '#A0349B')
+  const pos = posClasse(valores.pos)
+  const escala = escalaFrac(valores.escala)
+  // Marca d'água legível nos dois casos (o fundo bege apagava o creme).
+  const corMarca = ehFundoEscuroGrazi(fundo) ? 'rgba(242, 209, 167, 0.11)' : 'rgba(30, 58, 44, 0.13)'
   return (
-    <div
-      className={`grazi-card grazi-depo fmt-${formato.formato}`}
-      style={{ width: formato.largura, height: formato.altura, background: hexFundoGrazi(fundo) }}
-    >
-      <div className="depo-marca">
+    <div className={`grazi-card grazi-depo fmt-${formato.formato} pos-${pos}`} style={estiloCard(formato, fundo, undefined, escala)}>
+      <div className="depo-marca" style={{ color: corMarca }}>
         {'depoimento '.repeat(3).trim()}
         <br />
         {'depoimento '.repeat(3).trim()}
@@ -102,17 +130,32 @@ export function GraziDepoimentoCard({ valores, formato }: RenderProps) {
 }
 
 // Frase editorial: título sans caixa-alta + palavra de destaque em script + botão.
+// A palavra em script tem tamanho e altura (subir/descer) próprios.
 export function GraziFraseCard({ valores, formato }: RenderProps) {
   const fundo = String(valores.cor_fundo || 'mostarda')
   const cor = corFonteGrazi(valores.cor_fonte, fundo)
   const titulo = String(valores.titulo || '')
   const script = String(valores.script || '')
   const botao = String(valores.botao || '')
+  const pos = posClasse(valores.pos)
+  const escala = escalaFrac(valores.escala)
+  const scriptTam = escalaFrac(valores.script_tam)
+  const scriptY = Number(valores.script_y) || 0
+  // Tamanho e deslocamento vertical da palavra em script (independente do resto).
+  const estScript: CSSProperties = {
+    fontSize: `calc(150px * var(--e) * ${scriptTam})`,
+    transform: `translateY(${scriptY}px)`,
+  }
   return (
-    <GraziFrame fundo={fundo} cor={cor} classe="grazi-frase" formato={formato}>
+    <GraziFrame fundo={fundo} cor={cor} classe="grazi-frase" formato={formato} pos={pos} escala={escala}>
       <div className="titulo">
         {titulo}
-        {script && <span className="script"> {script}</span>}
+        {script && (
+          <span className="script" style={estScript}>
+            {' '}
+            {script}
+          </span>
+        )}
       </div>
       {botao && (
         <div className="grazi-btn">
@@ -130,7 +173,7 @@ export function GraziTextoCard({ valores, formato }: RenderProps) {
   const titulo = String(valores.titulo || '')
   const texto = String(valores.texto || '')
   return (
-    <GraziFrame fundo={fundo} cor={cor} classe="grazi-texto" formato={formato}>
+    <GraziFrame fundo={fundo} cor={cor} classe="grazi-texto" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)}>
       {titulo && <div className="titulo">{comDestaque(titulo)}</div>}
       {texto && <div className="corpo">{comDestaque(texto)}</div>}
     </GraziFrame>
@@ -145,7 +188,7 @@ export function GraziPassoCard({ valores, formato }: RenderProps) {
   const titulo = String(valores.titulo || '')
   const texto = String(valores.texto || '')
   return (
-    <GraziFrame fundo={fundo} cor={cor} classe="grazi-passo" formato={formato}>
+    <GraziFrame fundo={fundo} cor={cor} classe="grazi-passo" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)}>
       {numero !== '' && <div className="numero">{numero}</div>}
       {titulo && <div className="titulo">{comDestaque(titulo)}</div>}
       {texto && <div className="corpo">{comDestaque(texto)}</div>}
@@ -161,7 +204,7 @@ export function GraziCtaCard({ valores, formato }: RenderProps) {
   const produto = String(valores.produto || '')
   const botao = String(valores.botao || '')
   return (
-    <GraziFrame fundo={fundo} cor={cor} classe="grazi-cta" formato={formato}>
+    <GraziFrame fundo={fundo} cor={cor} classe="grazi-cta" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)}>
       {frase && <div className="frase">{comDestaque(frase)}</div>}
       {produto && <div className="produto">{produto}</div>}
       {botao && (
@@ -174,7 +217,7 @@ export function GraziCtaCard({ valores, formato }: RenderProps) {
 }
 
 // Frase mista: intro (sans) + palavra-herói em script + fecho (sans com
-// destaque) + nota manuscrita + "leia a legenda".
+// destaque) + nota manuscrita + "leia a legenda". A nota segue a cor do texto.
 export function GraziMistaCard({ valores, formato }: RenderProps) {
   const fundo = String(valores.cor_fundo || 'verde')
   const cor = corFonteGrazi(valores.cor_fonte, fundo)
@@ -183,13 +226,11 @@ export function GraziMistaCard({ valores, formato }: RenderProps) {
   const baixo = String(valores.texto_baixo || '')
   const nota = String(valores.nota || '')
   const botao = String(valores.botao || '')
+  const pos = posClasse(valores.pos)
+  const escala = escalaFrac(valores.escala)
   const linhasCima = cima.split('\n')
   return (
-    <div
-      className={`grazi-card grazi-mista fmt-${formato.formato}`}
-      style={{ width: formato.largura, height: formato.altura, background: hexFundoGrazi(fundo), color: cor }}
-    >
-      <div className="grazi-handle">{HANDLE}</div>
+    <div className={`grazi-card grazi-mista fmt-${formato.formato} pos-${pos}`} style={estiloCard(formato, fundo, cor, escala)}>
       {cima && (
         <div className="cima">
           {linhasCima.map((l, i) =>
@@ -208,8 +249,9 @@ export function GraziMistaCard({ valores, formato }: RenderProps) {
       )}
       {script && <div className="script-hero">{script}</div>}
       {baixo && <div className="baixo">{comDestaque(baixo)}</div>}
-      {nota && <div className="nota">{nota}</div>}
+      {nota && <div className="grazi-mao">{nota}</div>}
       {botao && <div className="rodape-txt">{botao}</div>}
+      <div className="grazi-handle">{HANDLE}</div>
       <div className="grazi-faixa" />
     </div>
   )
@@ -230,7 +272,7 @@ export function GraziFraseFotoCard({ valores, formato }: RenderProps) {
   const h = Math.round(baseH * area)
   const est = { ...estiloImagem(valores, 'foto'), width: '100%', height: '100%' } as const
   return (
-    <GraziFrame fundo={fundo} cor={cor} classe="grazi-frasefoto" formato={formato}>
+    <GraziFrame fundo={fundo} cor={cor} classe="grazi-frasefoto" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)}>
       {titulo && <div className="titulo">{comDestaque(titulo)}</div>}
       <div className="foto-janela" style={{ height: h }}>
         {foto ? (
@@ -259,7 +301,7 @@ export function GraziComparativoCard({ valores, formato }: RenderProps) {
   const itensA = String(valores.itens_a || '').split('\n').filter((l) => l.trim() !== '')
   const itensB = String(valores.itens_b || '').split('\n').filter((l) => l.trim() !== '')
   return (
-    <GraziFrame fundo={fundo} cor={cor} classe="grazi-comp" formato={formato}>
+    <GraziFrame fundo={fundo} cor={cor} classe="grazi-comp" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)}>
       {titulo && <div className="titulo">{comDestaque(titulo)}</div>}
       <div className="comp-grade">
         <div className="comp-col comp-col--a">
@@ -295,7 +337,7 @@ export function GraziNotasCard({ valores, formato }: RenderProps) {
   const titulo = String(valores.titulo || '')
   const corpo = String(valores.corpo || '')
   return (
-    <GraziFrame fundo={fundo} cor={cor} classe="grazi-notas" formato={formato}>
+    <GraziFrame fundo={fundo} cor={cor} classe="grazi-notas" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)}>
       {chamada && <div className="chamada">{comDestaque(chamada)}</div>}
       <div className="nota-card">
         <div className="nota-barra">

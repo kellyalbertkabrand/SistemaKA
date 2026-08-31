@@ -162,6 +162,33 @@ function campoCorTextoGrazi(): Campo {
     ],
   }
 }
+// Controles comuns a todos os cards da Grazi: posição vertical e tamanho do texto.
+function campoPosGrazi(): Campo {
+  return {
+    id: 'pos',
+    label: 'Posição do texto',
+    tipo: 'select',
+    padrao: 'meio',
+    chips: true,
+    opcoes: [
+      { valor: 'topo', rotulo: 'Em cima' },
+      { valor: 'meio', rotulo: 'No meio' },
+      { valor: 'base', rotulo: 'Embaixo' },
+    ],
+  }
+}
+function campoTamanhoGrazi(): Campo {
+  return {
+    id: 'escala',
+    label: 'Tamanho do texto',
+    tipo: 'range',
+    min: 70,
+    max: 130,
+    passo: 2,
+    padrao: 100,
+    ajuda: 'Aumenta ou diminui todo o texto do card.',
+  }
+}
 
 // Dimensões dos 3 formatos (todos os modelos usam as mesmas).
 const FORMATOS = [
@@ -1323,6 +1350,28 @@ export const TEMPLATES: Template[] = [
       },
       campoFundoGrazi('mostarda'),
       campoCorTextoGrazi(),
+      {
+        id: 'script_tam',
+        label: 'Tamanho da palavra em script',
+        tipo: 'range',
+        min: 60,
+        max: 160,
+        passo: 5,
+        padrao: 100,
+        ajuda: 'Aumenta ou diminui só a palavra escrita à mão.',
+      },
+      {
+        id: 'script_y',
+        label: 'Altura da palavra em script',
+        tipo: 'range',
+        min: -60,
+        max: 60,
+        passo: 4,
+        padrao: 0,
+        ajuda: 'Valores negativos sobem a palavra; positivos descem.',
+      },
+      campoPosGrazi(),
+      campoTamanhoGrazi(),
     ],
     render: GraziFraseCard,
   },
@@ -1375,6 +1424,8 @@ export const TEMPLATES: Template[] = [
         ],
       },
       campoFundoGrazi('verde-escuro'),
+      campoPosGrazi(),
+      campoTamanhoGrazi(),
     ],
     render: GraziDepoimentoCard,
   },
@@ -1406,6 +1457,8 @@ export const TEMPLATES: Template[] = [
       },
       campoFundoGrazi('verde'),
       campoCorTextoGrazi(),
+      campoPosGrazi(),
+      campoTamanhoGrazi(),
     ],
     render: GraziTextoCard,
   },
@@ -1435,6 +1488,8 @@ export const TEMPLATES: Template[] = [
       },
       campoFundoGrazi('terracota'),
       campoCorTextoGrazi(),
+      campoPosGrazi(),
+      campoTamanhoGrazi(),
     ],
     render: GraziPassoCard,
   },
@@ -1458,6 +1513,8 @@ export const TEMPLATES: Template[] = [
       { id: 'botao', label: 'Texto do botão', tipo: 'texto', padrao: 'Agende sua sessão' },
       campoFundoGrazi('bege-dourado'),
       campoCorTextoGrazi(),
+      campoPosGrazi(),
+      campoTamanhoGrazi(),
     ],
     render: GraziCtaCard,
   },
@@ -1502,6 +1559,8 @@ export const TEMPLATES: Template[] = [
       { id: 'botao', label: 'Rodapé (opcional)', tipo: 'texto', padrao: 'leia a legenda' },
       campoFundoGrazi('verde'),
       campoCorTextoGrazi(),
+      campoPosGrazi(),
+      campoTamanhoGrazi(),
     ],
     render: GraziMistaCard,
   },
@@ -1542,6 +1601,8 @@ export const TEMPLATES: Template[] = [
       },
       campoFundoGrazi('vinho'),
       campoCorTextoGrazi(),
+      campoPosGrazi(),
+      campoTamanhoGrazi(),
     ],
     render: GraziFraseFotoCard,
   },
@@ -1582,6 +1643,8 @@ export const TEMPLATES: Template[] = [
       },
       campoFundoGrazi('verde'),
       campoCorTextoGrazi(),
+      campoPosGrazi(),
+      campoTamanhoGrazi(),
     ],
     render: GraziComparativoCard,
   },
@@ -1614,6 +1677,8 @@ export const TEMPLATES: Template[] = [
       },
       campoFundoGrazi('bege-dourado'),
       campoCorTextoGrazi(),
+      campoPosGrazi(),
+      campoTamanhoGrazi(),
     ],
     render: GraziNotasCard,
   },

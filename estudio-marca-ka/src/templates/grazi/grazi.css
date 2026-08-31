@@ -45,10 +45,13 @@
   font-display: swap;
 }
 
-/* ---- Moldura Grazi: card 1080×1350, conteúdo centralizado, faixa verde ---- */
+/* ---- Moldura Grazi: card 1080×1350, conteúdo centralizado, faixa verde ----
+   `--e` = escala do texto (1 = normal), controlada pelo campo "Tamanho do texto".
+   As posições vertical do conteúdo (topo/meio/base) vêm das classes .pos-*. */
 .grazi-card {
   --sans: 'Poppins Grazi', 'Poppins', sans-serif;
   --script: 'Allura Grazi', cursive;
+  --e: 1;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -58,6 +61,18 @@
   font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
 }
+/* Posição vertical do conteúdo (o handle e a faixa são absolutos, fora do fluxo) */
+.grazi-card.pos-topo {
+  justify-content: flex-start;
+  padding-top: 150px;
+}
+.grazi-card.pos-meio {
+  justify-content: center;
+}
+.grazi-card.pos-base {
+  justify-content: flex-end;
+  padding-bottom: 210px;
+}
 .grazi-card .grazi-faixa {
   position: absolute;
   left: 0;
@@ -66,36 +81,40 @@
   height: 52px;
   background: var(--faixa, #1e3a2c);
 }
+/* @sougrazimartini — centralizado no rodapé (acima da faixa verde), em todos. */
 .grazi-card .grazi-handle {
-  font-size: 24px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 78px;
+  text-align: center;
+  font-size: 27px;
   font-weight: 500;
   font-style: italic;
   letter-spacing: 0.02em;
-  opacity: 0.92;
-  margin-bottom: 16px;
+  opacity: 0.9;
 }
 
 /* ---- Frase editorial (título sans + palavra em script + botão) ---- */
 .grazi-frase .titulo {
   font-weight: 700;
-  font-size: 104px;
+  font-size: calc(104px * var(--e));
   line-height: 1.02;
   letter-spacing: -0.05em;
   text-transform: uppercase;
 }
 .grazi-frase .titulo .script {
+  display: inline-block;
   font-family: var(--script);
   font-weight: 400;
-  font-size: 150px;
   line-height: 0.7;
   letter-spacing: 0;
   text-transform: none;
   margin-left: 14px;
-  vertical-align: -0.24em;
   white-space: nowrap;
 }
 .grazi-card .grazi-btn {
-  margin-top: 56px;
+  margin-top: calc(56px * var(--e));
   display: inline-flex;
   align-items: center;
   gap: 28px;
@@ -103,19 +122,17 @@
   border: 2px solid currentColor;
   border-radius: 999px;
   padding: 20px 50px;
-  font-size: 33px;
+  font-size: calc(33px * var(--e));
   font-weight: 400;
 }
 .grazi-card .grazi-btn .seta {
-  font-size: 28px;
+  font-size: calc(28px * var(--e));
 }
 
 /* Story 9:16 e Quadrado 1:1 (mais/menos altura): título um pouco menor. */
-.grazi-card.fmt-card .titulo {
-  font-size: 88px;
-}
-.grazi-card.fmt-card .titulo .script {
-  font-size: 128px;
+.grazi-card.fmt-card .grazi-frase .titulo,
+.grazi-card.grazi-frase.fmt-card .titulo {
+  font-size: calc(88px * var(--e));
 }
 
 /* ---- Depoimento (review estilo Google + marca d'água "depoimento") ---- */
@@ -137,7 +154,7 @@
   text-transform: none;
   white-space: nowrap;
   overflow: hidden;
-  color: rgba(242, 209, 167, 0.09);
+  /* a cor vem inline do componente (contrasta com o fundo, claro ou escuro) */
   pointer-events: none;
 }
 .grazi-depo .depo-box {
@@ -172,13 +189,13 @@
 }
 .grazi-depo .depo-nm {
   font-weight: 700;
-  font-size: 34px;
+  font-size: calc(34px * var(--e));
   color: #202124;
   line-height: 1.15;
 }
 .grazi-depo .depo-sub {
   font-weight: 400;
-  font-size: 26px;
+  font-size: calc(26px * var(--e));
   color: #5f6368;
   margin-top: 3px;
 }
@@ -196,7 +213,7 @@
 }
 .grazi-depo .depo-texto {
   font-weight: 400;
-  font-size: 34px;
+  font-size: calc(34px * var(--e));
   line-height: 1.5;
   color: #3c4043;
   white-space: pre-line;
@@ -223,7 +240,7 @@
 /* ---- Card de texto (desenvolvimento) ---- */
 .grazi-texto .titulo {
   font-weight: 700;
-  font-size: 66px;
+  font-size: calc(66px * var(--e));
   line-height: 1.08;
   letter-spacing: -0.02em;
   margin-bottom: 30px;
@@ -231,7 +248,7 @@
 }
 .grazi-texto .corpo {
   font-weight: 400;
-  font-size: 46px;
+  font-size: calc(46px * var(--e));
   line-height: 1.5;
   max-width: 94%;
   white-space: pre-line;
@@ -240,21 +257,21 @@
 /* ---- Passo numerado ---- */
 .grazi-passo .numero {
   font-weight: 700;
-  font-size: 220px;
+  font-size: calc(220px * var(--e));
   line-height: 0.9;
   letter-spacing: -0.03em;
   opacity: 0.9;
 }
 .grazi-passo .titulo {
   font-weight: 700;
-  font-size: 60px;
+  font-size: calc(60px * var(--e));
   line-height: 1.1;
   margin: 8px 0 24px;
   max-width: 92%;
 }
 .grazi-passo .corpo {
   font-weight: 400;
-  font-size: 44px;
+  font-size: calc(44px * var(--e));
   line-height: 1.5;
   max-width: 94%;
   white-space: pre-line;
@@ -267,14 +284,14 @@
 }
 .grazi-cta .frase {
   font-weight: 400;
-  font-size: 48px;
+  font-size: calc(48px * var(--e));
   line-height: 1.4;
   max-width: 84%;
 }
 .grazi-cta .produto {
   font-family: var(--script);
   font-weight: 400;
-  font-size: 132px;
+  font-size: calc(132px * var(--e));
   line-height: 1.05;
   margin: 14px 0 6px;
 }
@@ -288,53 +305,56 @@
 }
 .grazi-mista .cima {
   font-weight: 400;
-  font-size: 52px;
+  font-size: calc(52px * var(--e));
   line-height: 1.15;
   max-width: 92%;
 }
 .grazi-mista .cima .primeira {
   display: block;
-  font-size: 62px;
+  font-size: calc(62px * var(--e));
   font-weight: 500;
 }
 .grazi-mista .script-hero {
   font-family: var(--script);
-  font-size: 200px;
+  font-size: calc(200px * var(--e));
   line-height: 0.8;
   margin: 6px 0 18px;
 }
 .grazi-mista .baixo {
   font-weight: 400;
-  font-size: 58px;
+  font-size: calc(58px * var(--e));
   line-height: 1.15;
   max-width: 92%;
 }
 .grazi-mista .baixo strong {
   font-weight: 700;
 }
-.grazi-mista .nota {
+/* nota manuscrita — classe própria (NÃO usar .nota: colide com o aviso da gestão).
+   Herda a cor do texto do card (segue a cor da fonte escolhida). */
+.grazi-mista .grazi-mao {
+  color: inherit;
   font-family: var(--script);
-  font-size: 46px;
+  font-size: calc(46px * var(--e));
   line-height: 1.2;
   margin-top: 30px;
   padding-left: 92px;
   position: relative;
-  max-width: 60%;
+  max-width: 66%;
 }
-.grazi-mista .nota::before {
+.grazi-mista .grazi-mao::before {
   content: '↳';
   position: absolute;
   left: 26px;
   top: 2px;
   font-family: var(--sans);
-  font-size: 52px;
+  font-size: calc(52px * var(--e));
   opacity: 0.9;
 }
 .grazi-mista .rodape-txt {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 92px;
+  bottom: 132px;
   text-align: center;
   font-weight: 400;
   font-size: 34px;
@@ -344,7 +364,7 @@
 /* ---- Frase + foto (título / janela de foto / legenda) ---- */
 .grazi-frasefoto .titulo {
   font-weight: 700;
-  font-size: 60px;
+  font-size: calc(60px * var(--e));
   line-height: 1.1;
   letter-spacing: -0.02em;
   margin-bottom: 30px;
@@ -374,7 +394,7 @@
 }
 .grazi-frasefoto .legenda {
   font-weight: 400;
-  font-size: 42px;
+  font-size: calc(42px * var(--e));
   line-height: 1.35;
   margin-top: 30px;
   max-width: 96%;
@@ -383,7 +403,7 @@
 /* ---- Comparativo (duas colunas: pesa × inspira) ---- */
 .grazi-comp .titulo {
   font-weight: 700;
-  font-size: 58px;
+  font-size: calc(58px * var(--e));
   line-height: 1.08;
   letter-spacing: -0.02em;
   text-align: center;
@@ -413,7 +433,7 @@
 }
 .grazi-comp .comp-cab {
   font-weight: 700;
-  font-size: 40px;
+  font-size: calc(40px * var(--e));
   line-height: 1.1;
   letter-spacing: -0.01em;
   margin-bottom: 30px;
@@ -423,13 +443,13 @@
   gap: 16px;
   align-items: flex-start;
   font-weight: 400;
-  font-size: 36px;
+  font-size: calc(36px * var(--e));
   line-height: 1.34;
   margin-bottom: 22px;
 }
 .grazi-comp .comp-mk {
   flex-shrink: 0;
-  font-size: 32px;
+  font-size: calc(32px * var(--e));
   line-height: 1.5;
   opacity: 0.85;
 }
@@ -440,7 +460,7 @@
 /* ---- Bloco de notas (cartão estilo "Notas" do iPhone) ---- */
 .grazi-notas .chamada {
   font-weight: 700;
-  font-size: 56px;
+  font-size: calc(56px * var(--e));
   line-height: 1.08;
   letter-spacing: -0.02em;
   margin-bottom: 40px;
@@ -479,13 +499,13 @@
 }
 .grazi-notas .nota-tit {
   font-weight: 700;
-  font-size: 52px;
+  font-size: calc(52px * var(--e));
   line-height: 1.15;
   margin-bottom: 26px;
 }
 .grazi-notas .nota-txt {
   font-weight: 400;
-  font-size: 42px;
+  font-size: calc(42px * var(--e));
   line-height: 1.5;
   white-space: pre-line;
 }
