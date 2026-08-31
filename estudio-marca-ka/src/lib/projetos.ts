@@ -140,8 +140,17 @@ export const MODELOS_FASES: ModeloFases[] = [
     id: 'marca-essencia',
     nome: 'Marca com Essência©',
     fases: [
+      // ---- Abertura do contrato (ago/2026): as etapas administrativas que a KA
+      // já acompanhava na mão. Vêm antes de qualquer entrega.
+      { nome: 'Envio de Contrato', descricao: 'Contrato enviado para o cliente ler e assinar.' },
+      { nome: 'Assinatura de Contrato', descricao: 'Aceite digital do cliente registrado no sistema.' },
+      { nome: 'Pagamento da Entrada', descricao: 'Confirmação da entrada para o projeto começar.' },
       // Entra ANTES do IKIGAI, e só em parte dos contratos — por isso `opcional`.
-      { nome: 'Análise Estratégica de Mercado', descricao: 'Leitura do mercado, do público e da concorrência — base para o IKIGAI.', opcional: true },
+      { nome: 'Análise Estratégica de Mercado', descricao: 'Leitura do mercado, do público e da concorrência, base para o IKIGAI.', opcional: true },
+      // ---- Os formulários que o cliente preenche (aba Formulários).
+      { nome: 'Envio e Recebimento - Formulário do Ikigai', descricao: 'IKIGAI Empresarial enviado ao cliente e devolvido preenchido.' },
+      { nome: 'Envio e Recebimento - História', descricao: 'A história da marca contada pelo cliente, em áudio no WhatsApp.' },
+      { nome: 'Envio e Recebimento - Formulário Identidade Verbal', descricao: 'Formulário de Identidade Verbal enviado ao cliente e devolvido preenchido.' },
       { nome: 'Revelação de Essência', descricao: 'IKIGAI Empresarial + Escuta Estratégica com os fundadores.' },
       { nome: 'Base Estratégica + Identidade Verbal', descricao: 'Toda a inteligência da marca em um documento estratégico.' },
       { nome: 'Identidade Visual', descricao: 'Tradução da essência em expressão estética. Parceria VM Rocks Design (Gabi Lucato).', responsavel: 'VM' },
@@ -151,6 +160,7 @@ export const MODELOS_FASES: ModeloFases[] = [
       { nome: 'Personalização do WhatsApp', descricao: 'Canal de contato alinhado à identidade da marca. Parceria VM Rocks Design (Gabi Lucato).', responsavel: 'VM' },
       { nome: 'Linha de Produtos e Serviços', descricao: 'Reorganização estratégica da oferta, nomeação e proposta de valor.' },
       { nome: 'Plano de Comunicação + Agente de IA', descricao: 'Pilares, calendário editorial e 01 agente de inteligência artificial personalizado no ChatGPT, treinado com a essência da sua marca.' },
+      { nome: 'Agente de IA + Estúdio da Marca', descricao: 'Entrega do agente treinado e do estúdio de publicações da marca, com a equipe orientada a usar.' },
     ],
   },
   {

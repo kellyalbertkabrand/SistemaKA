@@ -702,10 +702,22 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
   padrão Kelly Albert. Projeto só-KA mantém o logo e o rodapé normais.
 - **Regras:** `projetos` = leitura pública (token no doc, como orçamentos),
   escrita só a KA.
-- **Modelos de fases** em `MODELOS_FASES`: **Marca com Essência©** (7 etapas
-  COM descrição — Instagram e WhatsApp são etapas separadas desde ago/2026), Identidade visual, Social media, Site, Personalizado. Cada
+- **Modelos de fases** em `MODELOS_FASES`: **Marca com Essência©** (15 etapas
+  COM descrição), Identidade visual, Social media, Site, Personalizado. Cada
   fase tem `nome` + `descricao` opcional (o cliente vê a descrição sob o nome,
   no admin e na linha do tempo pública).
+- **O modelo Marca com Essência© hoje (ago/2026)**, na ordem: abertura do
+  contrato (**Envio de Contrato · Assinatura de Contrato · Pagamento da
+  Entrada**), **Análise Estratégica de Mercado** (`opcional`), os formulários
+  (**Envio e Recebimento - Formulário do Ikigai · História · Formulário
+  Identidade Verbal**), **Revelação de Essência**, **Base Estratégica +
+  Identidade Verbal**, **Identidade Visual** (VM), **Personalização do
+  Instagram** (VM), **Personalização do WhatsApp** (VM), **Linha de Produtos e
+  Serviços**, **Plano de Comunicação + Agente de IA** e **Agente de IA +
+  Estúdio da Marca**. As etapas de contrato/formulários vieram do projeto real
+  da LM Sucessão & Proteção (a KA já as acompanhava na mão). Instagram e
+  WhatsApp continuam separados. ⚠️ Mudar o modelo só vale para projetos NOVOS —
+  os que já existem mantêm as fases deles.
 - **Biblioteca de fases (reuso):** toda fase que a KA escreve (nome+descrição)
   é salva na coleção `fases_biblioteca` (`salvarFaseSalva`, id=slug do nome);
   o formulário de nova fase tem `datalist` das fases salvas e autopreenche a
