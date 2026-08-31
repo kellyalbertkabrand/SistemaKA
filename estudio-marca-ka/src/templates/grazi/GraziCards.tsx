@@ -363,6 +363,58 @@ export function GraziComparativoCard({ valores, formato }: RenderProps) {
   )
 }
 
+// Capa de Reels: a foto (ou vídeo) ocupa o card inteiro; título grande por
+// cima (posição escolhível) + subtítulo opcional; e uma faixa verde elegante
+// no rodapé com um texto (a assinatura/chamada). Padrão 9:16.
+function corCapaGrazi(v: unknown, padrao = 'creme'): string {
+  const s = String(v || padrao)
+  if (s === 'branco') return '#FFFFFF'
+  if (s.startsWith('#')) return s
+  return hexFundoGrazi(s)
+}
+export function GraziCapaCard({ valores, formato }: RenderProps) {
+  const foto = String(valores.foto || '')
+  const ehVideo = String(valores.foto_kind) === 'video' || foto.startsWith('data:video')
+  const titulo = String(valores.titulo || '')
+  const subtitulo = String(valores.subtitulo || '')
+  const rodape = String(valores.rodape || '')
+  const tituloPos = posClasse(valores.titulo_pos)
+  const escala = escalaFrac(valores.escala)
+  const corTexto = corCapaGrazi(valores.cor_fonte, 'branco')
+  const faixaKey = String(valores.cor_faixa || 'verde-escuro')
+  const corFaixa = hexFundoGrazi(faixaKey)
+  const corFaixaTexto = corTextoGrazi(faixaKey)
+  const est = { ...estiloImagem(valores, 'foto'), width: '100%', height: '100%' } as const
+  const estiloRaiz = { width: formato.largura, height: formato.altura, '--e': escala } as CSSProperties
+  return (
+    <div className={`grazi-card grazi-capa fmt-${formato.formato} tpos-${tituloPos}`} style={estiloRaiz}>
+      <div className="capa-foto">
+        {foto ? (
+          ehVideo ? (
+            <video src={foto} style={est} autoPlay muted loop playsInline />
+          ) : (
+            <img src={foto} alt="" style={est} crossOrigin="anonymous" />
+          )
+        ) : (
+          <div className="capa-ph">anexe a foto</div>
+        )}
+      </div>
+      <div className="capa-sombra" />
+      {(titulo || subtitulo) && (
+        <div className="capa-texto" style={{ color: corTexto }}>
+          {titulo && <div className="capa-titulo">{comDestaque(titulo)}</div>}
+          {subtitulo && <div className="capa-sub">{comDestaque(subtitulo)}</div>}
+        </div>
+      )}
+      {rodape && (
+        <div className="capa-faixa" style={{ background: corFaixa }}>
+          <span style={{ color: corFaixaTexto }}>{rodape}</span>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // Bloco de notas: cartão estilo "Notas" do iPhone (título + linhas), sobre o
 // fundo da marca. Bom para listas/reflexões com um ar pessoal.
 export function GraziNotasCard({ valores, formato }: RenderProps) {

@@ -44,6 +44,7 @@ import {
   GraziFraseFotoCard,
   GraziComparativoCard,
   GraziNotasCard,
+  GraziCapaCard,
 } from './grazi/GraziCards'
 import { FUNDOS_GRAZI } from './grazi/cores'
 
@@ -138,6 +139,12 @@ const AJUDA_DESTAQUE =
 const FORMATO_GRAZI = [
   { formato: 'post' as const, rotulo: 'Feed 4:5', largura: 1080, altura: 1350 },
   { formato: 'story' as const, rotulo: 'Story 9:16', largura: 1080, altura: 1920 },
+  { formato: 'card' as const, rotulo: 'Quadrado 1:1', largura: 1080, altura: 1080 },
+]
+// Capa de Reels: 9:16 primeiro (formato padrão).
+const FORMATO_GRAZI_CAPA = [
+  { formato: 'story' as const, rotulo: 'Reels / Story 9:16', largura: 1080, altura: 1920 },
+  { formato: 'post' as const, rotulo: 'Feed 4:5', largura: 1080, altura: 1350 },
   { formato: 'card' as const, rotulo: 'Quadrado 1:1', largura: 1080, altura: 1080 },
 ]
 function campoFundoGrazi(padrao: string): Campo {
@@ -1708,6 +1715,84 @@ export const TEMPLATES: Template[] = [
       campoSeloCorGrazi(),
     ],
     render: GraziNotasCard,
+  },
+  {
+    id: 'grazi-capa',
+    clienteSlug: 'grazi',
+    clienteNome: 'Grazi Martini',
+    nome: 'Capa de Reels',
+    descricao:
+      'Foto (ou vídeo) ocupando o card inteiro, título grande por cima e uma ' +
+      'faixa verde elegante no rodapé com um texto. Padrão 9:16.',
+    formatos: FORMATO_GRAZI_CAPA,
+    campos: [
+      {
+        id: 'foto',
+        label: 'Foto ou vídeo (ocupa o card todo)',
+        tipo: 'imagem',
+        obrigatorio: true,
+        aceitaVideo: true,
+        ajuda: 'A imagem preenche a capa inteira. Use o enquadramento (arrastar/zoom) para posicionar. Aceita vídeo.',
+      },
+      {
+        id: 'titulo',
+        label: 'Título grande',
+        tipo: 'textarea',
+        obrigatorio: true,
+        placeholder: 'Ex.: O erro que trava a sua liderança',
+        ajuda: 'Aparece em MAIÚSCULAS por cima da foto. Palavra entre "aspas" fica em negrito.',
+        padrao: 'O erro que trava a sua "liderança"',
+      },
+      {
+        id: 'subtitulo',
+        label: 'Linha de apoio (opcional)',
+        tipo: 'texto',
+        placeholder: 'Ex.: e como sair dele em 3 passos',
+        padrao: '',
+      },
+      {
+        id: 'titulo_pos',
+        label: 'Posição do título',
+        tipo: 'select',
+        padrao: 'base',
+        chips: true,
+        opcoes: [
+          { valor: 'topo', rotulo: 'Em cima' },
+          { valor: 'meio', rotulo: 'No meio' },
+          { valor: 'base', rotulo: 'Embaixo' },
+        ],
+      },
+      campoTamanhoGrazi(),
+      {
+        id: 'cor_fonte',
+        label: 'Cor do título',
+        tipo: 'paleta',
+        padrao: 'branco',
+        ajuda: 'Sobre a foto, branco ou creme costumam ficar mais legíveis.',
+        opcoes: [
+          { valor: 'branco', rotulo: 'Branco', cor: '#FFFFFF' },
+          { valor: 'creme', rotulo: 'Creme', cor: '#F3EEE8' },
+          { valor: 'preto', rotulo: 'Preto', cor: '#181007' },
+          ...FUNDOS_GRAZI.map((f) => ({ valor: f.valor, rotulo: f.rotulo, cor: f.hex })),
+        ],
+      },
+      {
+        id: 'rodape',
+        label: 'Texto do rodapé (na faixa verde)',
+        tipo: 'texto',
+        placeholder: 'Ex.: @sougrazimartini',
+        ajuda: 'Deixe em branco para esconder a faixa.',
+        padrao: '@sougrazimartini',
+      },
+      {
+        id: 'cor_faixa',
+        label: 'Cor da faixa do rodapé',
+        tipo: 'paleta',
+        padrao: 'verde-escuro',
+        opcoes: FUNDOS_GRAZI.map((f) => ({ valor: f.valor, rotulo: f.rotulo, cor: f.hex })),
+      },
+    ],
+    render: GraziCapaCard,
   },
 ]
 
