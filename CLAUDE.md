@@ -690,19 +690,29 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
   tempo com barra de progresso; usa **onSnapshot** (query por token), então a
   página do cliente atualiza EM TEMPO REAL quando a KA marca uma fase. Cada fase
   mostra o **responsável** (etiqueta KA/VM Rocks/nome).
-- **URL personalizada com a marca:** `linkPublicoProjeto(token, rotulo)` gera
-  `/projeto/<slug-da-marca>-<token>` (ex.: `/projeto/boba-joy-<token>`). O token
-  (32 hex, sem hífen) fica no fim; `tokenDoParametro(param)` pega tudo após o
-  último hífen. Links antigos (só o token) continuam funcionando.
-  **O nome vem do CADASTRO (ago/2026):** `nomeParaLink(p)` resolve
-  `clientes.nome_marca` pelo `cliente_id` e só cai em `p.cliente_nome` (o nome
-  gravado no projeto) e depois em `p.nome` quando não há cadastro ligado. Assim
-  a URL leva o nome oficial da marca mesmo se o projeto guardou um nome antigo.
-  Vale nos 3 pontos que geram o link: o botão da coluna no painel de Fases, a
-  aba Lista e o detalhe (copiar + mensagem do WhatsApp). O `GestaoProjetos`
-  passou a carregar `listarClientes()` por causa disso. ⚠️ O nome EXIBIDO
-  (admin e página do cliente) continua vindo de `p.cliente_nome`, porque a
-  página pública não lê a coleção `clientes`. O nome do
+- **URL LIMPA, sem código (ago/2026) — decisão da KA.** O link do cliente é
+  **`/projeto/<nome-da-marca>`** (ex.: `/projeto/boba-joy`). Não há mais código
+  no fim. ⚠️ A KA foi avisada do custo: quem adivinhar o nome da marca abre o
+  acompanhamento (nome do cliente, etapas e andamento) — ela decidiu assim
+  mesmo. Como agora é a URL que identifica o projeto, cada doc ganhou o campo
+  **`slug`**:
+  - `linkPublicoProjeto(p)` usa `p.slug` (cai no `token` enquanto não houver).
+  - `slugLivre(rotulo, usados)` garante unicidade: `boba-joy`, `boba-joy-2`…
+    (dois projetos do mesmo cliente não colidem). `criarProjeto` já grava.
+  - `garantirSlugs(lista, rotuloDe)` preenche os projetos ANTIGOS na primeira
+    vez que a aba Projetos abre. Só grava o que falta — **apelido existente
+    nunca muda**, senão o link já enviado ao cliente quebraria.
+  - O rótulo sai de `rotuloDoProjeto(p, clientes)`: **nome do cadastro**
+    (`clientes.nome_marca` pelo `cliente_id`) → `p.cliente_nome` → `p.nome`.
+    Por isso `recarregar()` busca projetos e clientes **juntos** (`Promise.all`)
+    antes do backfill — com a lista de clientes vazia o apelido sairia com o
+    nome antigo gravado no projeto (bug pego no teste).
+  - **`assinarProjetoPorParametro(param, …)`** aceita os TRÊS formatos e mantém
+    o tempo real (acha o doc uma vez, depois `onSnapshot` nele):
+    `/projeto/boba-joy` (hoje), `/projeto/boba-joy-<token>` e `/projeto/<token>`
+    (links antigos). `tokenDoParametro` continua só para o 2º caso.
+  ⚠️ O nome EXIBIDO (admin e página do cliente) continua vindo de
+  `p.cliente_nome`, porque a página pública não lê a coleção `clientes`. O nome do
   projeto é **editável inline** no detalhe ("Editar nome").
 - **Co-assinatura KA + VM Rocks:** se o projeto tem **qualquer etapa com
   responsável VM** (`comVM = fases.some(...==='VM')`), a página do cliente
