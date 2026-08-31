@@ -91,8 +91,6 @@ export function GraziDepoimentoCard({ valores, formato }: RenderProps) {
   const sub = String(valores.sub || '')
   const depo = String(valores.depoimento || '')
   const n = Math.max(0, Math.min(5, Number(valores.estrelas ?? 5)))
-  const inicial = (String(valores.avatar || '').trim() || nome.trim().charAt(0) || '?').toUpperCase()
-  const corAvatar = String(valores.cor_avatar || '#A0349B')
   const pos = posClasse(valores.pos)
   const escala = escalaFrac(valores.escala)
   // Marca d'água legível nos dois casos (o fundo bege apagava o creme).
@@ -112,9 +110,6 @@ export function GraziDepoimentoCard({ valores, formato }: RenderProps) {
       </div>
       <div className="depo-box">
         <div className="depo-head">
-          <div className="depo-av" style={{ background: corAvatar }}>
-            {inicial}
-          </div>
           <div className="depo-quem">
             <div className="depo-nm">{nome}</div>
             {sub && <div className="depo-sub">{sub}</div>}
