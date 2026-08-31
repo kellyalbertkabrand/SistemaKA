@@ -189,6 +189,36 @@ function campoTamanhoGrazi(): Campo {
     ajuda: 'Aumenta ou diminui todo o texto do card.',
   }
 }
+// Selo @sougrazimartini: onde mostrar e em que cor (ou esconder).
+function campoSeloPosGrazi(): Campo {
+  return {
+    id: 'handle_pos',
+    label: 'Selo @sougrazimartini',
+    tipo: 'select',
+    padrao: 'rodape',
+    chips: true,
+    ajuda: 'Onde mostrar o @ da Grazi — ou esconder.',
+    opcoes: [
+      { valor: 'rodape', rotulo: 'No rodapé' },
+      { valor: 'cabecalho', rotulo: 'No topo' },
+      { valor: 'nenhum', rotulo: 'Não mostrar' },
+    ],
+  }
+}
+function campoSeloCorGrazi(padrao = 'auto'): Campo {
+  return {
+    id: 'handle_cor',
+    label: 'Cor do @',
+    tipo: 'paleta',
+    padrao,
+    ajuda: 'A primeira (A) combina com o fundo. Ou escolha uma cor fixa.',
+    opcoes: [
+      { valor: 'auto', rotulo: 'Automático (combina com o fundo)' },
+      { valor: '#C9A24C', rotulo: 'Dourado', cor: '#C9A24C' },
+      ...FUNDOS_GRAZI.map((f) => ({ valor: f.hex, rotulo: f.rotulo, cor: f.hex })),
+    ],
+  }
+}
 
 // Dimensões dos 3 formatos (todos os modelos usam as mesmas).
 const FORMATOS = [
@@ -1372,6 +1402,8 @@ export const TEMPLATES: Template[] = [
       },
       campoPosGrazi(),
       campoTamanhoGrazi(),
+      campoSeloPosGrazi(),
+      campoSeloCorGrazi(),
     ],
     render: GraziFraseCard,
   },
@@ -1405,6 +1437,8 @@ export const TEMPLATES: Template[] = [
       campoFundoGrazi('verde-escuro'),
       campoPosGrazi(),
       campoTamanhoGrazi(),
+      campoSeloPosGrazi(),
+      campoSeloCorGrazi('#C9A24C'),
     ],
     render: GraziDepoimentoCard,
   },
@@ -1438,6 +1472,8 @@ export const TEMPLATES: Template[] = [
       campoCorTextoGrazi(),
       campoPosGrazi(),
       campoTamanhoGrazi(),
+      campoSeloPosGrazi(),
+      campoSeloCorGrazi(),
     ],
     render: GraziTextoCard,
   },
@@ -1469,6 +1505,8 @@ export const TEMPLATES: Template[] = [
       campoCorTextoGrazi(),
       campoPosGrazi(),
       campoTamanhoGrazi(),
+      campoSeloPosGrazi(),
+      campoSeloCorGrazi(),
     ],
     render: GraziPassoCard,
   },
@@ -1494,6 +1532,8 @@ export const TEMPLATES: Template[] = [
       campoCorTextoGrazi(),
       campoPosGrazi(),
       campoTamanhoGrazi(),
+      campoSeloPosGrazi(),
+      campoSeloCorGrazi(),
     ],
     render: GraziCtaCard,
   },
@@ -1540,6 +1580,8 @@ export const TEMPLATES: Template[] = [
       campoCorTextoGrazi(),
       campoPosGrazi(),
       campoTamanhoGrazi(),
+      campoSeloPosGrazi(),
+      campoSeloCorGrazi(),
     ],
     render: GraziMistaCard,
   },
@@ -1582,6 +1624,8 @@ export const TEMPLATES: Template[] = [
       campoCorTextoGrazi(),
       campoPosGrazi(),
       campoTamanhoGrazi(),
+      campoSeloPosGrazi(),
+      campoSeloCorGrazi(),
     ],
     render: GraziFraseFotoCard,
   },
@@ -1624,6 +1668,8 @@ export const TEMPLATES: Template[] = [
       campoCorTextoGrazi(),
       campoPosGrazi(),
       campoTamanhoGrazi(),
+      campoSeloPosGrazi(),
+      campoSeloCorGrazi(),
     ],
     render: GraziComparativoCard,
   },
@@ -1658,6 +1704,8 @@ export const TEMPLATES: Template[] = [
       campoCorTextoGrazi(),
       campoPosGrazi(),
       campoTamanhoGrazi(),
+      campoSeloPosGrazi(),
+      campoSeloCorGrazi(),
     ],
     render: GraziNotasCard,
   },

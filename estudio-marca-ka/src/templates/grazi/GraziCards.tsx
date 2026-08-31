@@ -1,6 +1,6 @@
 import type { ReactNode, CSSProperties } from 'react'
 import type { RenderProps } from '../types'
-import { hexFundoGrazi, corFonteGrazi, ehFundoEscuroGrazi } from './cores'
+import { hexFundoGrazi, corFonteGrazi, corTextoGrazi, ehFundoEscuroGrazi } from './cores'
 import { estiloImagem } from '../imagem'
 import './grazi.css'
 
@@ -44,6 +44,25 @@ function estiloCard(formato: RenderProps['formato'], fundo: string, cor: string 
   return s as CSSProperties
 }
 
+// Selo @sougrazimartini: posição (rodapé/topo/nenhum) e cor (auto = contraste
+// com o fundo; senão a cor escolhida — hex direto ou chave da paleta).
+function handlePosDe(v: unknown): 'rodape' | 'cabecalho' | 'nenhum' {
+  const s = String(v || 'rodape')
+  return s === 'cabecalho' || s === 'nenhum' ? s : 'rodape'
+}
+function corHandleGrazi(v: unknown, fundo: string): string {
+  const s = String(v || 'auto')
+  if (s === 'auto') return corTextoGrazi(fundo)
+  if (s.startsWith('#')) return s
+  return hexFundoGrazi(s)
+}
+// Desenha o selo na posição pedida (ou nada).
+function SeloGrazi({ pos, cor }: { pos: 'rodape' | 'cabecalho' | 'nenhum'; cor: string }) {
+  if (pos === 'nenhum') return null
+  const lugar = pos === 'cabecalho' ? 'topo' : 'base'
+  return <div className={`grazi-handle grazi-handle--${lugar}`} style={{ color: cor }}>{HANDLE}</div>
+}
+
 // ============================================================================
 // Cards da Grazi Martini — Mentora e Estrategista do Comportamento Humano.
 // Padrão visual: fundos quentes (mostarda, terracota, vinho, verde), texto
@@ -63,6 +82,8 @@ function GraziFrame({
   formato,
   pos,
   escala,
+  seloPos,
+  seloCor,
   children,
 }: {
   fundo: string
@@ -71,12 +92,15 @@ function GraziFrame({
   formato: RenderProps['formato']
   pos: string
   escala: number
+  seloPos: 'rodape' | 'cabecalho' | 'nenhum'
+  seloCor: string
   children: React.ReactNode
 }) {
   return (
     <div className={`grazi-card ${classe} fmt-${formato.formato} pos-${pos}`} style={estiloCard(formato, fundo, cor, escala)}>
+      {seloPos === 'cabecalho' && <SeloGrazi pos="cabecalho" cor={seloCor} />}
       {children}
-      <div className="grazi-handle">{HANDLE}</div>
+      {seloPos === 'rodape' && <SeloGrazi pos="rodape" cor={seloCor} />}
       <div className="grazi-faixa" />
     </div>
   )
@@ -93,10 +117,14 @@ export function GraziDepoimentoCard({ valores, formato }: RenderProps) {
   const n = Math.max(0, Math.min(5, Number(valores.estrelas ?? 5)))
   const pos = posClasse(valores.pos)
   const escala = escalaFrac(valores.escala)
+  const seloPos = handlePosDe(valores.handle_pos)
+  // Padrão dourado (herança do review); "auto" também vale.
+  const seloCor = corHandleGrazi(valores.handle_cor ?? '#C9A24C', fundo)
   // Marca d'água legível nos dois casos (o fundo bege apagava o creme).
   const corMarca = ehFundoEscuroGrazi(fundo) ? 'rgba(242, 209, 167, 0.11)' : 'rgba(30, 58, 44, 0.13)'
   return (
     <div className={`grazi-card grazi-depo fmt-${formato.formato} pos-${pos}`} style={estiloCard(formato, fundo, undefined, escala)}>
+      {seloPos === 'cabecalho' && <SeloGrazi pos="cabecalho" cor={seloCor} />}
       <div className="depo-marca" style={{ color: corMarca }}>
         {'depoimento '.repeat(3).trim()}
         <br />
@@ -119,7 +147,7 @@ export function GraziDepoimentoCard({ valores, formato }: RenderProps) {
         <div className="depo-stars">{'★'.repeat(n)}</div>
         <div className="depo-texto">{depo}</div>
       </div>
-      <div className="depo-handle">@sougrazimartini</div>
+      {seloPos === 'rodape' && <SeloGrazi pos="rodape" cor={seloCor} />}
     </div>
   )
 }
@@ -142,7 +170,16 @@ export function GraziFraseCard({ valores, formato }: RenderProps) {
     transform: `translateY(${scriptY}px)`,
   }
   return (
-    <GraziFrame fundo={fundo} cor={cor} classe="grazi-frase" formato={formato} pos={pos} escala={escala}>
+    <GraziFrame
+      fundo={fundo}
+      cor={cor}
+      classe="grazi-frase"
+      formato={formato}
+      pos={pos}
+      escala={escala}
+      seloPos={handlePosDe(valores.handle_pos)}
+      seloCor={corHandleGrazi(valores.handle_cor, fundo)}
+    >
       <div className="titulo">
         {titulo}
         {script && (
@@ -168,7 +205,7 @@ export function GraziTextoCard({ valores, formato }: RenderProps) {
   const titulo = String(valores.titulo || '')
   const texto = String(valores.texto || '')
   return (
-    <GraziFrame fundo={fundo} cor={cor} classe="grazi-texto" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)}>
+    <GraziFrame fundo={fundo} cor={cor} classe="grazi-texto" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)} seloPos={handlePosDe(valores.handle_pos)} seloCor={corHandleGrazi(valores.handle_cor, fundo)}>
       {titulo && <div className="titulo">{comDestaque(titulo)}</div>}
       {texto && <div className="corpo">{comDestaque(texto)}</div>}
     </GraziFrame>
@@ -183,7 +220,7 @@ export function GraziPassoCard({ valores, formato }: RenderProps) {
   const titulo = String(valores.titulo || '')
   const texto = String(valores.texto || '')
   return (
-    <GraziFrame fundo={fundo} cor={cor} classe="grazi-passo" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)}>
+    <GraziFrame fundo={fundo} cor={cor} classe="grazi-passo" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)} seloPos={handlePosDe(valores.handle_pos)} seloCor={corHandleGrazi(valores.handle_cor, fundo)}>
       {numero !== '' && <div className="numero">{numero}</div>}
       {titulo && <div className="titulo">{comDestaque(titulo)}</div>}
       {texto && <div className="corpo">{comDestaque(texto)}</div>}
@@ -199,7 +236,7 @@ export function GraziCtaCard({ valores, formato }: RenderProps) {
   const produto = String(valores.produto || '')
   const botao = String(valores.botao || '')
   return (
-    <GraziFrame fundo={fundo} cor={cor} classe="grazi-cta" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)}>
+    <GraziFrame fundo={fundo} cor={cor} classe="grazi-cta" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)} seloPos={handlePosDe(valores.handle_pos)} seloCor={corHandleGrazi(valores.handle_cor, fundo)}>
       {frase && <div className="frase">{comDestaque(frase)}</div>}
       {produto && <div className="produto">{produto}</div>}
       {botao && (
@@ -223,9 +260,12 @@ export function GraziMistaCard({ valores, formato }: RenderProps) {
   const botao = String(valores.botao || '')
   const pos = posClasse(valores.pos)
   const escala = escalaFrac(valores.escala)
+  const seloPos = handlePosDe(valores.handle_pos)
+  const seloCor = corHandleGrazi(valores.handle_cor, fundo)
   const linhasCima = cima.split('\n')
   return (
     <div className={`grazi-card grazi-mista fmt-${formato.formato} pos-${pos}`} style={estiloCard(formato, fundo, cor, escala)}>
+      {seloPos === 'cabecalho' && <SeloGrazi pos="cabecalho" cor={seloCor} />}
       {cima && (
         <div className="cima">
           {linhasCima.map((l, i) =>
@@ -246,7 +286,7 @@ export function GraziMistaCard({ valores, formato }: RenderProps) {
       {baixo && <div className="baixo">{comDestaque(baixo)}</div>}
       {nota && <div className="grazi-mao">{nota}</div>}
       {botao && <div className="rodape-txt">{botao}</div>}
-      <div className="grazi-handle">{HANDLE}</div>
+      {seloPos === 'rodape' && <SeloGrazi pos="rodape" cor={seloCor} />}
       <div className="grazi-faixa" />
     </div>
   )
@@ -267,7 +307,7 @@ export function GraziFraseFotoCard({ valores, formato }: RenderProps) {
   const h = Math.round(baseH * area)
   const est = { ...estiloImagem(valores, 'foto'), width: '100%', height: '100%' } as const
   return (
-    <GraziFrame fundo={fundo} cor={cor} classe="grazi-frasefoto" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)}>
+    <GraziFrame fundo={fundo} cor={cor} classe="grazi-frasefoto" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)} seloPos={handlePosDe(valores.handle_pos)} seloCor={corHandleGrazi(valores.handle_cor, fundo)}>
       {titulo && <div className="titulo">{comDestaque(titulo)}</div>}
       <div className="foto-janela" style={{ height: h }}>
         {foto ? (
@@ -296,7 +336,7 @@ export function GraziComparativoCard({ valores, formato }: RenderProps) {
   const itensA = String(valores.itens_a || '').split('\n').filter((l) => l.trim() !== '')
   const itensB = String(valores.itens_b || '').split('\n').filter((l) => l.trim() !== '')
   return (
-    <GraziFrame fundo={fundo} cor={cor} classe="grazi-comp" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)}>
+    <GraziFrame fundo={fundo} cor={cor} classe="grazi-comp" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)} seloPos={handlePosDe(valores.handle_pos)} seloCor={corHandleGrazi(valores.handle_cor, fundo)}>
       {titulo && <div className="titulo">{comDestaque(titulo)}</div>}
       <div className="comp-grade">
         <div className="comp-col comp-col--a">
@@ -332,7 +372,7 @@ export function GraziNotasCard({ valores, formato }: RenderProps) {
   const titulo = String(valores.titulo || '')
   const corpo = String(valores.corpo || '')
   return (
-    <GraziFrame fundo={fundo} cor={cor} classe="grazi-notas" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)}>
+    <GraziFrame fundo={fundo} cor={cor} classe="grazi-notas" formato={formato} pos={posClasse(valores.pos)} escala={escalaFrac(valores.escala)} seloPos={handlePosDe(valores.handle_pos)} seloCor={corHandleGrazi(valores.handle_cor, fundo)}>
       {chamada && <div className="chamada">{comDestaque(chamada)}</div>}
       <div className="nota-card">
         <div className="nota-barra">
