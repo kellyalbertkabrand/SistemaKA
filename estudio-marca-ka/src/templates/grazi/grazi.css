@@ -465,18 +465,37 @@
   font-size: 40px;
   letter-spacing: 0.02em;
 }
-/* leve escurecimento p/ o texto ficar legível sobre qualquer foto */
-.grazi-capa .capa-sombra {
+/* Blur verde FORTE atrás do texto, para os textos aparecerem sobre a foto.
+   É um brilho radial na cor verde escolhida, bem difuso, que segue a posição
+   do bloco (topo/meio/base). */
+.grazi-capa .capa-glow {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.6) 0%,
-    rgba(0, 0, 0, 0.18) 30%,
-    rgba(0, 0, 0, 0) 55%,
-    rgba(0, 0, 0, 0.28) 100%
+}
+.grazi-capa .capa-glow.g-base {
+  background: radial-gradient(
+    135% 60% at 50% 112%,
+    var(--glow) 0%,
+    var(--glow-mid) 36%,
+    transparent 74%
+  );
+}
+.grazi-capa .capa-glow.g-topo {
+  background: radial-gradient(
+    135% 60% at 50% -12%,
+    var(--glow) 0%,
+    var(--glow-mid) 36%,
+    transparent 74%
+  );
+}
+.grazi-capa .capa-glow.g-meio {
+  background: radial-gradient(
+    118% 52% at 50% 50%,
+    var(--glow) 0%,
+    var(--glow-mid) 42%,
+    transparent 76%
   );
 }
 .grazi-capa .capa-texto {
@@ -487,22 +506,22 @@
   padding: 0 96px;
 }
 .grazi-capa.tpos-topo .capa-texto {
-  top: 170px;
+  top: 118px;
 }
 .grazi-capa.tpos-meio .capa-texto {
   top: 50%;
-  transform: translateY(-58%);
+  transform: translateY(-52%);
 }
 .grazi-capa.tpos-base .capa-texto {
-  bottom: 250px;
+  bottom: 150px;
 }
 .grazi-capa .capa-titulo {
   font-weight: 700;
   font-size: calc(116px * var(--e));
-  line-height: 1.0;
+  line-height: 1;
   letter-spacing: -0.03em;
   text-transform: uppercase;
-  text-shadow: 0 6px 34px rgba(0, 0, 0, 0.38);
+  text-shadow: 0 6px 30px rgba(0, 0, 0, 0.3);
 }
 .grazi-capa .capa-sub {
   font-weight: 400;
@@ -510,42 +529,24 @@
   line-height: 1.32;
   margin-top: 26px;
   max-width: 92%;
-  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.45);
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.36);
 }
-/* Feed 4:5 e Quadrado 1:1: título um pouco menor e faixa mais baixa */
+.grazi-capa .capa-assinatura {
+  font-weight: 500;
+  font-size: calc(38px * var(--e));
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-top: 34px;
+  opacity: 0.92;
+}
+/* Feed 4:5 e Quadrado 1:1: título um pouco menor */
 .grazi-capa.fmt-post .capa-titulo,
 .grazi-capa.fmt-card .capa-titulo {
   font-size: calc(92px * var(--e));
 }
 .grazi-capa.fmt-post.tpos-base .capa-texto,
 .grazi-capa.fmt-card.tpos-base .capa-texto {
-  bottom: 210px;
-}
-/* faixa verde elegante no rodapé, com fio dourado no topo */
-.grazi-capa .capa-faixa {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 3;
-  min-height: 152px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 34px 60px;
-  border-top: 2px solid rgba(231, 198, 157, 0.55);
-}
-.grazi-capa.fmt-post .capa-faixa,
-.grazi-capa.fmt-card .capa-faixa {
-  min-height: 128px;
-}
-.grazi-capa .capa-faixa span {
-  font-size: 40px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  text-align: center;
-  line-height: 1.25;
+  bottom: 130px;
 }
 
 /* ---- Bloco de notas (cartão estilo "Notas" do iPhone) ---- */

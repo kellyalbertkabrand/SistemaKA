@@ -372,6 +372,13 @@ function corCapaGrazi(v: unknown, padrao = 'creme'): string {
   if (s.startsWith('#')) return s
   return hexFundoGrazi(s)
 }
+function hexAlpha(hex: string, a: number): string {
+  const h = hex.replace('#', '')
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  return `rgba(${r}, ${g}, ${b}, ${a})`
+}
 export function GraziCapaCard({ valores, formato }: RenderProps) {
   const foto = String(valores.foto || '')
   const ehVideo = String(valores.foto_kind) === 'video' || foto.startsWith('data:video')
@@ -381,11 +388,15 @@ export function GraziCapaCard({ valores, formato }: RenderProps) {
   const tituloPos = posClasse(valores.titulo_pos)
   const escala = escalaFrac(valores.escala)
   const corTexto = corCapaGrazi(valores.cor_fonte, 'branco')
-  const faixaKey = String(valores.cor_faixa || 'verde-escuro')
-  const corFaixa = hexFundoGrazi(faixaKey)
-  const corFaixaTexto = corTextoGrazi(faixaKey)
+  const corGlow = hexFundoGrazi(String(valores.cor_faixa || 'verde-escuro'))
   const est = { ...estiloImagem(valores, 'foto'), width: '100%', height: '100%' } as const
   const estiloRaiz = { width: formato.largura, height: formato.altura, '--e': escala } as CSSProperties
+  // Blur verde forte atrás do texto (segue a posição do bloco).
+  const estiloGlow = {
+    '--glow': hexAlpha(corGlow, 0.94),
+    '--glow-mid': hexAlpha(corGlow, 0.6),
+  } as CSSProperties
+  const temTexto = titulo || subtitulo || rodape
   return (
     <div className={`grazi-card grazi-capa fmt-${formato.formato} tpos-${tituloPos}`} style={estiloRaiz}>
       <div className="capa-foto">
@@ -399,16 +410,12 @@ export function GraziCapaCard({ valores, formato }: RenderProps) {
           <div className="capa-ph">anexe a foto</div>
         )}
       </div>
-      <div className="capa-sombra" />
-      {(titulo || subtitulo) && (
+      {temTexto && <div className={`capa-glow g-${tituloPos}`} style={estiloGlow} />}
+      {temTexto && (
         <div className="capa-texto" style={{ color: corTexto }}>
           {titulo && <div className="capa-titulo">{comDestaque(titulo)}</div>}
           {subtitulo && <div className="capa-sub">{comDestaque(subtitulo)}</div>}
-        </div>
-      )}
-      {rodape && (
-        <div className="capa-faixa" style={{ background: corFaixa }}>
-          <span style={{ color: corFaixaTexto }}>{rodape}</span>
+          {rodape && <div className="capa-assinatura">{rodape}</div>}
         </div>
       )}
     </div>
