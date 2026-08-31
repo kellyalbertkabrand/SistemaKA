@@ -520,7 +520,6 @@
   font-size: calc(116px * var(--e));
   line-height: 1;
   letter-spacing: -0.03em;
-  text-transform: uppercase;
   text-shadow: 0 6px 30px rgba(0, 0, 0, 0.3);
 }
 .grazi-capa .capa-sub {
@@ -531,11 +530,23 @@
   max-width: 92%;
   text-shadow: 0 2px 16px rgba(0, 0, 0, 0.36);
 }
+/* Caixa das letras do título + apoio (o @ fica como foi digitado). */
+.grazi-capa .capa-texto.cx-maiuscula .capa-titulo,
+.grazi-capa .capa-texto.cx-maiuscula .capa-sub {
+  text-transform: uppercase;
+}
+.grazi-capa .capa-texto.cx-minuscula .capa-titulo,
+.grazi-capa .capa-texto.cx-minuscula .capa-sub {
+  text-transform: lowercase;
+}
+.grazi-capa .capa-texto.cx-normal .capa-titulo,
+.grazi-capa .capa-texto.cx-normal .capa-sub {
+  text-transform: none;
+}
 .grazi-capa .capa-assinatura {
   font-weight: 500;
   font-size: calc(38px * var(--e));
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  letter-spacing: 0.1em;
   margin-top: 34px;
   opacity: 0.92;
 }
