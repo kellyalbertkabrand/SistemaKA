@@ -1722,8 +1722,8 @@ export const TEMPLATES: Template[] = [
     clienteNome: 'Grazi Martini',
     nome: 'Capa de Reels',
     descricao:
-      'Foto (ou vídeo) ocupando o card inteiro, título grande por cima e uma ' +
-      'faixa verde elegante no rodapé com um texto. Padrão 9:16.',
+      'Foto (ou vídeo) ocupando o card inteiro, título grande por cima e um ' +
+      'blur verde suave atrás do texto. Padrão 9:16.',
     formatos: FORMATO_GRAZI_CAPA,
     campos: [
       {

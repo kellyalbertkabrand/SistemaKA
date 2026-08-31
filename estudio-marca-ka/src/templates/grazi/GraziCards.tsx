@@ -101,7 +101,6 @@ function GraziFrame({
       {seloPos === 'cabecalho' && <SeloGrazi pos="cabecalho" cor={seloCor} />}
       {children}
       {seloPos === 'rodape' && <SeloGrazi pos="rodape" cor={seloCor} />}
-      <div className="grazi-faixa" />
     </div>
   )
 }
@@ -287,7 +286,6 @@ export function GraziMistaCard({ valores, formato }: RenderProps) {
       {nota && <div className="grazi-mao">{nota}</div>}
       {botao && <div className="rodape-txt">{botao}</div>}
       {seloPos === 'rodape' && <SeloGrazi pos="rodape" cor={seloCor} />}
-      <div className="grazi-faixa" />
     </div>
   )
 }

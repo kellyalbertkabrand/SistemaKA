@@ -73,14 +73,6 @@
   justify-content: flex-end;
   padding-bottom: 210px;
 }
-.grazi-card .grazi-faixa {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 52px;
-  background: var(--faixa, #1e3a2c);
-}
 /* @sougrazimartini — selo com posição escolhível (rodapé/topo) e cor própria. */
 .grazi-card .grazi-handle {
   position: absolute;
