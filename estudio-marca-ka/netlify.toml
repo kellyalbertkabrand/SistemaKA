@@ -26,6 +26,13 @@
   SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
   SECRETS_SCAN_OMIT_KEYS = "VITE_SUPABASE_URL,VITE_SUPABASE_ANON_KEY"
 
+# Prévia do link do projeto no WhatsApp: a função de borda troca o título e a
+# descrição do HTML pelo nome do cliente daquele projeto, antes de a página ser
+# entregue (o WhatsApp não roda JavaScript, então lê só o HTML do servidor).
+[[edge_functions]]
+  path = "/projeto/*"
+  function = "projeto-og"
+
 # SPA: todas as rotas caem no index.html (React Router cuida do resto).
 [[redirects]]
   from = "/*"

@@ -12,16 +12,27 @@ import { resolve } from 'node:path'
 const dist = resolve('dist')
 const index = readFileSync(resolve(dist, 'index.html'), 'utf8')
 
+/**
+ * Troca um <meta> pelo nome do atributo. O `\s+` é essencial: no index.html os
+ * atributos ficam em LINHAS separadas (`<meta\n  name="description"\n
+ * content="…" />`), e um regex sem isso não casa — era por isso que a DESCRIÇÃO
+ * da prévia continuava a genérica do app (só o título trocava).
+ */
+function trocarMeta(html, attr, nome, valor) {
+  const re = new RegExp(`(<meta\\s+${attr}="${nome}"\\s+content=")[^"]*(")`, 'i')
+  return html.replace(re, `$1${valor}$2`)
+}
+
 /** Troca os metadados de preview do HTML por novos valores. */
 function comMeta(html, { titulo, descricao }) {
-  return html
-    .replace(/<title>[\s\S]*?<\/title>/, `<title>${titulo}</title>`)
-    .replace(/(<meta name="description" content=")[^"]*(")/, `$1${descricao}$2`)
-    .replace(/(<meta property="og:title" content=")[^"]*(")/, `$1${titulo}$2`)
-    .replace(/(<meta property="og:description" content=")[^"]*(")/, `$1${descricao}$2`)
-    .replace(/(<meta property="og:site_name" content=")[^"]*(")/, `$1Kelly Albert · KA$2`)
-    .replace(/(<meta name="twitter:title" content=")[^"]*(")/, `$1${titulo}$2`)
-    .replace(/(<meta name="twitter:description" content=")[^"]*(")/, `$1${descricao}$2`)
+  let saida = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${titulo}</title>`)
+  saida = trocarMeta(saida, 'name', 'description', descricao)
+  saida = trocarMeta(saida, 'property', 'og:title', titulo)
+  saida = trocarMeta(saida, 'property', 'og:description', descricao)
+  saida = trocarMeta(saida, 'property', 'og:site_name', 'Kelly Albert · KA')
+  saida = trocarMeta(saida, 'name', 'twitter:title', titulo)
+  saida = trocarMeta(saida, 'name', 'twitter:description', descricao)
+  return saida
 }
 
 const paginas = [

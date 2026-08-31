@@ -1401,6 +1401,20 @@ público** e envia (WhatsApp). O cliente preenche em `/formulario/:token`
   seção via `--acento`/`ACENTOS`, título centralizado, mais espaço até os campos).
   **Aviso verde "✓ Resposta salva"**: no topo (`.form-pub__salvo--ok`) e um
   **flutuante** que aparece e some (`.form-pub__flash`, `flashSalvo`).
+- **Prévia do LINK DO PROJETO no WhatsApp (ago/2026) — função de borda.** O
+  título da prévia é **"Painel de Controle de Projeto · <cliente>"**. Como o
+  nome muda por projeto, um HTML estático não resolve: quem faz é a Netlify
+  **Edge Function** `netlify/edge-functions/projeto-og.ts` (registrada em
+  `netlify.toml`, `path = "/projeto/*"`), que roda antes de servir a página,
+  busca `cliente_nome` no Firestore pela **REST API** (`documents:runQuery` com
+  a apiKey pública, aceitando apelido/token) e reescreve os `<meta>`. É à prova
+  de falha: 2,5s de limite, cai no nome tirado da própria URL
+  (`boba-joy` → "Boba Joy") e, em qualquer erro, devolve o HTML original.
+- ⚠️ **Bug antigo corrigido junto:** os regex de `gen-og.mjs` (e os da borda)
+  não casavam `description`/`og:description`/`twitter:description` porque no
+  `index.html` os atributos ficam em LINHAS separadas — só o título trocava, e a
+  prévia do formulário mostrava a descrição genérica do app. Agora a troca usa
+  `<meta\s+attr="nome"\s+content="…"` (o `\s+` cobre a quebra de linha).
 - **Prévia no WhatsApp (Open Graph):** como é SPA, o link `/formulario/*` teria a
   prévia genérica. `scripts/gen-og.mjs` (roda no `build`) gera `dist/formulario.html`
   (cópia do index com `<title>`/OG próprios: "IKIGAI Empresarial | Projeto Marca
