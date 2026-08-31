@@ -693,7 +693,16 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
 - **URL personalizada com a marca:** `linkPublicoProjeto(token, rotulo)` gera
   `/projeto/<slug-da-marca>-<token>` (ex.: `/projeto/boba-joy-<token>`). O token
   (32 hex, sem hífen) fica no fim; `tokenDoParametro(param)` pega tudo após o
-  último hífen. Links antigos (só o token) continuam funcionando. O nome do
+  último hífen. Links antigos (só o token) continuam funcionando.
+  **O nome vem do CADASTRO (ago/2026):** `nomeParaLink(p)` resolve
+  `clientes.nome_marca` pelo `cliente_id` e só cai em `p.cliente_nome` (o nome
+  gravado no projeto) e depois em `p.nome` quando não há cadastro ligado. Assim
+  a URL leva o nome oficial da marca mesmo se o projeto guardou um nome antigo.
+  Vale nos 3 pontos que geram o link: o botão da coluna no painel de Fases, a
+  aba Lista e o detalhe (copiar + mensagem do WhatsApp). O `GestaoProjetos`
+  passou a carregar `listarClientes()` por causa disso. ⚠️ O nome EXIBIDO
+  (admin e página do cliente) continua vindo de `p.cliente_nome`, porque a
+  página pública não lê a coleção `clientes`. O nome do
   projeto é **editável inline** no detalhe ("Editar nome").
 - **Co-assinatura KA + VM Rocks:** se o projeto tem **qualquer etapa com
   responsável VM** (`comVM = fases.some(...==='VM')`), a página do cliente

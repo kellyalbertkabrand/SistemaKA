@@ -71,6 +71,8 @@ export function GestaoProjetos() {
   const copiar = useCopiar()
   const { idAberto, abrir: abrirUrl, fechar } = useFichaUrl('id')
   const [lista, setLista] = useState<Projeto[]>([])
+  // Cadastro dos clientes: é dele que sai o nome oficial da marca na URL.
+  const [clientes, setClientes] = useState<Cliente[]>([])
   const [erro, setErro] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
 
@@ -98,6 +100,16 @@ export function GestaoProjetos() {
   useEffect(() => gravarPref('ka.fases.esconderFeitas', esconderFeitas), [esconderFeitas])
   const [filtroResp, setFiltroResp] = useState<Responsavel | 'todas'>('todas')
 
+  /**
+   * Nome do cliente para a URL: o que está no CADASTRO (aba Clientes) vem
+   * primeiro — é o nome oficial da marca. Se o projeto ainda não está ligado a
+   * um cadastro, usa o nome digitado nele; em último caso, o nome do projeto.
+   */
+  function nomeParaLink(p: Projeto): string {
+    const cadastro = p.cliente_id ? clientes.find((c) => c.id === p.cliente_id) : null
+    return cadastro?.nome_marca || p.cliente_nome || p.nome
+  }
+
   async function recarregar() {
     try {
       setCarregando(true)
@@ -115,7 +127,7 @@ export function GestaoProjetos() {
   }, [])
 
   async function copiarLink(p: Projeto) {
-    await navigator.clipboard.writeText(linkPublicoProjeto(p.token, p.cliente_nome ?? p.nome))
+    await navigator.clipboard.writeText(linkPublicoProjeto(p.token, nomeParaLink(p)))
     mostrar(`Link de "${p.nome}" copiado — é só enviar ao cliente`)
   }
 
@@ -268,6 +280,9 @@ export function GestaoProjetos() {
     listarFasesSalvas()
       .then(setFasesSalvasPainel)
       .catch(() => setFasesSalvasPainel([]))
+    listarClientes()
+      .then(setClientes)
+      .catch(() => setClientes([]))
   }, [])
 
   function abrirNovaEtapa(projetoId: string, clienteNome: string | null) {
@@ -1706,6 +1721,12 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
 
   const pct = progressoProjeto(p)
 
+  /** Nome que vai na URL do cliente: o do CADASTRO vem primeiro. */
+  function nomeParaLink(): string {
+    const cadastro = p.cliente_id ? clientes.find((c) => c.id === p.cliente_id) : null
+    return cadastro?.nome_marca || p.cliente_nome || p.nome
+  }
+
   function avisarWhatsApp() {
     const cliente = p.cliente_id ? clientes.find((c) => c.id === p.cliente_id) : null
     const nome = primeiroNome(cliente?.responsavel ?? p.cliente_nome)
@@ -1719,7 +1740,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     linhas.push(
       `Progresso: ${pct}% ✅`,
       '',
-      `Acompanhe em tempo real por aqui: ${linkPublicoProjeto(p.token, p.cliente_nome ?? p.nome)}`,
+      `Acompanhe em tempo real por aqui: ${linkPublicoProjeto(p.token, nomeParaLink())}`,
       '',
       'Kelly',
     )
@@ -1874,7 +1895,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
   }
 
   async function copiarLink() {
-    await navigator.clipboard.writeText(linkPublicoProjeto(p.token, p.cliente_nome ?? p.nome))
+    await navigator.clipboard.writeText(linkPublicoProjeto(p.token, nomeParaLink()))
     mostrar('Link copiado — a página do cliente atualiza em tempo real')
   }
 
