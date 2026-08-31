@@ -1140,6 +1140,12 @@ Na ficha do cliente (`GestaoClientes.tsx` → `PagamentosContrato`), a seção
     envia); quando o **login por papel** (parceiro) entrar, essa é exatamente a
     tela que a VM verá (o caixa `caixa` e o resto ficam fora do escopo dela).
     O `caixa` pessoal (entradas/saídas) é sempre só da KA.
+  - **ATRASO em destaque no portal da VM (ago/2026):** o card "A Receber" mostra
+    um aviso vermelho (`.vm-atraso`) quando há cobrança vencida — "N pagamentos
+    atrasados · R$ X" — e cada linha vencida vira `.mov--atrasada` com a etiqueta
+    **Atrasada** e "N dias de atraso" (`diasAtraso` local, sem UTC). As atrasadas
+    são listadas PRIMEIRO. Antes o atraso era só um "· atrasada" cinza no meio da
+    linha e passava batido.
   - **"A receber" da VM = só o EM ABERTO (ago/2026):** o total da visão VM (no
     Financeiro e no portal `/vm-rocks`) soma **apenas as cobranças pendentes/
     atrasadas** onde ela participa. As linhas de `pagamentos_contrato` (o
