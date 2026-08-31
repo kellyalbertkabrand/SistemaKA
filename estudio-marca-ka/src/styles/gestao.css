@@ -4633,3 +4633,45 @@
   background: rgba(61, 107, 126, 0.14);
   border-color: var(--essencia);
 }
+
+/* ============================================================
+   PORTAL DA VM — cobranças AGRUPADAS POR CLIENTE (ago/2026)
+   A VM pediu para ver de quem é cada valor sem ler linha por linha: o nome do
+   cliente encabeça o grupo, em caramelo, com o total dele ao lado.
+   ============================================================ */
+.vm-cli {
+  margin-top: 0.9rem;
+}
+.vm-cli:first-of-type {
+  margin-top: 0.5rem;
+}
+.vm-cli__cab {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.6rem;
+  padding-bottom: 0.3rem;
+  margin-bottom: 0.45rem;
+  border-bottom: 1px solid rgba(196, 120, 48, 0.28);
+}
+.vm-cli__nome {
+  font-family: var(--body);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #8a5a1f;
+}
+.vm-cli__total {
+  font-family: var(--heading);
+  font-size: 0.95rem;
+  color: var(--t-700);
+  white-space: nowrap;
+}
+.vm-cli__atraso {
+  font-family: var(--body);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #8d2b2b;
+}

@@ -1171,6 +1171,13 @@ Na ficha do cliente (`GestaoClientes.tsx` → `PagamentosContrato`), a seção
     envia); quando o **login por papel** (parceiro) entrar, essa é exatamente a
     tela que a VM verá (o caixa `caixa` e o resto ficam fora do escopo dela).
     O `caixa` pessoal (entradas/saídas) é sempre só da KA.
+  - **Cobranças AGRUPADAS POR CLIENTE no portal da VM (ago/2026):** o card
+    "A Receber" lista as cobranças em blocos por cliente (`grupos` em
+    `PortalVM.tsx`), com o nome da marca encabeçando em caramelo
+    (`.vm-cli__nome`) e o total do cliente ao lado (`.vm-cli__total`, mais o
+    quanto está atrasado). Grupos COM atraso vêm primeiro, depois por
+    vencimento; dentro do grupo, as atrasadas primeiro. A linha da cobrança
+    deixou de repetir o nome do cliente (o cabeçalho já diz).
   - **ATRASO em destaque no portal da VM (ago/2026):** o card "A Receber" mostra
     um aviso vermelho (`.vm-atraso`) quando há cobrança vencida — "N pagamentos
     atrasados · R$ X" — e cada linha vencida vira `.mov--atrasada` com a etiqueta

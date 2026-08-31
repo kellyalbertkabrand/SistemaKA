@@ -244,6 +244,43 @@ export function PortalVM() {
   // isso de cara — é o que ela cobra da KA.
   const atrasadas = vmCobrancas.filter((c) => statusEfetivo(c) === 'atrasada')
   const totalAtrasado = somarDinheiro(atrasadas.map(valorDaVM))
+
+  // As cobranças ficam AGRUPADAS POR CLIENTE (a VM pediu): assim ela vê de quem
+  // é cada valor sem ler linha por linha. Dentro do grupo, as atrasadas primeiro
+  // e depois por vencimento; os grupos com atraso vêm no topo da página.
+  const grupos = (() => {
+    const mapa = new Map<string, { cliente: string; itens: Cobranca[] }>()
+    for (const c of vmCobrancas) {
+      const cliente = nomeCliente(c.cliente_id) || 'Sem cliente'
+      const g = mapa.get(cliente) ?? { cliente, itens: [] }
+      g.itens.push(c)
+      mapa.set(cliente, g)
+    }
+    const porVencimento = (a: Cobranca, b: Cobranca) => {
+      const atA = statusEfetivo(a) === 'atrasada' ? 0 : 1
+      const atB = statusEfetivo(b) === 'atrasada' ? 0 : 1
+      if (atA !== atB) return atA - atB
+      return (a.vencimento || '') < (b.vencimento || '') ? -1 : 1
+    }
+    return [...mapa.values()]
+      .map((g) => {
+        const itens = g.itens.slice().sort(porVencimento)
+        const emAtraso = itens.filter((c) => statusEfetivo(c) === 'atrasada')
+        return {
+          ...g,
+          itens,
+          total: somarDinheiro(itens.map(valorDaVM)),
+          atrasadas: emAtraso.length,
+          atrasado: somarDinheiro(emAtraso.map(valorDaVM)),
+          // Para ordenar os grupos: quem tem atraso primeiro, depois quem vence antes.
+          primeiroVenc: itens[0]?.vencimento || '',
+        }
+      })
+      .sort((a, b) => {
+        if (!!a.atrasadas !== !!b.atrasadas) return a.atrasadas ? -1 : 1
+        return a.primeiroVenc < b.primeiroVenc ? -1 : 1
+      })
+  })()
   /** Há quantos dias venceu (0 = vence hoje). */
   const diasAtraso = (venc: string | null | undefined) => {
     if (!venc) return 0
@@ -296,52 +333,58 @@ export function PortalVM() {
         {vmCobrancas.length > 0 && (
           <section className="fin-secao" style={{ marginTop: '1rem' }}>
             <h3 className="fin-secao__tit">Cobranças em aberto</h3>
-            <div className="fin-lista">
-              {vmCobrancas
-                .slice()
-                // As atrasadas vêm primeiro; depois, por vencimento.
-                .sort((a, b) => {
-                  const atA = statusEfetivo(a) === 'atrasada' ? 0 : 1
-                  const atB = statusEfetivo(b) === 'atrasada' ? 0 : 1
-                  if (atA !== atB) return atA - atB
-                  return (a.vencimento || '') < (b.vencimento || '') ? -1 : 1
-                })
-                .map((c) => {
-                  const atrasada = statusEfetivo(c) === 'atrasada'
-                  const dias = atrasada ? diasAtraso(c.vencimento) : 0
-                  return (
-                    <div
-                      key={c.id}
-                      className={`mov ${atrasada ? 'mov--atrasada' : 'mov--receber'}`}
-                    >
-                      <div className="mov__corpo">
-                        <div className="mov__desc">
-                          {c.descricao}
-                          {atrasada && <span className="badge badge--atrasada">Atrasada</span>}
-                        </div>
-                        <div className="mov__meta">
-                          {nomeCliente(c.cliente_id) || 'cliente'} · vence{' '}
-                          {formatarData(c.vencimento)}
-                          {atrasada && (
-                            <span className="mov__atraso">
-                              {dias === 0
-                                ? ' · vence hoje'
-                                : dias === 1
-                                  ? ' · 1 dia de atraso'
-                                  : ` · ${dias} dias de atraso`}
-                            </span>
-                          )}
-                        </div>
-                      </div>
+            {grupos.map((g) => (
+              <div key={g.cliente} className="vm-cli">
+                <header className="vm-cli__cab">
+                  <span className="vm-cli__nome">{g.cliente}</span>
+                  <span className="vm-cli__total">
+                    {formatarBRL(g.total)}
+                    {g.atrasadas > 0 && (
+                      <span className="vm-cli__atraso">
+                        {' '}
+                        · {formatarBRL(g.atrasado)} atrasado
+                      </span>
+                    )}
+                  </span>
+                </header>
+                <div className="fin-lista">
+                  {g.itens.map((c) => {
+                    const atrasada = statusEfetivo(c) === 'atrasada'
+                    const dias = atrasada ? diasAtraso(c.vencimento) : 0
+                    return (
                       <div
-                        className={`mov__valor ${atrasada ? 'mov__valor--atrasada' : 'mov__valor--receber'}`}
+                        key={c.id}
+                        className={`mov ${atrasada ? 'mov--atrasada' : 'mov--receber'}`}
                       >
-                        {formatarBRL(valorDaVM(c))}
+                        <div className="mov__corpo">
+                          <div className="mov__desc">
+                            {c.descricao}
+                            {atrasada && <span className="badge badge--atrasada">Atrasada</span>}
+                          </div>
+                          <div className="mov__meta">
+                            vence {formatarData(c.vencimento)}
+                            {atrasada && (
+                              <span className="mov__atraso">
+                                {dias === 0
+                                  ? ' · vence hoje'
+                                  : dias === 1
+                                    ? ' · 1 dia de atraso'
+                                    : ` · ${dias} dias de atraso`}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div
+                          className={`mov__valor ${atrasada ? 'mov__valor--atrasada' : 'mov__valor--receber'}`}
+                        >
+                          {formatarBRL(valorDaVM(c))}
+                        </div>
                       </div>
-                    </div>
-                  )
-                })}
-            </div>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
           </section>
         )}
 
