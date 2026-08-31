@@ -81,18 +81,24 @@
   height: 52px;
   background: var(--faixa, #1e3a2c);
 }
-/* @sougrazimartini — centralizado no rodapé (acima da faixa verde), em todos. */
+/* @sougrazimartini — selo com posição escolhível (rodapé/topo) e cor própria. */
 .grazi-card .grazi-handle {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 78px;
   text-align: center;
   font-size: 27px;
   font-weight: 500;
   font-style: italic;
   letter-spacing: 0.02em;
   opacity: 0.9;
+  z-index: 2;
+}
+.grazi-card .grazi-handle--base {
+  bottom: 78px;
+}
+.grazi-card .grazi-handle--topo {
+  top: 70px;
 }
 
 /* ---- Frase editorial (título sans + palavra em script + botão) ---- */
@@ -207,19 +213,6 @@
   white-space: pre-line;
   overflow-wrap: anywhere;
 }
-.grazi-depo .depo-handle {
-  position: absolute;
-  z-index: 1;
-  left: 0;
-  right: 0;
-  bottom: 92px;
-  text-align: center;
-  font-weight: 400;
-  font-size: 44px;
-  letter-spacing: 0.01em;
-  color: #c9a24c;
-}
-
 /* destaque (aspas/asteriscos) — negrito na mesma cor */
 .grazi-card strong {
   font-weight: 700;
