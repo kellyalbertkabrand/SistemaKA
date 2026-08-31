@@ -9,7 +9,7 @@ import { useToast } from '../../components/Toast'
 import { useDitado } from '../../hooks/useDitado'
 import { useArrastarCartoes } from '../../hooks/useArrastarCartoes'
 import { confirmar } from '../../lib/confirmar'
-import { autoAltura } from '../../lib/ui'
+import { autoAltura, gravarPref, lerPref } from '../../lib/ui'
 import {
   listarProjetos,
   pendenciasDeProjetos,
@@ -74,23 +74,6 @@ type Item =
     }
 
 const chaveDaPendencia = (pd: Pendencia) => `p-${pd.projeto_id}-${pd.fase_idx}`
-
-// Preferências simples de tela (visão e blocos de concluídas), por aparelho.
-function lerPref<T>(chave: string, padrao: T): T {
-  try {
-    const bruto = localStorage.getItem(chave)
-    return bruto ? (JSON.parse(bruto) as T) : padrao
-  } catch {
-    return padrao
-  }
-}
-function gravarPref(chave: string, valor: unknown) {
-  try {
-    localStorage.setItem(chave, JSON.stringify(valor))
-  } catch {
-    /* aparelho sem armazenamento: a tela funciona igual, só não lembra */
-  }
-}
 
 export function GestaoAtividades() {
   const { mostrar } = useToast()

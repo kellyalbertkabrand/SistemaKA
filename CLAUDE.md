@@ -822,6 +822,14 @@ método. Reaproveita o layout de colunas (`.ativ-quadro`/`.ativ-col`).
 - **Ordem das colunas:** Em andamento → Com o cliente → Em revisão → Na fila
   (o trabalho em curso primeiro). Projetos **entregues** ficam escondidos, com o
   checkbox "mostrar entregues" para trazê-los.
+- **▦ Lado a lado × ☰ Em lista (ago/2026):** um segundo segmento dentro da aba
+  Fases troca o layout — *lado a lado* mantém as colunas (rola de lado) e *em
+  lista* empilha um projeto embaixo do outro (`.fases-pilha`, máx. 820px), sem
+  rolagem horizontal. A escolha fica no aparelho (`ka.fases.visao`, via
+  `lerPref`/`gravarPref`, que saíram do `GestaoAtividades` para `src/lib/ui.ts`).
+  ⚠️ Os rótulos NÃO são "Painéis/Lista" de propósito: o segmento principal da
+  aba já tem "☰ Lista (n)" (a tabela de projetos) e dois "Lista" na mesma tela
+  confundiriam. Arrastar etapa funciona igual nas duas visões.
 - **Arrastar etapa no painel (ago/2026):** segurar ~0,3s em qualquer parte do
   cartão da etapa (ou pegar na alça) e arrastar reordena as fases DAQUELE projeto
   (`arrastarEtapas` = `useArrastarCartoes`, chave `<projetoId>#<idx>`;

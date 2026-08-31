@@ -41,7 +41,7 @@ import { abrirWhatsApp, primeiroNome } from '../../lib/whatsapp'
 import { confirmar } from '../../lib/confirmar'
 import { useToast } from '../../components/Toast'
 import { BotaoLinkVM } from '../../components/BotaoLinkVM'
-import { autoAltura, imprimirComoPdf } from '../../lib/ui'
+import { autoAltura, gravarPref, imprimirComoPdf, lerPref } from '../../lib/ui'
 import { useCopiar } from '../../hooks/useCopiar'
 import { rotuloStatus } from '../../lib/rotulos'
 import { useFichaUrl } from '../../hooks/useFichaUrl'
@@ -84,6 +84,13 @@ export function GestaoProjetos() {
   )
   // Mostrar também os projetos já entregues no painel de fases?
   const [verEntregues, setVerEntregues] = useState(false)
+  // Painel de fases: lado a lado (painéis) ou um projeto embaixo do outro (lista).
+  // A escolha fica no aparelho — no computador o quadro cabe, no celular às
+  // vezes a lista é mais confortável.
+  const [fasesVisao, setFasesVisao] = useState<'paineis' | 'lista'>(() =>
+    lerPref<'paineis' | 'lista'>('ka.fases.visao', 'paineis'),
+  )
+  useEffect(() => gravarPref('ka.fases.visao', fasesVisao), [fasesVisao])
   const [filtroResp, setFiltroResp] = useState<Responsavel | 'todas'>('todas')
 
   async function recarregar() {
@@ -388,7 +395,8 @@ export function GestaoProjetos() {
         <>
           <div className="gestao-acoes" style={{ marginTop: 0 }}>
             <p className="dica-voz" style={{ margin: 0 }}>
-              Uma coluna por projeto, com todas as fases. Toque na bolinha para avançar:{' '}
+              {fasesVisao === 'paineis' ? 'Uma coluna por projeto' : 'Um projeto embaixo do outro'},
+              com todas as fases. Toque na bolinha para avançar:{' '}
               <span className="fase-bolinha fase-bolinha--exemplo">○</span> pendente →{' '}
               <span className="fase-bolinha fase-bolinha--exemplo fase-bolinha--andamento">●</span>{' '}
               em andamento → <span className="fase-bolinha fase-bolinha--exemplo fase-bolinha--ok">✓</span>{' '}
@@ -396,6 +404,22 @@ export function GestaoProjetos() {
               projeto.
             </p>
             <span className="espaco" />
+            <div className="seg seg--visao">
+              <button
+                className={fasesVisao === 'paineis' ? 'seg__on' : ''}
+                onClick={() => setFasesVisao('paineis')}
+                title="Um projeto por coluna, lado a lado"
+              >
+                ▦ Lado a lado
+              </button>
+              <button
+                className={fasesVisao === 'lista' ? 'seg__on' : ''}
+                onClick={() => setFasesVisao('lista')}
+                title="Um projeto embaixo do outro"
+              >
+                ☰ Em lista
+              </button>
+            </div>
             <label className="fases-toggle">
               <input
                 type="checkbox"
@@ -406,7 +430,7 @@ export function GestaoProjetos() {
             </label>
           </div>
 
-          <div className="ativ-quadro fases-quadro">
+          <div className={fasesVisao === 'paineis' ? 'ativ-quadro fases-quadro' : 'ativ-pilha fases-pilha'}>
             {/* No painel de fases o trabalho em curso vem primeiro; a fila, no fim. */}
             {(['andamento', 'cliente', 'revisao', 'fila', 'entregue'] as EstagioProjeto[])
               .flatMap((est) => (est === 'entregue' && !verEntregues ? [] : projetosDe(est)))

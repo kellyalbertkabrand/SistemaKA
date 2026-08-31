@@ -82,3 +82,23 @@ export function hojeLocal(): string {
   const dd = String(d.getDate()).padStart(2, '0')
   return `${d.getFullYear()}-${mm}-${dd}`
 }
+
+// ---- Preferências simples de tela (por aparelho) ----------------------------
+// Guardam escolhas de visualização (ex.: painéis × lista) no localStorage: não
+// são dados do negócio, então cada aparelho lembra o seu jeito de ver.
+export function lerPref<T>(chave: string, padrao: T): T {
+  try {
+    const bruto = localStorage.getItem(chave)
+    return bruto ? (JSON.parse(bruto) as T) : padrao
+  } catch {
+    return padrao
+  }
+}
+
+export function gravarPref(chave: string, valor: unknown) {
+  try {
+    localStorage.setItem(chave, JSON.stringify(valor))
+  } catch {
+    /* aparelho sem armazenamento: a tela funciona igual, só não lembra */
+  }
+}
