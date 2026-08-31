@@ -4463,30 +4463,42 @@
 
 /* ✕ para apagar a etapa direto no painel de Fases (às vezes ela foi cadastrada
    errada). Fica discreto: aparece no hover no computador, fixo no toque. */
-.fase-item__x {
+/* Ações da etapa (duplicar e apagar): discretas, aparecem no hover no
+   computador e ficam fixas no toque. */
+.fase-item__acoes {
+  display: flex;
   flex: none;
   align-self: flex-start;
+  gap: 0.1rem;
+}
+.fase-item__btn {
   width: 24px;
   height: 24px;
   border: none;
   border-radius: 7px;
   background: none;
-  color: var(--erro);
+  color: var(--t-500);
   font-size: 0.82rem;
   line-height: 1;
   cursor: pointer;
   opacity: 0.75;
 }
-.fase-item__x:hover {
-  background: rgba(178, 58, 58, 0.12);
+.fase-item__btn:hover {
+  background: rgba(15, 25, 35, 0.08);
   opacity: 1;
 }
+.fase-item__x {
+  color: var(--erro);
+}
+.fase-item__x:hover {
+  background: rgba(178, 58, 58, 0.12);
+}
 @media (hover: hover) {
-  .fase-item__x {
+  .fase-item__acoes {
     visibility: hidden;
   }
-  .fase-item:hover .fase-item__x,
-  .fase-item:focus-within .fase-item__x {
+  .fase-item:hover .fase-item__acoes,
+  .fase-item:focus-within .fase-item__acoes {
     visibility: visible;
   }
 }
@@ -4597,4 +4609,27 @@
   color: #8d2b2b;
   border-color: rgba(178, 58, 58, 0.4);
   background: rgba(178, 58, 58, 0.12);
+}
+
+/* Link de acompanhamento do cliente, no topo da coluna do projeto (painel de
+   Fases). Fica acima do nome do cliente, para a KA enviar sem abrir o projeto. */
+.fases-col__link {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.4rem;
+  border: 1px solid rgba(61, 107, 126, 0.3);
+  border-radius: 8px;
+  background: rgba(61, 107, 126, 0.06);
+  color: var(--essencia);
+  font-family: var(--body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.fases-col__link:hover {
+  background: rgba(61, 107, 126, 0.14);
+  border-color: var(--essencia);
 }

@@ -341,6 +341,24 @@ export function GestaoProjetos() {
     }
   }
 
+  /** Duplica a etapa logo abaixo dela (para etapas que se repetem). */
+  async function duplicarEtapaDoPainel(projetoId: string, idx: number) {
+    const proj = lista.find((x) => x.id === projetoId)
+    const alvo = proj?.fases[idx]
+    if (!proj || !alvo) return
+    const copia: FaseProjeto = { ...alvo, status: 'pendente', concluida_em: null }
+    const fases = [...proj.fases]
+    fases.splice(idx + 1, 0, copia)
+    setLista((l) => l.map((x) => (x.id === projetoId ? { ...x, fases } : x)))
+    try {
+      await salvarProjeto(projetoId, { fases })
+      mostrar('Etapa duplicada')
+    } catch {
+      mostrar('Não deu para duplicar a etapa, tente de novo.', 'erro')
+      void recarregar()
+    }
+  }
+
   /** Apaga de vez uma etapa (às vezes ela foi cadastrada errada). */
   async function excluirEtapaDoPainel(projetoId: string, idx: number) {
     const proj = lista.find((x) => x.id === projetoId)
@@ -511,7 +529,8 @@ export function GestaoProjetos() {
               {fasesVisao === 'paineis' ? 'Uma coluna por projeto' : 'Um projeto embaixo do outro'},
               com todas as fases. Use a alça <span aria-hidden>⠿</span> (ou segure a etapa) para
               mudar a posição, <strong>toque no nome</strong> para editar,{' '}
-              <strong>+ etapa</strong> para incluir uma nova e <strong>✕</strong> para apagar.
+              <strong>+ etapa</strong> para incluir uma nova, <strong>⧉</strong> para duplicar e{' '}
+              <strong>✕</strong> para apagar.
               Toque na bolinha para avançar:{' '}
               <span className="fase-bolinha fase-bolinha--exemplo">○</span> pendente →{' '}
               <span className="fase-bolinha fase-bolinha--exemplo fase-bolinha--andamento">●</span>{' '}
@@ -569,6 +588,14 @@ export function GestaoProjetos() {
                     ref={(el) => arrastarEtapas.registrarColuna(p.id, el)}
                   >
                     <header className="fases-col__cab">
+                      {/* O link que o cliente usa para acompanhar, à mão. */}
+                      <button
+                        className="fases-col__link"
+                        onClick={() => void copiarLink(p)}
+                        title="Copiar o link de acompanhamento deste cliente"
+                      >
+                        🔗 Copiar link do cliente
+                      </button>
                       <button
                         className="fases-col__abrir"
                         onClick={() => abrirUrl(p.id)}
@@ -715,14 +742,22 @@ export function GestaoProjetos() {
                                   )}
                                 </span>
                               </button>
-                              <button
-                                className="fase-item__x"
-                                data-nao-arrasta
-                                title="Apagar esta etapa"
-                                onClick={() => void excluirEtapaDoPainel(p.id, idx)}
-                              >
-                                ✕
-                              </button>
+                              <span className="fase-item__acoes" data-nao-arrasta>
+                                <button
+                                  className="fase-item__btn"
+                                  title="Duplicar esta etapa"
+                                  onClick={() => void duplicarEtapaDoPainel(p.id, idx)}
+                                >
+                                  ⧉
+                                </button>
+                                <button
+                                  className="fase-item__btn fase-item__x"
+                                  title="Apagar esta etapa"
+                                  onClick={() => void excluirEtapaDoPainel(p.id, idx)}
+                                >
+                                  ✕
+                                </button>
+                              </span>
                             </>
                           )}
                         </div>

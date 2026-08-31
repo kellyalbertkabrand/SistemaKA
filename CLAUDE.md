@@ -863,6 +863,13 @@ método. Reaproveita o layout de colunas (`.ativ-quadro`/`.ativ-col`).
   no toque) que apaga de vez, com a confirmação própria (`confirmar()`) — é para
   a etapa que foi cadastrada errada. `excluirEtapaDoPainel` grava com
   `salvarProjeto`.
+- **Link do cliente + duplicar etapa (ago/2026):** cada coluna do painel abre
+  com **"🔗 Copiar link do cliente"** (`.fases-col__link`, acima do nome do
+  cliente) — o mesmo `copiarLink(p)` da lista, para enviar o acompanhamento sem
+  abrir o projeto. E cada etapa ganhou **⧉ duplicar** ao lado do ✕
+  (`duplicarEtapaDoPainel` insere a cópia logo abaixo, sempre como *pendente*),
+  para as etapas que se repetem. Os dois botões vivem em `.fase-item__acoes`
+  (hover no computador, fixos no toque).
 - **Alça visível + "+ etapa" no painel (ago/2026):** cada etapa do painel ganhou
   a alça `⠿` (`.fase-item__alca`, pega na hora) — antes só quem descobria o
   "segurar" conseguia mover. E no fim de cada projeto há **"+ etapa"**
