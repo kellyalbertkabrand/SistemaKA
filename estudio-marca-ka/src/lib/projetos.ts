@@ -151,9 +151,9 @@ export const MODELOS_FASES: ModeloFases[] = [
       { nome: 'Envio e Recebimento - Formulário do Ikigai', descricao: 'IKIGAI Empresarial enviado ao cliente e devolvido preenchido.' },
       { nome: 'Envio e Recebimento - História', descricao: 'A história da marca contada pelo cliente, em áudio no WhatsApp.' },
       { nome: 'Envio e Recebimento - Formulário Identidade Verbal', descricao: 'Formulário de Identidade Verbal enviado ao cliente e devolvido preenchido.' },
-      { nome: 'Revelação de Essência', descricao: 'IKIGAI Empresarial + Escuta Estratégica com os fundadores.' },
-      { nome: 'Base Estratégica + Identidade Verbal', descricao: 'Toda a inteligência da marca em um documento estratégico.' },
-      { nome: 'Identidade Visual', descricao: 'Tradução da essência em expressão estética. Parceria VM Rocks Design (Gabi Lucato).', responsavel: 'VM' },
+      { nome: 'Revelação de Essência', descricao: 'Apresentação ao cliente (Ikigai + História).' },
+      { nome: 'Apresentação da Base Estratégica + Identidade Verbal', descricao: 'Toda a inteligência da marca em um documento estratégico.' },
+      { nome: 'Apresentação da Identidade Visual', descricao: 'Tradução da essência em expressão estética. Parceria VM Rocks Design (Gabi Lucato).', responsavel: 'VM' },
       // Instagram e WhatsApp SEPARADOS (ago/2026): tem contrato que fecha só um
       // dos dois, então cada um é uma etapa própria (dá para desmarcar ao criar).
       { nome: 'Personalização do Instagram', descricao: 'Perfil alinhado à identidade da marca. Parceria VM Rocks Design (Gabi Lucato).', responsavel: 'VM' },

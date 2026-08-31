@@ -710,11 +710,16 @@ Aba **Projetos** no painel (restrita à admin): gestão simples do andamento.
   contrato (**Envio de Contrato · Assinatura de Contrato · Pagamento da
   Entrada**), **Análise Estratégica de Mercado** (`opcional`), os formulários
   (**Envio e Recebimento - Formulário do Ikigai · História · Formulário
-  Identidade Verbal**), **Revelação de Essência**, **Base Estratégica +
-  Identidade Verbal**, **Identidade Visual** (VM), **Personalização do
+  Identidade Verbal**), **Revelação de Essência** ("Apresentação ao cliente
+  (Ikigai + História)"), **Apresentação da Base Estratégica + Identidade
+  Verbal**, **Apresentação da Identidade Visual** (VM), **Personalização do
   Instagram** (VM), **Personalização do WhatsApp** (VM), **Linha de Produtos e
   Serviços**, **Plano de Comunicação + Agente de IA** e **Agente de IA +
-  Estúdio da Marca**. As etapas de contrato/formulários vieram do projeto real
+  Estúdio da Marca**. Lista conferida com a KA em 31/08/2026 — as três
+  "Apresentação…" e a descrição da Revelação vieram dela. ⚠️ O **nome** e a
+  **descrição** nunca carregam o número da etapa nem "KA"/"VM": a numeração é só
+  visual (a lista renumera sozinha ao arrastar) e o responsável é a etiqueta
+  colorida. As etapas de contrato/formulários vieram do projeto real
   da LM Sucessão & Proteção (a KA já as acompanhava na mão). Instagram e
   WhatsApp continuam separados. ⚠️ Mudar o modelo só vale para projetos NOVOS —
   os que já existem mantêm as fases deles.
