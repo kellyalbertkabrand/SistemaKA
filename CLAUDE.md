@@ -830,6 +830,13 @@ método. Reaproveita o layout de colunas (`.ativ-quadro`/`.ativ-col`).
   ⚠️ Os rótulos NÃO são "Painéis/Lista" de propósito: o segmento principal da
   aba já tem "☰ Lista (n)" (a tabela de projetos) e dois "Lista" na mesma tela
   confundiriam. Arrastar etapa funciona igual nas duas visões.
+- **Editar a etapa no painel (ago/2026):** tocar no **nome** abre a edição
+  inline no lugar do cartão (`.fase-item__edit`): nome, descrição (o cliente vê),
+  responsável e data, com Salvar/Cancelar (Enter salva, Esc fecha). Salva com
+  `salvarProjeto` + `salvarFaseSalva` (vira sugestão nos próximos projetos), e a
+  descrição agora aparece no cartão (`.fase-item__desc`). ⚠️ O corpo do cartão
+  **não** leva `data-nao-arrasta` — senão segurar para arrastar deixaria de
+  funcionar; o clique que vem ao soltar é ignorado por `acabouDeArrastar()`.
 - **Esconder concluídas + apagar etapa (ago/2026):** o painel tem o checkbox
   **"esconder concluídas"** (`esconderFeitas`, guardado em
   `ka.fases.esconderFeitas`) — a lista fica só com o que falta; o contador

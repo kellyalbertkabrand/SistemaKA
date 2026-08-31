@@ -305,6 +305,42 @@ export function GestaoProjetos() {
     }
   }
 
+  // Editar uma etapa direto no painel (nome, descrição, responsável e data).
+  const [editEtapa, setEditEtapa] = useState<string | null>(null) // chave "projetoId#idx"
+  const [edNome, setEdNome] = useState('')
+  const [edDesc, setEdDesc] = useState('')
+  const [edResp, setEdResp] = useState<Responsavel>('KA')
+  const [edData, setEdData] = useState('')
+
+  function abrirEdicaoEtapa(projetoId: string, idx: number, f: FaseProjeto) {
+    setEditEtapa(`${projetoId}#${idx}`)
+    setEdNome(f.nome)
+    setEdDesc(f.descricao ?? '')
+    setEdResp(f.responsavel ?? 'KA')
+    setEdData(f.data ?? '')
+  }
+
+  async function salvarEdicaoEtapa(projetoId: string, idx: number) {
+    const nome = edNome.trim()
+    if (!nome) return
+    const proj = lista.find((x) => x.id === projetoId)
+    if (!proj) return
+    const descricao = edDesc.trim() || null
+    const fases = proj.fases.map((f, i) =>
+      i === idx ? { ...f, nome, descricao, responsavel: edResp.trim() || 'KA', data: edData || null } : f,
+    )
+    setLista((l) => l.map((x) => (x.id === projetoId ? { ...x, fases } : x)))
+    setEditEtapa(null)
+    try {
+      await salvarProjeto(projetoId, { fases })
+      void salvarFaseSalva(nome, descricao).catch(() => {})
+      mostrar('Etapa salva')
+    } catch {
+      mostrar('Não deu para salvar a etapa, tente de novo.', 'erro')
+      void recarregar()
+    }
+  }
+
   /** Apaga de vez uma etapa (às vezes ela foi cadastrada errada). */
   async function excluirEtapaDoPainel(projetoId: string, idx: number) {
     const proj = lista.find((x) => x.id === projetoId)
@@ -474,9 +510,9 @@ export function GestaoProjetos() {
             <p className="dica-voz" style={{ margin: 0 }}>
               {fasesVisao === 'paineis' ? 'Uma coluna por projeto' : 'Um projeto embaixo do outro'},
               com todas as fases. Use a alça <span aria-hidden>⠿</span> (ou segure a etapa) para
-              mudar a posição, <strong>+ etapa</strong> para incluir uma nova e{' '}
-              <strong>✕</strong> para apagar uma que ficou errada. Toque na bolinha para
-              avançar:{' '}
+              mudar a posição, <strong>toque no nome</strong> para editar,{' '}
+              <strong>+ etapa</strong> para incluir uma nova e <strong>✕</strong> para apagar.
+              Toque na bolinha para avançar:{' '}
               <span className="fase-bolinha fase-bolinha--exemplo">○</span> pendente →{' '}
               <span className="fase-bolinha fase-bolinha--exemplo fase-bolinha--andamento">●</span>{' '}
               em andamento → <span className="fase-bolinha fase-bolinha--exemplo fase-bolinha--ok">✓</span>{' '}
@@ -603,23 +639,92 @@ export function GestaoProjetos() {
                           >
                             {f.status === 'concluida' ? '✓' : f.status === 'andamento' ? '●' : '○'}
                           </button>
-                          <div className="fase-item__corpo">
-                            <div className="fase-item__nome">{f.nome}</div>
-                            <div className="fase-item__meta">
-                              <span className={`resp-badge resp--${respClasse(f.responsavel)}`}>
-                                {rotuloResp(f.responsavel)}
-                              </span>
-                              {f.data && <span className="data-chip">📅 {formatarData(f.data)}</span>}
-                            </div>
-                          </div>
-                          <button
-                            className="fase-item__x"
-                            data-nao-arrasta
-                            title="Apagar esta etapa"
-                            onClick={() => void excluirEtapaDoPainel(p.id, idx)}
-                          >
-                            ✕
-                          </button>
+                          {editEtapa === chave ? (
+                            <form
+                              className="fase-item__edit"
+                              data-nao-arrasta
+                              onSubmit={(e) => {
+                                e.preventDefault()
+                                void salvarEdicaoEtapa(p.id, idx)
+                              }}
+                            >
+                              <input
+                                autoFocus
+                                value={edNome}
+                                onChange={(e) => setEdNome(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Escape') setEditEtapa(null)
+                                }}
+                                placeholder="Nome da etapa"
+                              />
+                              <textarea
+                                rows={1}
+                                ref={autoAltura}
+                                value={edDesc}
+                                onChange={(e) => setEdDesc(e.target.value)}
+                                placeholder="Descrição (o cliente vê)"
+                              />
+                              <div className="fase-item__edit-linha">
+                                <SeletorResponsavel
+                                  value={edResp}
+                                  onChange={setEdResp}
+                                  clienteNome={p.cliente_nome}
+                                />
+                                <input
+                                  type="date"
+                                  value={edData}
+                                  onChange={(e) => setEdData(e.target.value)}
+                                />
+                              </div>
+                              <div className="fase-item__edit-linha">
+                                <span className="espaco" />
+                                <button className="btn-mini" type="submit" disabled={!edNome.trim()}>
+                                  Salvar
+                                </button>
+                                <button
+                                  className="btn-mini"
+                                  type="button"
+                                  onClick={() => setEditEtapa(null)}
+                                >
+                                  Cancelar
+                                </button>
+                              </div>
+                            </form>
+                          ) : (
+                            <>
+                              <button
+                                className="fase-item__corpo fase-item__abrir"
+                                title="Editar esta etapa"
+                                onClick={() => {
+                                  // Segurar o corpo do cartão continua arrastando;
+                                  // o clique que vem ao soltar não abre a edição.
+                                  if (arrastarEtapas.acabouDeArrastar()) return
+                                  abrirEdicaoEtapa(p.id, idx, f)
+                                }}
+                              >
+                                <span className="fase-item__nome">{f.nome}</span>
+                                {f.descricao && (
+                                  <span className="fase-item__desc">{f.descricao}</span>
+                                )}
+                                <span className="fase-item__meta">
+                                  <span className={`resp-badge resp--${respClasse(f.responsavel)}`}>
+                                    {rotuloResp(f.responsavel)}
+                                  </span>
+                                  {f.data && (
+                                    <span className="data-chip">📅 {formatarData(f.data)}</span>
+                                  )}
+                                </span>
+                              </button>
+                              <button
+                                className="fase-item__x"
+                                data-nao-arrasta
+                                title="Apagar esta etapa"
+                                onClick={() => void excluirEtapaDoPainel(p.id, idx)}
+                              >
+                                ✕
+                              </button>
+                            </>
+                          )}
                         </div>
                         )
                       })}

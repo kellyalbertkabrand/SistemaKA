@@ -4490,3 +4490,67 @@
     visibility: visible;
   }
 }
+
+/* Editar a etapa direto no painel de Fases: o corpo do cartão é um botão
+   (tocar no nome abre a edição) e o formulário ocupa o lugar dele. */
+.fase-item__abrir {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.fase-item__abrir:hover .fase-item__nome {
+  text-decoration: underline;
+}
+.fase-item__desc {
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: var(--t-500);
+}
+.fase-item__edit {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.fase-item__edit input,
+.fase-item__edit textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(61, 107, 126, 0.4);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  background: #fff;
+}
+.fase-item__edit textarea {
+  min-height: 2.2em;
+  line-height: 1.4;
+  resize: vertical;
+  overflow: hidden;
+}
+.fase-item__edit-linha {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.fase-item__edit-linha .espaco {
+  flex: 1;
+}
+.fase-item__edit-linha input[type='date'] {
+  width: auto;
+  flex: 1;
+  min-width: 130px;
+}
