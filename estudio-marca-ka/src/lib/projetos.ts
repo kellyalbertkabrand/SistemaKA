@@ -111,6 +111,12 @@ export interface Projeto {
   estagio?: EstagioProjeto | null
   /** Posição dentro da coluna (arrastar). Menor = mais em cima. */
   ordem?: number | null
+  /**
+   * Apelido da URL do cliente (ex.: "boba-joy"). É por ele que a página pública
+   * acha o projeto — a KA pediu a URL sem código no fim. Uma vez gravado, NÃO
+   * muda: o link já foi enviado ao cliente.
+   */
+  slug?: string | null
   token: string
   criado_em: string
   atualizado_em: string
@@ -532,6 +538,8 @@ export async function criarProjeto(dados: {
       data: null,
     })),
     status: 'ativo' as ProjetoStatus,
+    // Apelido da URL do cliente (/projeto/<apelido>), pelo nome da marca.
+    slug: await slugLivre(dados.cliente_nome || dados.nome),
     token: novoToken(),
     criado_em: agora(),
     atualizado_em: agora(),
@@ -610,10 +618,55 @@ function slugMarca(rotulo: string): string {
  * é o que identifica o projeto; o slug antes dele é só cosmético. Links antigos
  * (só o token) continuam funcionando.
  */
-export function linkPublicoProjeto(token: string, rotulo?: string | null): string {
-  const slug = rotulo ? slugMarca(rotulo) : ''
-  const cauda = slug ? `${slug}-${token}` : token
-  return `${window.location.origin}/projeto/${cauda}`
+export function linkPublicoProjeto(p: { token: string; slug?: string | null }): string {
+  // A KA pediu a URL limpa: /projeto/<nome-da-marca>. O `slug` é gravado no
+  // projeto (ver `garantirSlugs`); enquanto não houver, o token segura o link.
+  return `${window.location.origin}/projeto/${p.slug || p.token}`
+}
+
+/** Já existe um projeto com este apelido? (o apelido tem de ser único) */
+async function slugEmUso(slug: string): Promise<boolean> {
+  const snap = await getDocs(query(collection(db, 'projetos'), where('slug', '==', slug), limit(1)))
+  return !snap.empty
+}
+
+/**
+ * Devolve um apelido livre a partir do nome: "boba-joy", "boba-joy-2"…
+ * `usados` são os apelidos já escolhidos nesta rodada (ainda não gravados).
+ */
+export async function slugLivre(rotulo: string, usados: Set<string> = new Set()): Promise<string> {
+  const base = slugMarca(rotulo) || 'projeto'
+  for (let i = 1; i < 50; i++) {
+    const tentativa = i === 1 ? base : `${base}-${i}`
+    if (!usados.has(tentativa) && !(await slugEmUso(tentativa))) return tentativa
+  }
+  // Caso improvável (50 projetos com o mesmo nome): cai no token, que é único.
+  return ''
+}
+
+/**
+ * Garante que todo projeto da lista tenha apelido — os antigos foram criados
+ * quando a URL ainda levava o código. Grava só o que falta e devolve a lista
+ * atualizada. O apelido de quem já tem NÃO é mexido (o link já foi enviado).
+ */
+export async function garantirSlugs(
+  lista: Projeto[],
+  rotuloDe: (p: Projeto) => string,
+): Promise<Projeto[]> {
+  const usados = new Set(lista.map((p) => p.slug).filter(Boolean) as string[])
+  let mudou = false
+  const saida = [...lista]
+  for (let i = 0; i < saida.length; i++) {
+    const p = saida[i]
+    if (p.slug) continue
+    const slug = await slugLivre(rotuloDe(p), usados)
+    if (!slug) continue
+    usados.add(slug)
+    await updateDoc(doc(db, 'projetos', p.id), { slug })
+    saida[i] = { ...p, slug }
+    mudou = true
+  }
+  return mudou ? saida : lista
 }
 
 /** Do parâmetro da URL ("slug-<token>" ou só o token), devolve o token. */
@@ -686,21 +739,53 @@ export interface ProjetoPublico {
 }
 
 /**
- * Assina o projeto pelo token: o callback roda a cada mudança (tempo real).
- * Devolve a função para cancelar a assinatura (usar no cleanup do useEffect).
+ * Assina o projeto pelo que veio na URL, aceitando os TRÊS formatos de link:
+ *   /projeto/boba-joy            → apelido (o formato de hoje)
+ *   /projeto/boba-joy-<token>    → link antigo, com o código no fim
+ *   /projeto/<token>             → link bem antigo, só o código
+ * Continua em tempo real: acha o documento uma vez e escuta as mudanças dele.
  */
-export function assinarProjetoPorToken(
-  token: string,
+export function assinarProjetoPorParametro(
+  param: string,
   aoMudar: (p: ProjetoPublico | null) => void,
   aoErrar: (e: Error) => void,
 ): () => void {
-  const q = query(collection(db, 'projetos'), where('token', '==', token), limit(1))
-  return onSnapshot(
-    q,
-    (snap) => {
+  let pararDoc: (() => void) | null = null
+  let cancelado = false
+
+  const achar = async () => {
+    const tentativas = [
+      query(collection(db, 'projetos'), where('slug', '==', param), limit(1)),
+      query(collection(db, 'projetos'), where('token', '==', param), limit(1)),
+      query(collection(db, 'projetos'), where('token', '==', tokenDoParametro(param)), limit(1)),
+    ]
+    for (const q of tentativas) {
+      const snap = await getDocs(q)
       const d = snap.docs[0]
-      aoMudar(d ? (d.data() as ProjetoPublico) : null)
-    },
-    (e) => aoErrar(e instanceof Error ? e : new Error(String(e))),
-  )
+      if (d) return d.id
+    }
+    return null
+  }
+
+  achar()
+    .then((id) => {
+      if (cancelado) return
+      if (!id) {
+        aoMudar(null)
+        return
+      }
+      pararDoc = onSnapshot(
+        doc(db, 'projetos', id),
+        (d) => aoMudar(d.exists() ? (d.data() as ProjetoPublico) : null),
+        (e) => aoErrar(e instanceof Error ? e : new Error(String(e))),
+      )
+    })
+    .catch((e) => {
+      if (!cancelado) aoErrar(e instanceof Error ? e : new Error(String(e)))
+    })
+
+  return () => {
+    cancelado = true
+    if (pararDoc) pararDoc()
+  }
 }

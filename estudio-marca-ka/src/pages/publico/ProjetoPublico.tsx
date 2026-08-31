@@ -2,11 +2,10 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { formatarData } from '../../lib/gestao'
 import {
-  assinarProjetoPorToken,
+  assinarProjetoPorParametro,
   progressoProjeto,
   respClasse,
   rotuloResp,
-  tokenDoParametro,
   type ProjetoPublico as Proj,
 } from '../../lib/projetos'
 import '../../styles/gestao.css'
@@ -40,16 +39,15 @@ export function ProjetoPublico() {
   useTituloPagina('Projeto')
   const { token: param } = useParams<{ token: string }>()
   const demo = import.meta.env.DEV && param === 'demo'
-  // A URL pode vir personalizada ("boba-joy-<token>"); extraímos o token real.
-  const token = param ? tokenDoParametro(param) : undefined
   const [proj, setProj] = useState<Proj | null>(demo ? DEMO : null)
   const [carregando, setCarregando] = useState(!demo)
   const [erro, setErro] = useState<string | null>(null)
 
   useEffect(() => {
-    if (!token || demo) return
-    const parar = assinarProjetoPorToken(
-      token,
+    if (!param || demo) return
+    // Aceita a URL de hoje (/projeto/boba-joy) e as antigas, com o código.
+    const parar = assinarProjetoPorParametro(
+      param,
       (p) => {
         setProj(p)
         setCarregando(false)
@@ -60,7 +58,7 @@ export function ProjetoPublico() {
       },
     )
     return parar
-  }, [token, demo])
+  }, [param, demo])
 
   if (carregando) {
     return (

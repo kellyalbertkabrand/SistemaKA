@@ -16,6 +16,7 @@ import {
   resumoSemanaTexto,
   revisaoSemana,
   ROTULO_ESTAGIO,
+  garantirSlugs,
   linkPublicoProjeto,
   listarFasesSalvas,
   listarProjetos,
@@ -64,6 +65,16 @@ const BADGE_FASE: Record<FaseStatus, string> = {
   concluida: 'badge--verde',
 }
 
+/**
+ * Nome do cliente que vai na URL: o do CADASTRO (aba Clientes) vem primeiro —
+ * é o nome oficial da marca. Sem cadastro ligado, usa o nome digitado no
+ * projeto; em último caso, o nome do projeto.
+ */
+function rotuloDoProjeto(p: Projeto, clientes: Cliente[]): string {
+  const cadastro = p.cliente_id ? clientes.find((c) => c.id === p.cliente_id) : null
+  return cadastro?.nome_marca || p.cliente_nome || p.nome
+}
+
 // Projetos: cadastro simples, fases com modelos prontos e link público onde
 // o cliente acompanha o andamento em tempo real.
 export function GestaoProjetos() {
@@ -71,8 +82,6 @@ export function GestaoProjetos() {
   const copiar = useCopiar()
   const { idAberto, abrir: abrirUrl, fechar } = useFichaUrl('id')
   const [lista, setLista] = useState<Projeto[]>([])
-  // Cadastro dos clientes: é dele que sai o nome oficial da marca na URL.
-  const [clientes, setClientes] = useState<Cliente[]>([])
   const [erro, setErro] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(true)
 
@@ -100,21 +109,26 @@ export function GestaoProjetos() {
   useEffect(() => gravarPref('ka.fases.esconderFeitas', esconderFeitas), [esconderFeitas])
   const [filtroResp, setFiltroResp] = useState<Responsavel | 'todas'>('todas')
 
-  /**
-   * Nome do cliente para a URL: o que está no CADASTRO (aba Clientes) vem
-   * primeiro — é o nome oficial da marca. Se o projeto ainda não está ligado a
-   * um cadastro, usa o nome digitado nele; em último caso, o nome do projeto.
-   */
-  function nomeParaLink(p: Projeto): string {
-    const cadastro = p.cliente_id ? clientes.find((c) => c.id === p.cliente_id) : null
-    return cadastro?.nome_marca || p.cliente_nome || p.nome
-  }
-
   async function recarregar() {
     try {
       setCarregando(true)
-      setLista(await listarProjetos())
+      // Os CLIENTES vêm junto: é do cadastro que sai o nome da URL, então o
+      // apelido só pode ser gerado depois que a lista deles chegar.
+      const [ps, cs] = await Promise.all([
+        listarProjetos(),
+        listarClientes().catch(() => [] as Cliente[]),
+      ])
+      setLista(ps)
       setErro(null)
+      // Projetos antigos não têm apelido de URL (a URL levava o código no fim).
+      // Grava o que falta, usando o nome da marca do cadastro.
+      garantirSlugs(ps, (p) => rotuloDoProjeto(p, cs))
+        .then((atualizados) => {
+          if (atualizados !== ps) setLista(atualizados)
+        })
+        .catch(() => {
+          /* sem apelido o link cai no código antigo, que continua valendo */
+        })
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
     } finally {
@@ -127,7 +141,7 @@ export function GestaoProjetos() {
   }, [])
 
   async function copiarLink(p: Projeto) {
-    await navigator.clipboard.writeText(linkPublicoProjeto(p.token, nomeParaLink(p)))
+    await navigator.clipboard.writeText(linkPublicoProjeto(p))
     mostrar(`Link de "${p.nome}" copiado — é só enviar ao cliente`)
   }
 
@@ -280,9 +294,6 @@ export function GestaoProjetos() {
     listarFasesSalvas()
       .then(setFasesSalvasPainel)
       .catch(() => setFasesSalvasPainel([]))
-    listarClientes()
-      .then(setClientes)
-      .catch(() => setClientes([]))
   }, [])
 
   function abrirNovaEtapa(projetoId: string, clienteNome: string | null) {
@@ -1721,12 +1732,6 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
 
   const pct = progressoProjeto(p)
 
-  /** Nome que vai na URL do cliente: o do CADASTRO vem primeiro. */
-  function nomeParaLink(): string {
-    const cadastro = p.cliente_id ? clientes.find((c) => c.id === p.cliente_id) : null
-    return cadastro?.nome_marca || p.cliente_nome || p.nome
-  }
-
   function avisarWhatsApp() {
     const cliente = p.cliente_id ? clientes.find((c) => c.id === p.cliente_id) : null
     const nome = primeiroNome(cliente?.responsavel ?? p.cliente_nome)
@@ -1740,7 +1745,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
     linhas.push(
       `Progresso: ${pct}% ✅`,
       '',
-      `Acompanhe em tempo real por aqui: ${linkPublicoProjeto(p.token, nomeParaLink())}`,
+      `Acompanhe em tempo real por aqui: ${linkPublicoProjeto(p)}`,
       '',
       'Kelly',
     )
@@ -1895,7 +1900,7 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
   }
 
   async function copiarLink() {
-    await navigator.clipboard.writeText(linkPublicoProjeto(p.token, nomeParaLink()))
+    await navigator.clipboard.writeText(linkPublicoProjeto(p))
     mostrar('Link copiado — a página do cliente atualiza em tempo real')
   }
 
