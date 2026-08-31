@@ -903,6 +903,16 @@ método. Reaproveita o layout de colunas (`.ativ-quadro`/`.ativ-col`).
   no toque) que apaga de vez, com a confirmação própria (`confirmar()`) — é para
   a etapa que foi cadastrada errada. `excluirEtapaDoPainel` grava com
   `salvarProjeto`.
+- **ABRIR o painel do cliente (ago/2026):** em TODO lugar onde aparece o link do
+  cliente há agora, ao lado de "copiar", um **"abrir em outra aba"**: no detalhe
+  do projeto (**"Abrir o painel do cliente ↗"**), na ☰ Lista (**"Abrir painel ↗"**,
+  ao lado de "Copiar link") e no cabeçalho de cada coluna do painel ⛭ Fases
+  (**"↗ Abrir painel"**, ao lado de "🔗 Copiar link", em `.fases-col__links`).
+  ⚠️ São `<a target="_blank" rel="noopener noreferrer">` de VERDADE, não
+  `window.open` — o Safari do iPhone bloqueia janela aberta por script (mesma
+  regra do download: nada de ação programática depois de `await`). Por virarem
+  links, o CSS ganhou `a.btn-mini` (como já havia `a.btn--voltar`) e os dois
+  botões do painel de Fases sobem para 40px de altura no celular.
 - **Link do cliente + duplicar etapa (ago/2026):** cada coluna do painel abre
   com **"🔗 Copiar link do cliente"** (`.fases-col__link`, acima do nome do
   cliente) — o mesmo `copiarLink(p)` da lista, para enviar o acompanhamento sem

@@ -4719,3 +4719,40 @@
   background: none;
   accent-color: #3d6b7e;
 }
+
+/* ============================================================
+   ABRIR O PAINEL DO CLIENTE (ago/2026)
+   Onde o link do cliente aparece, agora há também "abrir em outra aba". É um
+   <a target="_blank"> de verdade, não window.open — o Safari do iPhone bloqueia
+   janela aberta por script. Como viraram links, precisam das mesmas regras dos
+   botões (sublinhado fora, alinhamento no meio).
+   ============================================================ */
+a.btn-mini {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  line-height: 1.2;
+}
+/* Cabeçalho da coluna no painel ⛭ Fases: copiar e abrir lado a lado. */
+.fases-col__links {
+  display: flex;
+  gap: 0.3rem;
+  margin-bottom: 0.4rem;
+}
+.fases-col__links .fases-col__link {
+  flex: 1;
+  margin-bottom: 0;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+}
+/* No celular esses dois viram alvo de dedo — sobem para os 40px do padrão. */
+@media (max-width: 640px) {
+  .fases-col__links .fases-col__link {
+    min-height: 40px;
+    justify-content: center;
+    display: inline-flex;
+    align-items: center;
+    font-size: 0.74rem;
+  }
+}

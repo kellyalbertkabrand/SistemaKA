@@ -614,14 +614,26 @@ export function GestaoProjetos() {
                     ref={(el) => arrastarEtapas.registrarColuna(p.id, el)}
                   >
                     <header className="fases-col__cab">
-                      {/* O link que o cliente usa para acompanhar, à mão. */}
-                      <button
-                        className="fases-col__link"
-                        onClick={() => void copiarLink(p)}
-                        title="Copiar o link de acompanhamento deste cliente"
-                      >
-                        🔗 Copiar link do cliente
-                      </button>
+                      {/* O link que o cliente usa para acompanhar, à mão: copiar
+                          para enviar, ou abrir para conferir como ele vê. */}
+                      <div className="fases-col__links">
+                        <button
+                          className="fases-col__link"
+                          onClick={() => void copiarLink(p)}
+                          title="Copiar o link de acompanhamento deste cliente"
+                        >
+                          🔗 Copiar link
+                        </button>
+                        <a
+                          className="fases-col__link"
+                          href={linkPublicoProjeto(p)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Abrir o painel do cliente em outra aba"
+                        >
+                          ↗ Abrir painel
+                        </a>
+                      </div>
                       <button
                         className="fases-col__abrir"
                         onClick={() => abrirUrl(p.id)}
@@ -1068,6 +1080,15 @@ export function GestaoProjetos() {
                       <button className="btn-mini" onClick={() => void copiarLink(p)}>
                         Copiar link
                       </button>
+                      <a
+                        className="btn-mini"
+                        href={linkPublicoProjeto(p)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Abrir o painel do cliente em outra aba"
+                      >
+                        Abrir painel ↗
+                      </a>
                       <button className="btn-mini btn-mini--perigo" onClick={() => void excluir(p)}>
                         Excluir
                       </button>
@@ -1951,6 +1972,17 @@ function DetalheProjeto({ original, aoVoltar }: { original: Projeto; aoVoltar: (
         <button className="btn--voltar" onClick={() => void copiarLink()}>
           Copiar link do cliente
         </button>
+        {/* Link de verdade (não window.open): no iPhone o Safari bloqueia
+            janela aberta por script, e assim "abrir em outra aba" funciona. */}
+        <a
+          className="btn--voltar"
+          href={linkPublicoProjeto(p)}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="Abrir o painel do cliente em outra aba"
+        >
+          Abrir o painel do cliente ↗
+        </a>
         <button className="btn--voltar btn--voltar-whats" onClick={avisarWhatsApp}>
           Avisar no WhatsApp
         </button>
