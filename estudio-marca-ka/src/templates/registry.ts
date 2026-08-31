@@ -1757,9 +1757,22 @@ export const TEMPLATES: Template[] = [
         padrao: 'base',
         chips: true,
         opcoes: [
-          { valor: 'topo', rotulo: 'Em cima' },
+          { valor: 'topo', rotulo: 'No topo' },
           { valor: 'meio', rotulo: 'No meio' },
           { valor: 'base', rotulo: 'Embaixo' },
+        ],
+      },
+      {
+        id: 'caixa',
+        label: 'Caixa das letras',
+        tipo: 'select',
+        padrao: 'maiuscula',
+        chips: true,
+        ajuda: 'Vale para o título e a linha de apoio. O @ fica como você escrever.',
+        opcoes: [
+          { valor: 'maiuscula', rotulo: 'MAIÚSCULAS' },
+          { valor: 'minuscula', rotulo: 'minúsculas' },
+          { valor: 'normal', rotulo: 'Como escrevi' },
         ],
       },
       campoTamanhoGrazi(),

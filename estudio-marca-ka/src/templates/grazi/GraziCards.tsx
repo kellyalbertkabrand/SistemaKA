@@ -387,6 +387,9 @@ export function GraziCapaCard({ valores, formato }: RenderProps) {
   const rodape = String(valores.rodape || '')
   const tituloPos = posClasse(valores.titulo_pos)
   const escala = escalaFrac(valores.escala)
+  const caixa = ['maiuscula', 'minuscula', 'normal'].includes(String(valores.caixa))
+    ? String(valores.caixa)
+    : 'maiuscula'
   const corTexto = corCapaGrazi(valores.cor_fonte, 'branco')
   const corGlow = hexFundoGrazi(String(valores.cor_faixa || 'verde-escuro'))
   const est = { ...estiloImagem(valores, 'foto'), width: '100%', height: '100%' } as const
@@ -412,7 +415,7 @@ export function GraziCapaCard({ valores, formato }: RenderProps) {
       </div>
       {temTexto && <div className={`capa-glow g-${tituloPos}`} style={estiloGlow} />}
       {temTexto && (
-        <div className="capa-texto" style={{ color: corTexto }}>
+        <div className={`capa-texto cx-${caixa}`} style={{ color: corTexto }}>
           {titulo && <div className="capa-titulo">{comDestaque(titulo)}</div>}
           {subtitulo && <div className="capa-sub">{comDestaque(subtitulo)}</div>}
           {rodape && <div className="capa-assinatura">{rodape}</div>}
