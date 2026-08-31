@@ -830,6 +830,15 @@ método. Reaproveita o layout de colunas (`.ativ-quadro`/`.ativ-col`).
   ⚠️ Os rótulos NÃO são "Painéis/Lista" de propósito: o segmento principal da
   aba já tem "☰ Lista (n)" (a tabela de projetos) e dois "Lista" na mesma tela
   confundiriam. Arrastar etapa funciona igual nas duas visões.
+- **Esconder concluídas + apagar etapa (ago/2026):** o painel tem o checkbox
+  **"esconder concluídas"** (`esconderFeitas`, guardado em
+  `ka.fases.esconderFeitas`) — a lista fica só com o que falta; o contador
+  `feitas/total` continua mostrando o todo. A etapa concluída não é renderizada,
+  mas o **índice real** segue valendo (arrastar e apagar continuam certos).
+  Cada etapa tem **✕** (`.fase-item__x`, aparece no hover no computador e fixo
+  no toque) que apaga de vez, com a confirmação própria (`confirmar()`) — é para
+  a etapa que foi cadastrada errada. `excluirEtapaDoPainel` grava com
+  `salvarProjeto`.
 - **Alça visível + "+ etapa" no painel (ago/2026):** cada etapa do painel ganhou
   a alça `⠿` (`.fase-item__alca`, pega na hora) — antes só quem descobria o
   "segurar" conseguia mover. E no fim de cada projeto há **"+ etapa"**

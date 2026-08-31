@@ -91,6 +91,11 @@ export function GestaoProjetos() {
     lerPref<'paineis' | 'lista'>('ka.fases.visao', 'paineis'),
   )
   useEffect(() => gravarPref('ka.fases.visao', fasesVisao), [fasesVisao])
+  // Esconder as etapas já concluídas (a lista fica só com o que falta fazer).
+  const [esconderFeitas, setEsconderFeitas] = useState(() =>
+    lerPref<boolean>('ka.fases.esconderFeitas', false),
+  )
+  useEffect(() => gravarPref('ka.fases.esconderFeitas', esconderFeitas), [esconderFeitas])
   const [filtroResp, setFiltroResp] = useState<Responsavel | 'todas'>('todas')
 
   async function recarregar() {
@@ -300,6 +305,30 @@ export function GestaoProjetos() {
     }
   }
 
+  /** Apaga de vez uma etapa (às vezes ela foi cadastrada errada). */
+  async function excluirEtapaDoPainel(projetoId: string, idx: number) {
+    const proj = lista.find((x) => x.id === projetoId)
+    if (!proj) return
+    const alvo = proj.fases[idx]
+    if (!alvo) return
+    if (
+      !(await confirmar(`Apagar a etapa "${alvo.nome}"? Não dá para desfazer.`, {
+        perigo: true,
+        confirmar: 'Apagar',
+      }))
+    )
+      return
+    const fases = proj.fases.filter((_, i) => i !== idx)
+    setLista((l) => l.map((x) => (x.id === projetoId ? { ...x, fases } : x)))
+    try {
+      await salvarProjeto(projetoId, { fases })
+      mostrar('Etapa apagada')
+    } catch {
+      mostrar('Não deu para apagar a etapa, tente de novo.', 'erro')
+      void recarregar()
+    }
+  }
+
   // Arrastar etapas no painel ⛭ Fases: cada projeto é uma "coluna".
   const arrastarEtapas = useArrastarCartoes<string>({
     colunas: lista.map((x) => x.id),
@@ -445,8 +474,9 @@ export function GestaoProjetos() {
             <p className="dica-voz" style={{ margin: 0 }}>
               {fasesVisao === 'paineis' ? 'Uma coluna por projeto' : 'Um projeto embaixo do outro'},
               com todas as fases. Use a alça <span aria-hidden>⠿</span> (ou segure a etapa) para
-              mudar a posição, e <strong>+ etapa</strong> para incluir uma nova. Toque na bolinha
-              para avançar:{' '}
+              mudar a posição, <strong>+ etapa</strong> para incluir uma nova e{' '}
+              <strong>✕</strong> para apagar uma que ficou errada. Toque na bolinha para
+              avançar:{' '}
               <span className="fase-bolinha fase-bolinha--exemplo">○</span> pendente →{' '}
               <span className="fase-bolinha fase-bolinha--exemplo fase-bolinha--andamento">●</span>{' '}
               em andamento → <span className="fase-bolinha fase-bolinha--exemplo fase-bolinha--ok">✓</span>{' '}
@@ -470,6 +500,14 @@ export function GestaoProjetos() {
                 ☰ Em lista
               </button>
             </div>
+            <label className="fases-toggle">
+              <input
+                type="checkbox"
+                checked={esconderFeitas}
+                onChange={(e) => setEsconderFeitas(e.target.checked)}
+              />
+              <span>esconder concluídas</span>
+            </label>
             <label className="fases-toggle">
               <input
                 type="checkbox"
@@ -513,7 +551,13 @@ export function GestaoProjetos() {
 
                     <div className="ativ-col__corpo">
                       {p.fases.length === 0 && <p className="ativ-vazio">Sem fases cadastradas.</p>}
+                      {p.fases.length > 0 && esconderFeitas && feitas === p.fases.length && (
+                        <p className="ativ-vazio">Tudo concluído neste projeto ✨</p>
+                      )}
                       {p.fases.map((f, idx) => {
+                        // Escondida: não renderiza (o índice real segue valendo
+                        // para arrastar e apagar).
+                        if (esconderFeitas && f.status === 'concluida') return null
                         const chave = `${p.id}#${idx}`
                         const puxando = arrastarEtapas.arrastando === chave
                         const alvoEtapa =
@@ -568,6 +612,14 @@ export function GestaoProjetos() {
                               {f.data && <span className="data-chip">📅 {formatarData(f.data)}</span>}
                             </div>
                           </div>
+                          <button
+                            className="fase-item__x"
+                            data-nao-arrasta
+                            title="Apagar esta etapa"
+                            onClick={() => void excluirEtapaDoPainel(p.id, idx)}
+                          >
+                            ✕
+                          </button>
                         </div>
                         )
                       })}
