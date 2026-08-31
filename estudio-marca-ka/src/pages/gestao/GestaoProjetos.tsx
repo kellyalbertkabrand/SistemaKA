@@ -252,6 +252,54 @@ export function GestaoProjetos() {
     }
   }
 
+  // Nova etapa direto no painel de fases (sem abrir o projeto): guarda o texto
+  // por projeto e a lista de fases já usadas, para sugerir.
+  const [novaEtapaDe, setNovaEtapaDe] = useState<string | null>(null)
+  const [novaEtapaTxt, setNovaEtapaTxt] = useState('')
+  const [novaEtapaResp, setNovaEtapaResp] = useState<Responsavel>('KA')
+  const [fasesSalvasPainel, setFasesSalvasPainel] = useState<FaseSalva[]>([])
+
+  useEffect(() => {
+    listarFasesSalvas()
+      .then(setFasesSalvasPainel)
+      .catch(() => setFasesSalvasPainel([]))
+  }, [])
+
+  function abrirNovaEtapa(projetoId: string, clienteNome: string | null) {
+    setNovaEtapaDe(projetoId)
+    setNovaEtapaTxt('')
+    setNovaEtapaResp('KA')
+    void clienteNome
+  }
+
+  /** Acrescenta uma etapa no FIM do projeto, direto do painel. */
+  async function adicionarEtapaNoPainel(projetoId: string) {
+    const nome = novaEtapaTxt.trim()
+    if (!nome) return
+    const proj = lista.find((x) => x.id === projetoId)
+    if (!proj) return
+    const salva = fasesSalvasPainel.find((x) => x.nome === nome)
+    const nova: FaseProjeto = {
+      nome,
+      descricao: salva?.descricao ?? null,
+      status: 'pendente',
+      concluida_em: null,
+      responsavel: novaEtapaResp || responsavelPadrao(nome),
+      data: null,
+    }
+    const fases = [...proj.fases, nova]
+    setLista((l) => l.map((x) => (x.id === projetoId ? { ...x, fases } : x)))
+    setNovaEtapaTxt('')
+    try {
+      await salvarProjeto(projetoId, { fases })
+      void salvarFaseSalva(nome, nova.descricao).catch(() => {})
+      mostrar('Etapa adicionada')
+    } catch {
+      mostrar('Não deu para adicionar a etapa, tente de novo.', 'erro')
+      void recarregar()
+    }
+  }
+
   // Arrastar etapas no painel ⛭ Fases: cada projeto é uma "coluna".
   const arrastarEtapas = useArrastarCartoes<string>({
     colunas: lista.map((x) => x.id),
@@ -396,7 +444,9 @@ export function GestaoProjetos() {
           <div className="gestao-acoes" style={{ marginTop: 0 }}>
             <p className="dica-voz" style={{ margin: 0 }}>
               {fasesVisao === 'paineis' ? 'Uma coluna por projeto' : 'Um projeto embaixo do outro'},
-              com todas as fases. Toque na bolinha para avançar:{' '}
+              com todas as fases. Use a alça <span aria-hidden>⠿</span> (ou segure a etapa) para
+              mudar a posição, e <strong>+ etapa</strong> para incluir uma nova. Toque na bolinha
+              para avançar:{' '}
               <span className="fase-bolinha fase-bolinha--exemplo">○</span> pendente →{' '}
               <span className="fase-bolinha fase-bolinha--exemplo fase-bolinha--andamento">●</span>{' '}
               em andamento → <span className="fase-bolinha fase-bolinha--exemplo fase-bolinha--ok">✓</span>{' '}
@@ -487,6 +537,14 @@ export function GestaoProjetos() {
                               : undefined
                           }
                         >
+                          <span
+                            className="arr-alca fase-item__alca"
+                            title="Segure e arraste para mudar a posição"
+                            data-alca
+                            aria-hidden
+                          >
+                            ⠿
+                          </span>
                           <button
                             className={`fase-bolinha ${
                               f.status === 'concluida'
@@ -513,12 +571,65 @@ export function GestaoProjetos() {
                         </div>
                         )
                       })}
+
+                      {/* Incluir uma etapa nova sem precisar abrir o projeto. */}
+                      {novaEtapaDe === p.id ? (
+                        <form
+                          className="fase-nova"
+                          onSubmit={(e) => {
+                            e.preventDefault()
+                            void adicionarEtapaNoPainel(p.id)
+                          }}
+                        >
+                          <input
+                            autoFocus
+                            list="fases-salvas-painel"
+                            value={novaEtapaTxt}
+                            onChange={(e) => setNovaEtapaTxt(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Escape') setNovaEtapaDe(null)
+                            }}
+                            placeholder="Nome da etapa"
+                          />
+                          <div className="fase-nova__linha">
+                            <SeletorResponsavel
+                              value={novaEtapaResp}
+                              onChange={setNovaEtapaResp}
+                              clienteNome={p.cliente_nome}
+                            />
+                            <span className="espaco" />
+                            <button className="btn-mini" type="submit" disabled={!novaEtapaTxt.trim()}>
+                              Adicionar
+                            </button>
+                            <button
+                              className="btn-mini"
+                              type="button"
+                              onClick={() => setNovaEtapaDe(null)}
+                            >
+                              Cancelar
+                            </button>
+                          </div>
+                        </form>
+                      ) : (
+                        <button
+                          className="fase-add"
+                          onClick={() => abrirNovaEtapa(p.id, p.cliente_nome)}
+                          title="Incluir uma etapa neste projeto"
+                        >
+                          + etapa
+                        </button>
+                      )}
                     </div>
                   </section>
                 )
               },
             )}
           </div>
+          <datalist id="fases-salvas-painel">
+            {fasesSalvasPainel.map((f) => (
+              <option key={f.id} value={f.nome} />
+            ))}
+          </datalist>
         </>
       )}
 

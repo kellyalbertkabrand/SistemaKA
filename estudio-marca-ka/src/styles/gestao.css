@@ -4401,3 +4401,62 @@
 .fases-pilha .fases-col {
   min-width: 0;
 }
+
+/* ---- Painel ⛭ Fases: alça de arraste e "+ etapa" (ago/2026) -------------- */
+/* A alça deixa claro que a etapa se move — antes só descobria quem segurava. */
+.fase-item__alca {
+  flex: none;
+  min-width: 22px;
+  height: 22px;
+  font-size: 0.95rem;
+  margin-top: 0.1rem;
+}
+/* Botão discreto no fim da coluna do projeto. */
+.fase-add {
+  display: block;
+  width: 100%;
+  margin-top: 0.2rem;
+  border: 1px dashed rgba(184, 155, 106, 0.55);
+  border-radius: 10px;
+  background: none;
+  color: #8a5a1f;
+  font-family: var(--body);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.45rem 0.5rem;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.fase-add:hover {
+  background: rgba(184, 155, 106, 0.12);
+  border-color: var(--dourado);
+}
+.fase-nova {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  border: 1px solid rgba(184, 155, 106, 0.5);
+  border-radius: 10px;
+  background: var(--bg-1);
+  padding: 0.5rem;
+  margin-top: 0.2rem;
+}
+.fase-nova input {
+  width: 100%;
+  font-family: var(--body);
+  font-size: 0.85rem;
+  border: 1px solid rgba(15, 25, 35, 0.14);
+  border-radius: 8px;
+  padding: 0.45rem 0.55rem;
+  background: #fff;
+}
+.fase-nova__linha {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.fase-nova__linha .espaco {
+  flex: 1;
+}

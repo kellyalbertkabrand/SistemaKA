@@ -830,6 +830,13 @@ método. Reaproveita o layout de colunas (`.ativ-quadro`/`.ativ-col`).
   ⚠️ Os rótulos NÃO são "Painéis/Lista" de propósito: o segmento principal da
   aba já tem "☰ Lista (n)" (a tabela de projetos) e dois "Lista" na mesma tela
   confundiriam. Arrastar etapa funciona igual nas duas visões.
+- **Alça visível + "+ etapa" no painel (ago/2026):** cada etapa do painel ganhou
+  a alça `⠿` (`.fase-item__alca`, pega na hora) — antes só quem descobria o
+  "segurar" conseguia mover. E no fim de cada projeto há **"+ etapa"**
+  (`.fase-add` → formulário `.fase-nova` com nome + responsável, `datalist` das
+  fases da biblioteca): inclui a etapa no FIM daquele projeto sem abrir o
+  projeto (`adicionarEtapaNoPainel` → `salvarProjeto` + `salvarFaseSalva`). O
+  formulário fica aberto depois de adicionar, para lançar várias seguidas.
 - **Arrastar etapa no painel (ago/2026):** segurar ~0,3s em qualquer parte do
   cartão da etapa (ou pegar na alça) e arrastar reordena as fases DAQUELE projeto
   (`arrastarEtapas` = `useArrastarCartoes`, chave `<projetoId>#<idx>`;
