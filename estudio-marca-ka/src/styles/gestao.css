@@ -2711,10 +2711,21 @@
   justify-content: space-between;
   gap: 0.6rem;
 }
+/* O NOME DO CLIENTE é o que a KA procura primeiro na lista de cobranças —
+   por isso vem em caramelo e maiúsculas, como no resto do sistema. */
 .cob-card__cliente {
+  font-weight: 800;
+  color: #8a5a1f;
+  font-size: 0.88rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+/* Agrupado POR CLIENTE, o nome já está no cabeçalho do grupo: o cartão mostra
+   o vencimento no topo, no lugar dele. */
+.cob-card__venc-topo {
   font-weight: 700;
-  color: var(--t-900);
-  font-size: 1rem;
+  color: var(--t-700);
+  font-size: 0.92rem;
 }
 .cob-card__desc {
   margin-top: 0.28rem;
@@ -4674,4 +4685,37 @@
   font-size: 0.74rem;
   font-weight: 700;
   color: #8d2b2b;
+}
+
+/* Cobranças agrupadas POR CLIENTE: o nome da marca encabeça o grupo em
+   caramelo (mesmo destaque das outras telas). */
+.mes-grupo__nome--cli {
+  color: #8a5a1f;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+/* Caixinha "mudar também as outras parcelas" (dentro de .field, que estiliza
+   label/input — por isso os overrides explícitos). */
+.field label.parcelas-junto {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+  font-size: 0.85rem;
+  color: var(--t-900);
+  line-height: 1.4;
+  cursor: pointer;
+}
+.field .parcelas-junto input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  flex: none;
+  margin-top: 0.1rem;
+  padding: 0;
+  border: none;
+  background: none;
+  accent-color: #3d6b7e;
 }

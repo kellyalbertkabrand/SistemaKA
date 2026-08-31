@@ -628,6 +628,27 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
     uma nova cobrança e **logo abaixo do card** ao editar (`editandoId === c.id`,
     card em `<Fragment>` + `.cob-card--editando`). Antes abria só no topo e, no
     desktop com a lista longa, parecia que "não abria".
+  - **NOME DO CLIENTE em destaque (ago/2026):** o cliente saiu do cinza da linha
+    de meta e virou o topo do cartão, em **caramelo maiúsculo**
+    (`.cob-card__cliente`) — é o que a KA procura primeiro numa lista longa.
+    Quando a lista está **agrupada por cliente** o nome não se repete no cartão
+    (o cabeçalho do grupo já diz, agora também em caramelo,
+    `.mes-grupo__nome--cli`) e o topo do cartão passa a mostrar o **vencimento**
+    (`.cob-card__venc-topo`), que é o que distingue uma cobrança da outra ali.
+  - **MUDAR A DATA DE TODAS AS PARCELAS (ago/2026):** quando a KA edita uma
+    cobrança que é parcela de um parcelamento (descrição terminada em `(k/n)`,
+    lida por `parcelaDe()`) e **muda o vencimento**, aparece a caixa **"Mudar
+    também as outras N parcelas de «X»"** (`.parcelas-junto`) com a **prévia das
+    datas** que ficarão ("Ficam assim: 10/10/2026 · 10/11/2026"). Marcando,
+    `salvarForm` aplica **o mesmo deslocamento** às irmãs: `mesesEntre(data
+    antiga, data nova)` meses + o **dia** novo (`aplicarMudanca`, que clampa o
+    dia ao último do mês — 31 em fevereiro vira 28). Assim tanto "só mudei o dia"
+    (05→10) quanto "adiei o pagamento um mês" (05/09→15/10) fazem a coisa certa.
+    Regras: só entram as irmãs **do mesmo cliente**, mesma descrição-base e mesmo
+    total de parcelas, e **em aberto** — parcela **paga ou cancelada não muda**.
+    A caixa só aparece **depois** que a data muda de fato (`dataMudou`) e nasce
+    desmarcada (mudar uma parcela só continua sendo um clique). O toast diz
+    quantas mudaram junto.
 - **EXPORTAR o cadastro do cliente (ago/2026) — `src/lib/exportarCliente.ts` +
   `src/lib/xlsx.ts`:** na ficha do cliente há **"⤓ Baixar PDF"** (abre o cadastro
   como documento e já chama a impressão / Salvar como PDF) e **"⤓ Exportar

@@ -50,6 +50,43 @@ function somarMeses(iso: string, k: number): string {
   return `${dt.getFullYear()}-${mm}-${dd}`
 }
 
+/**
+ * Reconhece a parcela pela descrição ("Rebranding (2/5)") e devolve a base do
+ * nome e a posição. É por isso que dá para achar as IRMÃS de um parcelamento:
+ * mesma base + mesmo cliente.
+ */
+function parcelaDe(descricao: string | null | undefined): { base: string; k: number; n: number } | null {
+  const m = /^(.*)\s\((\d+)\/(\d+)\)\s*$/.exec(descricao ?? '')
+  if (!m) return null
+  const k = Number(m[2])
+  const n = Number(m[3])
+  if (!k || !n || n < 2) return null
+  return { base: m[1].trim(), k, n }
+}
+
+/**
+ * Move uma data aplicando a MESMA mudança feita na parcela editada: o tanto de
+ * meses que ela andou + o novo dia do mês. Assim funciona nos dois casos:
+ *   • trocar o dia (05/09 → 10/09): as outras viram dia 10 no mês delas;
+ *   • adiar um mês (05/09 → 05/10): todas andam um mês, mantendo o dia.
+ */
+function aplicarMudanca(iso: string, meses: number, dia: number): string {
+  const [y, m] = iso.split('-').map(Number)
+  const alvoMes = m - 1 + meses
+  const ultimoDia = new Date(y, alvoMes + 1, 0).getDate()
+  const dt = new Date(y, alvoMes, Math.min(dia, ultimoDia))
+  const mm = String(dt.getMonth() + 1).padStart(2, '0')
+  const dd = String(dt.getDate()).padStart(2, '0')
+  return `${dt.getFullYear()}-${mm}-${dd}`
+}
+
+/** Diferença em MESES entre duas datas (só ano/mês). */
+function mesesEntre(de: string, para: string): number {
+  const [ya, ma] = de.split('-').map(Number)
+  const [yb, mb] = para.split('-').map(Number)
+  return (yb - ya) * 12 + (mb - ma)
+}
+
 // "2026-07" → "Julho de 2026" (cabeçalho dos grupos por mês).
 function rotuloMes(chave: string): string {
   const [y, m] = chave.split('-')
@@ -88,6 +125,10 @@ export function GestaoCobrancas() {
   // Formulário de cobrança avulsa (criar OU editar) — sem window.prompt.
   const [criando, setCriando] = useState(false)
   const [editandoId, setEditandoId] = useState<string | null>(null)
+  // Vencimento de quando o formulário abriu: é com ele que se descobre o que
+  // mudou, para oferecer aplicar a mesma mudança nas outras parcelas.
+  const [vencOriginal, setVencOriginal] = useState<string | null>(null)
+  const [aplicarNasParcelas, setAplicarNasParcelas] = useState(false)
   const [novoCli, setNovoCli] = useState('')
   const [novaDesc, setNovaDesc] = useState('')
   const [novoValor, setNovoValor] = useState('')
@@ -298,12 +339,16 @@ export function GestaoCobrancas() {
     setNovaVM(false)
     setNovoValorVM('')
     setNovaComNota(null)
+    setVencOriginal(null)
+    setAplicarNasParcelas(false)
     setErro(null)
     setCriando(true)
   }
 
   function abrirEditar(c: Cobranca) {
     setEditandoId(c.id)
+    setVencOriginal(c.vencimento)
+    setAplicarNasParcelas(false)
     // Se a cobrança está sem cliente (ou o id não existe mais), já seleciona o
     // 1º da lista — assim o que aparece no campo é o que será salvo de verdade.
     const cid =
@@ -324,7 +369,26 @@ export function GestaoCobrancas() {
   function fecharForm() {
     setCriando(false)
     setEditandoId(null)
+    setVencOriginal(null)
+    setAplicarNasParcelas(false)
   }
+
+  // Editando uma PARCELA? Quais são as irmãs dela ainda em aberto?
+  const emEdicao = editandoId ? lista.find((c) => c.id === editandoId) ?? null : null
+  const parcelaAtual = emEdicao ? parcelaDe(emEdicao.descricao) : null
+  const irmasEmAberto = useMemo(() => {
+    if (!emEdicao || !parcelaAtual) return []
+    return lista.filter((c) => {
+      if (c.id === emEdicao.id) return false
+      if (c.cliente_id !== emEdicao.cliente_id) return false
+      if (c.status === 'paga' || c.status === 'cancelada') return false
+      const p = parcelaDe(c.descricao)
+      return !!p && p.base === parcelaAtual.base && p.n === parcelaAtual.n
+    })
+  }, [lista, emEdicao, parcelaAtual])
+  // A data mudou de verdade? Só aí faz sentido oferecer aplicar nas outras.
+  const dataMudou = !!vencOriginal && !!novoVenc && novoVenc !== vencOriginal
+  const podePropagar = irmasEmAberto.length > 0 && dataMudou
 
   async function salvarForm() {
     const cliente = clientes.find((c) => c.id === novoCli)
@@ -362,7 +426,26 @@ export function GestaoCobrancas() {
           valor_vm: valorVM,
           com_nota: novaComNota,
         })
-        mostrar('Cobrança atualizada')
+        // Mudou a data de uma PARCELA e pediu para valer nas outras: aplica a
+        // mesma mudança (quantos meses andou + o novo dia) em cada irmã ainda
+        // em aberto. As já pagas ou canceladas ficam como estão.
+        if (aplicarNasParcelas && podePropagar && vencOriginal) {
+          const meses = mesesEntre(vencOriginal, novoVenc)
+          const dia = Number(novoVenc.split('-')[2])
+          for (const irma of irmasEmAberto) {
+            if (!irma.vencimento) continue
+            await atualizarCobranca(irma.id, {
+              vencimento: aplicarMudanca(irma.vencimento, meses, dia),
+            })
+          }
+          mostrar(
+            irmasEmAberto.length === 1
+              ? 'Cobrança atualizada · a outra parcela também mudou de data'
+              : `Cobrança atualizada · as outras ${irmasEmAberto.length} parcelas também mudaram de data`,
+          )
+        } else {
+          mostrar('Cobrança atualizada')
+        }
       } else {
         // Criar (ou, ao editar em parcelado, vira a 1ª parcela + cria as demais).
         for (let k = 0; k < parcelas; k++) {
@@ -589,6 +672,48 @@ export function GestaoCobrancas() {
           <input type="date" value={novoVenc} onChange={(e) => setNovoVenc(e.target.value)} />
         </div>
 
+        {/* Mudou a data de uma parcela: oferece aplicar nas irmãs em aberto. */}
+        {podePropagar && parcelaAtual && (
+          <div className="field campo-toda">
+            <label className="parcelas-junto">
+              <input
+                type="checkbox"
+                checked={aplicarNasParcelas}
+                onChange={(e) => setAplicarNasParcelas(e.target.checked)}
+              />
+              <span>
+                Mudar também{' '}
+                <strong>
+                  {irmasEmAberto.length === 1
+                    ? 'a outra parcela'
+                    : `as outras ${irmasEmAberto.length} parcelas`}
+                </strong>{' '}
+                de "{parcelaAtual.base}" (as já pagas não mudam)
+              </span>
+            </label>
+            {aplicarNasParcelas && vencOriginal && (
+              <span className="campo-ajuda">
+                Ficam assim:{' '}
+                {irmasEmAberto
+                  .slice()
+                  .sort((a, b) => ((a.vencimento || '') < (b.vencimento || '') ? -1 : 1))
+                  .map((c) =>
+                    c.vencimento
+                      ? formatarData(
+                          aplicarMudanca(
+                            c.vencimento,
+                            mesesEntre(vencOriginal, novoVenc),
+                            Number(novoVenc.split('-')[2]),
+                          ),
+                        )
+                      : '—',
+                  )
+                  .join(' · ')}
+              </span>
+            )}
+          </div>
+        )}
+
         <div className="field">
           <label>Nota fiscal</label>
           <div className={`seg seg--nota ${novaComNota === null ? 'seg--faltando' : ''}`}>
@@ -787,7 +912,9 @@ export function GestaoCobrancas() {
             aria-expanded={!recolhido}
           >
             <span className="mes-grupo__seta">{recolhido ? '▸' : '▾'}</span>
-            <span className="mes-grupo__nome">{g.rotulo}</span>
+            <span className={`mes-grupo__nome ${agrupar === 'cliente' ? 'mes-grupo__nome--cli' : ''}`}>
+              {g.rotulo}
+            </span>
             <span className="mes-grupo__total">
               {g.itens.length} {g.itens.length === 1 ? 'cobrança' : 'cobranças'}
               {totalEmAberto(g.itens) > 0 && <> · {formatarBRL(totalEmAberto(g.itens))} em aberto</>}
@@ -802,9 +929,11 @@ export function GestaoCobrancas() {
                 <Fragment key={c.id}>
                   <div className={`cob-card cob-card--${s} ${editandoId === c.id ? 'cob-card--editando' : ''}`}>
                   <div className="cob-card__cab">
-                    <span className="cob-card__cliente">
-                      {agrupar === 'cliente' ? formatarData(c.vencimento) : nomeCliente(c.cliente_id)}
-                    </span>
+                    {agrupar === 'cliente' ? (
+                      <span className="cob-card__venc-topo">vence {formatarData(c.vencimento)}</span>
+                    ) : (
+                      <span className="cob-card__cliente">{nomeCliente(c.cliente_id)}</span>
+                    )}
                     <span className={`badge ${BADGE_COBRANCA[s]}`}>{rotuloStatus('cobranca', s)}</span>
                   </div>
                   <div className="cob-card__desc">
@@ -839,9 +968,9 @@ export function GestaoCobrancas() {
                         {formatarBRL(arredondar(Number(c.valor) + Number(c.valor_vm)))}
                       </span>
                     )}
-                    <span className="cob-card__venc">
-                      {agrupar === 'cliente' ? nomeCliente(c.cliente_id) : `vence ${formatarData(c.vencimento)}`}
-                    </span>
+                    {agrupar !== 'cliente' && (
+                      <span className="cob-card__venc">vence {formatarData(c.vencimento)}</span>
+                    )}
                     {c.status === 'paga' && c.pago_em && (
                       <span className="cob-card__pago">paga em {formatarData(c.pago_em)}</span>
                     )}
