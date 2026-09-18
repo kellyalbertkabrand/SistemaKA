@@ -3,9 +3,19 @@
 // sucinta e clara para o cliente — e atualize a VERSAO (data da publicação).
 // É exibido na página pública /atualizacoes, que pode ser enviada ao cliente.
 
-export const VERSAO = '20/08/2026';
+export const VERSAO = '18/09/2026';
 
 export const CHANGELOG = [
+  {
+    data: '18/09/2026',
+    titulo: 'Contratos no sistema',
+    itens: [
+      'Nova aba Contratos com três modelos: Projeto e Execução, Projeto, e Administração de Obra.',
+      'Escolha o modelo, selecione o cliente (os dados do cadastro entram sozinhos) e complete os dados da obra e os valores.',
+      'O contrato é gerado pronto e pode ser editado direto na tela antes de finalizar.',
+      'Baixe em Word (editável) ou imprima / salve em PDF.',
+    ],
+  },
   {
     data: '20/08/2026',
     titulo: 'Financeiro mais claro e controle do projeto',

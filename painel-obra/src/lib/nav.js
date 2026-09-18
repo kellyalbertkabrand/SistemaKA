@@ -20,6 +20,7 @@ export function navBar(ativo = '') {
       <label for="nav-toggle" class="nav-fechar" aria-label="Fechar menu">✕</label>
       ${item('/obras', 'Painel', 'painel')}
       ${item('/financeiro', 'Financeiro', 'financeiro')}
+      ${item('/contratos', 'Contratos', 'contratos')}
       ${item('/clientes', 'Clientes', 'clientes')}
       ${item('/fornecedores', 'Fornecedores', 'fornecedores')}
       ${item('/atualizacoes', 'Atualizações', 'atualizacoes')}
