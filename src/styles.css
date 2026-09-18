@@ -733,6 +733,22 @@ body.modal-aberto { overflow: hidden; }
 .pub-rodape-nota { margin-top: .7rem !important; opacity: .8; }
 .pub-vazio { text-align: center; padding: 5rem 1rem; }
 
+/* ---- Contratos ---- */
+.contrato-modelos { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .8rem; }
+.contrato-modelo-card {
+  display: flex; flex-direction: column; gap: .35rem; text-align: left; cursor: pointer;
+  background: var(--card); border: 1px solid var(--linha); border-left: 5px solid var(--acento);
+  border-radius: var(--raio); padding: 1.1rem 1.15rem; font: inherit; color: var(--tinta); box-shadow: var(--sombra-sm);
+}
+.contrato-modelo-card:hover { border-color: var(--acento); box-shadow: var(--sombra); }
+.contrato-modelo-card strong { font-family: var(--fonte); font-size: 1.08rem; }
+.contrato-modelo-card .muted { font-size: .85rem; }
+.contrato-toolbar { display: flex; align-items: center; justify-content: space-between; gap: .6rem; flex-wrap: wrap; margin-bottom: .7rem; }
+.contrato-dica { font-size: .82rem; }
+.contrato-folha { padding: 0; overflow: hidden; }
+.contrato-editavel { background: #fff; padding: 2.4rem 2.6rem; max-width: 820px; margin: 0 auto; outline: none; }
+.contrato-editavel:focus { box-shadow: inset 0 0 0 2px var(--acento-tint); }
+
 /* ---- Responsivo ---- */
 @media (max-width: 720px) {
   .kpis { grid-template-columns: repeat(2, 1fr); }
@@ -793,4 +809,7 @@ body.modal-aberto { overflow: hidden; }
   /* Cabeçalho do card da obra mais compacto. */
   .fin-obra-nome { font-size: 1.06rem; }
   .fin-obra-cab { gap: .6rem; }
+
+  /* Contrato: menos margem interna no celular. */
+  .contrato-editavel { padding: 1.4rem 1.1rem; }
 }
