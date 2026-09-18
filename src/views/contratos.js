@@ -235,9 +235,8 @@ export async function renderContratos(container, opts = {}) {
   }
 
   async function salvar(botao) {
-    const m = modeloPorId(modeloId);
     const corpoHtml = conteudoAtual();
-    const titulo = `${m.nome} — ${dados.nome || clienteNome || 'contratante'}`;
+    const titulo = tituloContrato();
     const registro = { modeloId, titulo, dados, corpoHtml, clienteId, clienteNome, obraId, obraNome };
     const rot = botao.textContent; botao.disabled = true; botao.textContent = 'Salvando…';
     try {
@@ -256,10 +255,14 @@ export async function renderContratos(container, opts = {}) {
     const el = container.querySelector('#ct-editavel');
     return el ? el.innerHTML : '';
   }
+  // "Contrato entre [contratante] e Schramm Engenharia e Projetos" — usado no
+  // título salvo e no nome do arquivo baixado.
+  function tituloContrato() {
+    const contratante = (dados.nome || clienteNome || 'Contratante').trim();
+    return `Contrato entre ${contratante} e Schramm Engenharia e Projetos`;
+  }
   function nomeArquivo() {
-    const m = modeloPorId(modeloId);
-    const base = (dados.nome || 'contrato').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-zA-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
-    return `contrato-${m.id}-${base || 'cliente'}`;
+    return tituloContrato().replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, ' ').trim().slice(0, 120);
   }
 
   function imprimir() {
