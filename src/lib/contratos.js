@@ -80,13 +80,18 @@ function introPartes(d) {
   return `De um lado, <strong>${esc(d.nome)}</strong>${c ? ', ' + c : ''}, CPF ${esc(d.cpf)}, residente na ${esc(d.endereco)}, doravante simplesmente denominado <strong>CONTRATANTE</strong>; e, de outro lado, ${CONTRATADA_INTRO}`;
 }
 
-function fecho(d, contratanteRot = 'Contratante') {
+// Fecho do contrato (modelos 01 e 02). Recebe a ÚLTIMA cláusula (Foro) e a
+// mantém junto com o espaço das assinaturas num bloco que NÃO quebra de página.
+function fecho(d, foroHtml = '', contratanteRot = 'Contratante') {
   return `
-    <p>E por estarem justas e acertadas, na melhor forma de direito, as partes assinam o presente instrumento em 02 (duas) vias originais e de igual teor e forma, na presença das testemunhas, que também o assinam.</p>
-    <p>${esc(d.cidade || 'Gravataí/RS')}, ${esc(d.dataExt || '____ de __________ de ______')}.</p>
-    <div class="contrato-assinaturas">
-      <div><div class="linha-assinatura"></div><p>${esc(d.nome || 'Contratante')}<br><small>${contratanteRot}</small></p></div>
-      <div><div class="linha-assinatura"></div><p>Schramm Engenharia e Projetos Ltda<br><small>Contratada</small></p></div>
+    <div class="contrato-fim">
+      ${foroHtml}
+      <p>E por estarem justas e acertadas, na melhor forma de direito, as partes assinam o presente instrumento em 02 (duas) vias originais e de igual teor e forma, na presença das testemunhas, que também o assinam.</p>
+      <p>${esc(d.cidade || 'Gravataí/RS')}, ${esc(d.dataExt || '____ de __________ de ______')}.</p>
+      <div class="contrato-assinaturas">
+        <div><div class="linha-assinatura"></div><p>${esc(d.nome || 'Contratante')}<br><small>${contratanteRot}</small></p></div>
+        <div><div class="linha-assinatura"></div><p>Schramm Engenharia e Projetos Ltda<br><small>Contratada</small></p></div>
+      </div>
     </div>`;
 }
 
@@ -160,9 +165,7 @@ function docProjetoExecucao(d) {
   ${p('8.7 O presente contrato não transfere ao CONTRATANTE os direitos de uso de imagem atinentes ao projeto e maquetes eletrônicas, ou a propriedade intelectual destes, ainda que parcial, que poderão continuar a ser utilizados pelo CONTRATADO, especialmente para fins publicitários e composição de seu portfólio.')}
   ${p('8.8 O CONTRATADO não se responsabiliza por alterações ocorridas durante a obra que estiverem em desacordo com os serviços por ele executados ou alterações solicitadas pela CONTRATANTE que estiverem em desacordo com a legislação em vigor.')}
   ${p('8.9 O CONTRATANTE autoriza, de forma gratuita e por prazo indeterminado, o(a) CONTRATADO(a) a realizar e utilizar fotografias e vídeos do projeto, da obra e do trabalho finalizado, para fins de divulgação em portfólio, redes sociais, site, apresentações e demais meios de comunicação, físicos ou digitais, nos termos da Lei nº 9.610/98 (Lei de Direitos Autorais) e demais legislações aplicáveis. Esta autorização inclui o uso integral ou parcial das imagens, podendo ser editadas ou adaptadas, desde que mantida a integridade do projeto. Fica vedada a divulgação de imagens que exponham dados pessoais, pessoas ou informações de caráter íntimo sem autorização prévia do CONTRATANTE.')}
-  ${h('9 – CLÁUSULA NONA: DO FORO')}
-  ${p('9.1 Para qualquer demanda judicial relativa ao presente contrato, as partes elegem o foro da Comarca de Gravataí/RS, com exclusão de qualquer outro, por mais privilegiado que seja.')}
-  ${fecho(d)}`;
+  ${fecho(d, h('9 – CLÁUSULA NONA: DO FORO') + p('9.1 Para qualquer demanda judicial relativa ao presente contrato, as partes elegem o foro da Comarca de Gravataí/RS, com exclusão de qualquer outro, por mais privilegiado que seja.'))}`;
 }
 
 // =====================================================================
@@ -228,9 +231,7 @@ function docProjeto(d) {
   ${p('8.6 A responsabilidade do CONTRATADO não se estende a compra de materiais necessários e nem tampouco os pagamentos dos materiais adquiridos e/ou dos serviços contratados ou ainda os encargos relativos à contratação de profissionais executores de obra ou prestadores de serviço. Não há identidade ou solidariedade entre a responsabilidade dos profissionais contratados para a elaboração dos projetos e para a execução dos serviços da obra, visto que cada um atua em área própria, como profissional ou empresa independente, respondendo cada qual pelo seu trabalho.')}
   ${p('8.7 O presente contrato não transfere ao CONTRATANTE os direitos de uso de imagem atinentes ao projeto e maquetes eletrônicas, ou a propriedade intelectual destes, ainda que parcial, que poderão continuar a ser utilizados pelo CONTRATADO, especialmente para fins publicitários e composição de seu portfólio.')}
   ${p('8.8 O CONTRATADO não se responsabiliza por alterações ocorridas durante a obra que estiverem em desacordo com os serviços por ele executados ou alterações solicitadas pela CONTRATANTE que estiverem em desacordo com a legislação em vigor.')}
-  ${h('9 – CLÁUSULA NONA: DO FORO')}
-  ${p('9.1 Para qualquer demanda judicial relativa ao presente contrato, as partes elegem o foro da Comarca de Gravataí/RS, com exclusão de qualquer outro, por mais privilegiado que seja.')}
-  ${fecho(d)}`;
+  ${fecho(d, h('9 – CLÁUSULA NONA: DO FORO') + p('9.1 Para qualquer demanda judicial relativa ao presente contrato, as partes elegem o foro da Comarca de Gravataí/RS, com exclusão de qualquer outro, por mais privilegiado que seja.'))}`;
 }
 
 // =====================================================================
@@ -296,6 +297,7 @@ function docAdministracao(d) {
   ${p('12.1. O presente contrato vigorará da data de sua assinatura até a conclusão da obra, incluindo a entrega do "habite-se" ou documento equivalente (mediante quitação das referidas taxas pelo CONTRATANTE), quando aplicável, e a quitação integral dos honorários e despesas devidos, ressalvado o disposto na Cláusula Décima Primeira.')}
   ${h('CLÁUSULA DÉCIMA TERCEIRA – DAS DISPOSIÇÕES GERAIS')}
   ${p('13.1. Este contrato obriga as partes e seus eventuais sucessores a qualquer título.<br>13.2. Qualquer alteração a este contrato somente será válida se formalizada por escrito, mediante termo aditivo assinado por ambas as partes.<br>13.3. A tolerância de uma parte quanto ao eventual descumprimento de qualquer obrigação pela outra não implicará novação ou renúncia a direitos, podendo a obrigação ser exigida a qualquer tempo.')}
+  <div class="contrato-fim">
   ${h('CLÁUSULA DÉCIMA QUARTA – DO FORO')}
   ${p('14.1. Fica eleito o foro da Comarca de Gravataí/RS para dirimir quaisquer dúvidas ou controvérsias oriundas do presente contrato, com renúncia expressa a qualquer outro, por mais privilegiado que seja.')}
   ${p('E, por estarem assim justas e contratadas, as partes firmam o presente instrumento em 2 (duas) vias de igual teor e forma, na presença de duas testemunhas.')}
@@ -308,6 +310,7 @@ function docAdministracao(d) {
     <p>Testemunhas:</p>
     <p>1) ____________________________________________<br>Nome:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CPF:</p>
     <p>2) ____________________________________________<br>Nome:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;CPF:</p>
+  </div>
   </div>`;
 }
 

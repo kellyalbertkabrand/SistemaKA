@@ -16,6 +16,7 @@ const ESTILO_CONTRATO = `
   .contrato-doc .linha-assinatura { border-top:1px solid #000; margin:0 0 4px; }
   .contrato-doc .contrato-assinaturas p { margin:0; }
   .contrato-doc .contrato-testemunhas { margin-top:28px; }
+  .contrato-doc .contrato-fim { break-inside:avoid; page-break-inside:avoid; }
 `;
 
 // Envelope HTML (impressão / Word) com o logo/cabeçalho do escritório.
@@ -103,14 +104,14 @@ export async function renderContratos(container, opts = {}) {
     container.innerHTML = chrome(`
       <div class="contrato-toolbar">
         <button class="btn btn-mini btn-ghost" id="ct-voltar-dados">← Editar dados</button>
-        <span class="muted contrato-dica">Você pode editar o texto abaixo direto aqui.</span>
         <span class="row-end">
+          <button class="btn btn-mini" id="ct-editar">✏️ Editar contrato</button>
           <button class="btn btn-mini" id="ct-imprimir">🖨 Imprimir / PDF</button>
           <button class="btn btn-mini btn-primary" id="ct-word">⬇ Baixar Word</button>
         </span>
       </div>
       <div class="card contrato-folha">
-        <div id="ct-editavel" class="contrato-editavel" contenteditable="true">${html}</div>
+        <div id="ct-editavel" class="contrato-editavel" contenteditable="false">${html}</div>
       </div>
       <style>${ESTILO_CONTRATO}</style>`);
     liga();
@@ -160,6 +161,18 @@ export async function renderContratos(container, opts = {}) {
     const voltarDados = container.querySelector('#ct-voltar-dados');
     if (voltarDados) voltarDados.addEventListener('click', telaDados);
 
+    // Botão de editar: liga/desliga a edição direta do contrato na tela.
+    const btnEditar = container.querySelector('#ct-editar');
+    const editavel = container.querySelector('#ct-editavel');
+    if (btnEditar && editavel) btnEditar.addEventListener('click', () => {
+      const ligando = editavel.getAttribute('contenteditable') !== 'true';
+      editavel.setAttribute('contenteditable', ligando ? 'true' : 'false');
+      editavel.classList.toggle('editando', ligando);
+      btnEditar.classList.toggle('btn-primary', ligando);
+      btnEditar.textContent = ligando ? '✓ Concluir edição' : '✏️ Editar contrato';
+      if (ligando) editavel.focus();
+    });
+
     const btnImp = container.querySelector('#ct-imprimir');
     if (btnImp) btnImp.addEventListener('click', imprimir);
     const btnWord = container.querySelector('#ct-word');
@@ -182,14 +195,27 @@ export async function renderContratos(container, opts = {}) {
     const w = window.open('', '_blank');
     if (!w) { alert('Permita pop-ups para imprimir, ou use "Baixar Word".'); return; }
     w.document.write(`<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><title>Contrato</title>
-      <style>@page{margin:2.2cm 2cm;} body{margin:0;}${ESTILO_CONTRATO}</style></head>
+      <style>
+        @page { margin: 2.2cm 2cm; @bottom-right { content: "Página " counter(page) " de " counter(pages); font: 9pt Georgia, serif; color: #555; } }
+        body { margin: 0; }
+        ${ESTILO_CONTRATO}
+      </style></head>
       <body>${conteudoAtual()}</body></html>`);
     w.document.close(); w.focus();
     setTimeout(() => { try { w.print(); } catch (e) { /* usuário imprime manual */ } }, 350);
   }
 
   function baixarWord() {
-    const html = `<!doctype html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>${ESTILO_CONTRATO} body{font-family:Georgia,serif;}</style></head><body>${conteudoAtual()}</body></html>`;
+    // Rodapé com numeração de páginas (campos do Word PAGE / NUMPAGES).
+    const rodape = `<div style='mso-element:footer' id='rodape1'><p class=MsoFooter style='text-align:right;font-size:9.0pt;color:#555'>Página <span style='mso-field-code:" PAGE "'></span> de <span style='mso-field-code:" NUMPAGES "'></span></p></div>`;
+    const html = `<!doctype html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">
+      <style>
+        @page Section1 { size: 21.0cm 29.7cm; margin: 2.2cm 2.0cm; mso-footer: rodape1; }
+        div.Section1 { page: Section1; }
+        ${ESTILO_CONTRATO}
+        body { font-family: Georgia, serif; }
+      </style></head>
+      <body><div class="Section1">${conteudoAtual()}${rodape}</div></body></html>`;
     const blob = new Blob(['﻿', html], { type: 'application/msword' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

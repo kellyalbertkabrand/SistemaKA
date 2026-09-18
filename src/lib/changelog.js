@@ -12,8 +12,9 @@ export const CHANGELOG = [
     itens: [
       'Nova aba Contratos com três modelos: Projeto e Execução, Projeto, e Administração de Obra.',
       'Escolha o modelo, selecione o cliente (os dados do cadastro entram sozinhos) e complete os dados da obra e os valores.',
-      'O contrato é gerado pronto e pode ser editado direto na tela antes de finalizar.',
-      'Baixe em Word (editável) ou imprima / salve em PDF.',
+      'O contrato é gerado pronto, com o valor por extenso automático, e pode ser editado direto na tela (botão "Editar contrato").',
+      'Baixe em Word (editável) ou imprima / salve em PDF — com as páginas numeradas.',
+      'A última cláusula fica sempre junto do espaço das assinaturas (não se separa entre páginas).',
     ],
   },
   {
