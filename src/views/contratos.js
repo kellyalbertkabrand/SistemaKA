@@ -276,11 +276,22 @@ export async function renderContratos(container, opts = {}) {
       <style>
         @page { margin: 2.2cm 2cm; @bottom-right { content: "Página " counter(page) " de " counter(pages); font: 9pt Georgia, serif; color: #555; } }
         body { margin: 0; }
+        .ct-topbar { position: sticky; top: 0; display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 10px 14px; background: #f5f2ec; border-bottom: 1px solid #ddd6c8; font-family: Inter, -apple-system, system-ui, sans-serif; }
+        .ct-topbar button { font: inherit; font-size: 15px; padding: 9px 14px; border: 1px solid #cfc7ba; background: #fff; border-radius: 8px; cursor: pointer; }
+        .ct-topbar .ct-voltar { border-color: #c65a2e; color: #c65a2e; font-weight: 600; }
+        .ct-corpo { padding: 0 14px; }
+        @media print { .no-print { display: none !important; } .ct-corpo { padding: 0; } }
         ${ESTILO_CONTRATO}
       </style></head>
-      <body>${conteudoAtual()}</body></html>`);
+      <body>
+        <div class="ct-topbar no-print">
+          <button class="ct-voltar" onclick="window.close()">← Voltar ao sistema</button>
+          <button onclick="window.print()">🖨 Imprimir / Salvar PDF</button>
+        </div>
+        <div class="ct-corpo">${conteudoAtual()}</div>
+      </body></html>`);
     w.document.close(); w.focus();
-    setTimeout(() => { try { w.print(); } catch (e) { /* imprime manual */ } }, 350);
+    setTimeout(() => { try { w.print(); } catch (e) { /* imprime manual pelo botão */ } }, 400);
   }
 
   function baixarWord() {
