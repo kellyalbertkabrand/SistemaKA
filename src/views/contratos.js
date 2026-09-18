@@ -139,6 +139,7 @@ export async function renderContratos(container, opts = {}) {
         <span class="row-end">
           <button class="btn btn-mini" id="ct-editar">✏️ Editar contrato</button>
           <button class="btn btn-mini" id="ct-salvar">💾 Salvar</button>
+          <button class="btn btn-mini" id="ct-salvar-pdf">💾 Salvar e PDF</button>
           <button class="btn btn-mini" id="ct-imprimir">🖨 Imprimir / PDF</button>
           <button class="btn btn-mini btn-primary" id="ct-word">⬇ Baixar Word</button>
         </span>
@@ -218,6 +219,8 @@ export async function renderContratos(container, opts = {}) {
 
     const btnSalvar = container.querySelector('#ct-salvar');
     if (btnSalvar) btnSalvar.addEventListener('click', () => salvar(btnSalvar));
+    const btnSalvarPdf = container.querySelector('#ct-salvar-pdf');
+    if (btnSalvarPdf) btnSalvarPdf.addEventListener('click', () => salvar(btnSalvarPdf, imprimir));
     const btnImp = container.querySelector('#ct-imprimir');
     if (btnImp) btnImp.addEventListener('click', imprimir);
     const btnWord = container.querySelector('#ct-word');
@@ -234,7 +237,7 @@ export async function renderContratos(container, opts = {}) {
     telaContrato();
   }
 
-  async function salvar(botao) {
+  async function salvar(botao, depois) {
     const corpoHtml = conteudoAtual();
     const titulo = tituloContrato();
     const registro = { modeloId, titulo, dados, corpoHtml, clienteId, clienteNome, obraId, obraNome };
@@ -244,6 +247,7 @@ export async function renderContratos(container, opts = {}) {
       else contratoId = await criarContrato(registro);
       contratos = await listarContratos().catch(() => contratos);
       botao.textContent = '✓ Salvo';
+      if (typeof depois === 'function') depois();
       setTimeout(() => { botao.disabled = false; botao.textContent = rot; }, 1500);
     } catch (err) {
       botao.disabled = false; botao.textContent = rot;
