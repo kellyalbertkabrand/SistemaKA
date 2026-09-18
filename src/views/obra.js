@@ -2,7 +2,7 @@ import {
   obterObra, listarEtapas, listarLancamentos, atualizarObra, excluirObra, definirPublicado,
   criarEtapa, atualizarEtapa, excluirEtapa, criarLancamento, atualizarLancamento, excluirLancamento, sair,
   anexarRecibo, removerRecibo, obterRecibo, enviarFoto, listarFotos, excluirFoto, atualizarFoto, obterFotoBin, salvarFotoBin, excluirBin,
-  listarFornecedores,
+  listarFornecedores, listarContratosDaObra,
 } from '../dados.js';
 import { navegar } from '../main.js';
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
@@ -63,10 +63,11 @@ export async function renderObra(container, obraId, opts = {}) {
   // Etapas e lançamentos entram no caminho crítico (os KPIs e as tabelas
   // dependem deles). As FOTOS são as mais pesadas (imagens em base64), então
   // NÃO seguram a abertura da tela: carregam em segundo plano logo abaixo.
-  const [etapas, lancamentos, fornecedores] = await Promise.all([
+  const [etapas, lancamentos, fornecedores, contratosObra] = await Promise.all([
     listarEtapas(obraId).catch(() => []),
     listarLancamentos(obraId).catch(() => []),
     listarFornecedores().catch(() => []),
+    listarContratosDaObra(obraId).catch(() => []),
   ]);
   // No refresh, reaproveita as fotos já carregadas (opts.fotosCache) para o grid
   // já sair com a altura certa e a rolagem cair no lugar exato (sem "pulo").
@@ -288,6 +289,23 @@ export async function renderObra(container, obraId, opts = {}) {
           <p class="status-voz" id="status-projeto" hidden></p>
         </form>
         <div id="lista-projetos">${listaProjetos(obra.projetos)}</div>
+      </section>
+
+      <section class="card">
+        <div class="row-between">
+          <h2>Contratos</h2>
+          <a class="btn btn-mini btn-primary" data-link href="/contratos" style="margin:0">+ Novo contrato</a>
+        </div>
+        ${(contratosObra && contratosObra.length) ? `<div class="contrato-lista">
+          ${contratosObra.map((c) => `
+            <div class="contrato-item">
+              <div class="contrato-item-info">
+                <strong>${esc(c.titulo || 'Contrato')}</strong>
+                <span class="muted">${esc(dataBR(new Date(c.atualizadoEm || c.criadoEm).toISOString()))}</span>
+              </div>
+              <a class="btn btn-mini" data-link href="/contratos?abrir=${esc(c.id)}">Abrir</a>
+            </div>`).join('')}
+        </div>` : '<p class="muted">Nenhum contrato salvo para esta obra. Gere um em Contratos e vincule a esta obra.</p>'}
       </section>
     </div>`;
 
