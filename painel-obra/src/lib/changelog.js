@@ -15,6 +15,8 @@ export const CHANGELOG = [
       'O contrato é gerado pronto, com o valor por extenso automático, e pode ser editado direto na tela (botão "Editar contrato").',
       'Baixe em Word (editável) ou imprima / salve em PDF — com as páginas numeradas.',
       'A última cláusula fica sempre junto do espaço das assinaturas (não se separa entre páginas).',
+      'Contratos salvos: cada contrato fica guardado (dados + edições) para reabrir, ajustar e baixar de novo; salvar de novo atualiza o mesmo contrato.',
+      'Vínculo com a obra: o contrato pode ser ligado a uma obra e aparece também no painel dela.',
     ],
   },
   {

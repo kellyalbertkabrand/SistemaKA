@@ -255,6 +255,40 @@ export async function listarPagamentosDoEscritorio() {
 }
 
 // ---------------------------------------------------------------------------
+// Contratos gerados e SALVOS (para reabrir, editar e baixar de novo).
+//   contratos/{id} -> modeloId, titulo, dados{}, corpoHtml, clienteId,
+//                     clienteNome, obraId, obraNome, ownerId, criadoEm, atualizadoEm
+// ---------------------------------------------------------------------------
+export async function listarContratos() {
+  const snap = await getDocs(collection(db, 'contratos'));
+  const cs = docsComId(snap);
+  cs.sort((a, b) => (b.atualizadoEm || b.criadoEm || 0) - (a.atualizadoEm || a.criadoEm || 0));
+  return cs;
+}
+export async function listarContratosDaObra(obraId) {
+  const snap = await getDocs(query(collection(db, 'contratos'), where('obraId', '==', obraId)));
+  const cs = docsComId(snap);
+  cs.sort((a, b) => (b.atualizadoEm || b.criadoEm || 0) - (a.atualizadoEm || a.criadoEm || 0));
+  return cs;
+}
+export async function obterContrato(id) {
+  const d = await getDoc(doc(db, 'contratos', id));
+  return d.exists() ? { id: d.id, ...d.data() } : null;
+}
+export async function criarContrato(campos) {
+  const ref = await addDoc(collection(db, 'contratos'), {
+    ...campos, ownerId: uid(), criadoEm: Date.now(), atualizadoEm: Date.now(),
+  });
+  return ref.id;
+}
+export async function atualizarContrato(id, campos) {
+  await updateDoc(doc(db, 'contratos', id), { ...campos, atualizadoEm: Date.now() });
+}
+export async function excluirContrato(id) {
+  await deleteDoc(doc(db, 'contratos', id));
+}
+
+// ---------------------------------------------------------------------------
 // Importar backup (restauração a partir do backup.json do ZIP).
 // Regrava (upsert por id) as coleções de texto: obras, etapas, lançamentos,
 // pagamentos, clientes e fornecedores. É idempotente (reimportar não duplica).
