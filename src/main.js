@@ -12,6 +12,8 @@ import { renderCadastroFornecedor } from './views/cadastroFornecedor.js';
 import { renderFornecedores } from './views/fornecedores.js';
 import { renderFinanceiro } from './views/financeiro.js';
 import { renderContratos } from './views/contratos.js';
+import { renderBriefings } from './views/briefings.js';
+import { renderBriefingPublico } from './views/briefingPublico.js';
 import { renderAtualizacoes } from './views/atualizacoes.js';
 
 const app = document.getElementById('app');
@@ -59,6 +61,11 @@ function rotear() {
   if (mCadastro) {
     return renderCadastroCliente(app, decodeURIComponent(mCadastro[1]));
   }
+  //    /briefing/{token} — o cliente preenche o briefing do projeto
+  const mBriefing = path.match(/^\/briefing\/([^/]+)\/?$/);
+  if (mBriefing) {
+    return renderBriefingPublico(app, decodeURIComponent(mBriefing[1]));
+  }
 
   // Sem a config do Firebase nada interno funciona — avisa em vez de quebrar.
   if (!configurado) {
@@ -99,6 +106,10 @@ function rotear() {
 
   if (path === '/contratos' || path === '/contratos/') {
     return renderContratos(app);
+  }
+
+  if (path === '/briefings' || path === '/briefings/') {
+    return renderBriefings(app);
   }
 
   // Padrão (home): menu-lançador com os botões.

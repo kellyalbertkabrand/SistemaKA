@@ -21,6 +21,7 @@ export function navBar(ativo = '') {
       ${item('/obras', 'Painel', 'painel')}
       ${item('/financeiro', 'Financeiro', 'financeiro')}
       ${item('/contratos', 'Contratos', 'contratos')}
+      ${item('/briefings', 'Briefing', 'briefing')}
       ${item('/clientes', 'Clientes', 'clientes')}
       ${item('/fornecedores', 'Fornecedores', 'fornecedores')}
       ${item('/atualizacoes', 'Atualizações', 'atualizacoes')}

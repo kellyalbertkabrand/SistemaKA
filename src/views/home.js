@@ -10,6 +10,7 @@ export function renderHome(container) {
     { href: '/obras', icone: '🏗️', titulo: 'Painel de Obras', desc: 'Obras, KPIs, etapas e lançamentos' },
     { href: '/financeiro', icone: '💳', titulo: 'Financeiro', desc: 'Total a pagar, recebido e saldo por obra' },
     { href: '/contratos', icone: '📄', titulo: 'Contratos', desc: 'Gerar contrato de projeto, execução ou administração' },
+    { href: '/briefings', icone: '📝', titulo: 'Briefing', desc: 'Link do briefing do projeto e respostas do cliente' },
     { href: '/clientes', icone: '👥', titulo: 'Clientes', desc: 'Cadastro e dados para contrato' },
     { href: '/fornecedores', icone: '🏢', titulo: 'Fornecedores', desc: 'Sua lista de fornecedores' },
   ];
