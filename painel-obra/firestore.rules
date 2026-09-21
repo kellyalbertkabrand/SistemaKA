@@ -56,6 +56,14 @@ service cloud.firestore {
     match /contratos/{id} {
       allow read, write: if logado();
     }
+    // Briefings — o cliente preenche pelo link público (token de convite válido);
+    // só o escritório logado lê/edita/exclui.
+    match /briefings/{id} {
+      allow read, update, delete: if logado();
+      allow create: if logado()
+        || (request.resource.data.token != null
+            && exists(/databases/$(database)/documents/convites/$(request.resource.data.token)));
+    }
     match /clientes/{id} {
       allow read, update, delete: if logado();
       allow create: if logado()

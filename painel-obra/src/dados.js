@@ -289,6 +289,41 @@ export async function excluirContrato(id) {
 }
 
 // ---------------------------------------------------------------------------
+// Briefings — a arquiteta gera um link (convite tipo 'briefing') e o cliente
+// preenche o formulário de briefing do projeto. As respostas ficam salvas.
+//   briefings/{id} -> token, ownerId, obraId?, obraNome?, rotulo?, cliente?,
+//                     respostas[{secao, pergunta, resposta}], criadoEm
+// ---------------------------------------------------------------------------
+export async function listarBriefings() {
+  const snap = await getDocs(collection(db, 'briefings'));
+  const bs = docsComId(snap);
+  bs.sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+  return bs;
+}
+export async function listarBriefingsDaObra(obraId) {
+  const snap = await getDocs(query(collection(db, 'briefings'), where('obraId', '==', obraId)));
+  const bs = docsComId(snap);
+  bs.sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+  return bs;
+}
+export async function obterBriefing(id) {
+  const d = await getDoc(doc(db, 'briefings', id));
+  return d.exists() ? { id: d.id, ...d.data() } : null;
+}
+// Envio público do briefing. O ownerId vem do convite (validado nas Regras).
+export async function criarBriefingPublico({ token, ownerId, ...campos }) {
+  await addDoc(collection(db, 'briefings'), {
+    token,
+    ownerId,
+    ...campos,
+    criadoEm: Date.now(),
+  });
+}
+export async function excluirBriefing(id) {
+  await deleteDoc(doc(db, 'briefings', id));
+}
+
+// ---------------------------------------------------------------------------
 // Importar backup (restauração a partir do backup.json do ZIP).
 // Regrava (upsert por id) as coleções de texto: obras, etapas, lançamentos,
 // pagamentos, clientes e fornecedores. É idempotente (reimportar não duplica).
@@ -333,12 +368,13 @@ export async function importarBackup(backup, onLog = () => {}) {
 // Convites + Clientes (link de autopreenchimento)
 // ---------------------------------------------------------------------------
 // Gera um convite com um token único (docId = token) e devolve o token.
-export async function criarConvite({ rotulo, obraId, tipo }) {
+export async function criarConvite({ rotulo, obraId, obraNome, tipo }) {
   const token = crypto.randomUUID();
   await setDoc(doc(db, 'convites', token), {
     rotulo: rotulo ?? null,
     obraId: obraId ?? null,
-    tipo: tipo ?? 'cliente', // 'cliente' | 'fornecedor'
+    obraNome: obraNome ?? null,
+    tipo: tipo ?? 'cliente', // 'cliente' | 'fornecedor' | 'briefing'
     ownerId: uid(),
     criadoEm: Date.now(),
   });
