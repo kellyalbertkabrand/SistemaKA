@@ -863,3 +863,9 @@ body.modal-aberto { overflow: hidden; }
 .brf-resp:last-child { border-bottom: 0; }
 .brf-resp-p { margin: 0 0 .2rem; font-size: .82rem; color: var(--muted); }
 .brf-resp-r { margin: 0; color: var(--tinta); line-height: 1.4; white-space: pre-wrap; }
+.brf-status { margin: .6rem 0 0; font-size: .85rem; color: var(--muted); }
+.brf-status.ok { color: var(--ok); font-weight: 600; }
+.brf-status.erro-inline { color: var(--neg); font-weight: 600; }
+.brf-selo { font-size: .72rem; font-weight: 700; padding: .12rem .5rem; border-radius: 999px; margin-left: .5rem; }
+.brf-selo.concluido { background: #e6f2ea; color: var(--ok); }
+.brf-selo.andamento { background: #fbf1ea; color: var(--acento); }

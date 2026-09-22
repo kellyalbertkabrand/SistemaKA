@@ -58,9 +58,12 @@ service cloud.firestore {
     }
     // Briefings — o cliente preenche pelo link público (token de convite válido);
     // só o escritório logado lê/edita/exclui.
+    // Briefings — o cliente preenche pelo link público e as respostas vão sendo
+    // SALVAS automaticamente (create + update com token de convite válido); só o
+    // escritório logado lê e exclui.
     match /briefings/{id} {
-      allow read, update, delete: if logado();
-      allow create: if logado()
+      allow read, delete: if logado();
+      allow create, update: if logado()
         || (request.resource.data.token != null
             && exists(/databases/$(database)/documents/convites/$(request.resource.data.token)));
     }
