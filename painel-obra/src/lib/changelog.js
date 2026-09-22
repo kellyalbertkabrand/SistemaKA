@@ -3,15 +3,17 @@
 // sucinta e clara para o cliente — e atualize a VERSAO (data da publicação).
 // É exibido na página pública /atualizacoes, que pode ser enviada ao cliente.
 
-export const VERSAO = '21/09/2026';
+export const VERSAO = '22/09/2026';
 
 export const CHANGELOG = [
   {
-    data: '21/09/2026',
+    data: '22/09/2026',
     titulo: 'Briefing do projeto online',
     itens: [
       'Nova aba Briefing: gere um link e envie ao cliente para ele preencher o briefing do projeto direto pelo celular.',
       'O formulário reúne o perfil dos moradores, estilo e fachada, e os ambientes da casa — com perguntas de múltipla escolha e campos para descrever cada detalhe.',
+      'Salvamento automático: as respostas vão sendo guardadas enquanto o cliente preenche — nada se perde se ele fechar e voltar depois.',
+      'Você só precisa gerar o link. Cada briefing mostra se está "Em preenchimento" ou "Concluído".',
       'As respostas chegam prontas no sistema: abra "Ver respostas" para ler tudo organizado por seção.',
       'Você pode vincular o briefing a uma obra e apagar um briefing quando quiser.',
     ],

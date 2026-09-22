@@ -114,10 +114,15 @@ function tituloBriefing(b) {
 
 function listaBriefings(briefings) {
   if (!briefings.length) return `<p class="muted">Nenhum briefing recebido ainda.</p>`;
-  return briefings.map((b) => `
+  return briefings.map((b) => {
+    const selo = b.concluido
+      ? '<span class="brf-selo concluido">Concluído</span>'
+      : '<span class="brf-selo andamento">Em preenchimento</span>';
+    const quando = b.atualizadoEm || b.criadoEm;
+    return `
     <div class="cliente-item">
       <div class="row-between">
-        <strong>${esc(tituloBriefing(b))}</strong>
+        <strong>${esc(tituloBriefing(b))}${selo}</strong>
         <span class="row-end">
           <button class="btn btn-mini btn-primary" data-ver-brf="${esc(b.id)}">Ver respostas</button>
           <button class="btn btn-x" data-del-brf="${esc(b.id)}" title="Excluir">×</button>
@@ -127,8 +132,9 @@ function listaBriefings(briefings) {
         ${b.obraNome ? `🏗️ ${esc(b.obraNome)} · ` : ''}
         ${(b.respostas?.length || 0)} resposta(s)
       </div>
-      <div class="cliente-data muted">Recebido em ${dataBR(b.criadoEm ? new Date(b.criadoEm).toISOString() : '')}</div>
-    </div>`).join('');
+      <div class="cliente-data muted">Atualizado em ${dataBR(quando ? new Date(quando).toISOString() : '')}</div>
+    </div>`;
+  }).join('');
 }
 
 // Modal com todas as respostas (agrupadas por seção).

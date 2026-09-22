@@ -297,27 +297,30 @@ export async function excluirContrato(id) {
 export async function listarBriefings() {
   const snap = await getDocs(collection(db, 'briefings'));
   const bs = docsComId(snap);
-  bs.sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+  bs.sort((a, b) => (b.atualizadoEm || b.criadoEm || 0) - (a.atualizadoEm || a.criadoEm || 0));
   return bs;
 }
 export async function listarBriefingsDaObra(obraId) {
   const snap = await getDocs(query(collection(db, 'briefings'), where('obraId', '==', obraId)));
   const bs = docsComId(snap);
-  bs.sort((a, b) => (b.criadoEm || 0) - (a.criadoEm || 0));
+  bs.sort((a, b) => (b.atualizadoEm || b.criadoEm || 0) - (a.atualizadoEm || a.criadoEm || 0));
   return bs;
 }
 export async function obterBriefing(id) {
   const d = await getDoc(doc(db, 'briefings', id));
   return d.exists() ? { id: d.id, ...d.data() } : null;
 }
-// Envio público do briefing. O ownerId vem do convite (validado nas Regras).
-export async function criarBriefingPublico({ token, ownerId, ...campos }) {
-  await addDoc(collection(db, 'briefings'), {
+// Salvamento público do briefing (auto-save). Cada link (token) tem UM
+// briefing, guardado no doc de id = token e atualizado a cada mudança (merge).
+// Assim as respostas não se perdem mesmo que o cliente não "finalize".
+export async function salvarBriefingPublico({ token, ownerId, criadoEm, ...campos }) {
+  await setDoc(doc(db, 'briefings', token), {
     token,
     ownerId,
     ...campos,
-    criadoEm: Date.now(),
-  });
+    criadoEm: criadoEm ?? Date.now(),
+    atualizadoEm: Date.now(),
+  }, { merge: true });
 }
 export async function excluirBriefing(id) {
   await deleteDoc(doc(db, 'briefings', id));

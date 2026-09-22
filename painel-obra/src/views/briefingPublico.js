@@ -1,5 +1,5 @@
 import { configurado } from '../firebase.js';
-import { obterConvite, criarBriefingPublico } from '../dados.js';
+import { obterConvite, salvarBriefingPublico } from '../dados.js';
 import { esc } from '../lib/format.js';
 import { caixaLogo } from '../lib/marca.js';
 import { BRIEFING, perguntasDoBriefing } from '../lib/briefingModelo.js';
@@ -75,7 +75,7 @@ export async function renderBriefingPublico(container, token) {
         <section class="card brf-intro">
           <h1 class="cad-titulo">${esc(BRIEFING.titulo)}</h1>
           <p class="muted">${esc(BRIEFING.intro)}</p>
-          <label class="brf-nome">Nome de quem está respondendo
+          <label class="brf-nome">Nome de quem irá preencher ou nome da obra
             <input class="brf-input" id="brf-cliente" />
           </label>
         </section>
@@ -83,7 +83,8 @@ export async function renderBriefingPublico(container, token) {
         ${secoesHtml}
 
         <section class="card brf-envio">
-          <button class="btn btn-primary" type="submit" id="brf-enviar">Enviar briefing</button>
+          <button class="btn btn-primary" type="submit" id="brf-enviar">Concluir briefing</button>
+          <p class="brf-status" id="brf-status">Suas respostas são salvas automaticamente conforme você preenche.</p>
           <p class="erro" id="brf-erro" hidden></p>
         </section>
       </form>
@@ -107,12 +108,15 @@ export async function renderBriefingPublico(container, token) {
     });
   });
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    erro.hidden = true;
+  const statusEl = container.querySelector('#brf-status');
+  const btn = container.querySelector('#brf-enviar');
+  // Momento em que o link começou a ser preenchido (mantém a ordem estável nos
+  // auto-saves da mesma sessão).
+  const criadoEm = Date.now();
 
+  // Lê o formulário e monta o registro a salvar.
+  const coletar = () => {
     const cliente = container.querySelector('#brf-cliente').value.trim();
-
     const respostas = [];
     perguntas.forEach((p) => {
       const nome = `p_${p.id}`;
@@ -132,14 +136,7 @@ export async function renderBriefingPublico(container, token) {
       }
       if (resposta) respostas.push({ secao: p.secao, pergunta: p.label, resposta });
     });
-
-    if (!respostas.length) {
-      erro.textContent = 'Responda ao menos uma pergunta antes de enviar.';
-      erro.hidden = false;
-      return;
-    }
-
-    const registro = {
+    return {
       token,
       ownerId: convite.ownerId,
       obraId: convite.obraId || null,
@@ -147,20 +144,63 @@ export async function renderBriefingPublico(container, token) {
       rotulo: convite.rotulo || null,
       cliente: cliente || null,
       respostas,
+      criadoEm,
     };
+  };
 
-    const btn = container.querySelector('#brf-enviar');
-    btn.disabled = true; btn.textContent = 'Enviando…';
-
+  // ---- Auto-save (salva enquanto o cliente preenche) ----
+  let salvando = false, pendente = false, jaSalvou = false;
+  const mostrarStatus = (txt, cls) => {
+    if (!statusEl) return;
+    statusEl.textContent = txt;
+    statusEl.className = 'brf-status' + (cls ? ' ' + cls : '');
+  };
+  const salvarAgora = async () => {
+    if (salvando) { pendente = true; return; }
+    const registro = coletar();
+    if (!registro.respostas.length && !registro.cliente) return; // nada ainda
+    salvando = true;
+    mostrarStatus('Salvando…');
     try {
-      await criarBriefingPublico(registro);
+      await salvarBriefingPublico(registro);
+      jaSalvou = true;
+      mostrarStatus('Respostas salvas automaticamente ✓', 'ok');
     } catch {
-      btn.disabled = false; btn.textContent = 'Enviar briefing';
-      erro.textContent = 'Não foi possível enviar agora. Tente novamente.';
+      mostrarStatus('Não foi possível salvar agora. Tente novamente em instantes.', 'erro-inline');
+    } finally {
+      salvando = false;
+      if (pendente) { pendente = false; salvarAgora(); }
+    }
+  };
+  let timer = null;
+  const agendarSalvar = () => {
+    clearTimeout(timer);
+    timer = setTimeout(salvarAgora, 900);
+  };
+  form.addEventListener('input', agendarSalvar);
+  form.addEventListener('change', agendarSalvar);
+
+  // ---- Concluir (grava na hora e mostra o agradecimento) ----
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    erro.hidden = true;
+    const registro = coletar();
+    if (!registro.respostas.length) {
+      erro.textContent = 'Responda ao menos uma pergunta antes de concluir.';
       erro.hidden = false;
       return;
     }
-
+    clearTimeout(timer);
+    btn.disabled = true; btn.textContent = 'Salvando…';
+    try {
+      await salvarBriefingPublico({ ...registro, concluido: true });
+    } catch {
+      btn.disabled = false; btn.textContent = 'Concluir briefing';
+      erro.textContent = 'Não foi possível concluir agora. Tente novamente.';
+      erro.hidden = false;
+      return;
+    }
+    const cliente = registro.cliente;
     form.innerHTML = `
       <section class="card cadastro-card">
         <div class="cad-sucesso">
@@ -170,5 +210,12 @@ export async function renderBriefingPublico(container, token) {
         </div>
       </section>`;
     window.scrollTo(0, 0);
+  });
+
+  // Salva o que já houver ao sair/fechar a página (rede best-effort).
+  window.addEventListener('pagehide', () => {
+    if (!jaSalvou) return;
+    const registro = coletar();
+    if (registro.respostas.length || registro.cliente) salvarAgora();
   });
 }
