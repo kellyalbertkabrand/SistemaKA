@@ -1,7 +1,7 @@
 import { configurado } from '../firebase.js';
 import { obterConvite, salvarBriefingPublico } from '../dados.js';
 import { esc } from '../lib/format.js';
-import { caixaLogo } from '../lib/marca.js';
+import { caixaLogo, NOME_MARCA } from '../lib/marca.js';
 import { BRIEFING, perguntasDoBriefing } from '../lib/briefingModelo.js';
 
 // Formulário público do briefing do projeto, acessado por /briefing/{token}.
@@ -90,7 +90,7 @@ export async function renderBriefingPublico(container, token) {
       </form>
 
       <footer class="pub-rodape">
-        <p class="pub-rodape-nome">SCHRAMM ARQUITETURA E ENGENHARIA</p>
+        <p class="pub-rodape-nome">${esc(NOME_MARCA)}</p>
         <p class="muted">Suas respostas são usadas apenas para o desenvolvimento do seu projeto.</p>
       </footer>
     </div>`;

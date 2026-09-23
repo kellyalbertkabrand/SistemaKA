@@ -1,22 +1,17 @@
 // Modelos de contrato do escritório. Cada modelo tem:
 //  - campos: os dados variáveis (preenchidos pela arquiteta; parte vem do cliente)
 //  - documento(d): devolve o HTML do contrato já preenchido, pronto para
-//    imprimir/baixar. O texto das cláusulas é fiel aos contratos-modelo da Schramm.
+//    imprimir/baixar. O texto das cláusulas é fiel aos contratos-modelo do escritório.
 import { esc } from './format.js';
+import { MARCA } from './marca.js';
 
-// ---- CONTRATADA (Schramm) — dados fixos ----
-const REP = 'representada por Luiza Barbosa Schramm, brasileira, casada, CPF 002.634.640-08';
-const CONTRATADA_INTRO = `SCHRAMM ENGENHARIA E PROJETOS LTDA, CNPJ 08.940.235/0001-75, sito à Rua Dr. Luiz Bastos do Prado, 2093, sala 504, centro em Gravataí/RS, ${REP}, simplesmente doravante denominado CONTRATADO, convencionam e ajustam o que segue:`;
+// ---- CONTRATADA (o escritório) — dados fixos, vêm da config do cliente ----
+const CT = MARCA.contratos;
+const CONTRATADA_INTRO = CT.intro;
 
-export const BANCO_INTER = `BANCO INTER - 077
-SCHRAMM ENGENHARIA E PROJETOS LTDA
-CNPJ: 08.940.235/0001-75
-Agência: 0001     Conta: 51862092-1
-PIX: 1301e44e-6339-4235-b101-f8625227df9c`;
+export const BANCO_INTER = CT.bancoProjetoExecucao;
 
-const BANCO_BB = `Banco do Brasil - Schramm Engenharia e Projetos Ltda
-CNPJ 08.940.235/0001-75 (PIX)
-Ag.: 0883-4     CC.: 34.852-x`;
+const BANCO_BB = CT.bancoProjeto;
 
 // ---- Número por extenso (reais) ----
 export function porExtenso(v) {
@@ -70,7 +65,7 @@ const CAMPOS_CONTRATANTE = [
 ];
 
 const CAMPOS_FECHO = [
-  { id: 'cidade', rotulo: 'Cidade (assinatura)', valor: 'Gravataí/RS' },
+  { id: 'cidade', rotulo: 'Cidade (assinatura)', valor: CT.cidade },
   { id: 'dataExt', rotulo: 'Data (por extenso)', placeholder: 'ex.: 18 de setembro de 2026' },
 ];
 
@@ -87,10 +82,10 @@ function fecho(d, foroHtml = '', contratanteRot = 'Contratante') {
     <div class="contrato-fim">
       ${foroHtml}
       <p>E por estarem justas e acertadas, na melhor forma de direito, as partes assinam o presente instrumento em 02 (duas) vias originais e de igual teor e forma, na presença das testemunhas, que também o assinam.</p>
-      <p>${esc(d.cidade || 'Gravataí/RS')}, ${esc(d.dataExt || '____ de __________ de ______')}.</p>
+      <p>${esc(d.cidade || CT.cidade)}, ${esc(d.dataExt || '____ de __________ de ______')}.</p>
       <div class="contrato-assinaturas">
         <div><div class="linha-assinatura"></div><p>${esc(d.nome || 'Contratante')}<br><small>${contratanteRot}</small></p></div>
-        <div><div class="linha-assinatura"></div><p>Schramm Engenharia e Projetos Ltda<br><small>Contratada</small></p></div>
+        <div><div class="linha-assinatura"></div><p>${esc(CT.assinatura)}<br><small>Contratada</small></p></div>
       </div>
     </div>`;
 }
@@ -165,7 +160,7 @@ function docProjetoExecucao(d) {
   ${p('8.7 O presente contrato não transfere ao CONTRATANTE os direitos de uso de imagem atinentes ao projeto e maquetes eletrônicas, ou a propriedade intelectual destes, ainda que parcial, que poderão continuar a ser utilizados pelo CONTRATADO, especialmente para fins publicitários e composição de seu portfólio.')}
   ${p('8.8 O CONTRATADO não se responsabiliza por alterações ocorridas durante a obra que estiverem em desacordo com os serviços por ele executados ou alterações solicitadas pela CONTRATANTE que estiverem em desacordo com a legislação em vigor.')}
   ${p('8.9 O CONTRATANTE autoriza, de forma gratuita e por prazo indeterminado, o(a) CONTRATADO(a) a realizar e utilizar fotografias e vídeos do projeto, da obra e do trabalho finalizado, para fins de divulgação em portfólio, redes sociais, site, apresentações e demais meios de comunicação, físicos ou digitais, nos termos da Lei nº 9.610/98 (Lei de Direitos Autorais) e demais legislações aplicáveis. Esta autorização inclui o uso integral ou parcial das imagens, podendo ser editadas ou adaptadas, desde que mantida a integridade do projeto. Fica vedada a divulgação de imagens que exponham dados pessoais, pessoas ou informações de caráter íntimo sem autorização prévia do CONTRATANTE.')}
-  ${fecho(d, h('9 – CLÁUSULA NONA: DO FORO') + p('9.1 Para qualquer demanda judicial relativa ao presente contrato, as partes elegem o foro da Comarca de Gravataí/RS, com exclusão de qualquer outro, por mais privilegiado que seja.'))}`;
+  ${fecho(d, h('9 – CLÁUSULA NONA: DO FORO') + p(`9.1 Para qualquer demanda judicial relativa ao presente contrato, as partes elegem o foro da Comarca de ${esc(CT.foro)}, com exclusão de qualquer outro, por mais privilegiado que seja.`))}`;
 }
 
 // =====================================================================
@@ -231,7 +226,7 @@ function docProjeto(d) {
   ${p('8.6 A responsabilidade do CONTRATADO não se estende a compra de materiais necessários e nem tampouco os pagamentos dos materiais adquiridos e/ou dos serviços contratados ou ainda os encargos relativos à contratação de profissionais executores de obra ou prestadores de serviço. Não há identidade ou solidariedade entre a responsabilidade dos profissionais contratados para a elaboração dos projetos e para a execução dos serviços da obra, visto que cada um atua em área própria, como profissional ou empresa independente, respondendo cada qual pelo seu trabalho.')}
   ${p('8.7 O presente contrato não transfere ao CONTRATANTE os direitos de uso de imagem atinentes ao projeto e maquetes eletrônicas, ou a propriedade intelectual destes, ainda que parcial, que poderão continuar a ser utilizados pelo CONTRATADO, especialmente para fins publicitários e composição de seu portfólio.')}
   ${p('8.8 O CONTRATADO não se responsabiliza por alterações ocorridas durante a obra que estiverem em desacordo com os serviços por ele executados ou alterações solicitadas pela CONTRATANTE que estiverem em desacordo com a legislação em vigor.')}
-  ${fecho(d, h('9 – CLÁUSULA NONA: DO FORO') + p('9.1 Para qualquer demanda judicial relativa ao presente contrato, as partes elegem o foro da Comarca de Gravataí/RS, com exclusão de qualquer outro, por mais privilegiado que seja.'))}`;
+  ${fecho(d, h('9 – CLÁUSULA NONA: DO FORO') + p(`9.1 Para qualquer demanda judicial relativa ao presente contrato, as partes elegem o foro da Comarca de ${esc(CT.foro)}, com exclusão de qualquer outro, por mais privilegiado que seja.`))}`;
 }
 
 // =====================================================================
@@ -242,7 +237,7 @@ function docAdministracao(d) {
   <h2 class="contrato-titulo">CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE ADMINISTRAÇÃO DE OBRA</h2>
   ${p('Pelo presente instrumento particular, de um lado:')}
   ${p(`<strong>CONTRATANTE:</strong><br>${esc(d.nome)}, ${esc(d.nacionalidade || 'brasileiro(a)')}, ${esc(d.estadoCivil || '')}, ${esc(d.profissao || '')}, portador(a) da Cédula de Identidade RG nº ${esc(d.rg || '')} e inscrito(a) no CPF/CNPJ sob o nº ${esc(d.cpf)}, residente e domiciliado(a) na ${esc(d.endereco)}, doravante denominado(a) simplesmente CONTRATANTE;`)}
-  ${p('<strong>CONTRATADA:</strong><br>SCHRAMM ENGENHARIA E PROJETOS, pessoa jurídica de direito privado, inscrita no CNPJ sob o nº 08.940.235/0001-75, com sede na Rua Dr. Luiz Bastos do Prado, 2093, centro, Gravataí/RS, neste ato representada na forma de seu contrato social por Luiza Barbosa Schramm, portador(a) da Cédula de Identidade RG nº 5079432166 e do CPF nº 002.634.640-08, doravante denominada simplesmente CONTRATADA;')}
+  ${p(`<strong>CONTRATADA:</strong><br>${CT.qualificacao}`)}
   ${p('Têm entre si justo e contratado o presente Contrato de Prestação de Serviços de Administração de Obra, que se regerá pelas cláusulas e condições a seguir estabelecidas:')}
   ${h('CLÁUSULA PRIMEIRA – DO OBJETO')}
   ${p(`1.1. O presente contrato tem por objeto a prestação, pela CONTRATADA, de serviços técnicos de administração, gerenciamento e fiscalização da execução da obra de construção nova, de natureza residencial, com área total de ${esc(d.metragem)} m², a ser edificada no imóvel localizado na ${esc(d.obraEndereco)}, conforme projeto técnico Nº ${esc(d.projetoNumero || '________')}, previamente aprovado pelo CONTRATANTE e, quando aplicável, pelos órgãos públicos competentes.`)}
@@ -299,12 +294,12 @@ function docAdministracao(d) {
   ${p('13.1. Este contrato obriga as partes e seus eventuais sucessores a qualquer título.<br>13.2. Qualquer alteração a este contrato somente será válida se formalizada por escrito, mediante termo aditivo assinado por ambas as partes.<br>13.3. A tolerância de uma parte quanto ao eventual descumprimento de qualquer obrigação pela outra não implicará novação ou renúncia a direitos, podendo a obrigação ser exigida a qualquer tempo.')}
   <div class="contrato-fim">
   ${h('CLÁUSULA DÉCIMA QUARTA – DO FORO')}
-  ${p('14.1. Fica eleito o foro da Comarca de Gravataí/RS para dirimir quaisquer dúvidas ou controvérsias oriundas do presente contrato, com renúncia expressa a qualquer outro, por mais privilegiado que seja.')}
+  ${p(`14.1. Fica eleito o foro da Comarca de ${esc(CT.foro)} para dirimir quaisquer dúvidas ou controvérsias oriundas do presente contrato, com renúncia expressa a qualquer outro, por mais privilegiado que seja.`)}
   ${p('E, por estarem assim justas e contratadas, as partes firmam o presente instrumento em 2 (duas) vias de igual teor e forma, na presença de duas testemunhas.')}
-  ${p(`${esc(d.cidade || 'Gravataí/RS')}, ${esc(d.dataExt || '____ de __________ de ______')}.`)}
+  ${p(`${esc(d.cidade || CT.cidade)}, ${esc(d.dataExt || '____ de __________ de ______')}.`)}
   <div class="contrato-assinaturas">
     <div><div class="linha-assinatura"></div><p>${esc(d.nome || '[NOME DO CONTRATANTE]')}<br><small>CONTRATANTE</small></p></div>
-    <div><div class="linha-assinatura"></div><p>SCHRAMM ENGENHARIA E PROJETOS<br><small>CONTRATADA</small></p></div>
+    <div><div class="linha-assinatura"></div><p>${esc(CT.assinaturaAdministracao || CT.assinatura)}<br><small>CONTRATADA</small></p></div>
   </div>
   <div class="contrato-testemunhas">
     <p>Testemunhas:</p>

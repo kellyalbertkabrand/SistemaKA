@@ -5,6 +5,7 @@ import {
 import { esc, dataBR } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
 import { MODELOS, modeloPorId } from '../lib/contratos.js';
+import { MARCA, COR_ACENTO } from '../lib/marca.js';
 
 // Estilo do contrato — usado na tela, na impressão (PDF) e no Word baixado.
 const ESTILO_CONTRATO = `
@@ -259,11 +260,11 @@ export async function renderContratos(container, opts = {}) {
     const el = container.querySelector('#ct-editavel');
     return el ? el.innerHTML : '';
   }
-  // "Contrato entre [contratante] e Schramm Engenharia e Projetos" — usado no
+  // "Contrato entre [contratante] e <nome do escritório>" — usado no
   // título salvo e no nome do arquivo baixado.
   function tituloContrato() {
     const contratante = (dados.nome || clienteNome || 'Contratante').trim();
-    return `Contrato entre ${contratante} e Schramm Engenharia e Projetos`;
+    return `Contrato entre ${contratante} e ${MARCA.contratos.nomeTitulo}`;
   }
   function nomeArquivo() {
     return tituloContrato().replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, ' ').trim().slice(0, 120);
@@ -278,7 +279,7 @@ export async function renderContratos(container, opts = {}) {
         body { margin: 0; }
         .ct-topbar { position: sticky; top: 0; display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 10px 14px; background: #f5f2ec; border-bottom: 1px solid #ddd6c8; font-family: Inter, -apple-system, system-ui, sans-serif; }
         .ct-topbar button { font: inherit; font-size: 15px; padding: 9px 14px; border: 1px solid #cfc7ba; background: #fff; border-radius: 8px; cursor: pointer; }
-        .ct-topbar .ct-voltar { border-color: #c65a2e; color: #c65a2e; font-weight: 600; }
+        .ct-topbar .ct-voltar { border-color: ${COR_ACENTO}; color: ${COR_ACENTO}; font-weight: 600; }
         .ct-corpo { padding: 0 14px; }
         @media print { .no-print { display: none !important; } .ct-corpo { padding: 0; } }
         ${ESTILO_CONTRATO}

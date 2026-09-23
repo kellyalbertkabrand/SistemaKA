@@ -3,7 +3,7 @@ import { obterObraPublicaPorSlug, listarEtapas, listarLancamentos, listarPagamen
 import { moeda, dataBR, pct, esc, pillStatus } from '../lib/format.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { calcularReembolso } from '../lib/reembolso.js';
-import { caixaLogo } from '../lib/marca.js';
+import { caixaLogo, NOME_MARCA, MARCA } from '../lib/marca.js';
 import { abrirLightbox, abrirAnexo } from '../lib/lightbox.js';
 import { criarZip } from '../lib/zip.js';
 import { baixarBlob } from '../lib/exportar.js';
@@ -240,8 +240,8 @@ export async function renderPublica(container, slug) {
       <a class="btn btn-ghost pub-voltar-arq" id="voltar-arq" data-link href="/painel/${esc(obra.slug)}" hidden>← Voltar ao painel do arquiteto</a>
 
       <footer class="pub-rodape">
-        <p class="pub-rodape-nome">SCHRAMM ARQUITETURA E ENGENHARIA</p>
-        <p class="muted">Rua Dr. Luiz Bastos do Prado, 2093 - 504 - Centro, Gravataí - RS, 94010-021</p>
+        <p class="pub-rodape-nome">${esc(NOME_MARCA)}</p>
+        <p class="muted">${esc(MARCA.endereco || '')}</p>
         <p class="muted pub-rodape-nota">Atualizado em tempo real pelo escritório.</p>
       </footer>
     </div>`;

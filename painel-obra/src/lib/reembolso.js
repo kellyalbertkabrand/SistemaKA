@@ -7,21 +7,13 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { moeda, dataBR, esc } from './format.js';
 import { baixarExcel, numBR } from './exportar.js';
-import { logoSchramm } from './marca.js';
+import { logoMarca, MARCA, NOME_MARCA, COR_ACENTO } from './marca.js';
 
-const ESCRITORIO_NOME = 'SCHRAMM ARQUITETURA E ENGENHARIA';
-const ESCRITORIO_ENDERECO =
-  'Rua Dr. Luiz Bastos do Prado, 2093 - 504 - Centro, Gravataí - RS, 94010-021';
+const ESCRITORIO_NOME = NOME_MARCA;
+const ESCRITORIO_ENDERECO = MARCA.endereco || '';
 
-// Dados bancários para o pagamento do honorário de gestão.
-export const PAGAMENTO = {
-  banco: 'Banco do Brasil',
-  titular: 'Schramm Eng e Proj Ltda',
-  agencia: '0883-4',
-  conta: '34852-x',
-  pixTipo: 'CPF',
-  pix: '08940235000175',
-};
+// Dados bancários para o pagamento do honorário de gestão (config do cliente).
+export const PAGAMENTO = MARCA.pagamento;
 
 // Cálculo central do reembolso/honorário — usado no PDF, na mensagem de
 // WhatsApp e no painel do cliente, para todos baterem.
@@ -93,8 +85,8 @@ export function montarRelatorioReembolso({ obra, lancamentos, de, ate }) {
   const periodo = (de || ate) ? `${de ? dataBR(de) : '…'} a ${ate ? dataBR(ate) : '…'}` : 'Toda a obra';
   const emitidoEm = dataBR(new Date().toISOString());
   // URL absoluto do logo — a aba nova (about:blank) não resolve caminhos relativos.
-  let logoUrl = logoSchramm;
-  try { logoUrl = new URL(logoSchramm, window.location.href).href; } catch { /* mantém */ }
+  let logoUrl = logoMarca;
+  try { logoUrl = new URL(logoMarca, window.location.href).href; } catch { /* mantém */ }
 
   const corpo = itens.length
     ? itens.map(linhaLanc).join('')
@@ -107,10 +99,10 @@ export function montarRelatorioReembolso({ obra, lancamentos, de, ate }) {
   * { box-sizing: border-box; }
   body { font-family: Arial, Helvetica, sans-serif; color: #2a2622; margin: 0; padding: 28px 30px; }
   .cab { display: flex; align-items: center; justify-content: space-between; gap: 16px;
-         border-bottom: 3px solid #c65a2e; padding-bottom: 14px; }
+         border-bottom: 3px solid ${COR_ACENTO}; padding-bottom: 14px; }
   .cab img { height: 54px; width: auto; }
   .cab .tit { text-align: right; }
-  .cab h1 { font-size: 19px; margin: 0; color: #c65a2e; letter-spacing: .3px; }
+  .cab h1 { font-size: 19px; margin: 0; color: ${COR_ACENTO}; letter-spacing: .3px; }
   .cab .sub { font-size: 12px; color: #6b6259; margin-top: 2px; }
   .meta { display: flex; flex-wrap: wrap; gap: 6px 26px; margin: 18px 0 8px; font-size: 13px; }
   .meta b { color: #6b6259; font-weight: 600; }
@@ -127,13 +119,13 @@ export function montarRelatorioReembolso({ obra, lancamentos, de, ate }) {
   .totais .row { display: flex; justify-content: space-between; padding: 5px 0; }
   .totais .sub { color: #6b6259; }
   .totais .base { border-top: 1px solid #cfc7ba; margin-top: 4px; padding-top: 8px; font-weight: 600; }
-  .totais .geral { border-top: 2px solid #c65a2e; margin-top: 6px; padding-top: 9px;
-                   font-size: 16px; font-weight: 700; color: #c65a2e; }
+  .totais .geral { border-top: 2px solid ${COR_ACENTO}; margin-top: 6px; padding-top: 9px;
+                   font-size: 16px; font-weight: 700; color: ${COR_ACENTO}; }
   .nota-gestao { margin-top: 14px; margin-left: auto; width: 340px; font-size: 10.5px;
                  color: #8a8178; text-align: right; }
-  .pagamento { margin-top: 22px; border: 1px solid #e0d8cc; border-left: 4px solid #c65a2e;
+  .pagamento { margin-top: 22px; border: 1px solid #e0d8cc; border-left: 4px solid ${COR_ACENTO};
                border-radius: 6px; padding: 12px 14px; background: #faf7f2; font-size: 12.5px; }
-  .pagamento h2 { margin: 0 0 6px; font-size: 13px; color: #c65a2e; }
+  .pagamento h2 { margin: 0 0 6px; font-size: 13px; color: ${COR_ACENTO}; }
   .pagamento .grade { display: flex; flex-wrap: wrap; gap: 3px 26px; }
   .pagamento .item b { color: #6b6259; font-weight: 600; }
   .pagamento .pix { margin-top: 4px; font-weight: 700; }
@@ -235,7 +227,7 @@ export async function baixarPdfReembolso({ obra, lancamentos, de, ate }) {
   const M = 40;
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
-  const TERRA = [198, 90, 46];
+  const TERRA = hexParaRgb(COR_ACENTO);
   const ESCURO = [42, 38, 34];
   const MUTED = [107, 98, 89];
   const TEXTO = [60, 55, 50];
@@ -243,8 +235,8 @@ export async function baixarPdfReembolso({ obra, lancamentos, de, ate }) {
   let y = M;
 
   // Logo (esquerda), preservando proporção.
-  let logoUrl = logoSchramm;
-  try { logoUrl = new URL(logoSchramm, window.location.href).href; } catch { /* mantém */ }
+  let logoUrl = logoMarca;
+  try { logoUrl = new URL(logoMarca, window.location.href).href; } catch { /* mantém */ }
   const logo = await carregarImagem(logoUrl);
   if (logo && logo.width && logo.height) {
     const escala = Math.min(170 / logo.width, 44 / logo.height);
@@ -402,4 +394,11 @@ export function montarMensagemWhatsApp({ obra, lancamentos, de, ate }) {
     `Pix (${PAGAMENTO.pixTipo}): ${PAGAMENTO.pix}`,
   );
   return linhas.join('\n');
+}
+
+// '#c65a2e' -> [198, 90, 46] (cores do jsPDF).
+function hexParaRgb(hex) {
+  const h = String(hex).replace('#', '');
+  const n = parseInt(h.length === 3 ? h.split('').map((x) => x + x).join('') : h, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }

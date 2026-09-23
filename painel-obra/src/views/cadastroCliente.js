@@ -1,7 +1,7 @@
 import { configurado } from '../firebase.js';
 import { obterConvite, criarClientePublico } from '../dados.js';
 import { esc } from '../lib/format.js';
-import { caixaLogo } from '../lib/marca.js';
+import { caixaLogo, NOME_MARCA } from '../lib/marca.js';
 import { ligarMascara, ligarEmail, formatarCpfCnpj, formatarTelefone, validarEmail } from '../lib/mascaras.js';
 
 // Formulário público de autopreenchimento do cliente, acessado por
@@ -63,7 +63,7 @@ export async function renderCadastroCliente(container, token) {
       </section>
 
       <footer class="pub-rodape">
-        <p class="pub-rodape-nome">SCHRAMM ARQUITETURA E ENGENHARIA</p>
+        <p class="pub-rodape-nome">${esc(NOME_MARCA)}</p>
         <p class="muted">Seus dados são usados apenas para o acompanhamento da sua obra.</p>
       </footer>
     </div>`;

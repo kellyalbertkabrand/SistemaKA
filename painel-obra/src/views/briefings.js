@@ -1,6 +1,7 @@
 import { listarBriefings, listarObras, criarConvite, obterBriefing, excluirBriefing, sair } from '../dados.js';
 import { esc, dataBR } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
+import { MARCA, COR_ACENTO } from '../lib/marca.js';
 
 // Tela interna: gerar o link do briefing para enviar ao cliente e ver as
 // respostas recebidas.
@@ -204,14 +205,14 @@ function baixarPdfBriefing(b, secoes) {
       body { margin: 0; font-family: Georgia, 'Times New Roman', serif; color: #241f1b; line-height: 1.5; }
       .topbar { position: sticky; top: 0; display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 10px 14px; background: #f5f2ec; border-bottom: 1px solid #ddd6c8; font-family: Inter, -apple-system, system-ui, sans-serif; }
       .topbar button { font: inherit; font-size: 15px; padding: 9px 14px; border: 1px solid #cfc7ba; background: #fff; border-radius: 8px; cursor: pointer; }
-      .topbar .voltar { border-color: #c65a2e; color: #c65a2e; font-weight: 600; }
+      .topbar .voltar { border-color: ${COR_ACENTO}; color: ${COR_ACENTO}; font-weight: 600; }
       .corpo { padding: 24px 32px 40px; max-width: 760px; margin: 0 auto; }
-      .cab { text-align: center; border-bottom: 2px solid #c65a2e; padding-bottom: 14px; margin-bottom: 22px; }
+      .cab { text-align: center; border-bottom: 2px solid ${COR_ACENTO}; padding-bottom: 14px; margin-bottom: 22px; }
       .cab .escritorio { font-family: Inter, system-ui, sans-serif; font-size: 12px; letter-spacing: .12em; color: #928a7e; text-transform: uppercase; }
       .cab h1 { font-size: 22px; margin: 8px 0 4px; }
       .cab .meta { font-family: Inter, system-ui, sans-serif; font-size: 13px; color: #574f47; }
       .brf-sec { margin: 0 0 20px; break-inside: avoid; }
-      .brf-sec h2 { font-size: 16px; color: #c65a2e; border-bottom: 1px solid #e9e3d8; padding-bottom: 5px; margin: 0 0 10px; }
+      .brf-sec h2 { font-size: 16px; color: ${COR_ACENTO}; border-bottom: 1px solid #e9e3d8; padding-bottom: 5px; margin: 0 0 10px; }
       .brf-item { padding: 7px 0; border-bottom: 1px solid #f0ece3; break-inside: avoid; }
       .brf-item:last-child { border-bottom: 0; }
       .brf-q { font-family: Inter, system-ui, sans-serif; font-size: 12.5px; color: #8a8276; margin: 0 0 3px; }
@@ -225,7 +226,7 @@ function baixarPdfBriefing(b, secoes) {
       </div>
       <div class="corpo">
         <div class="cab">
-          <div class="escritorio">Schramm Arquitetura e Engenharia</div>
+          <div class="escritorio">${esc(MARCA.nome)}</div>
           <h1>Briefing do projeto</h1>
           <div class="meta">
             ${esc(tituloBriefing(b))}${b.obraNome && b.obraNome !== tituloBriefing(b) ? ' · ' + esc(b.obraNome) : ''}
