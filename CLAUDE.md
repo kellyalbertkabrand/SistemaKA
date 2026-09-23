@@ -125,7 +125,7 @@ Idioma do produto e dos commits: **português (pt-BR)**.
 - Voz: **Web Speech API** (pt-BR), contínua e acumulativa.
 
 ```
-painel-obra/
+gestaodeobra/
 ├─ index.html
 ├─ netlify.toml                     # build: npm run build; publish: dist; functions
 ├─ .env.example
