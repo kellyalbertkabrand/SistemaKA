@@ -1,6 +1,8 @@
+import { jsPDF } from 'jspdf';
 import { listarBriefings, listarObras, criarConvite, obterBriefing, excluirBriefing, sair } from '../dados.js';
 import { esc, dataBR } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
+import { logoSchramm } from '../lib/marca.js';
 
 // Tela interna: gerar o link do briefing para enviar ao cliente e ver as
 // respostas recebidas.
@@ -165,7 +167,8 @@ function abrirModal(container, b) {
         </div>
         ${b.obraNome ? `<p class="muted">🏗️ ${esc(b.obraNome)}</p>` : ''}
         <div class="modal-acoes" style="justify-content:flex-start;margin-bottom:.4rem">
-          <button class="btn btn-mini btn-primary" id="brf-pdf">🖨 Baixar PDF</button>
+          <button class="btn btn-mini btn-primary" id="brf-pdf">📄 Baixar PDF</button>
+          <button class="btn btn-mini" id="brf-imprimir">🖨 Imprimir</button>
         </div>
         <div class="brf-modal-corpo">${corpo || '<p class="muted">Sem respostas.</p>'}</div>
       </div>
@@ -176,11 +179,115 @@ function abrirModal(container, b) {
   modal.querySelector('#brf-fundo').addEventListener('click', (e) => {
     if (e.target.id === 'brf-fundo') fechar();
   });
-  modal.querySelector('#brf-pdf').addEventListener('click', () => baixarPdfBriefing(b, secoes));
+  modal.querySelector('#brf-pdf').addEventListener('click', (e) => baixarPdfBriefing(b, secoes, e.currentTarget));
+  modal.querySelector('#brf-imprimir').addEventListener('click', () => imprimirBriefing(b, secoes));
 }
 
-// Abre uma janela de impressão do briefing (o navegador salva como PDF).
-function baixarPdfBriefing(b, secoes) {
+function carregarImagem(src) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+// Gera e BAIXA um arquivo .pdf de verdade (jsPDF), sem passar pela impressão.
+async function baixarPdfBriefing(b, secoes, btn) {
+  const rotuloBtn = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'Gerando…'; }
+  try {
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+    const M = 40;
+    const W = doc.internal.pageSize.getWidth();
+    const H = doc.internal.pageSize.getHeight();
+    const TERRA = [198, 90, 46];
+    const ESCURO = [42, 38, 34];
+    const MUTED = [138, 130, 118];
+    const TEXTO = [55, 50, 45];
+    const larguraUtil = W - M * 2;
+    let y = M;
+
+    const novaPaginaSePreciso = (altura) => {
+      if (y + altura > H - M) { doc.addPage(); y = M; }
+    };
+
+    // Cabeçalho: logo + título.
+    let logoUrl = logoSchramm;
+    try { logoUrl = new URL(logoSchramm, window.location.href).href; } catch { /* mantém */ }
+    const logo = await carregarImagem(logoUrl);
+    if (logo && logo.width && logo.height) {
+      const escala = Math.min(150 / logo.width, 40 / logo.height);
+      try { doc.addImage(logo, 'PNG', M, y, logo.width * escala, logo.height * escala); } catch { /* segue */ }
+    }
+    doc.setTextColor(...TERRA); doc.setFont('helvetica', 'bold'); doc.setFontSize(16);
+    doc.text('Briefing do projeto', W - M, y + 15, { align: 'right' });
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...MUTED);
+    doc.text('Schramm Arquitetura e Engenharia', W - M, y + 29, { align: 'right' });
+
+    y += 50;
+    doc.setDrawColor(...TERRA); doc.setLineWidth(2); doc.line(M, y, W - M, y);
+    y += 18;
+
+    // Meta.
+    const quando = b.atualizadoEm || b.criadoEm;
+    const dataTxt = quando ? dataBR(new Date(quando).toISOString()) : '';
+    const status = b.concluido ? 'Concluído' : 'Em preenchimento';
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(...ESCURO);
+    doc.text(tituloBriefing(b), M, y); y += 15;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(...TEXTO);
+    const metaLinha = [
+      b.obraNome && b.obraNome !== tituloBriefing(b) ? `Obra: ${b.obraNome}` : null,
+      dataTxt ? `Atualizado em ${dataTxt}` : null,
+      status,
+    ].filter(Boolean).join('     ');
+    if (metaLinha) { doc.text(metaLinha, M, y); y += 8; }
+    y += 10;
+
+    // Seções e respostas.
+    secoes.forEach((s) => {
+      if (s.titulo) {
+        novaPaginaSePreciso(30);
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(...TERRA);
+        doc.text(s.titulo, M, y); y += 6;
+        doc.setDrawColor(233, 227, 216); doc.setLineWidth(0.8); doc.line(M, y, W - M, y);
+        y += 14;
+      }
+      s.itens.forEach((r) => {
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(...MUTED);
+        const perguntaLinhas = doc.splitTextToSize(r.pergunta, larguraUtil);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...ESCURO);
+        const respostaLinhas = doc.splitTextToSize(r.resposta, larguraUtil);
+        const alturaBloco = perguntaLinhas.length * 12 + respostaLinhas.length * 14 + 12;
+        novaPaginaSePreciso(alturaBloco);
+
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(...MUTED);
+        doc.text(perguntaLinhas, M, y); y += perguntaLinhas.length * 12 + 2;
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...ESCURO);
+        doc.text(respostaLinhas, M, y); y += respostaLinhas.length * 14 + 8;
+      });
+      y += 6;
+    });
+
+    // Rodapé com numeração em todas as páginas.
+    const total = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= total; i++) {
+      doc.setPage(i);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...MUTED);
+      doc.text(`Página ${i} de ${total}`, W - M, H - 20, { align: 'right' });
+    }
+
+    const nomeArq = `Briefing - ${tituloBriefing(b)}`.replace(/[\\/:*?"<>|]+/g, ' ').trim();
+    doc.save(`${nomeArq}.pdf`);
+  } catch (e) {
+    alert('Não foi possível gerar o PDF. Tente "Imprimir" e salvar como PDF.');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = rotuloBtn || '📄 Baixar PDF'; }
+  }
+}
+
+// Abre uma janela de impressão do briefing (o navegador imprime/salva PDF).
+function imprimirBriefing(b, secoes) {
   const w = window.open('', '_blank');
   if (!w) { alert('Permita pop-ups para gerar o PDF.'); return; }
   const quando = b.atualizadoEm || b.criadoEm;
