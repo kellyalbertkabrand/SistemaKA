@@ -15,6 +15,7 @@ export const CHANGELOG = [
       'Salvamento automático: as respostas vão sendo guardadas enquanto o cliente preenche — nada se perde se ele fechar e voltar depois.',
       'Você só precisa gerar o link. Cada briefing mostra se está "Em preenchimento" ou "Concluído".',
       'As respostas chegam prontas no sistema: abra "Ver respostas" para ler tudo organizado por seção.',
+      'Baixe o briefing em PDF (botão "Baixar PDF") — pronto para imprimir, salvar ou anexar ao projeto.',
       'Você pode vincular o briefing a uma obra e apagar um briefing quando quiser.',
     ],
   },
