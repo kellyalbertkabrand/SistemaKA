@@ -164,6 +164,9 @@ function abrirModal(container, b) {
           <button class="btn btn-x" id="brf-fechar" aria-label="Fechar">×</button>
         </div>
         ${b.obraNome ? `<p class="muted">🏗️ ${esc(b.obraNome)}</p>` : ''}
+        <div class="modal-acoes" style="justify-content:flex-start;margin-bottom:.4rem">
+          <button class="btn btn-mini btn-primary" id="brf-pdf">🖨 Baixar PDF</button>
+        </div>
         <div class="brf-modal-corpo">${corpo || '<p class="muted">Sem respostas.</p>'}</div>
       </div>
     </div>`;
@@ -173,4 +176,65 @@ function abrirModal(container, b) {
   modal.querySelector('#brf-fundo').addEventListener('click', (e) => {
     if (e.target.id === 'brf-fundo') fechar();
   });
+  modal.querySelector('#brf-pdf').addEventListener('click', () => baixarPdfBriefing(b, secoes));
+}
+
+// Abre uma janela de impressão do briefing (o navegador salva como PDF).
+function baixarPdfBriefing(b, secoes) {
+  const w = window.open('', '_blank');
+  if (!w) { alert('Permita pop-ups para gerar o PDF.'); return; }
+  const quando = b.atualizadoEm || b.criadoEm;
+  const dataTxt = quando ? dataBR(new Date(quando).toISOString()) : '';
+  const status = b.concluido ? 'Concluído' : 'Em preenchimento';
+  const corpo = secoes.map((s) => `
+    <section class="brf-sec">
+      ${s.titulo ? `<h2>${esc(s.titulo)}</h2>` : ''}
+      ${s.itens.map((r) => `
+        <div class="brf-item">
+          <p class="brf-q">${esc(r.pergunta)}</p>
+          <p class="brf-a">${esc(r.resposta)}</p>
+        </div>`).join('')}
+    </section>`).join('');
+
+  w.document.write(`<!doctype html><html lang="pt-br"><head><meta charset="utf-8">
+    <title>Briefing — ${esc(tituloBriefing(b))}</title>
+    <style>
+      @page { margin: 2cm 2cm; @bottom-right { content: "Página " counter(page) " de " counter(pages); font: 9pt Georgia, serif; color: #555; } }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: Georgia, 'Times New Roman', serif; color: #241f1b; line-height: 1.5; }
+      .topbar { position: sticky; top: 0; display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 10px 14px; background: #f5f2ec; border-bottom: 1px solid #ddd6c8; font-family: Inter, -apple-system, system-ui, sans-serif; }
+      .topbar button { font: inherit; font-size: 15px; padding: 9px 14px; border: 1px solid #cfc7ba; background: #fff; border-radius: 8px; cursor: pointer; }
+      .topbar .voltar { border-color: #c65a2e; color: #c65a2e; font-weight: 600; }
+      .corpo { padding: 24px 32px 40px; max-width: 760px; margin: 0 auto; }
+      .cab { text-align: center; border-bottom: 2px solid #c65a2e; padding-bottom: 14px; margin-bottom: 22px; }
+      .cab .escritorio { font-family: Inter, system-ui, sans-serif; font-size: 12px; letter-spacing: .12em; color: #928a7e; text-transform: uppercase; }
+      .cab h1 { font-size: 22px; margin: 8px 0 4px; }
+      .cab .meta { font-family: Inter, system-ui, sans-serif; font-size: 13px; color: #574f47; }
+      .brf-sec { margin: 0 0 20px; break-inside: avoid; }
+      .brf-sec h2 { font-size: 16px; color: #c65a2e; border-bottom: 1px solid #e9e3d8; padding-bottom: 5px; margin: 0 0 10px; }
+      .brf-item { padding: 7px 0; border-bottom: 1px solid #f0ece3; break-inside: avoid; }
+      .brf-item:last-child { border-bottom: 0; }
+      .brf-q { font-family: Inter, system-ui, sans-serif; font-size: 12.5px; color: #8a8276; margin: 0 0 3px; }
+      .brf-a { margin: 0; font-size: 14.5px; white-space: pre-wrap; }
+      @media print { .no-print { display: none !important; } .corpo { padding: 0; } }
+    </style></head>
+    <body>
+      <div class="topbar no-print">
+        <button class="voltar" onclick="window.close()">← Voltar ao sistema</button>
+        <button onclick="window.print()">🖨 Imprimir / Salvar PDF</button>
+      </div>
+      <div class="corpo">
+        <div class="cab">
+          <div class="escritorio">Schramm Arquitetura e Engenharia</div>
+          <h1>Briefing do projeto</h1>
+          <div class="meta">
+            ${esc(tituloBriefing(b))}${b.obraNome && b.obraNome !== tituloBriefing(b) ? ' · ' + esc(b.obraNome) : ''}
+            ${dataTxt ? ' · ' + esc(dataTxt) : ''} · ${esc(status)}
+          </div>
+        </div>
+        ${corpo || '<p>Sem respostas.</p>'}
+      </div>
+    </body></html>`);
+  w.document.close(); w.focus();
+  setTimeout(() => { try { w.print(); } catch (e) { /* imprime pelo botão */ } }, 400);
 }
