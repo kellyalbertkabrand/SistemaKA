@@ -1,5 +1,5 @@
 import { esc } from '../lib/format.js';
-import { caixaLogo } from '../lib/marca.js';
+import { caixaLogo, NOME_MARCA } from '../lib/marca.js';
 import { VERSAO, CHANGELOG } from '../lib/changelog.js';
 
 // Página pública (sem login) com o histórico de atualizações do sistema.
@@ -37,7 +37,7 @@ export function renderAtualizacoes(container) {
       </section>
 
       <footer class="pub-rodape">
-        <p class="pub-rodape-nome">SCHRAMM ARQUITETURA E ENGENHARIA</p>
+        <p class="pub-rodape-nome">${esc(NOME_MARCA)}</p>
         <p class="muted pub-rodape-nota">Sistema de gestão de obras — atualizações contínuas.</p>
       </footer>
     </div>`;

@@ -147,10 +147,12 @@ Build local (`npm run build`) antes de commitar, para validar.
 - **Netlify base directory = `painel-obra`** (o produto está em subpasta).
 - **Voz:** `voice.js` grava de forma **contínua e acumulativa** (não apaga nas
   pausas). O botão alterna Falar/Parar; só ao Parar envia para a IA.
-- **Logo:** o arquivo oficial já está no sistema (`src/assets/logo-schramm.png`,
-  lockup completo: monograma + SCHRAMM + tagline). `marca.js` expõe `logoImg()` /
-  `caixaLogo()` que renderizam esse `<img>` (afeta login, nav interna e painel do
-  cliente de uma vez). Para trocar o logo, basta substituir o PNG em `assets/`.
+- **Marca / multi-cliente:** tudo o que é do escritório (nome, cores, logo,
+  ícones, banco, dados de contrato) fica em `clientes/<id>/`; `VITE_CLIENTE`
+  escolhe a pasta (padrão `schramm`). Cada cliente tem **branch própria**
+  (`cliente/<id>`), site Netlify próprio e projeto Firebase próprio. Nunca
+  escreva nome/dados de um escritório direto no código — use `MARCA` de
+  `src/lib/marca.js`. Passo a passo em `clientes/README.md`.
 
 ---
 

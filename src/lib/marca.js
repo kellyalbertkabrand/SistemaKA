@@ -1,15 +1,24 @@
-// Identidade visual do escritório (Schramm Arquitetura e Engenharia).
-// O arquivo oficial do logo já chegou: é o lockup completo (monograma +
-// "SCHRAMM" + "ARQUITETURA E ENGENHARIA"). O Vite resolve o import para a URL
-// final (com hash) no build.
-import logoSchramm from '../assets/logo-schramm.png';
+// Identidade visual do escritório (cliente). A marca vem da pasta
+// clientes/<VITE_CLIENTE>/ — o alias "@cliente" é definido no vite.config.js.
+// O Vite resolve o import do logo para a URL final (com hash) no build.
+import MARCA from '@cliente/config.js';
+import logoUrl from '@cliente/logo.png';
+
+export { MARCA };
 
 // URL do logo, caso alguma tela precise usar direto.
-export { logoSchramm };
+export const logoMarca = logoUrl;
+
+// Nome do escritório em caixa alta (rodapés).
+export const NOME_MARCA = MARCA.nome.toUpperCase();
+
+// Cor principal da marca (usada nas páginas de impressão/PDF, que não
+// carregam o styles.css).
+export const COR_ACENTO = MARCA.cores?.acento || '#c65a2e';
 
 // Logo do escritório como <img>. `classe` ajusta o tamanho por contexto.
 export function logoImg(classe = '') {
-  return `<img class="logo-schramm ${classe}" src="${logoSchramm}" alt="Schramm Arquitetura e Engenharia" />`;
+  return `<img class="logo-schramm ${classe}" src="${logoMarca}" alt="${MARCA.nome}" />`;
 }
 
 // Compatibilidade: antes existia um placeholder cinza. Agora devolve o logo.

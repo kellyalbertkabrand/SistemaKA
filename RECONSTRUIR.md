@@ -97,6 +97,7 @@ Dependências (package.json): `firebase`, `jspdf`, `jspdf-autotable` (+ `vite` d
 ```
 painel-obra/
 ├─ index.html
+├─ clientes/<id>/              # marca de cada cliente: config.js, logo.png, public/ (ver clientes/README.md)
 ├─ netlify.toml                 # build (npm run build → dist), SPA redirect, headers de cache
 ├─ package.json
 ├─ firestore.rules             # Regras do Firestore (publicar no Console)
@@ -108,13 +109,12 @@ painel-obra/
    ├─ main.js                  # roteador SPA
    ├─ firebase.js              # inicializa Firebase a partir das VITE_FIREBASE_*
    ├─ dados.js                 # TODA a camada de acesso ao Firestore/Auth
-   ├─ styles.css               # visual + marca (terracota #c65a2e)
-   ├─ assets/logo-schramm.png  # logo (lockup)
+   ├─ styles.css               # visual (cores da marca vêm de clientes/<id>/config.js)
    ├─ lib/
    │  ├─ format.js             # moeda, dataBR, pct, slugify, esc, pillStatus
    │  ├─ voice.js              # reconhecimento de voz
    │  ├─ ordenar.js            # ordenação de lançamentos
-   │  ├─ marca.js              # logo/branding
+   │  ├─ marca.js              # logo/branding (lê clientes/<VITE_CLIENTE>/)
    │  ├─ imagem.js             # comprimir/converter imagens e dataURL
    │  ├─ lightbox.js           # visor de fotos/anexos
    │  ├─ zip.js                # cria ZIP no navegador
@@ -240,6 +240,8 @@ No Netlify (Site settings → Environment variables) e em `.env` local:
 - `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`,
   `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`,
   `VITE_FIREBASE_APP_ID` — configuração pública do Firebase (o front só usa `VITE_*`).
+- `VITE_CLIENTE` — pasta da marca em `clientes/` (padrão `schramm`). Cada cliente
+  tem branch, site Netlify e projeto Firebase próprios — ver `clientes/README.md`.
 - `ANTHROPIC_API_KEY` — **secreta**, usada só na Netlify Function.
 
 ---
