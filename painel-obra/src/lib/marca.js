@@ -16,6 +16,13 @@ export const NOME_MARCA = MARCA.nome.toUpperCase();
 // carregam o styles.css).
 export const COR_ACENTO = MARCA.cores?.acento || '#c65a2e';
 
+// A mesma cor em [r, g, b] (jsPDF).
+export const RGB_ACENTO = (() => {
+  const h = COR_ACENTO.replace('#', '');
+  const n = parseInt(h.length === 3 ? h.split('').map((x) => x + x).join('') : h, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+})();
+
 // Logo do escritório como <img>. `classe` ajusta o tamanho por contexto.
 export function logoImg(classe = '') {
   return `<img class="logo-schramm ${classe}" src="${logoMarca}" alt="${MARCA.nome}" />`;
