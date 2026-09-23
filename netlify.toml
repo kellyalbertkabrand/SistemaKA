@@ -1,6 +1,6 @@
 # Configuração do Netlify para o Painel de Obra (piloto).
-# IMPORTANTE: ao criar o site no Netlify, defina o "Base directory" como
-# "painel-obra" (este projeto vive numa subpasta do repositório).
+# Um site por cliente: branch de produção = cliente/<id>, Base directory vazio,
+# e a variável VITE_CLIENTE=<id> (ver clientes/README.md).
 
 [build]
   command = "npm run build"

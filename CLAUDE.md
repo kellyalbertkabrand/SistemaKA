@@ -2,7 +2,8 @@
 
 > Documento de handoff. Se você é uma nova sessão do Claude Code, **leia isto
 > primeiro**. Ele explica o que é o projeto, onde está, como desenvolver,
-> publicar e continuar. Todo o produto vive na subpasta **`painel-obra/`**.
+> publicar e continuar. Repositório: **`kellyalbertkabrand/gestaodeobra`** (o produto fica na raiz).
+> Até set/2026 o código vivia em `SistemaKA/painel-obra/` — o histórico veio junto.
 
 ---
 
@@ -12,12 +13,12 @@
 > **desatualizadas**. O que vale hoje é esta seção 0.
 
 ### Branches: base + uma por cliente (decisão da Kelly, set/2026)
-- **`claude/painel-obra-pilot-neqkp0`** = produto base **e** site da **Schramm**
-  (o Netlify `piloto-schramm-obra` publica dela; push = deploy em ~1–2 min).
-  Melhorias do produto nascem aqui.
-- **Cada novo cliente tem a própria branch `cliente/<id>`**, o próprio site no
+- **`main`** = produto base. Melhorias do produto nascem aqui.
+- **Cada cliente tem a própria branch `cliente/<id>`**, o próprio site no
   Netlify (que publica só dessa branch) e o próprio projeto Firebase (banco
-  separado). Levar melhoria a um cliente = `git merge` da neqkp0 na branch dele.
+  separado). Levar melhoria a um cliente = `git merge main` na branch dele.
+- **Schramm** = `cliente/schramm` (Netlify `piloto-schramm-obra`; push = deploy
+  em ~1–2 min).
 - A marca de cada cliente fica em `clientes/<id>/` (ver `clientes/README.md`);
   nunca escreva nome/dados de escritório direto no código — use `MARCA` de
   `src/lib/marca.js`.
@@ -27,8 +28,9 @@
 ### Fluxo de trabalho (o que a cliente espera)
 - Regra da cliente (Kelly/Luiza): **"ajuste e já publique"** — as mudanças vão
   direto para produção, sem ficar perguntando a cada passo.
-- A cada mudança: `npm run build` (validar) → `git add`/commit → `git push`
-  na `neqkp0`. Sempre `git add` a partir da **raiz do repo** (`/home/user/SistemaKA`).
+- A cada mudança: `npm run build` (validar) → commit na `main` → `git push` →
+  `git merge main` na branch do(s) cliente(s) que deve(m) receber → `git push`.
+  Ajuste exclusivo de um cliente: commit direto na `cliente/<id>` dele.
 - Para toda feature/ajuste visível ao cliente, **atualize o changelog**
   (`src/lib/changelog.js`): adicione um item e atualize a `VERSAO` (data).
 - Rodapé de commit:
@@ -41,7 +43,7 @@
 - Coleções: `obras`, `etapas`, `lancamentos`, `pagamentos`, `clientes`,
   `fornecedores`, `convites`, `fotos`, `fotos_bin`, `recibos`, `contratos`,
   `briefings`.
-- **Regras do Firestore** ficam em `painel-obra/firestore.rules`, mas são
+- **Regras do Firestore** ficam em `firestore.rules`, mas são
   **publicadas MANUALMENTE pela usuária** no Console do Firebase (Firestore →
   Regras → Publicar). **Sempre que criar/alterar uma coleção pública, lembre de
   avisar a usuária para republicar as regras.**
@@ -101,19 +103,16 @@ Idioma do produto e dos commits: **português (pt-BR)**.
 
 | Item | Valor |
 |---|---|
-| Repositório | `kellyalbertkabrand/SistemaKA` |
-| Branch de trabalho | `claude/painel-obra-pilot-neqkp0` |
-| Subpasta do produto | `painel-obra/` |
+| Repositório | `kellyalbertkabrand/gestaodeobra` |
+| Branch base do produto | `main` |
+| Branch da Schramm | `cliente/schramm` |
 | Site no ar (Netlify) | `https://piloto-schramm-obra.netlify.app` |
 | Projeto Netlify | `piloto-schramm-obra` (time `kellyalbertka`) |
-| Base directory no Netlify | `painel-obra` |
+| Base directory no Netlify | (vazio — raiz do repo) |
 | Banco (Supabase) | projeto `piloto-schramm`, org `KA Pilotos`, região São Paulo |
 | E-mail "laboratório" | `ferramentaska@gmail.com` (Supabase) |
 | Modelo de IA | `claude-haiku-4-5` (Anthropic) |
 
-> ⚠️ Existe **outro projeto** no mesmo repositório (um agregador de notícias em
-> Python, na branch `claude/branding-ai-news-aggregator-pY5az` e na raiz). **NÃO
-> misture.** Trabalhe apenas dentro de `painel-obra/` nesta branch.
 
 ---
 
@@ -183,7 +182,7 @@ no front.
 ## 6. Como desenvolver, buildar e publicar
 
 ```bash
-# dentro de painel-obra/
+# na raiz do repositório
 npm install
 npm run build          # gera dist/ (Vite)
 # dev do front apenas:
@@ -192,14 +191,8 @@ npm run dev
 netlify dev
 ```
 
-**Publicação = git push.** O Netlify está ligado ao GitHub: todo push na branch
-`claude/painel-obra-pilot-neqkp0` reconstrói e republica sozinho (~1–2 min).
-
-### ⚠️ Gotcha de git (importante)
-Sempre faça `git add` a partir da **raiz do repo** (`/home/user/SistemaKA`),
-não de dentro de `painel-obra/`. O diretório de trabalho do shell persiste entre
-comandos; se um `cd painel-obra` anterior deixou o cwd lá, `git add painel-obra/src`
-falha ("painel-obra/painel-obra"). Volte à raiz antes de `git add`.
+**Publicação = git push.** Cada site do Netlify está ligado a uma branch
+`cliente/<id>`: todo push nela reconstrói e republica sozinho (~1–2 min).
 
 ### Fluxo de commit usado
 Mensagens em português. Rodapé dos commits:
@@ -218,7 +211,7 @@ Build local (`npm run build`) antes de commitar, para validar.
 - **Supabase free hiberna:** a 1ª requisição após um tempo demora. Por isso
   `main.js` (getSession) e `views/obras.js`/`publica.js` têm **timeout** e
   mensagem de erro, para nunca ficar em tela branca / "Carregando" eterno.
-- **Netlify base directory = `painel-obra`** (o produto está em subpasta).
+- **Netlify base directory = vazio** (o produto está na raiz do repositório).
 - **Voz:** `voice.js` grava de forma **contínua e acumulativa** (não apaga nas
   pausas). O botão alterna Falar/Parar; só ao Parar envia para a IA.
 - **Marca / multi-cliente:** tudo o que é do escritório (nome, cores, logo,
@@ -272,9 +265,10 @@ em PDF (fora do repo, entregue à cliente).
 
 ## 10. Como continuar (para a próxima sessão)
 
-1. Trabalhe só em `painel-obra/` na branch `claude/painel-obra-pilot-neqkp0`.
-2. Faça a mudança, rode `npm run build` para validar, e `git add`/commit/push
-   **a partir da raiz do repo**. O Netlify publica sozinho.
+1. Melhorias do produto na `main`; depois `git merge main` na `cliente/<id>`
+   de cada cliente que deve receber (a Schramm é `cliente/schramm`).
+2. Faça a mudança, rode `npm run build` para validar, commit/push. O Netlify
+   de cada cliente publica sozinho a partir da branch dele.
 3. Para features com dados novos (fotos, briefing, etc.), lembre de:
    - criar/ajustar tabelas no Supabase **com RLS** no mesmo padrão;
    - manter chaves secretas apenas em Netlify Functions;

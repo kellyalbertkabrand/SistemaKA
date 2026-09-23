@@ -18,13 +18,14 @@ Quem escolhe o cliente no build é a variável de ambiente **`VITE_CLIENTE`**
 
 | Branch | Papel |
 |---|---|
-| `claude/painel-obra-pilot-neqkp0` | Produto base + site da **Schramm** (piloto) |
+| `main` | Produto base (melhorias nascem aqui) |
+| `cliente/schramm` | Site da **Schramm** (piloto) |
 | `cliente/<id>` | Site do cliente `<id>` (o Netlify dele publica só desta branch) |
 
 - Cada cliente evolui **isolado**: um ajuste feito na branch de um cliente não
   mexe no site dos outros.
-- **Levar uma melhoria do produto para um cliente** = `git merge` da branch
-  base na branch do cliente. Como a marca de cada um fica só na sua pasta
+- **Levar uma melhoria do produto para um cliente** = `git merge main` na
+  branch do cliente. Como a marca de cada um fica só na sua pasta
   `clientes/<id>/`, esse merge não dá conflito de marca.
 - Ajuste exclusivo de um cliente (ex.: cláusula de contrato própria) fica só na
   branch dele.
@@ -35,7 +36,7 @@ Quem escolhe o cliente no build é a variável de ambiente **`VITE_CLIENTE`**
 
 ### 1. Branch e pasta da marca (no código)
 0. Crie a branch a partir da base:
-   `git checkout -b cliente/<id> origin/claude/painel-obra-pilot-neqkp0`
+   `git checkout -b cliente/<id> origin/main`
 1. Copie `clientes/schramm/` para `clientes/<id>/` (id curto, sem espaço/acento,
    ex.: `estudio-lima`).
 2. Troque `logo.png` (PNG com fundo transparente, lockup horizontal).
@@ -60,7 +61,7 @@ Quem escolhe o cliente no build é a variável de ambiente **`VITE_CLIENTE`**
 
 ### 3. Site (Netlify — um site por cliente)
 1. Netlify → **Add new project → Import from Git** → este repositório.
-2. Branch de produção: **`cliente/<id>`**. **Base directory: `painel-obra`**.
+2. Branch de produção: **`cliente/<id>`**. **Base directory: vazio** (raiz).
 3. **Environment variables**:
    - `VITE_CLIENTE` = `<id>`
    - `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`,

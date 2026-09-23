@@ -24,7 +24,7 @@ Uma plataforma web de **gestão e acompanhamento de obra** para o escritório
 | # | Plataforma | Para quê serve | Conta usada no piloto |
 |---|------------|----------------|------------------------|
 | 1 | **Gmail** | E-mail "laboratório" que identifica o ambiente | `ferramentaska@gmail.com` |
-| 2 | **GitHub** | Guarda o código-fonte do projeto | repositório `kellyalbertkabrand/SistemaKA` |
+| 2 | **GitHub** | Guarda o código-fonte do projeto | repositório `kellyalbertkabrand/gestaodeobra` |
 | 3 | **Netlify** | Hospeda o site no ar + roda a função da IA | time `kellyalbertka`, projeto `piloto-schramm-obra` |
 | 4 | **Supabase** | Banco de dados + login + regras de segurança | org `KA Pilotos`, projeto `piloto-schramm` (São Paulo) |
 | 5 | **Anthropic (Claude)** | A IA que transforma a fala em lançamento | chave de API (modelo `claude-haiku-4-5`) |
@@ -42,8 +42,8 @@ Uma plataforma web de **gestão e acompanhamento de obra** para o escritório
 - **Site (produção do piloto):** `https://piloto-schramm-obra.netlify.app`
   - Login do escritório: `https://piloto-schramm-obra.netlify.app`
   - Painel do cliente: `https://piloto-schramm-obra.netlify.app/obra/{slug}`
-- **Código:** repositório `SistemaKA`, na branch `claude/painel-obra-pilot-neqkp0`,
-  dentro da subpasta `painel-obra/`.
+- **Código:** repositório `gestaodeobra`, branch `cliente/schramm` (base do
+  produto na `main`).
 - **Banco:** projeto Supabase `piloto-schramm` (região América do Sul / São Paulo).
 
 ---
@@ -61,7 +61,7 @@ Uma plataforma web de **gestão e acompanhamento de obra** para o escritório
 
 ### Estrutura de pastas
 ```
-painel-obra/
+gestaodeobra/
 ├─ index.html                       # ponto de entrada (app de página única)
 ├─ netlify.toml                     # config de build + funções + redirect
 ├─ .env.example                     # modelo das chaves
@@ -155,9 +155,9 @@ Cadastradas em **Netlify → Site settings → Environment variables**:
 ## 9. Publicação e atualizações
 
 - O Netlify está ligado ao **GitHub**: a cada novo envio de código para a branch
-  `claude/painel-obra-pilot-neqkp0`, o Netlify **reconstrói e republica sozinho**.
+  `cliente/schramm`, o Netlify **reconstrói e republica sozinho**.
 - Build: `npm run build` (Vite) → gera a pasta `dist` → Netlify publica.
-- **Base directory** no Netlify: `painel-obra` (o projeto vive nessa subpasta).
+- **Base directory** no Netlify: vazio (o projeto fica na raiz do repositório).
 
 ---
 

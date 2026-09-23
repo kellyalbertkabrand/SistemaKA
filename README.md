@@ -28,7 +28,7 @@ arquitetura. Tem duas caras:
 ## Estrutura
 
 ```
-painel-obra/
+gestaodeobra/
 ├─ index.html                  # ponto de entrada (SPA)
 ├─ netlify.toml                # build + redirect SPA + pasta de funções
 ├─ .env.example                # modelo das chaves a preencher
@@ -76,9 +76,8 @@ netlify dev                  # abre em http://localhost:8888
 ### 4. Publicar (Netlify)
 1. Suba este projeto para um repositório novo no GitHub.
 2. Netlify → **Add new site → Import from GitHub** → escolha o repositório.
-3. **Importante:** em *Site configuration → Build & deploy*, defina o
-   **Base directory** como `painel-obra` (o projeto vive nesta subpasta).
-   O `netlify.toml` cuida do resto (`npm run build`, pasta `dist`, funções).
+3. Branch de produção: `cliente/<id>`; Base directory vazio. Veja
+   `clientes/README.md` (um site e um banco por cliente). O `netlify.toml` cuida do resto (`npm run build`, pasta `dist`, funções).
 4. **Site settings → Environment variables:** cadastre as três chaves do passo 2.
 5. O Netlify publica e te dá a URL (ex.: `pilotoarq-obra.netlify.app`).
 

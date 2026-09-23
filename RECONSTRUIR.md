@@ -29,10 +29,10 @@ na Netlify (seção 11) e restaurar os dados (seção 12).
 
 | Item | Valor |
 |---|---|
-| Repositório | `kellyalbertkabrand/SistemaKA` (subpasta **`painel-obra/`**) |
-| Branch de produção (deploy) | `claude/painel-obra-pilot-neqkp0` |
+| Repositório | `kellyalbertkabrand/gestaodeobra` (produto na raiz) |
+| Branches | `main` (base do produto) + `cliente/<id>` (uma por cliente; Schramm = `cliente/schramm`) |
 | Site no ar (Netlify) | `https://piloto-schramm-obra.netlify.app` |
-| Projeto Netlify | `piloto-schramm-obra` (time `kellyalbertka`), base directory `painel-obra` |
+| Projeto Netlify | `piloto-schramm-obra` (time `kellyalbertka`), branch `cliente/schramm`, base directory vazio |
 | Firebase | projeto **`painel-obra-schramm`** (Firestore + Auth) |
 | IA | Netlify Function → API Anthropic, modelo `claude-haiku-4-5` |
 
@@ -95,7 +95,7 @@ Dependências (package.json): `firebase`, `jspdf`, `jspdf-autotable` (+ `vite` d
 ## 5. Estrutura de pastas
 
 ```
-painel-obra/
+gestaodeobra/
 ├─ index.html
 ├─ clientes/<id>/              # marca de cada cliente: config.js, logo.png, public/ (ver clientes/README.md)
 ├─ netlify.toml                 # build (npm run build → dist), SPA redirect, headers de cache

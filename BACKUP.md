@@ -11,7 +11,7 @@ restaurar se algo for perdido. Projeto Firebase: **painel-obra-schramm**.
   Guarda obras, etapas, lançamentos, clientes, fornecedores, fotos (miniatura +
   imagem cheia em `fotos_bin`), notas fiscais (`recibos`), convites e **pagamentos**
   (recebimentos do cliente).
-- **Código-fonte:** GitHub `kellyalbertkabrand/SistemaKA` (subpasta `painel-obra/`).
+- **Código-fonte:** GitHub `kellyalbertkabrand/gestaodeobra` (branch `cliente/schramm`).
   O código em si já é versionado no Git — este documento trata do backup dos **dados**.
 
 ---
