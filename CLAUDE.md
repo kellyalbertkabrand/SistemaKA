@@ -6,6 +6,80 @@
 
 ---
 
+## 0. ESTADO ATUAL — LEIA ANTES DE TUDO (set/2026)
+
+> As seções mais antigas abaixo (Supabase, roteiro de fases) ficaram
+> **desatualizadas**. O que vale hoje é esta seção 0.
+
+### Branches: base + uma por cliente (decisão da Kelly, set/2026)
+- **`claude/painel-obra-pilot-neqkp0`** = produto base **e** site da **Schramm**
+  (o Netlify `piloto-schramm-obra` publica dela; push = deploy em ~1–2 min).
+  Melhorias do produto nascem aqui.
+- **Cada novo cliente tem a própria branch `cliente/<id>`**, o próprio site no
+  Netlify (que publica só dessa branch) e o próprio projeto Firebase (banco
+  separado). Levar melhoria a um cliente = `git merge` da neqkp0 na branch dele.
+- A marca de cada cliente fica em `clientes/<id>/` (ver `clientes/README.md`);
+  nunca escreva nome/dados de escritório direto no código — use `MARCA` de
+  `src/lib/marca.js`.
+- Não crie outras branches de trabalho além dessas. (Branches antigas de
+  sessões anteriores, como `*-o69lul`, foram descontinuadas.)
+
+### Fluxo de trabalho (o que a cliente espera)
+- Regra da cliente (Kelly/Luiza): **"ajuste e já publique"** — as mudanças vão
+  direto para produção, sem ficar perguntando a cada passo.
+- A cada mudança: `npm run build` (validar) → `git add`/commit → `git push`
+  na `neqkp0`. Sempre `git add` a partir da **raiz do repo** (`/home/user/SistemaKA`).
+- Para toda feature/ajuste visível ao cliente, **atualize o changelog**
+  (`src/lib/changelog.js`): adicione um item e atualize a `VERSAO` (data).
+- Rodapé de commit:
+  `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`
+
+### Banco de dados = FIREBASE (não é mais Supabase)
+- Hoje o sistema roda em **Firebase**: **Firestore** (dados) + **Firebase Auth**
+  (login da arquiteta). Config em `src/firebase.js`; toda a camada de dados em
+  **`src/dados.js`**.
+- Coleções: `obras`, `etapas`, `lancamentos`, `pagamentos`, `clientes`,
+  `fornecedores`, `convites`, `fotos`, `fotos_bin`, `recibos`, `contratos`,
+  `briefings`.
+- **Regras do Firestore** ficam em `painel-obra/firestore.rules`, mas são
+  **publicadas MANUALMENTE pela usuária** no Console do Firebase (Firestore →
+  Regras → Publicar). **Sempre que criar/alterar uma coleção pública, lembre de
+  avisar a usuária para republicar as regras.**
+- Padrão de regra pública (autopreenchimento por link): criar com token de
+  convite válido; ler/editar/excluir só logado. Ver `clientes`, `fornecedores`,
+  `briefings` como exemplo.
+
+### Funcionalidades já no ar
+- **Painel de obras**: KPIs, etapas, lançamentos (com fornecedor, fotos, NF),
+  edição, lançamento por voz/IA. Correção de scroll (a tela não "sobe" ao editar).
+- **Financeiro**: parcelas (total = soma), aberto em vermelho claro / pago em
+  verde, controle interno do pagamento do projeto (obras com gestão), cards por obra.
+- **Clientes**: cadastro pelo escritório + **link público** `/cadastro/{token}`
+  (dados de contato e de contrato). WhatsApp.
+- **Fornecedores**: lista + **link público** `/cadastro-fornecedor/{token}`.
+- **Contratos**: 3 modelos (Projeto e Execução, Projeto, Administração), valor por
+  extenso, edição na tela, **salvar** (reabrir/atualizar), vínculo com obra,
+  **Salvar e PDF**, imprimir/PDF e **baixar Word**.
+- **Briefing** (mais recente): aba interna gera **link público** `/briefing/{token}`;
+  o cliente preenche o briefing do projeto e **salva automaticamente** enquanto
+  responde (1 briefing por link, doc de id = token, upsert com merge). A arquiteta
+  vê as respostas por seção; selo "Em preenchimento"/"Concluído"; **Baixar PDF**
+  (arquivo .pdf de verdade via jsPDF) e **Imprimir** (botões separados). Modelo do
+  briefing em `src/lib/briefingModelo.js`.
+
+### Estrutura real de código (resumo)
+- `src/main.js` — roteador SPA. Rotas públicas (sem login) casam ANTES do login:
+  `/obra/{slug}`, `/atualizacoes`, `/cadastro/{token}`, `/cadastro-fornecedor/{token}`,
+  `/briefing/{token}`. Rotas internas: `/obras`, `/painel/{id}`, `/financeiro`,
+  `/contratos`, `/briefings`, `/clientes`, `/fornecedores`.
+- `src/dados.js` — Firestore (todas as funções de dados).
+- `src/views/` — telas. `src/lib/` — utilidios (format, nav, marca, changelog,
+  contratos, briefingModelo, reembolso [jsPDF], zip, imagem, etc.).
+- Padrão de refresh sem "pular" a rolagem: view recebe `opts={}`; se
+  `opts.scrollY != null`, re-renderiza sem "Carregando…" e restaura a rolagem.
+
+---
+
 ## 1. Contexto e objetivo
 
 Plataforma web de **gestão e acompanhamento de obra** para o escritório

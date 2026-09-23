@@ -7,7 +7,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { moeda, dataBR, esc } from './format.js';
 import { baixarExcel, numBR } from './exportar.js';
-import { logoMarca, MARCA, NOME_MARCA, COR_ACENTO } from './marca.js';
+import { logoMarca, MARCA, NOME_MARCA, COR_ACENTO, RGB_ACENTO } from './marca.js';
 
 const ESCRITORIO_NOME = NOME_MARCA;
 const ESCRITORIO_ENDERECO = MARCA.endereco || '';
@@ -227,7 +227,7 @@ export async function baixarPdfReembolso({ obra, lancamentos, de, ate }) {
   const M = 40;
   const W = doc.internal.pageSize.getWidth();
   const H = doc.internal.pageSize.getHeight();
-  const TERRA = hexParaRgb(COR_ACENTO);
+  const TERRA = RGB_ACENTO;
   const ESCURO = [42, 38, 34];
   const MUTED = [107, 98, 89];
   const TEXTO = [60, 55, 50];
@@ -394,11 +394,4 @@ export function montarMensagemWhatsApp({ obra, lancamentos, de, ate }) {
     `Pix (${PAGAMENTO.pixTipo}): ${PAGAMENTO.pix}`,
   );
   return linhas.join('\n');
-}
-
-// '#c65a2e' -> [198, 90, 46] (cores do jsPDF).
-function hexParaRgb(hex) {
-  const h = String(hex).replace('#', '');
-  const n = parseInt(h.length === 3 ? h.split('').map((x) => x + x).join('') : h, 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 }
