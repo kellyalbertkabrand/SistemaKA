@@ -93,49 +93,37 @@ export default async (req) => {
   if (!texto) return json({ ok: false, erro: "texto_vazio", mensagem: "Escreva ou fale o lançamento primeiro." }, 400);
 
   const dica = etapas.length ? ` Etapas cadastradas: ${etapas.join(", ")}.` : "";
-  const base = {
+  // Método mais compatível: pedimos o JSON direto no prompt (sem saída
+  // estruturada, que em alguns modelos exige beta/pode recusar) e lemos de
+  // forma robusta. Haiku devolve um JSON curto e limpo com esta instrução.
+  const corpo = {
     model: MODEL,
     max_tokens: 300,
-    system: SISTEMA,
+    system: SISTEMA + `\n\nResponda SOMENTE com um JSON válido, sem texto antes ou depois, no formato exato: {"etapa": "...", "descricao": "...", "valor": 0, "status": "pago"}. O campo status só pode ser "pago" ou "pendente".`,
     messages: [{ role: "user", content: texto + dica }],
   };
 
   try {
-    // Tentativa 1: saída estruturada (JSON garantido pelo schema).
-    let resp = await chamarAnthropic(apiKey, {
-      ...base,
-      output_config: { format: { type: "json_schema", schema: SCHEMA } },
-    });
+    const resp = await chamarAnthropic(apiKey, corpo);
 
-    // Deu erro? Descobre o motivo e, se fizer sentido, tenta um plano B.
     if (!resp.ok) {
       const detalhe = await resp.text().catch(() => "");
       const txt = String(detalhe);
-
       if (resp.status === 401 || resp.status === 403) {
         return json({ ok: false, erro: "chave_invalida",
-          mensagem: "A chave da IA foi recusada (inválida ou expirada). Gere uma nova chave em console.anthropic.com e atualize ANTHROPIC_API_KEY no Netlify." });
+          mensagem: "A chave da IA foi recusada (inválida ou expirada). Gere uma nova chave em console.anthropic.com e atualize ANTHROPIC_API_KEY no Netlify (depois faça um redeploy)." });
       }
       if (/credit|billing|quota|insufficient|balance/i.test(txt)) {
         return json({ ok: false, erro: "sem_credito",
-          mensagem: "A conta da IA está sem créditos. Adicione créditos/billing em console.anthropic.com (Plans & Billing) e tente de novo." });
+          mensagem: "A conta da IA está sem créditos. Adicione créditos em console.anthropic.com (Plans & Billing) e tente de novo." });
       }
       if (resp.status === 429 || /rate|overloaded/i.test(txt)) {
         return json({ ok: false, erro: "limite",
           mensagem: "A IA está ocupada no momento. Aguarde alguns segundos e tente de novo." });
       }
-
-      // Plano B: tenta sem saída estruturada (caso o problema fosse o formato).
-      resp = await chamarAnthropic(apiKey, {
-        ...base,
-        system: SISTEMA + `\nResponda SOMENTE com um JSON válido no formato {"etapa": "...", "descricao": "...", "valor": 0, "status": "pago"} — sem texto antes ou depois.`,
-      });
-      if (!resp.ok) {
-        const d2 = await resp.text().catch(() => "");
-        return json({ ok: false, erro: "anthropic_error", status: resp.status,
-          mensagem: `A IA retornou um erro (${resp.status}). Tente de novo em instantes; se persistir, confira a chave/créditos da IA.`,
-          detalhe: (d2 || txt).slice(0, 300) });
-      }
+      return json({ ok: false, erro: "anthropic_error", status: resp.status,
+        mensagem: `A IA retornou um erro (${resp.status}). Tente de novo em instantes.`,
+        detalhe: txt.slice(0, 300) });
     }
 
     const data = await resp.json().catch(() => null);
