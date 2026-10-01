@@ -3,9 +3,17 @@
 // sucinta e clara para o cliente — e atualize a VERSAO (data da publicação).
 // É exibido na página pública /atualizacoes, que pode ser enviada ao cliente.
 
-export const VERSAO = '22/09/2026';
+export const VERSAO = '01/10/2026';
 
 export const CHANGELOG = [
+  {
+    data: '01/10/2026',
+    titulo: 'Lançar custo por voz/IA mais estável',
+    itens: [
+      'Quando a IA não consegue organizar o lançamento, o sistema agora mostra o motivo exato (ex.: aguarde e tente de novo) em vez de uma mensagem genérica.',
+      'Mais robustez: se a primeira tentativa falhar, o sistema tenta novamente automaticamente antes de avisar.',
+    ],
+  },
   {
     data: '22/09/2026',
     titulo: 'Briefing do projeto online',

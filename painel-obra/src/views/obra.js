@@ -1273,7 +1273,7 @@ function configurarLancamento(container, obra, etapas, fornecedores, recarregar)
       btnInterpretar.disabled = false;
 
       if (!resp.ok || !dados.ok) {
-        setStatus('Não consegui interpretar agora. Confira a chave da IA ou tente de novo.', 'erro');
+        setStatus(dados?.mensagem || 'Não consegui interpretar agora. Tente de novo em instantes.', 'erro');
         return;
       }
       setStatus('');
