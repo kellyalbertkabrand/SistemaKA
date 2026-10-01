@@ -1,0 +1,19 @@
+# Site do Diagnóstico Marca com Essência©.
+# No Netlify, crie um site novo apontando para este repositório com "Base directory" = diagnostico.
+[build]
+  publish = "public"
+
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Endereços amigáveis para as páginas.
+[[redirects]]
+  from = "/entrar"
+  to = "/entrar.html"
+  status = 200
+
+[[redirects]]
+  from = "/diagnostico"
+  to = "/diagnostico.html"
+  status = 200

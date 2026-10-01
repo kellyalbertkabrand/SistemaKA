@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar · Diagnóstico Marca com Essência©</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@500;600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="container"><a href="/">Kelly Albert</a></div>
+  </header>
+
+  <main class="secao">
+    <div class="container" style="max-width: 480px;">
+      <span class="rotulo">Diagnóstico Marca com Essência©</span>
+      <h2>Entre com o <strong>e-mail da compra.</strong></h2>
+
+      <div id="aviso" class="aviso oculto" role="status"></div>
+
+      <div id="opcoes">
+        <button id="google" class="botao botao-largo">Entrar com Google</button>
+        <p class="centro suave pequeno" style="margin: 20px 0;">ou receba um link de acesso no seu e-mail</p>
+        <form id="form-link">
+          <label for="email">Seu e-mail</label>
+          <input id="email" type="email" autocomplete="email" required placeholder="o mesmo usado na compra">
+          <button class="botao botao-contorno botao-largo" type="submit">Enviar link de acesso</button>
+        </form>
+      </div>
+
+      <form id="form-confirmar" class="oculto">
+        <p>Para concluir, confirme o e-mail em que você recebeu o link.</p>
+        <label for="email-confirmar">Seu e-mail</label>
+        <input id="email-confirmar" type="email" autocomplete="email" required>
+        <button class="botao botao-largo" type="submit">Entrar</button>
+      </form>
+    </div>
+  </main>
+
+  <script type="module">
+    import {
+      entrarComGoogle, enviarLinkMagico, linkMagicoNaUrl, concluirLinkMagico, emailGuardado, usuarioAtual,
+    } from "/js/sessao.js";
+
+    const aviso = document.getElementById("aviso");
+    const mostrar = (texto) => { aviso.textContent = texto; aviso.classList.remove("oculto"); };
+    const irParaDiagnostico = () => { location.href = "/diagnostico"; };
+
+    async function iniciar() {
+      if (linkMagicoNaUrl()) {
+        const email = emailGuardado();
+        if (email) return concluir(email);
+        // Link aberto em outro aparelho: pede o e-mail para confirmar.
+        document.getElementById("opcoes").classList.add("oculto");
+        document.getElementById("form-confirmar").classList.remove("oculto");
+        return;
+      }
+      if (await usuarioAtual()) irParaDiagnostico();
+    }
+
+    async function concluir(email) {
+      try {
+        await concluirLinkMagico(email);
+        irParaDiagnostico();
+      } catch {
+        mostrar("Esse link expirou ou já foi usado. Peça um novo link abaixo.");
+        document.getElementById("opcoes").classList.remove("oculto");
+        document.getElementById("form-confirmar").classList.add("oculto");
+      }
+    }
+
+    document.getElementById("google").addEventListener("click", async () => {
+      try {
+        await entrarComGoogle();
+        irParaDiagnostico();
+      } catch (e) {
+        if (e?.code !== "auth/popup-closed-by-user") mostrar("Não deu certo entrar com o Google. Tente pelo link no e-mail.");
+      }
+    });
+
+    document.getElementById("form-link").addEventListener("submit", async (ev) => {
+      ev.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      try {
+        await enviarLinkMagico(email);
+        mostrar(`Pronto. Enviamos um link de acesso para ${email}. Abra o e-mail e toque no link. Confira também a caixa de spam.`);
+      } catch {
+        mostrar("Não conseguimos enviar o link agora. Confira o e-mail digitado e tente de novo.");
+      }
+    });
+
+    document.getElementById("form-confirmar").addEventListener("submit", (ev) => {
+      ev.preventDefault();
+      concluir(document.getElementById("email-confirmar").value.trim());
+    });
+
+    iniciar();
+  </script>
+</body>
+</html>

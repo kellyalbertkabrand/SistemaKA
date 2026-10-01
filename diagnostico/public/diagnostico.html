@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Diagnóstico Marca com Essência©</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:wght@500;600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/estilo.css">
+</head>
+<body>
+  <header class="topo">
+    <div class="container">
+      <span>Kelly Albert</span>
+      <button class="sair" id="sair" type="button">Sair</button>
+    </div>
+  </header>
+
+  <main id="tela">
+    <!-- Carregando -->
+    <section class="secao centro" data-tela="carregando">
+      <div class="container"><div class="carregando"></div><p class="suave">Carregando…</p></div>
+    </section>
+
+    <!-- Sem acesso -->
+    <section class="secao oculto" data-tela="sem-acesso">
+      <div class="container" style="max-width: 520px;">
+        <span class="rotulo">Acesso</span>
+        <h2 id="sem-acesso-titulo">Não encontramos uma compra com este e-mail.</h2>
+        <p id="sem-acesso-texto"></p>
+        <a class="botao botao-largo js-checkout" href="#">Garantir o meu diagnóstico</a>
+        <p class="centro"><button class="botao-link" id="trocar-email" type="button">Entrar com outro e-mail</button></p>
+      </div>
+    </section>
+
+    <!-- Perfil da marca -->
+    <section class="secao oculto" data-tela="perfil">
+      <div class="container" style="max-width: 560px;">
+        <span class="rotulo">Antes de começar</span>
+        <h2>Conta um pouco sobre <strong>a sua marca.</strong></h2>
+        <p class="suave">São 35 perguntas, em 7 dimensões. Leva uns 20 minutos. Tudo fica salvo, então dá para parar e voltar quando quiser.</p>
+        <form id="form-perfil"></form>
+      </div>
+    </section>
+
+    <!-- Pergunta -->
+    <section class="secao oculto" data-tela="pergunta">
+      <div class="container" style="max-width: 600px;">
+        <div class="pergunta-cap" id="p-cap"></div>
+        <div class="progresso" aria-hidden="true"><span id="p-barra"></span></div>
+        <p class="suave pequeno" id="p-contador"></p>
+        <div class="pergunta-texto" id="p-texto"></div>
+        <p class="suave" id="p-ajuda"></p>
+        <div id="p-campo"></div>
+        <div class="navegacao">
+          <button class="botao-link" id="p-voltar" type="button">Voltar</button>
+          <button class="botao" id="p-avancar" type="button">Avançar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gerando -->
+    <section class="secao centro oculto" data-tela="gerando">
+      <div class="container" style="max-width: 520px;">
+        <div class="carregando"></div>
+        <h2>Lendo a <strong>sua marca.</strong></h2>
+        <p class="suave">A Inteligência Artificial está cruzando as suas respostas com o método Marca com Essência©. Isso leva cerca de 1 minuto. Pode deixar esta tela aberta.</p>
+      </div>
+    </section>
+
+    <!-- Erro -->
+    <section class="secao oculto" data-tela="erro">
+      <div class="container" style="max-width: 520px;">
+        <h2>Algo não saiu como esperado.</h2>
+        <p id="erro-texto">Não conseguimos gerar o seu diagnóstico agora. Suas respostas estão salvas.</p>
+        <button class="botao" id="tentar-de-novo" type="button">Tentar de novo</button>
+      </div>
+    </section>
+
+    <!-- Resultado -->
+    <div class="oculto" data-tela="resultado" id="resultado"></div>
+  </main>
+
+  <footer class="rodape">
+    <div class="container">KA | Inteligência para Marcas · @kellyalbert.brand</div>
+  </footer>
+
+  <script type="module" src="/js/diagnostico.js"></script>
+</body>
+</html>

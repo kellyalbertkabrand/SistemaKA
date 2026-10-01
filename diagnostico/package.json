@@ -1,0 +1,21 @@
+{
+  "name": "diagnostico-marca-com-essencia",
+  "private": true,
+  "type": "module",
+  "description": "Diagnóstico Marca com Essência© — ferramenta de autodiagnóstico de marca com IA (Fase 1: site).",
+  "scripts": {
+    "dev": "netlify dev",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-strip-types scripts/testar-pontuacao.mts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.131.0",
+    "@netlify/functions": "^6.0.1",
+    "firebase-admin": "^14.5.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "typescript": "^7.0.2"
+  }
+}

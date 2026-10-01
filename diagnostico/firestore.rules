@@ -1,0 +1,19 @@
+rules_version = '2';
+// Regras de segurança do banco de dados (cole no Firebase: Firestore > Regras).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Cada pessoa lê e grava somente as próprias respostas.
+    match /respostas/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+    // O resultado é escrito só pelo servidor; a pessoa apenas lê o seu.
+    match /resultados/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow write: if false;
+    }
+    // Compras: só o servidor acessa.
+    match /compras/{email} {
+      allow read, write: if false;
+    }
+  }
+}
