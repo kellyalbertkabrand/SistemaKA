@@ -209,6 +209,10 @@ export function GestaoCobrancas() {
         .map((c) => Number(c.valor)),
     )
 
+  // Total JÁ PAGO de um grupo (cobranças com status paga).
+  const totalPago = (itens: Cobranca[]) =>
+    somarDinheiro(itens.filter((c) => c.status === 'paga').map((c) => Number(c.valor)))
+
   function cobrarWhatsApp(c: Cobranca) {
     const cliente = c.cliente_id ? clientePorId.get(c.cliente_id) : null
     const nome = primeiroNome(cliente?.responsavel ?? cliente?.nome_marca)
@@ -903,6 +907,8 @@ export function GestaoCobrancas() {
 
       {grupos.map((g) => {
         const recolhido = estaRecolhido(g.chave)
+        const pago = totalPago(g.itens)
+        const falta = totalEmAberto(g.itens)
         return (
         <section key={g.chave} className="cob-grupo">
           <button
@@ -917,7 +923,8 @@ export function GestaoCobrancas() {
             </span>
             <span className="mes-grupo__total">
               {g.itens.length} {g.itens.length === 1 ? 'cobrança' : 'cobranças'}
-              {totalEmAberto(g.itens) > 0 && <> · {formatarBRL(totalEmAberto(g.itens))} em aberto</>}
+              <span className="cob-grupo__pago"> · pago {formatarBRL(pago)}</span>
+              <span className="cob-grupo__falta"> · falta {formatarBRL(falta)}</span>
             </span>
           </button>
           {!recolhido && (
