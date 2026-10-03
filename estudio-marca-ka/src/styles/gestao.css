@@ -4862,3 +4862,27 @@ a.btn-mini {
 .proj-simform {
   flex-wrap: wrap;
 }
+
+/* Projeção: cor do "falta receber" e botões por mês */
+.proj-v--falta {
+  color: #8a4b1f;
+}
+.proj-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  padding-top: 0.45rem;
+  border-top: 1px dashed rgba(0, 0, 0, 0.1);
+}
+.btn-mini--saida {
+  color: var(--erro);
+  border-color: rgba(178, 58, 58, 0.4);
+}
+.proj-conf {
+  flex: 0 0 auto;
+}
+.proj-conf button {
+  font-size: 0.74rem;
+  padding: 0.2rem 0.5rem;
+}
