@@ -84,3 +84,36 @@ export async function atualizarLancamento(
 export async function excluirLancamento(id: string): Promise<void> {
   await moverParaLixeira('caixa', id)
 }
+
+// ============================================================================
+// SIMULAÇÕES — receitas HIPOTÉTICAS por mês (ex.: orçamentos "na rua" que podem
+// entrar). NÃO contam no saldo nem em "A receber"; só aparecem na projeção por
+// mês do Financeiro, para a KA ver se o mês fica positivo ou negativo.
+// ============================================================================
+
+export interface Simulacao {
+  id: string
+  descricao: string
+  valor: number
+  mes: string // 'YYYY-MM'
+  criado_em: string
+}
+
+export async function listarSimulacoes(): Promise<Simulacao[]> {
+  const snap = await getDocs(collection(db, 'simulacoes'))
+  return snap.docs
+    .filter((d) => !d.data().excluido_em)
+    .map((d) => ({ id: d.id, ...(d.data() as Omit<Simulacao, 'id'>) }))
+}
+
+export async function criarSimulacao(
+  dados: Omit<Simulacao, 'id' | 'criado_em'>,
+): Promise<Simulacao> {
+  const novo = { ...dados, criado_em: agora() }
+  const ref = await addDoc(collection(db, 'simulacoes'), novo)
+  return { id: ref.id, ...novo }
+}
+
+export async function excluirSimulacao(id: string): Promise<void> {
+  await moverParaLixeira('simulacoes', id)
+}

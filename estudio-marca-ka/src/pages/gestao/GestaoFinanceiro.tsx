@@ -8,12 +8,16 @@ import {
   atualizarLancamento,
   contaAPagar,
   criarLancamento,
+  criarSimulacao,
   entradaAReceber,
   excluirLancamento,
+  excluirSimulacao,
   lancamentoRealizado,
   listarLancamentos,
+  listarSimulacoes,
   type EscopoLancamento,
   type Lancamento,
+  type Simulacao,
   type TipoLancamento,
 } from '../../lib/caixa'
 import { useToast } from '../../components/Toast'
@@ -137,6 +141,7 @@ export function GestaoFinanceiro() {
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [cobrancas, setCobrancas] = useState<Cobranca[]>([])
   const [lancamentos, setLancamentos] = useState<Lancamento[]>([])
+  const [simulacoes, setSimulacoes] = useState<Simulacao[]>([])
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
   // Visão: "Meu caixa" (pessoal da KA) OU "A receber da VM Rocks" (só o que é
@@ -156,14 +161,24 @@ export function GestaoFinanceiro() {
   const [fRecebido, setFRecebido] = useState(true) // entrada: já recebida ou a receber
   const [fPago, setFPago] = useState(true) // saída: já paga ou "a pagar" (conta)
   const [salvando, setSalvando] = useState(false)
+  // Simulação por mês (orçamento "na rua" que pode entrar): form inline por mês.
+  const [simMes, setSimMes] = useState<string | null>(null)
+  const [simDesc, setSimDesc] = useState('')
+  const [simValor, setSimValor] = useState('')
 
   async function recarregar() {
     try {
       setCarregando(true)
-      const [cs, cb, lc] = await Promise.all([listarClientes(), listarCobrancas(), listarLancamentos()])
+      const [cs, cb, lc, sm] = await Promise.all([
+        listarClientes(),
+        listarCobrancas(),
+        listarLancamentos(),
+        listarSimulacoes(),
+      ])
       setClientes(cs)
       setCobrancas(cb)
       setLancamentos(lc)
+      setSimulacoes(sm)
       setErro(null)
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
@@ -286,6 +301,33 @@ export function GestaoFinanceiro() {
   // Saldo previsto = o que sobra depois de receber o que está em aberto e pagar
   // as contas a pagar. Ajuda a planejar (dá pra ver antes de o dinheiro mexer).
   const saldoPrevisto = arredondar(saldo + totalAReceber - totalAPagar)
+
+  // ===== PROJEÇÃO POR MÊS (dentro do Meu caixa) =====
+  // Para cada mês (a partir do atual) mostra: Recebido + A receber + Simulação
+  // (entradas) − A pagar − Saídas pagas, e o RESULTADO (positivo/negativo).
+  // Itens em aberto com data no passado (atrasados) caem no mês atual.
+  const mesBucket = (data: string) => {
+    const k = mesDe(data)
+    return k && k < hojeChave ? hojeChave : k
+  }
+  const recebidoMovs = movimentos.filter((m) => m.tipo === 'entrada')
+  const saidaMovs = movimentos.filter((m) => m.tipo === 'saida')
+  const mesesSet = new Set<string>([hojeChave])
+  for (const r of recebTodos) mesesSet.add(mesBucket(r.data))
+  for (const m of movimentos) if (mesDe(m.data) >= hojeChave) mesesSet.add(mesDe(m.data))
+  for (const l of contasPagar) mesesSet.add(mesBucket(l.data))
+  for (const s of simulacoes) mesesSet.add(s.mes < hojeChave ? hojeChave : s.mes)
+  const mesesProj = [...mesesSet].filter((k) => !!k && k >= hojeChave).sort()
+  const projecao = mesesProj.map((chave) => {
+    const recebido = somarDinheiro(recebidoMovs.filter((m) => mesDe(m.data) === chave).map((m) => m.valor))
+    const aReceberM = somarDinheiro(recebTodos.filter((r) => mesBucket(r.data) === chave).map((r) => r.valor))
+    const simuls = simulacoes.filter((s) => (s.mes < hojeChave ? hojeChave : s.mes) === chave)
+    const simTotal = somarDinheiro(simuls.map((s) => Number(s.valor || 0)))
+    const saiuPago = somarDinheiro(saidaMovs.filter((m) => mesDe(m.data) === chave).map((m) => m.valor))
+    const aPagarM = somarDinheiro(contasPagar.filter((l) => mesBucket(l.data) === chave).map((l) => Number(l.valor || 0)))
+    const resultado = arredondar(recebido + aReceberM + simTotal - saiuPago - aPagarM)
+    return { chave, recebido, aReceberM, simuls, simTotal, saiuPago, aPagarM, resultado }
+  })
 
   // "Quem tem a receber" (KA/VM Rocks) — dos pagamentos do contrato.
   const linhas = linhasFinanceiro(clientes)
@@ -434,6 +476,43 @@ export function GestaoFinanceiro() {
     try {
       await atualizarLancamento(l.id, { pago: true })
       mostrar('Marcada como paga ✓ (foi para Saídas)', 'ok')
+    } catch (e) {
+      mostrar(e instanceof Error ? e.message : String(e), 'erro')
+      void recarregar()
+    }
+  }
+
+  // Abre/fecha o form de simulação de um mês.
+  function abrirSim(chave: string) {
+    setSimMes(chave)
+    setSimDesc('')
+    setSimValor('')
+  }
+  async function salvarSim() {
+    if (!simMes) return
+    const descricao = simDesc.trim()
+    const valor = parseValorBR(simValor)
+    if (!descricao) {
+      mostrar('Escreva o nome do orçamento/simulação.', 'erro')
+      return
+    }
+    if (!valor || valor <= 0) {
+      mostrar('Informe um valor maior que zero.', 'erro')
+      return
+    }
+    try {
+      const nova = await criarSimulacao({ descricao, valor, mes: simMes })
+      setSimulacoes((s) => [nova, ...s])
+      setSimMes(null)
+      mostrar('Simulação adicionada ✓', 'ok')
+    } catch (e) {
+      mostrar(e instanceof Error ? e.message : String(e), 'erro')
+    }
+  }
+  async function removerSim(s: Simulacao) {
+    setSimulacoes((x) => x.filter((y) => y.id !== s.id))
+    try {
+      await excluirSimulacao(s.id)
     } catch (e) {
       mostrar(e instanceof Error ? e.message : String(e), 'erro')
       void recarregar()
@@ -691,6 +770,99 @@ export function GestaoFinanceiro() {
             <strong>“Pago”</strong> quando acontecer, aí entra no saldo. As{' '}
             <strong>cobranças pagas</strong> (aba Cobranças) entram como entradas sozinhas.
           </p>
+
+          {/* ===== Projeção por mês: entra (recebido + a receber + simulação) − sai (a pagar) ===== */}
+          <section className="fin-secao">
+            <h3 className="fin-secao__tit">Resultado por mês (projeção)</h3>
+            <p className="fin-dica" style={{ marginTop: 0 }}>
+              Para cada mês: o que já <strong>entrou</strong>, o que ainda vai <strong>entrar</strong>,
+              as <strong>simulações</strong> (orçamentos na rua que podem entrar) e o que há{' '}
+              <strong>a pagar</strong> — e se o mês fecha <strong>positivo ou negativo</strong>. As contas
+              a pagar você lança no botão <strong>“− Saída / conta a pagar”</strong> (marcando “A pagar”).
+            </p>
+            {projecao.map((p) => (
+              <div key={p.chave} className="proj-mes">
+                <div className="proj-mes__cab">
+                  <span className="proj-mes__nome">{rotuloMes(p.chave)}</span>
+                  <span className={`proj-mes__res ${p.resultado >= 0 ? 'proj-mes__res--pos' : 'proj-mes__res--neg'}`}>
+                    {p.resultado >= 0 ? 'sobra ' : 'falta '}
+                    {formatarBRL(Math.abs(p.resultado))}
+                  </span>
+                </div>
+                <div className="proj-linhas">
+                  <div className="proj-linha">
+                    <span>Recebido</span>
+                    <span className="proj-v proj-v--pos">+ {formatarBRL(p.recebido)}</span>
+                  </div>
+                  <div className="proj-linha">
+                    <span>A receber</span>
+                    <span className="proj-v proj-v--pos">+ {formatarBRL(p.aReceberM)}</span>
+                  </div>
+                  <div className="proj-linha">
+                    <span>Simulação (orçamentos na rua)</span>
+                    <span className="proj-v proj-v--sim">+ {formatarBRL(p.simTotal)}</span>
+                  </div>
+                  {p.simuls.length > 0 && (
+                    <div className="proj-sims">
+                      {p.simuls.map((s) => (
+                        <span key={s.id} className="proj-sim">
+                          {s.descricao} · {formatarBRL(s.valor)}
+                          <button className="proj-sim__x" onClick={() => void removerSim(s)} title="Remover simulação">
+                            ✕
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {simMes === p.chave ? (
+                    <div className="colar-link proj-simform">
+                      <input
+                        autoFocus
+                        value={simDesc}
+                        onChange={(e) => setSimDesc(e.target.value)}
+                        placeholder="Orçamento (ex.: Logo Fulano)"
+                      />
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={simValor}
+                        onChange={(e) => setSimValor(e.target.value)}
+                        placeholder="valor"
+                        style={{ maxWidth: '7rem' }}
+                      />
+                      <button className="btn-mini" onClick={() => void salvarSim()}>
+                        Adicionar
+                      </button>
+                      <button className="btn-mini" onClick={() => setSimMes(null)}>
+                        Cancelar
+                      </button>
+                    </div>
+                  ) : (
+                    <button className="btn-mini proj-add" onClick={() => abrirSim(p.chave)}>
+                      + Simular orçamento
+                    </button>
+                  )}
+                  {p.saiuPago > 0 && (
+                    <div className="proj-linha">
+                      <span>Saídas já pagas</span>
+                      <span className="proj-v proj-v--neg">− {formatarBRL(p.saiuPago)}</span>
+                    </div>
+                  )}
+                  <div className="proj-linha">
+                    <span>A pagar</span>
+                    <span className="proj-v proj-v--neg">− {formatarBRL(p.aPagarM)}</span>
+                  </div>
+                  <div className="proj-linha proj-linha--tot">
+                    <span>Resultado do mês</span>
+                    <span className={`proj-v ${p.resultado >= 0 ? 'proj-v--pos' : 'proj-v--neg'}`}>
+                      {p.resultado >= 0 ? '+ ' : '− '}
+                      {formatarBRL(Math.abs(p.resultado))}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </section>
 
           {/* Botões / formulário de entrada e saída */}
           <div className="gestao-acoes">

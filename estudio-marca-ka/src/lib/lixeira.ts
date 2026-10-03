@@ -36,6 +36,7 @@ const FONTES: { colecao: string; tipo: string; nome: (d: Record<string, unknown>
   { colecao: 'contratos', tipo: 'Contrato', nome: (d) => String(d.titulo ?? 'Contrato') },
   { colecao: 'cobrancas', tipo: 'Cobrança', nome: (d) => String(d.descricao ?? 'Cobrança') },
   { colecao: 'caixa', tipo: 'Lançamento', nome: (d) => String(d.descricao ?? 'Lançamento') },
+  { colecao: 'simulacoes', tipo: 'Simulação', nome: (d) => String(d.descricao ?? 'Simulação') },
   { colecao: 'cuidadoras', tipo: 'Cuidadora', nome: (d) => String(d.nome ?? 'Cuidadora') },
   { colecao: 'atividades', tipo: 'Atividade', nome: (d) => String(d.titulo ?? 'Atividade') },
 ]

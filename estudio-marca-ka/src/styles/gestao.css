@@ -3313,3 +3313,110 @@
   color: var(--t-600);
   line-height: 1.6;
 }
+
+/* ---- Cobranças: pago/falta no cabeçalho do mês ---- */
+.cob-grupo__pago {
+  color: #2e6b45;
+  font-weight: 600;
+}
+.cob-grupo__falta {
+  color: var(--erro);
+  font-weight: 600;
+}
+
+/* ---- Financeiro: projeção por mês (resultado positivo/negativo) ---- */
+.proj-mes {
+  border: 1px solid var(--borda, #e6e0d3);
+  border-radius: 12px;
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 0.7rem;
+  background: var(--card-bg, #fff);
+}
+.proj-mes__cab {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.12);
+}
+.proj-mes__nome {
+  font-weight: 700;
+  font-size: 1rem;
+}
+.proj-mes__res {
+  font-weight: 800;
+  font-size: 1.02rem;
+  white-space: nowrap;
+}
+.proj-mes__res--pos {
+  color: #2e6b45;
+}
+.proj-mes__res--neg {
+  color: var(--erro);
+}
+.proj-linhas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+.proj-linha {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  color: var(--t-700);
+}
+.proj-linha--tot {
+  margin-top: 0.3rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  font-weight: 700;
+}
+.proj-v {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.proj-v--pos {
+  color: #2e6b45;
+}
+.proj-v--neg {
+  color: var(--erro);
+}
+.proj-v--sim {
+  color: #8a4b1f;
+}
+.proj-sims {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.1rem 0 0.1rem;
+}
+.proj-sim {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  background: rgba(138, 75, 31, 0.1);
+  color: #8a4b1f;
+  border-radius: 999px;
+  padding: 0.15rem 0.6rem;
+}
+.proj-sim__x {
+  border: none;
+  background: transparent;
+  color: #8a4b1f;
+  cursor: pointer;
+  font-size: 0.78rem;
+  line-height: 1;
+  padding: 0;
+}
+.proj-add {
+  align-self: flex-start;
+  margin: 0.1rem 0 0.15rem;
+}
+.proj-simform {
+  flex-wrap: wrap;
+}
