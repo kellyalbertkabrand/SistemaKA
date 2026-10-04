@@ -3444,3 +3444,21 @@
   font-size: 0.74rem;
   padding: 0.2rem 0.5rem;
 }
+
+/* Meses por estado: passado = verde claro, atual = amarelo claro */
+.cob-grupo--passado .mes-grupo__cab {
+  background: #eaf4ec;
+  border-radius: 10px;
+}
+.cob-grupo--atual .mes-grupo__cab {
+  background: #fcf3d6;
+  border-radius: 10px;
+}
+.proj-mes--passado {
+  background: #eaf4ec;
+  border-color: #cfe5d4;
+}
+.proj-mes--atual {
+  background: #fcf3d6;
+  border-color: #efe0ad;
+}
