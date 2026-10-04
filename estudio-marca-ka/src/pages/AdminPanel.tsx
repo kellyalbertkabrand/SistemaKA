@@ -37,7 +37,7 @@ type Aba =
 
 // Atalhos da HOME, agrupados por categoria. Ícones de linha (elegantes, no
 // dourado da marca) desenhados abaixo em IconeAtalho.
-const GRUPOS: { titulo: string; itens: { id: Aba; rotulo: string; icone: string }[] }[] = [
+const GRUPOS: { titulo: string; itens: { id: Aba; rotulo: string; icone: string; tom?: string }[] }[] = [
   {
     titulo: 'Criação',
     itens: [
@@ -50,11 +50,11 @@ const GRUPOS: { titulo: string; itens: { id: Aba; rotulo: string; icone: string 
     itens: [
       { id: 'clientes', rotulo: 'Clientes', icone: 'clientes' },
       { id: 'projetos', rotulo: 'Projetos', icone: 'projetos' },
-      { id: 'formularios', rotulo: 'Formulários', icone: 'formularios' },
       { id: 'orcamentos', rotulo: 'Orçamentos', icone: 'orcamentos' },
       { id: 'contratos', rotulo: 'Contratos', icone: 'contratos' },
-      { id: 'cobrancas', rotulo: 'Cobranças', icone: 'cobrancas' },
-      { id: 'financeiro', rotulo: 'Financeiro', icone: 'financeiro' },
+      { id: 'cobrancas', rotulo: 'Cobranças', icone: 'cobrancas', tom: 'dinheiro' },
+      { id: 'financeiro', rotulo: 'Financeiro', icone: 'financeiro', tom: 'dinheiro' },
+      { id: 'formularios', rotulo: 'Formulários', icone: 'formularios' },
       { id: 'relatorios', rotulo: 'Relatórios', icone: 'relatorios' },
     ],
   },
@@ -300,7 +300,11 @@ export function AdminPanel() {
                     <div className="atalho-grupo__tit">{g.titulo}</div>
                     <div className="grade-atalhos">
                       {g.itens.map((t) => (
-                        <button key={t.id} className="atalho-card" onClick={() => irPara(t.id)}>
+                        <button
+                          key={t.id}
+                          className={`atalho-card ${t.tom ? `atalho-card--${t.tom}` : ''}`}
+                          onClick={() => irPara(t.id)}
+                        >
                           <span className="atalho-card__ico">
                             <IconeAtalho nome={t.icone} />
                           </span>
