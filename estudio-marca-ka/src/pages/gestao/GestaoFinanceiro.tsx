@@ -805,7 +805,10 @@ export function GestaoFinanceiro() {
               mês fecha <strong>positivo ou negativo</strong>. Use os botões de cada mês para ajustar.
             </p>
             {projecao.map((p) => (
-              <div key={p.chave} className="proj-mes">
+              <div
+                key={p.chave}
+                className={`proj-mes ${p.chave < hojeChave ? 'proj-mes--passado' : p.chave === hojeChave ? 'proj-mes--atual' : ''}`}
+              >
                 <div className="proj-mes__cab">
                   <span className="proj-mes__nome">{rotuloMes(p.chave)}</span>
                   <span className={`proj-mes__res ${p.resultado >= 0 ? 'proj-mes__res--pos' : 'proj-mes__res--neg'}`}>

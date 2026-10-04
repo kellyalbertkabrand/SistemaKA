@@ -909,8 +909,17 @@ export function GestaoCobrancas() {
         const recolhido = estaRecolhido(g.chave)
         const pago = totalPago(g.itens)
         const falta = totalEmAberto(g.itens)
+        // Cor do mês: passado = verde claro, atual = amarelo claro (só agrupando por mês).
+        const estadoMes =
+          agrupar === 'mes' && g.chave !== 'sem'
+            ? g.chave < mesAtual
+              ? 'passado'
+              : g.chave === mesAtual
+                ? 'atual'
+                : ''
+            : ''
         return (
-        <section key={g.chave} className="cob-grupo">
+        <section key={g.chave} className={`cob-grupo ${estadoMes ? `cob-grupo--${estadoMes}` : ''}`}>
           <button
             type="button"
             className="mes-grupo__cab mes-grupo__cab--btn"
