@@ -313,6 +313,17 @@
   color: var(--marinho);
   text-align: center;
 }
+/* Cobranças + Financeiro (dinheiro): tom diferente para destacar */
+.atalho-card--dinheiro {
+  background: #eef5ef;
+  border-color: rgba(46, 107, 69, 0.35);
+}
+.atalho-card--dinheiro .atalho-card__ico {
+  color: #2e6b45;
+}
+.atalho-card--dinheiro:hover {
+  border-color: #2e6b45;
+}
 @media (max-width: 480px) {
   .grade-atalhos {
     grid-template-columns: repeat(2, 1fr);

@@ -689,7 +689,7 @@ export function GestaoCobrancas() {
                 : ''
             : ''
         return (
-        <section key={g.chave} className={`cob-grupo ${estadoMes ? `cob-grupo--${estadoMes}` : ''}`}>
+        <section key={g.chave} className={`cob-grupo ${!recolhido ? 'cob-grupo--aberto' : ''} ${estadoMes ? `cob-grupo--${estadoMes}` : ''}`}>
           <button
             type="button"
             className="mes-grupo__cab mes-grupo__cab--btn"

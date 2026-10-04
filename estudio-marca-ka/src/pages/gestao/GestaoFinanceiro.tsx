@@ -166,6 +166,10 @@ export function GestaoFinanceiro() {
   const [lfDesc, setLfDesc] = useState('')
   const [lfValor, setLfValor] = useState('')
   const [lfConf, setLfConf] = useState(true) // entrada: já recebi? / saída: já paguei?
+  // Recolher/expandir cada mês da projeção (passados vêm recolhidos) e expandir
+  // a lista de contas a pagar dentro do mês.
+  const [projToggle, setProjToggle] = useState<Record<string, boolean>>({})
+  const [pagarAberto, setPagarAberto] = useState<Record<string, boolean>>({})
 
   async function recarregar() {
     try {
@@ -333,10 +337,14 @@ export function GestaoFinanceiro() {
     const simuls = simulacoes.filter((s) => s.mes === chave)
     const simTotal = somarDinheiro(simuls.map((s) => Number(s.valor || 0)))
     const saiuPago = somarDinheiro(saidasPagas.filter((l) => mesDe(l.data) === chave).map((l) => Number(l.valor || 0)))
-    const aPagarM = somarDinheiro(contasPagar.filter((l) => mesDe(l.data) === chave).map((l) => Number(l.valor || 0)))
+    const contas = contasPagar.filter((l) => mesDe(l.data) === chave)
+    const aPagarM = somarDinheiro(contas.map((l) => Number(l.valor || 0)))
     const resultado = arredondar(pago + falta + simTotal - saiuPago - aPagarM)
-    return { chave, pago, falta, simuls, simTotal, saiuPago, aPagarM, resultado }
+    return { chave, pago, falta, simuls, simTotal, saiuPago, contas, aPagarM, resultado }
   })
+  // Passados vêm recolhidos; a KA abre/fecha à mão.
+  const projRecolhido = (chave: string) => projToggle[chave] ?? chave < hojeChave
+  const toggleProj = (chave: string) => setProjToggle((p) => ({ ...p, [chave]: !projRecolhido(chave) }))
 
   // "Quem tem a receber" (KA/VM Rocks) — dos pagamentos do contrato.
   const linhas = linhasFinanceiro(clientes)
@@ -794,18 +802,22 @@ export function GestaoFinanceiro() {
               <strong>simulações</strong> de orçamentos na rua e o que há <strong>a pagar</strong> — e se o
               mês fecha <strong>positivo ou negativo</strong>. Use os botões de cada mês para ajustar.
             </p>
-            {projecao.map((p) => (
+            {projecao.map((p) => {
+              const recolhido = projRecolhido(p.chave)
+              return (
               <div
                 key={p.chave}
                 className={`proj-mes ${p.chave < hojeChave ? 'proj-mes--passado' : p.chave === hojeChave ? 'proj-mes--atual' : ''}`}
               >
-                <div className="proj-mes__cab">
+                <button type="button" className="proj-mes__cab proj-mes__cab--btn" onClick={() => toggleProj(p.chave)} aria-expanded={!recolhido}>
+                  <span className="proj-mes__seta">{recolhido ? '▸' : '▾'}</span>
                   <span className="proj-mes__nome">{rotuloMes(p.chave)}</span>
                   <span className={`proj-mes__res ${p.resultado >= 0 ? 'proj-mes__res--pos' : 'proj-mes__res--neg'}`}>
                     {p.resultado >= 0 ? 'sobra ' : 'falta '}
                     {formatarBRL(Math.abs(p.resultado))}
                   </span>
-                </div>
+                </button>
+                {!recolhido && (
                 <div className="proj-linhas">
                   <div className="proj-linha">
                     <span>Pago</span>
@@ -837,10 +849,37 @@ export function GestaoFinanceiro() {
                       <span className="proj-v proj-v--neg">− {formatarBRL(p.saiuPago)}</span>
                     </div>
                   )}
-                  <div className="proj-linha">
-                    <span>A pagar</span>
+                  <button
+                    type="button"
+                    className="proj-linha proj-linha--exp"
+                    onClick={() => p.contas.length && setPagarAberto((x) => ({ ...x, [p.chave]: !x[p.chave] }))}
+                    disabled={p.contas.length === 0}
+                  >
+                    <span>
+                      A pagar{' '}
+                      {p.contas.length > 0 && <span className="proj-exp-seta">{pagarAberto[p.chave] ? '▾' : '▸'}</span>}
+                    </span>
                     <span className="proj-v proj-v--neg">− {formatarBRL(p.aPagarM)}</span>
-                  </div>
+                  </button>
+                  {pagarAberto[p.chave] && p.contas.length > 0 && (
+                    <div className="proj-contas">
+                      {p.contas.map((l) => (
+                        <div key={l.id} className="proj-conta">
+                          <span className="proj-conta__desc">
+                            {l.descricao}
+                            {l.data < hoje() ? ' · atrasada' : ''}
+                          </span>
+                          <span className="proj-conta__v">− {formatarBRL(l.valor)}</span>
+                          <button className="btn-mini" onClick={() => void marcarPaga(l)} title="Marcar como paga">
+                            Pago
+                          </button>
+                          <button className="btn-mini btn-mini--perigo" onClick={() => void excluir(l)} title="Excluir">
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   <div className="proj-linha proj-linha--tot">
                     <span>Resultado do mês</span>
                     <span className={`proj-v ${p.resultado >= 0 ? 'proj-v--pos' : 'proj-v--neg'}`}>
@@ -912,8 +951,10 @@ export function GestaoFinanceiro() {
                     </div>
                   )}
                 </div>
+                )}
               </div>
-            ))}
+              )
+            })}
           </section>
 
           {formTipo && (
