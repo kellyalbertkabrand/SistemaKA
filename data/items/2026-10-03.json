@@ -1,7 +1,7 @@
 {
   "date": "2026-10-03",
-  "generated_at": "2026-10-04T11:36:49.183898+00:00",
-  "count": 20,
+  "generated_at": "2026-10-05T13:09:02.230156+00:00",
+  "count": 23,
   "items": [
     {
       "title": "Com reposicionamento de marca na base, Botafogo TV valoriza Joias do Bairro e amplia oferta de conteudos - FogãoNET",
@@ -14,14 +14,14 @@
       "published": "2026-10-03",
       "raw_summary": "Hoje com 708 mil inscritos, a Botafogo TV ampliou sua presenÃ§a e sua oferta de conteÃºdo, dando foco sobretudo a valorizar as Joias do Bairro. A estratÃ©gia ...",
       "title_pt": "",
-      "summary_pt": "Reposicionamento de marca que fundamenta expansão de conteúdo e maior foco estratégico no diferencial.",
+      "summary_pt": "Canal de vídeo reposiciona marca focando em conteúdo local diferenciado e cresce em inscritos.",
       "angle_pt": "",
-      "pme_pt": "Demonstra como clareza de posicionamento permite decisões estratégicas de conteúdo e expansão — útil para marcas que crescem mas perdem rumo sem base sólida.",
+      "pme_pt": "Mostra como clareza no posicionamento (valorizar Joias do Bairro) permite ampliar oferta de conteúdo estratégico e crescer audiência sem perder identidade.",
       "roteiro_pt": "",
-      "link_kelly": "Mentoria",
+      "link_kelly": "Projeto",
       "authors": "",
       "score": 22,
-      "fetched_at": "2026-10-04T11:33:05.936653+00:00",
+      "fetched_at": "2026-10-05T13:05:23.031522+00:00",
       "id": "a5035210d08f8016"
     },
     {
@@ -191,6 +191,27 @@
       "score": 11,
       "fetched_at": "2026-10-04T11:34:36.434368+00:00",
       "id": "04a6bf228e80f2b6"
+    },
+    {
+      "title": "É neste sábado a grande Inauguração da Rene Store em Teixeira; participe - sulbahianews.com.br",
+      "link": "https://www.sulbahianews.com.br/e-neste-sabado-a-grande-inauguracao-da-rene-store-em-teixeira-participe/",
+      "source": "sulbahianews.com.br",
+      "lang": "pt",
+      "region": "BR",
+      "category": "essencia",
+      "kind": "noticia",
+      "published": "2026-10-03",
+      "raw_summary": "O dia chegou e a Rene Store abre oficialmente as portas de sua nova fase em Teixeira de Freitas, trazendo não apenas uma nova identidade, mas uma experiência completa para quem valoriza estilo, autenticidade e boas oportunidades. A inauguração acontece neste sábado, 11 de abril, a partir das 9 horas, marcando um momento importante para a marca e para o público que acompanha sua trajetória.",
+      "title_pt": "",
+      "summary_pt": "Varejo relança com nova identidade e experiência, marcando novo capítulo para a marca.",
+      "angle_pt": "",
+      "pme_pt": "Exemplo prático de reposicionamento em varejo: nova identidade + experiência completa, mostrando a relevância de alinhamento interno e externo.",
+      "roteiro_pt": "",
+      "link_kelly": "Projeto (feito sob medida pra você)",
+      "authors": "",
+      "score": 11,
+      "fetched_at": "2026-10-05T13:05:24.069153+00:00",
+      "id": "28d92a03be7eb54b"
     },
     {
       "title": "Earning the right to know them: A signal of where Nigeria's marketing communication industry is heading - TheCable",
@@ -422,6 +443,48 @@
       "score": 5,
       "fetched_at": "2026-10-04T11:34:48.043797+00:00",
       "id": "6bf5383cc4a4b2a1"
+    },
+    {
+      "title": "Man accused of stealing $187K worth of designer handbags from influencer in Miramar, police say - CBS News",
+      "link": "https://www.cbsnews.com/miami/news/designer-handbag-theft-arrest-10-3-2026/",
+      "source": "CBS News",
+      "lang": "en",
+      "region": "world",
+      "category": "influencer",
+      "kind": "noticia",
+      "published": "2026-10-03",
+      "raw_summary": "Shaquille Jaray Palmer, 33, now faces a first-degree grand theft charge.",
+      "title_pt": "Homem acusado de roubar R$ 950 mil em bolsas de grife de influenciadora em Miramar",
+      "summary_pt": "Roubo de itens de luxo de influenciadora resulta em acusação de furto em primeiro grau.",
+      "angle_pt": "",
+      "pme_pt": "",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 4,
+      "fetched_at": "2026-10-05T13:06:54.918124+00:00",
+      "id": "ecf7d46dd5673188"
+    },
+    {
+      "title": "Influencer Alix Earle Says She’s ‘Never Read a Book,’ Sparking Fierce Online Backlash - nysun.com",
+      "link": "https://www.nysun.com/article/influencer-alix-earle-says-shes-never-read-a-book-sparking-fierce-online-backlash",
+      "source": "nysun.com",
+      "lang": "en",
+      "region": "world",
+      "category": "influencer",
+      "kind": "noticia",
+      "published": "2026-10-03",
+      "raw_summary": "Influencer Alix Earle Says She’s ‘Never Read a Book,’ Sparking Fierce Online Backlash nysun.com",
+      "title_pt": "Influenciadora Alix Earle diz que 'nunca leu um livro', provocando rejeição online acirrada",
+      "summary_pt": "Declaração de influenciadora sobre analfabetismo funcional gera crítica na internet.",
+      "angle_pt": "",
+      "pme_pt": "",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 4,
+      "fetched_at": "2026-10-05T13:06:59.036960+00:00",
+      "id": "2728d432a49cfacc"
     }
   ]
 }
