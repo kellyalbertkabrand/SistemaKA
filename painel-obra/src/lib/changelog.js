@@ -3,9 +3,16 @@
 // sucinta e clara para o cliente — e atualize a VERSAO (data da publicação).
 // É exibido na página pública /atualizacoes, que pode ser enviada ao cliente.
 
-export const VERSAO = '01/10/2026';
+export const VERSAO = '06/10/2026';
 
 export const CHANGELOG = [
+  {
+    data: '06/10/2026',
+    titulo: 'Atalho do link do cliente no celular abre direto',
+    itens: [
+      'Ao adicionar o link do cliente à tela de início do celular, o atalho agora abre direto a página da obra — sem pedir login/senha.',
+    ],
+  },
   {
     data: '01/10/2026',
     titulo: 'Lançar custo por voz/IA mais estável',

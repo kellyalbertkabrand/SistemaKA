@@ -18,6 +18,20 @@ import { renderAtualizacoes } from './views/atualizacoes.js';
 
 const app = document.getElementById('app');
 
+// PWA — "adicionar à tela de início": nas páginas PÚBLICAS (link do cliente),
+// o atalho precisa abrir a PRÓPRIA página, não a raiz "/" (que cai no login e
+// pede senha). O manifesto define start_url "/", então nessas rotas nós o
+// removemos: o iPhone passa a usar a URL atual como ponto de partida. Ícone,
+// nome e tela cheia continuam funcionando pelas metatags apple-* do index.html.
+(function ajustarPWAPublico() {
+  try {
+    const p = window.location.pathname;
+    const ehPublica = /^\/(obra|cadastro|cadastro-fornecedor|briefing)\//.test(p)
+      || /^\/atualizacoes\/?$/.test(p);
+    if (ehPublica) document.querySelector('link[rel="manifest"]')?.remove();
+  } catch { /* nunca bloqueia o app */ }
+})();
+
 // Firebase resolve a sessão salva de forma assíncrona. Até resolver, seguramos
 // as rotas internas numa telinha de "Carregando" para não piscar o login.
 let authResolvido = !configurado;
