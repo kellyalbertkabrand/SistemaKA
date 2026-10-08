@@ -2,9 +2,11 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   orderBy,
   query,
+  setDoc,
   updateDoc,
 } from 'firebase/firestore'
 import { db } from './firebase'
@@ -113,4 +115,27 @@ export async function duplicarAtividade(a: Atividade): Promise<Atividade> {
     cliente_id: a.cliente_id ?? null,
     cliente_nome: a.cliente_nome ?? null,
   })
+}
+
+// ---- Ordem dos BLOCOS (categorias) no painel — a KA move p/ cima/baixo. ----
+// Guardada num doc único (cross-device). Vale só p/ a KA.
+const REF_ORDEM = doc(db, 'config', 'atividades_ordem')
+
+/** Lê a ordem salva dos blocos; completa com as que faltam (na ordem padrão). */
+export async function carregarOrdemCategorias(): Promise<CategoriaAtividade[]> {
+  try {
+    const snap = await getDoc(REF_ORDEM)
+    const bruta = snap.exists() ? snap.data().ordem : null
+    if (!Array.isArray(bruta)) return [...CATEGORIAS]
+    const validas = bruta.filter((c): c is CategoriaAtividade => (CATEGORIAS as string[]).includes(c))
+    const faltando = CATEGORIAS.filter((c) => !validas.includes(c))
+    return [...validas, ...faltando]
+  } catch {
+    return [...CATEGORIAS]
+  }
+}
+
+/** Salva a nova ordem dos blocos. */
+export async function salvarOrdemCategorias(ordem: CategoriaAtividade[]): Promise<void> {
+  await setDoc(REF_ORDEM, { ordem }, { merge: true })
 }

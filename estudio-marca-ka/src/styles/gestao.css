@@ -3537,3 +3537,21 @@
   font-size: 0.64rem;
   padding: 0.15rem 0.5rem;
 }
+
+/* Cabeçalho do bloco de atividades + setas para mover o bloco inteiro */
+.ativ-grupo__cab {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+.ativ-grupo__cab .ativ-grupo__tit {
+  flex: 1;
+  margin-bottom: 0;
+}
+.ativ-grupo__mover {
+  display: flex;
+  gap: 0.25rem;
+  padding-bottom: 0.5rem;
+  flex: none;
+}

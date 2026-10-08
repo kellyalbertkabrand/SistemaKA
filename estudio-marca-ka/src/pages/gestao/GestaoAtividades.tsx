@@ -19,6 +19,7 @@ import {
 import {
   alternarAtividade,
   CATEGORIAS,
+  carregarOrdemCategorias,
   criarAtividade,
   duplicarAtividade,
   editarAtividade,
@@ -26,6 +27,7 @@ import {
   listarAtividades,
   reordenarAtividades,
   ROTULO_CATEGORIA,
+  salvarOrdemCategorias,
   type Atividade,
   type CategoriaAtividade,
 } from '../../lib/atividades'
@@ -45,6 +47,8 @@ export function GestaoAtividades() {
   const [projetos, setProjetos] = useState<Projeto[]>([])
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [atividades, setAtividades] = useState<Atividade[]>([])
+  // Ordem dos BLOCOS (categorias) — a KA move p/ cima/baixo; salva no Firestore.
+  const [ordemCat, setOrdemCat] = useState<CategoriaAtividade[]>(CATEGORIAS)
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
   const [salvando, setSalvando] = useState(false)
@@ -93,6 +97,7 @@ export function GestaoAtividades() {
       setProjetos(ps)
       setAtividades(as)
       setClientes(cs)
+      carregarOrdemCategorias().then(setOrdemCat).catch(() => {})
       setErro(null)
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
@@ -398,7 +403,18 @@ export function GestaoAtividades() {
   }
   const totalAberto = ORDEM.reduce((s, c) => s + abertosDe(c), 0)
 
-  const categoriasVisiveis = ORDEM.filter((c) => filtro === 'tudo' || filtro === c)
+  // Mover um BLOCO inteiro (categoria) para cima/baixo e salvar a ordem.
+  function moverBloco(cat: CategoriaAtividade, dir: -1 | 1) {
+    const i = ordemCat.indexOf(cat)
+    const j = i + dir
+    if (i < 0 || j < 0 || j >= ordemCat.length) return
+    const arr = [...ordemCat]
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+    setOrdemCat(arr)
+    salvarOrdemCategorias(arr).catch(() => mostrar('Não deu para salvar a ordem dos blocos.', 'erro'))
+  }
+
+  const categoriasVisiveis = ordemCat.filter((c) => filtro === 'tudo' || filtro === c)
 
   return (
     <>
@@ -591,7 +607,33 @@ export function GestaoAtividades() {
 
           return (
             <div key={cat} className="ativ-grupo">
-              <h3 className={`ativ-grupo__tit cat--${cat}`}>{ROTULO_CATEGORIA[cat]}</h3>
+              <div className="ativ-grupo__cab">
+                <h3 className={`ativ-grupo__tit cat--${cat}`}>{ROTULO_CATEGORIA[cat]}</h3>
+                {filtro === 'tudo' && ordemCat.length > 1 && (
+                  <div className="ativ-grupo__mover">
+                    <button
+                      type="button"
+                      className="ativ__seta"
+                      disabled={ordemCat.indexOf(cat) <= 0}
+                      title="Mover bloco para cima"
+                      aria-label="Mover bloco para cima"
+                      onClick={() => moverBloco(cat, -1)}
+                    >
+                      ▲
+                    </button>
+                    <button
+                      type="button"
+                      className="ativ__seta"
+                      disabled={ordemCat.indexOf(cat) >= ordemCat.length - 1}
+                      title="Mover bloco para baixo"
+                      aria-label="Mover bloco para baixo"
+                      onClick={() => moverBloco(cat, 1)}
+                    >
+                      ▼
+                    </button>
+                  </div>
+                )}
+              </div>
 
               {vazio && <p className="ativ-vazio">Nada por aqui ainda.</p>}
 
