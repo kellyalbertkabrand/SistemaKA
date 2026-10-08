@@ -138,3 +138,26 @@ export async function duplicarAtividade(a: Atividade): Promise<Atividade> {
     cliente_nome: a.cliente_nome ?? null,
   })
 }
+
+// ---- Ordem dos BLOCOS (categorias) no painel — a KA move p/ cima/baixo. ----
+// Guardada num doc único (cross-device), na coleção `preferencias`. Só a KA.
+const REF_ORDEM_BLOCOS = () => doc(db, 'preferencias', 'ordem_blocos')
+
+/** Lê a ordem salva dos blocos; completa com as que faltam (na ordem padrão). */
+export async function carregarOrdemCategorias(): Promise<CategoriaAtividade[]> {
+  try {
+    const d = await getDoc(REF_ORDEM_BLOCOS())
+    const bruta = d.exists() ? d.data().ordem : null
+    if (!Array.isArray(bruta)) return [...CATEGORIAS]
+    const validas = bruta.filter((c): c is CategoriaAtividade => (CATEGORIAS as string[]).includes(c))
+    const faltando = CATEGORIAS.filter((c) => !validas.includes(c))
+    return [...validas, ...faltando]
+  } catch {
+    return [...CATEGORIAS]
+  }
+}
+
+/** Salva a nova ordem dos blocos. */
+export async function salvarOrdemCategorias(ordem: CategoriaAtividade[]): Promise<void> {
+  await setDoc(REF_ORDEM_BLOCOS(), { ordem }, { merge: true })
+}

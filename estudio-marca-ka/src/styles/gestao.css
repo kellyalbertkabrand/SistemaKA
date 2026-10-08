@@ -4979,3 +4979,11 @@ a.btn-mini {
   font-size: 0.64rem;
   padding: 0.15rem 0.5rem;
 }
+
+/* Setas para mover o BLOCO inteiro de atividades (visão Lista) */
+.ativ-grupo__mover {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+  flex: none;
+}

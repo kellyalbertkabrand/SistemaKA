@@ -19,6 +19,7 @@ import {
 } from '../../lib/projetos'
 import {
   alternarAtividade,
+  carregarOrdemCategorias,
   carregarOrdemPendencias,
   CATEGORIAS,
   criarAtividade,
@@ -28,6 +29,7 @@ import {
   excluirAtividade,
   listarAtividades,
   ROTULO_CATEGORIA,
+  salvarOrdemCategorias,
   salvarOrdemPendencias,
   type Atividade,
   type CategoriaAtividade,
@@ -81,6 +83,8 @@ export function GestaoAtividades() {
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [atividades, setAtividades] = useState<Atividade[]>([])
   const [ordemPend, setOrdemPend] = useState<Record<string, number>>({})
+  // Ordem dos BLOCOS (categorias) — a KA move p/ cima/baixo; salva no Firestore.
+  const [ordemCat, setOrdemCat] = useState<CategoriaAtividade[]>(CATEGORIAS)
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
   const [salvando, setSalvando] = useState(false)
@@ -143,6 +147,7 @@ export function GestaoAtividades() {
       setAtividades(as)
       setClientes(cs)
       setOrdemPend(om)
+      carregarOrdemCategorias().then(setOrdemCat).catch(() => {})
       setErro(null)
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
@@ -477,7 +482,18 @@ export function GestaoAtividades() {
     return itensDe(cat).filter((it) => !it.feito).length
   }
   const totalAberto = ORDEM.reduce((s, c) => s + abertosDe(c), 0)
-  const colunasVisiveis = ORDEM.filter((c) => filtro === 'tudo' || filtro === c)
+  const colunasVisiveis = ordemCat.filter((c) => filtro === 'tudo' || filtro === c)
+
+  // Mover um BLOCO inteiro (categoria) na ordem e salvar (cross-device).
+  function moverBloco(cat: CategoriaAtividade, dir: -1 | 1) {
+    const i = ordemCat.indexOf(cat)
+    const j = i + dir
+    if (i < 0 || j < 0 || j >= ordemCat.length) return
+    const arr = [...ordemCat]
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+    setOrdemCat(arr)
+    salvarOrdemCategorias(arr).catch(() => mostrar('Não deu para salvar a ordem dos blocos.', 'erro'))
+  }
   const podeArrastar = ordenar === 'padrao'
 
   // Arrastar: mesmo gesto do resto do sistema (segurar ~0,3s em qualquer parte
@@ -686,6 +702,30 @@ export function GestaoAtividades() {
         <header className="ativ-col__cab">
           <h3 className={`ativ-col__tit cat--${cat}`}>{ROTULO_CATEGORIA[cat]}</h3>
           <span className="ativ-col__n">{abertos.length}</span>
+          {visao === 'lista' && filtro === 'tudo' && ordemCat.length > 1 && (
+            <div className="ativ-grupo__mover">
+              <button
+                type="button"
+                className="ativ__seta"
+                disabled={ordemCat.indexOf(cat) <= 0}
+                title="Mover bloco para cima"
+                aria-label="Mover bloco para cima"
+                onClick={() => moverBloco(cat, -1)}
+              >
+                ▲
+              </button>
+              <button
+                type="button"
+                className="ativ__seta"
+                disabled={ordemCat.indexOf(cat) >= ordemCat.length - 1}
+                title="Mover bloco para baixo"
+                aria-label="Mover bloco para baixo"
+                onClick={() => moverBloco(cat, 1)}
+              >
+                ▼
+              </button>
+            </div>
+          )}
         </header>
 
         <div className="ativ-col__corpo">
