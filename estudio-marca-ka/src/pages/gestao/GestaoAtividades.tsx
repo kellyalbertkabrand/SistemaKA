@@ -85,6 +85,12 @@ export function GestaoAtividades() {
   const [ordemPend, setOrdemPend] = useState<Record<string, number>>({})
   // Ordem dos BLOCOS (categorias) — a KA move p/ cima/baixo; salva no Firestore.
   const [ordemCat, setOrdemCat] = useState<CategoriaAtividade[]>(CATEGORIAS)
+  // Arrastar o BLOCO inteiro (visão Lista) — Pointer Events (funciona no toque).
+  const [dragBloco, setDragBloco] = useState<CategoriaAtividade | null>(null)
+  const [overBloco, setOverBloco] = useState<CategoriaAtividade | null>(null)
+  const [dragBlocoY, setDragBlocoY] = useState(0)
+  const blocoRefs = useRef<Map<CategoriaAtividade, HTMLElement>>(new Map())
+  const dragBlocoRef = useRef<{ de: CategoriaAtividade; para: CategoriaAtividade } | null>(null)
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
   const [salvando, setSalvando] = useState(false)
@@ -494,6 +500,69 @@ export function GestaoAtividades() {
     setOrdemCat(arr)
     salvarOrdemCategorias(arr).catch(() => mostrar('Não deu para salvar a ordem dos blocos.', 'erro'))
   }
+
+  // Reordena colocando o bloco `de` na posição do bloco `para` e salva.
+  function reordenarBlocoPara(de: CategoriaAtividade, para: CategoriaAtividade) {
+    if (de === para) return
+    const arr = [...ordemCat]
+    const i = arr.indexOf(de)
+    const j = arr.indexOf(para)
+    if (i < 0 || j < 0) return
+    arr.splice(i, 1)
+    arr.splice(j, 0, de)
+    setOrdemCat(arr)
+    salvarOrdemCategorias(arr).catch(() => mostrar('Não deu para salvar a ordem dos blocos.', 'erro'))
+  }
+
+  // Arrastar o bloco pela alça ⠿ (Pointer Events — funciona no toque do iPhone).
+  function iniciarArrasteBloco(e: React.PointerEvent, cat: CategoriaAtividade) {
+    e.preventDefault()
+    const startY = e.clientY
+    try {
+      ;(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)
+    } catch {
+      /* ignora */
+    }
+    dragBlocoRef.current = { de: cat, para: cat }
+    setDragBloco(cat)
+    setOverBloco(cat)
+    setDragBlocoY(0)
+    const mover = (ev: PointerEvent) => {
+      const st = dragBlocoRef.current
+      if (!st) return
+      setDragBlocoY(ev.clientY - startY)
+      const y = ev.clientY
+      let alvo = st.de
+      let melhor = Infinity
+      for (const c of ordemCat) {
+        if (c === st.de) continue
+        const el = blocoRefs.current.get(c)
+        if (!el) continue
+        const r = el.getBoundingClientRect()
+        const dist = Math.abs(y - (r.top + r.bottom) / 2)
+        if (dist < melhor) {
+          melhor = dist
+          alvo = c
+        }
+      }
+      st.para = alvo
+      setOverBloco(alvo)
+    }
+    const soltar = () => {
+      window.removeEventListener('pointermove', mover)
+      window.removeEventListener('pointerup', soltar)
+      window.removeEventListener('pointercancel', soltar)
+      const st = dragBlocoRef.current
+      dragBlocoRef.current = null
+      setDragBloco(null)
+      setOverBloco(null)
+      setDragBlocoY(0)
+      if (st && st.de !== st.para) reordenarBlocoPara(st.de, st.para)
+    }
+    window.addEventListener('pointermove', mover)
+    window.addEventListener('pointerup', soltar)
+    window.addEventListener('pointercancel', soltar)
+  }
   const podeArrastar = ordenar === 'padrao'
 
   // Arrastar: mesmo gesto do resto do sistema (segurar ~0,3s em qualquer parte
@@ -692,17 +761,36 @@ export function GestaoAtividades() {
     const feitos = itens.filter((it) => it.feito)
     const mostrarFeitas = !!feitasAbertas[cat]
     const recebendo = arrastar.colunaAlvo === cat && arrastar.arrastando !== null
+    const arrastandoBloco = dragBloco === cat
+    const alvoBloco = visao === 'lista' && overBloco === cat && dragBloco !== null && dragBloco !== cat
+    const podeMoverBloco = visao === 'lista' && filtro === 'tudo' && ordemCat.length > 1
 
     return (
       <section
         key={cat}
-        className={`ativ-col cat--${cat} ${recebendo ? 'ativ-col--recebendo' : ''}`}
-        ref={(el) => arrastar.registrarColuna(cat, el)}
+        className={`ativ-col cat--${cat} ${recebendo ? 'ativ-col--recebendo' : ''} ${
+          arrastandoBloco ? 'ativ-col--arrastando-bloco' : ''
+        } ${alvoBloco ? 'ativ-col--alvo-bloco' : ''}`}
+        ref={(el) => {
+          arrastar.registrarColuna(cat, el)
+          if (el) blocoRefs.current.set(cat, el)
+          else blocoRefs.current.delete(cat)
+        }}
+        style={arrastandoBloco ? { transform: `translateY(${dragBlocoY}px)`, zIndex: 30 } : undefined}
       >
         <header className="ativ-col__cab">
+          {podeMoverBloco && (
+            <span
+              className="fase__handle ativ-col__arrasta"
+              title="Segure e arraste para mover o bloco"
+              onPointerDown={(e) => iniciarArrasteBloco(e, cat)}
+            >
+              ⠿
+            </span>
+          )}
           <h3 className={`ativ-col__tit cat--${cat}`}>{ROTULO_CATEGORIA[cat]}</h3>
           <span className="ativ-col__n">{abertos.length}</span>
-          {visao === 'lista' && filtro === 'tudo' && ordemCat.length > 1 && (
+          {podeMoverBloco && (
             <div className="ativ-grupo__mover">
               <button
                 type="button"

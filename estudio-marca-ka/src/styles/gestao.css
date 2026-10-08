@@ -4987,3 +4987,26 @@ a.btn-mini {
   margin-left: auto;
   flex: none;
 }
+
+/* Arrastar o BLOCO inteiro de atividades (visão Lista) */
+.ativ-col__arrasta {
+  cursor: grab;
+  touch-action: none;
+  margin-right: 0.1rem;
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--t-400);
+}
+.ativ-col__arrasta:active {
+  cursor: grabbing;
+}
+.ativ-col--arrastando-bloco {
+  position: relative;
+  box-shadow: 0 16px 36px rgba(21, 37, 53, 0.18);
+  opacity: 0.97;
+}
+.ativ-col--alvo-bloco {
+  outline: 2px dashed var(--dourado);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
