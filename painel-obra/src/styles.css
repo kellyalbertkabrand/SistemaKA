@@ -636,6 +636,8 @@ body.modal-aberto { overflow: hidden; }
 .cliente-item { padding: .7rem 0; border-bottom: 1px solid #f1ece2; }
 .cliente-item:last-child { border-bottom: none; }
 .cliente-dados { font-size: .85rem; margin-top: .15rem; }
+/* Linha de ações do cliente (WhatsApp, PDF, editar…) quebra no celular */
+.cliente-acoes { flex-wrap: wrap; justify-content: flex-end; gap: .4rem; }
 .cliente-data { font-size: .72rem; margin-top: .3rem; }
 .cadastro-card { max-width: 620px; margin: 1.2rem auto; }
 .cad-titulo { font-size: 1.5rem; margin: 0 0 .3rem; }

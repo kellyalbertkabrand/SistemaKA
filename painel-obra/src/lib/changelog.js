@@ -3,9 +3,18 @@
 // sucinta e clara para o cliente — e atualize a VERSAO (data da publicação).
 // É exibido na página pública /atualizacoes, que pode ser enviada ao cliente.
 
-export const VERSAO = '06/10/2026';
+export const VERSAO = '15/10/2026';
 
 export const CHANGELOG = [
+  {
+    data: '15/10/2026',
+    titulo: 'Clientes: exportar em PDF e enviar por WhatsApp',
+    itens: [
+      'Cada cliente tem o botão "📄 PDF": baixa os dados completos (contato + contrato) num PDF com a marca do escritório.',
+      'Novo botão "📲 Enviar dados": abre o WhatsApp com os dados do cliente já prontos para enviar.',
+      'O botão de WhatsApp de contato agora se chama "Conversar" (abre a conversa com o cliente).',
+    ],
+  },
   {
     data: '06/10/2026',
     titulo: 'Atalho do link do cliente no celular abre direto',

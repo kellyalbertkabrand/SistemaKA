@@ -2,6 +2,7 @@ import { listarClientes, listarObras, criarConvite, criarClienteEscritorio, atua
 import { esc, dataBR } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
 import { ligarMascara, ligarEmail, formatarCpfCnpj, formatarTelefone, validarEmail, linkWhatsApp } from '../lib/mascaras.js';
+import { baixarPdfCliente, textoWhatsAppCliente } from '../lib/clienteExport.js';
 
 // Tela interna: cadastrar cliente pelo escritório, gerar link de autopreenchimento
 // e listar os cadastrados.
@@ -228,6 +229,22 @@ export async function renderClientes(container, opts = {}) {
     });
   });
 
+  // ---- Baixar PDF dos dados do cliente ----
+  container.querySelectorAll('[data-pdf-cli]').forEach((b) => {
+    b.addEventListener('click', async () => {
+      const c = clientes.find((x) => x.id === b.getAttribute('data-pdf-cli'));
+      if (!c) return;
+      const rot = b.textContent;
+      b.disabled = true; b.textContent = 'Gerando…';
+      try {
+        await baixarPdfCliente(c);
+      } catch (err) {
+        alert('Não foi possível gerar o PDF: ' + (err?.message || err));
+      }
+      b.disabled = false; b.textContent = rot;
+    });
+  });
+
   // ---- Excluir cliente ----
   container.querySelectorAll('[data-del-cli]').forEach((b) => {
     b.addEventListener('click', async () => {
@@ -246,8 +263,10 @@ function listaClientes(clientes) {
     <div class="cliente-item">
       <div class="row-between">
         <strong>${esc(c.nome)}</strong>
-        <span class="row-end">
-          ${c.telefone && linkWhatsApp(c.telefone) ? `<a class="btn btn-mini btn-whats" href="${esc(linkWhatsApp(c.telefone, c.nome ? `Olá, ${c.nome}!` : ''))}" target="_blank" rel="noopener" title="Chamar no WhatsApp">💬 WhatsApp</a>` : ''}
+        <span class="row-end cliente-acoes">
+          ${c.telefone && linkWhatsApp(c.telefone) ? `<a class="btn btn-mini btn-whats" href="${esc(linkWhatsApp(c.telefone, c.nome ? `Olá, ${c.nome}!` : ''))}" target="_blank" rel="noopener" title="Conversar no WhatsApp">💬 Conversar</a>` : ''}
+          <a class="btn btn-mini btn-whats" href="https://wa.me/?text=${encodeURIComponent(textoWhatsAppCliente(c))}" target="_blank" rel="noopener" title="Enviar os dados do cliente por WhatsApp">📲 Enviar dados</a>
+          <button class="btn btn-mini" data-pdf-cli="${esc(c.id)}" title="Baixar os dados em PDF">📄 PDF</button>
           <button class="btn btn-mini" data-edit-cli="${esc(c.id)}" title="Editar cadastro">✎ Editar</button>
           <button class="btn btn-x" data-del-cli="${esc(c.id)}" title="Excluir">×</button>
         </span>
