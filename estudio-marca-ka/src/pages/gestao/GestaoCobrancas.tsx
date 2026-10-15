@@ -135,6 +135,8 @@ export function GestaoCobrancas() {
   const [novoVenc, setNovoVenc] = useState('')
   const [novaForma, setNovaForma] = useState<'avista' | 'parcelado' | 'mensal'>('avista')
   const [novaVezes, setNovaVezes] = useState('2')
+  // Mensal: por quantos meses gerar de uma vez (uma cobrança por mês).
+  const [novoMeses, setNovoMeses] = useState('12')
   // VM Rocks participa desta cobrança? (aparece na visão financeira dela)
   const [novaVM, setNovaVM] = useState(false)
   const [novoValorVM, setNovoValorVM] = useState('')
@@ -340,6 +342,7 @@ export function GestaoCobrancas() {
     setNovoVenc(new Date().toISOString().slice(0, 10))
     setNovaForma('avista')
     setNovaVezes('2')
+    setNovoMeses('12')
     setNovaVM(false)
     setNovoValorVM('')
     setNovaComNota(null)
@@ -401,9 +404,17 @@ export function GestaoCobrancas() {
       setErro('Preencha o cliente, a descrição, um valor maior que zero e o vencimento.')
       return
     }
-    // Parcelado → N cobranças (uma por mês); mensal → 1 cobrança de mensalidade.
-    const parcelas = novaForma === 'parcelado' ? Math.min(24, Math.max(2, Number(novaVezes) || 2)) : 1
-    const tipo = novaForma === 'mensal' ? 'mensalidade' : 'avulsa'
+    // Parcelado → N cobranças (uma por mês). Mensal → uma cobrança por mês nos
+    // próximos N meses (ao CRIAR); ao editar, só atualiza a cobrança escolhida.
+    const ehMensal = novaForma === 'mensal'
+    const mesesMensal = Math.min(60, Math.max(1, Number(novoMeses) || 12))
+    const parcelas =
+      novaForma === 'parcelado'
+        ? Math.min(24, Math.max(2, Number(novaVezes) || 2))
+        : ehMensal && !editandoId
+          ? mesesMensal
+          : 1
+    const tipo = ehMensal ? 'mensalidade' : 'avulsa'
     const descBase = novaDesc.trim()
     if (novaComNota === null) {
       setErro('Diga se esta cobrança sai COM ou SEM nota fiscal.')
@@ -453,7 +464,7 @@ export function GestaoCobrancas() {
       } else {
         // Criar (ou, ao editar em parcelado, vira a 1ª parcela + cria as demais).
         for (let k = 0; k < parcelas; k++) {
-          const desc = parcelas > 1 ? `${descBase} (${k + 1}/${parcelas})` : descBase
+          const desc = novaForma === 'parcelado' && parcelas > 1 ? `${descBase} (${k + 1}/${parcelas})` : descBase
           const venc = somarMeses(novoVenc, k)
           if (editandoId && k === 0) {
             await atualizarCobranca(editandoId, {
@@ -480,11 +491,13 @@ export function GestaoCobrancas() {
           }
         }
         mostrar(
-          parcelas > 1
+          novaForma === 'parcelado' && parcelas > 1
             ? `${parcelas} parcelas criadas (uma por mês)`
-            : editandoId
-              ? 'Cobrança atualizada'
-              : 'Cobrança criada',
+            : ehMensal && parcelas > 1
+              ? `${parcelas} mensalidades criadas — uma por mês, vencendo todo dia ${Number(novoVenc.split('-')[2])}`
+              : editandoId
+                ? 'Cobrança atualizada'
+                : 'Cobrança criada',
         )
       }
       fecharForm()
@@ -654,6 +667,22 @@ export function GestaoCobrancas() {
             />
           </div>
         )}
+        {novaForma === 'mensal' && !editandoId && (
+          <div className="field">
+            <label>Gerar por quantos meses</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              maxLength={2}
+              value={novoMeses}
+              onChange={(e) => setNovoMeses(e.target.value.replace(/\D/g, ''))}
+              placeholder="ex.: 12"
+            />
+            <span className="campo-ajuda">
+              Cria uma cobrança por mês, já nos próximos meses (todas vencendo no mesmo dia).
+            </span>
+          </div>
+        )}
         <div className="field">
           <label>
             {novaForma === 'parcelado'
@@ -672,7 +701,13 @@ export function GestaoCobrancas() {
           />
         </div>
         <div className="field">
-          <label>{novaForma === 'parcelado' ? '1º vencimento' : 'Vencimento'}</label>
+          <label>
+            {novaForma === 'parcelado'
+              ? '1º vencimento'
+              : novaForma === 'mensal'
+                ? 'Vencimento (repete nesse dia todo mês)'
+                : 'Vencimento'}
+          </label>
           <input type="date" value={novoVenc} onChange={(e) => setNovoVenc(e.target.value)} />
         </div>
 
@@ -785,6 +820,14 @@ export function GestaoCobrancas() {
           sistema cria {nParcelas} cobranças, uma por mês a partir do 1º vencimento.
         </p>
       )}
+      {novaForma === 'mensal' && !editandoId && valorNum > 0 && (
+        <p style={{ fontSize: '0.8rem', color: 'var(--t-500)', margin: '0.2rem 0 0.4rem' }}>
+          Cria <strong>{Math.min(60, Math.max(1, Number(novoMeses) || 12))}</strong> cobranças de{' '}
+          {formatarBRL(valorNum)} — uma por mês
+          {novoVenc ? `, vencendo todo dia ${Number(novoVenc.split('-')[2])}` : ''} (a partir do vencimento
+          escolhido). Assim ela aparece em todos os meses seguintes.
+        </p>
+      )}
 
       {erro && <div className="erro-msg" style={{ marginTop: '0.4rem' }}>{erro}</div>}
 
@@ -796,7 +839,9 @@ export function GestaoCobrancas() {
               ? 'Salvar alterações'
               : novaForma === 'parcelado'
                 ? 'Criar parcelas'
-                : 'Criar cobrança'}
+                : novaForma === 'mensal'
+                  ? 'Criar mensalidades'
+                  : 'Criar cobrança'}
         </button>
         <button className="btn--voltar" onClick={fecharForm}>
           Cancelar
