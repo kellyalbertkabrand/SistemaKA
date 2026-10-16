@@ -1652,8 +1652,10 @@ function flash(btn, msg) {
 }
 
 // Mensagem pronta para o WhatsApp: apresenta o link do acompanhamento da obra e
-// ensina o cliente a salvar o painel como um app na tela inicial (iPhone e
-// Android). Formatação com *asteriscos* (negrito do WhatsApp).
+// ensina o cliente a salvar o painel como um app na tela inicial (Android e
+// iPhone), já com o passo a passo atualizado (Android instala o app que abre
+// direto na obra). Vale para qualquer obra, nova ou existente, porque o link e
+// o nome vêm da própria obra. Formatação com *asteriscos* (negrito do WhatsApp).
 function montarMensagemLinkCliente({ obra, link }) {
   const saudacao = obra.cliente ? `Olá, ${obra.cliente}!` : 'Olá!';
   return [
@@ -1663,7 +1665,13 @@ function montarMensagemLinkCliente({ obra, link }) {
     '',
     link,
     '',
-    '*Deixe como um app no seu celular* (abre com 1 toque, sem baixar nada):',
+    '*Deixe como um app no seu celular* (abre com 1 toque, direto na sua obra, sem pedir senha):',
+    '',
+    '*Android (Chrome):*',
+    '1) Abra o link acima no Chrome',
+    '2) Toque no menu de três pontinhos (⋮), no canto superior direito',
+    '3) Toque em "Instalar aplicativo" (em alguns aparelhos: "Adicionar à tela inicial")',
+    '4) Confirme em "Instalar"',
     '',
     '*iPhone (Safari):*',
     '1) Abra o link acima no Safari',
@@ -1671,12 +1679,8 @@ function montarMensagemLinkCliente({ obra, link }) {
     '3) Toque em "Adicionar à Tela de Início"',
     '4) Toque em "Adicionar"',
     '',
-    '*Android (Chrome):*',
-    '1) Abra o link acima no Chrome',
-    '2) Toque no menu de três pontinhos, no canto',
-    '3) Toque em "Adicionar à tela inicial" (ou "Instalar app")',
-    '4) Confirme',
+    'Pronto! O ícone fica na sua tela inicial e abre direto o acompanhamento da obra.',
     '',
-    'Pronto! O acompanhamento fica sempre à mão.',
+    'Obs.: se você já tinha um atalho antigo que pedia senha, apague o ícone antigo e refaça o passo a passo — o novo abre direto.',
   ].join('\n');
 }
