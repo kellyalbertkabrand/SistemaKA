@@ -1702,6 +1702,8 @@ function montarMensagemPrimeiroEnvio({ obra, link }) {
     '',
     'Pronto! O ícone fica na sua tela inicial e abre direto o acompanhamento da obra.',
     '',
+    '⚠️ Não apareceu o menu de três pontinhos (Android)? Provavelmente o link abriu dentro do próprio WhatsApp. Toque no menu do WhatsApp e escolha "Abrir no Chrome" (ou "Abrir no navegador") e refaça os passos. Se o seu navegador for o Samsung Internet, o menu fica embaixo (ícone de três linhas) → "Adicionar página a" → "Tela inicial".',
+    '',
     'Qualquer dúvida, é só me chamar!',
   ].join('\n');
 }
