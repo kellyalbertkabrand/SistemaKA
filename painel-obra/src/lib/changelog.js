@@ -3,9 +3,17 @@
 // sucinta e clara para o cliente — e atualize a VERSAO (data da publicação).
 // É exibido na página pública /atualizacoes, que pode ser enviada ao cliente.
 
-export const VERSAO = '15/10/2026';
+export const VERSAO = '16/10/2026';
 
 export const CHANGELOG = [
+  {
+    data: '16/10/2026',
+    titulo: 'Atalho do cliente no Android abre como aplicativo',
+    itens: [
+      'No Android, ao adicionar o link do cliente à tela inicial, ele agora instala como um aplicativo de verdade (tela cheia) que abre direto na página da obra — sem cair no login nem pedir senha.',
+      'No iPhone continua igual: o atalho abre direto o acompanhamento da obra.',
+    ],
+  },
   {
     data: '15/10/2026',
     titulo: 'Clientes: exportar em PDF e enviar por WhatsApp',
