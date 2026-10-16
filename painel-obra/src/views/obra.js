@@ -156,8 +156,8 @@ export async function renderObra(container, obraId, opts = {}) {
             </label>
             <button class="btn btn-mini" id="copiar-link">Copiar</button>
             <a class="btn btn-mini" href="/obra/${esc(obra.slug)}" target="_blank" rel="noopener" title="Abre o painel do cliente numa nova aba">Abrir ↗</a>
-            <button class="btn btn-mini btn-whats" id="whats-primeiro" title="Mensagem do primeiro envio: o link + passo a passo para salvar como app (opcional)">💬 Primeiro envio</button>
-            <button class="btn btn-mini btn-whats" id="whats-update" title="Avisar o cliente que a obra foi atualizada (ex.: novas fotos), já com o link">🔄 Avisar atualização</button>
+            <button class="btn btn-mini btn-whats" id="whats-primeiro" title="Mensagem do primeiro envio: o link + passo a passo para salvar como app (opcional)">💬 Enviar link (1ª vez)</button>
+            <button class="btn btn-mini btn-whats" id="whats-update" title="Avisar o cliente que a obra foi atualizada (ex.: novas fotos), já com o link">🔄 Avisar novidade</button>
           </div>
         </div>
         <div id="whats-link-saida"></div>
