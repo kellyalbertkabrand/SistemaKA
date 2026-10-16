@@ -12,7 +12,7 @@ export const CHANGELOG = [
     itens: [
       'No Android, ao adicionar o link do cliente à tela inicial, ele agora instala como um aplicativo de verdade (tela cheia) que abre direto na página da obra — sem cair no login nem pedir senha.',
       'No iPhone continua igual: o atalho abre direto o acompanhamento da obra.',
-      'A mensagem de "Enviar por WhatsApp" do link do cliente já vai com o passo a passo atualizado (Android e iPhone) — vale para qualquer obra, nova ou já existente.',
+      'O link do cliente agora tem dois botões de WhatsApp: "Primeiro envio" (manda o link com o passo a passo para salvar como app — deixando claro que instalar é opcional e que o link funciona sempre só clicando) e "Avisar atualização" (mensagem curta para avisar o cliente quando a obra for atualizada, com um campo opcional para dizer o que mudou). Valem para qualquer obra, nova ou já existente.',
     ],
   },
   {

@@ -156,7 +156,8 @@ export async function renderObra(container, obraId, opts = {}) {
             </label>
             <button class="btn btn-mini" id="copiar-link">Copiar</button>
             <a class="btn btn-mini" href="/obra/${esc(obra.slug)}" target="_blank" rel="noopener" title="Abre o painel do cliente numa nova aba">Abrir ↗</a>
-            <button class="btn btn-mini btn-whats" id="whats-link" title="Enviar o link ao cliente pelo WhatsApp com o passo a passo para salvar como app">💬 Enviar por WhatsApp</button>
+            <button class="btn btn-mini btn-whats" id="whats-primeiro" title="Mensagem do primeiro envio: o link + passo a passo para salvar como app (opcional)">💬 Primeiro envio</button>
+            <button class="btn btn-mini btn-whats" id="whats-update" title="Avisar o cliente que a obra foi atualizada (ex.: novas fotos), já com o link">🔄 Avisar atualização</button>
           </div>
         </div>
         <div id="whats-link-saida"></div>
@@ -581,8 +582,8 @@ export async function renderObra(container, obraId, opts = {}) {
   // Enviar o link ao cliente pelo WhatsApp, já com o passo a passo para salvar
   // o painel como um app na tela inicial do celular.
   const whatsSaida = container.querySelector('#whats-link-saida');
-  container.querySelector('#whats-link').addEventListener('click', () => {
-    const msg = montarMensagemLinkCliente({ obra, link: linkPublico });
+  // Abre o WhatsApp com a mensagem e mostra um cartão para copiar o texto.
+  const enviarWhats = (msg) => {
     window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank', 'noopener');
     whatsSaida.innerHTML = `
       <div class="preview-card" style="margin-top:.6rem">
@@ -594,6 +595,24 @@ export async function renderObra(container, obraId, opts = {}) {
     whatsSaida.querySelector('#whats-link-copiar').addEventListener('click', async (ev) => {
       try { await navigator.clipboard.writeText(msg); ev.target.textContent = 'Copiado!'; }
       catch { ev.target.textContent = 'Copie manualmente'; }
+    });
+  };
+  // Botão 1 — primeiro envio (link + passo a passo de instalação opcional).
+  container.querySelector('#whats-primeiro').addEventListener('click', () => {
+    enviarWhats(montarMensagemPrimeiroEnvio({ obra, link: linkPublico }));
+  });
+  // Botão 2 — avisar atualização: abre um campo opcional ("o que mudou") e envia.
+  container.querySelector('#whats-update').addEventListener('click', () => {
+    whatsSaida.innerHTML = `
+      <div class="preview-card" style="margin-top:.6rem">
+        <label class="muted" for="whats-update-oque">O que você atualizou? (opcional)</label>
+        <textarea class="texto-livre" rows="2" id="whats-update-oque"
+          placeholder="Ex.: novas fotos da visita de hoje"></textarea>
+        <div class="row-end"><button class="btn btn-mini btn-whats" id="whats-update-enviar">Gerar e abrir no WhatsApp</button></div>
+      </div>`;
+    whatsSaida.querySelector('#whats-update-enviar').addEventListener('click', () => {
+      const oque = whatsSaida.querySelector('#whats-update-oque').value;
+      enviarWhats(montarMensagemAtualizacao({ obra, link: linkPublico, oque }));
     });
   });
 
@@ -1651,29 +1670,31 @@ function flash(btn, msg) {
   setTimeout(() => { btn.textContent = original; }, 1500);
 }
 
-// Mensagem pronta para o WhatsApp: apresenta o link do acompanhamento da obra e
-// ensina o cliente a salvar o painel como um app na tela inicial (Android e
-// iPhone), já com o passo a passo atualizado (Android instala o app que abre
-// direto na obra). Vale para qualquer obra, nova ou existente, porque o link e
-// o nome vêm da própria obra. Formatação com *asteriscos* (negrito do WhatsApp).
-function montarMensagemLinkCliente({ obra, link }) {
+// Mensagem do PRIMEIRO ENVIO: apresenta o link, deixa claro que ele funciona
+// sempre só clicando (não precisa instalar nada nem criar senha) e, como opção,
+// ensina a salvar um atalho na tela inicial para ficar como um app (Android e
+// iPhone). Vale para qualquer obra, nova ou existente, porque o link e o nome
+// vêm da própria obra. Formatação com *asteriscos* (negrito do WhatsApp).
+function montarMensagemPrimeiroEnvio({ obra, link }) {
   const saudacao = obra.cliente ? `Olá, ${obra.cliente}!` : 'Olá!';
   return [
     saudacao,
     '',
-    `Aqui está o acompanhamento da sua obra *${obra.nome}* — você vê fotos, andamento e pagamentos em tempo real:`,
+    `Aqui está o acompanhamento da sua obra *${obra.nome}* — você acompanha fotos, andamento e pagamentos em tempo real:`,
     '',
     link,
     '',
-    '*Deixe como um app no seu celular* (abre com 1 toque, direto na sua obra, sem pedir senha):',
+    'Esse link é só seu e *funciona sempre que você tocar nele* — não precisa instalar nada nem criar senha. Você pode salvar nos favoritos ou numa conversa sua e abrir quando quiser.',
     '',
-    '*Android (Chrome):*',
+    'Se preferir, dá para deixar um *atalho dele na tela inicial do celular*, que fica igual a um aplicativo (abre com 1 toque). Isso é opcional — faça só se quiser. Veja como:',
+    '',
+    '*Caso seu celular seja Android (Chrome):*',
     '1) Abra o link acima no Chrome',
     '2) Toque no menu de três pontinhos (⋮), no canto superior direito',
     '3) Toque em "Instalar aplicativo" (em alguns aparelhos: "Adicionar à tela inicial")',
     '4) Confirme em "Instalar"',
     '',
-    '*iPhone (Safari):*',
+    '*Caso seu celular seja iPhone (Safari):*',
     '1) Abra o link acima no Safari',
     '2) Toque no ícone de compartilhar (o quadradinho com a setinha para cima)',
     '3) Toque em "Adicionar à Tela de Início"',
@@ -1681,6 +1702,27 @@ function montarMensagemLinkCliente({ obra, link }) {
     '',
     'Pronto! O ícone fica na sua tela inicial e abre direto o acompanhamento da obra.',
     '',
-    'Obs.: se você já tinha um atalho antigo que pedia senha, apague o ícone antigo e refaça o passo a passo — o novo abre direto.',
+    'Qualquer dúvida, é só me chamar!',
+  ].join('\n');
+}
+
+// Mensagem de AVISO DE ATUALIZAÇÃO: curta, para quando a arquiteta atualizar a
+// obra (ex.: novas fotos). O que mudou (`oque`) é opcional — se vier, entra na
+// mensagem; se não, manda só a notificação com o link. Não repete o passo a
+// passo, só lembra que o atalho (se já salvo) abre com 1 toque.
+function montarMensagemAtualizacao({ obra, link, oque }) {
+  const saudacao = obra.cliente ? `Olá, ${obra.cliente}, tudo bem?` : 'Olá, tudo bem?';
+  const detalhe = (oque || '').trim();
+  return [
+    saudacao,
+    '',
+    detalhe
+      ? `Acabei de fazer uma atualização no acompanhamento da sua obra *${obra.nome}*: ${detalhe}`
+      : `Acabei de fazer uma atualização no acompanhamento da sua obra *${obra.nome}*.`,
+    '',
+    'É só abrir o link para ver:',
+    link,
+    '',
+    '(Se você já salvou o atalho na tela inicial, é só tocar no ícone.)',
   ].join('\n');
 }
