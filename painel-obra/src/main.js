@@ -12,6 +12,51 @@ import { renderFornecedores } from './views/fornecedores.js';
 
 const app = document.getElementById('app');
 
+// PWA — "adicionar à tela de início": nas páginas PÚBLICAS (link do cliente),
+// o atalho precisa abrir a PRÓPRIA página, não a raiz "/". O manifesto padrão
+// tem start_url "/", que no Android instala o app abrindo na raiz (cai no login).
+// Então nessas rotas trocamos por um manifesto DINÂMICO apontando start_url/scope
+// para a própria obra: no Android instala um app de verdade (standalone) que
+// abre direto no painel do cliente; no iPhone o atalho usa esta mesma URL.
+// Como o manifesto é servido como blob (sem caminho base próprio), TODAS as URLs
+// dentro dele precisam ser absolutas.
+(function ajustarPWAPublico() {
+  try {
+    const p = window.location.pathname;
+    const ehPublica = /^\/(obra|cadastro|cadastro-fornecedor|briefing)\//.test(p)
+      || /^\/atualizacoes\/?$/.test(p);
+    if (!ehPublica) return;
+
+    const origem = window.location.origin;
+    const urlAtual = origem + p + window.location.search;
+    const titulo = (document.title || 'Painel de Obras').trim();
+    const manifesto = {
+      name: titulo,
+      short_name: (titulo.split('—').pop() || titulo).trim().slice(0, 24) || 'Obra',
+      description: 'Acompanhamento da obra.',
+      start_url: urlAtual,
+      scope: origem + p,
+      display: 'standalone',
+      orientation: 'portrait',
+      background_color: '#f5f2ec',
+      theme_color: document.querySelector('meta[name="theme-color"]')?.content || '#c65a2e',
+      icons: [
+        { src: origem + '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+        { src: origem + '/apple-touch-icon.png', sizes: '180x180', type: 'image/png', purpose: 'any' },
+      ],
+    };
+    const blob = new Blob([JSON.stringify(manifesto)], { type: 'application/manifest+json' });
+    const href = URL.createObjectURL(blob);
+    let link = document.querySelector('link[rel="manifest"]');
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'manifest';
+      document.head.appendChild(link);
+    }
+    link.href = href;
+  } catch { /* nunca bloqueia o app */ }
+})();
+
 // Firebase resolve a sessão salva de forma assíncrona. Até resolver, seguramos
 // as rotas internas numa telinha de "Carregando" para não piscar o login.
 let authResolvido = !configurado;
