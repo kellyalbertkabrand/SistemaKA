@@ -212,7 +212,7 @@ function renderResultado(r) {
   const marca = r.perfil?.marca || "a sua marca";
 
   // Abertura com nota geral
-  raiz.append(el("section", { class: "secao" }, el("div", { class: "container" },
+  raiz.append(el("section", { class: "secao secao-azul com-reticula", style: "padding-bottom: 150px;" }, el("div", { class: "container" },
     el("span", { class: "rotulo", texto: `Diagnóstico Marca com Essência© · ${marca}` }),
     el("div", { class: "nota-geral" }, String(r.notaGeral), el("small", { texto: "/100" })),
     el("h2", { texto: r.faixa?.nome || "" }),
@@ -230,7 +230,7 @@ function renderResultado(r) {
       trilho,
     ));
   }
-  raiz.append(el("section", { class: "secao secao-escura" }, mapa));
+  raiz.append(el("section", { class: "secao secao-azul2" }, mapa));
 
   // Leitura geral e coerência
   raiz.append(el("section", { class: "secao" }, el("div", { class: "container" },
@@ -256,12 +256,12 @@ function renderResultado(r) {
       el("h4", { texto: "Primeiro passo" }), el("p", { texto: l.primeiro_passo || "" }),
     ));
   }
-  raiz.append(el("section", { class: "secao" }, blocoDim));
+  raiz.append(el("section", { class: "secao secao-painel" }, blocoDim));
 
   // Prioridades
   const lista = el("ol", { class: "prioridades" });
   (leitura.prioridades || []).forEach((p) => lista.append(el("li", { texto: p })));
-  raiz.append(el("section", { class: "secao secao-escura" }, el("div", { class: "container" },
+  raiz.append(el("section", { class: "secao secao-azul2" }, el("div", { class: "container" },
     el("span", { class: "rotulo", texto: "Suas 3 prioridades" }), lista,
   )));
 
