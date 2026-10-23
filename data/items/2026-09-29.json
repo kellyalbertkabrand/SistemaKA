@@ -1,6 +1,6 @@
 {
   "date": "2026-09-29",
-  "generated_at": "2026-10-01T12:11:30.946732+00:00",
+  "generated_at": "2026-10-23T10:48:53.086248+00:00",
   "count": 40,
   "items": [
     {
@@ -718,6 +718,27 @@
       "id": "22cad93b162ac136"
     },
     {
+      "title": "Vale processo? YouTuber Davy Jones diz que 'não autorizou' uso de voz e imagem pela campanha de Zema - Drops de Jogos",
+      "link": "https://dropsdejogos.uai.com.br/noticias/cultura/vale-processo-youtuber-davy-jones-diz-que-nao-autorizou-uso-de-voz-e-imagem-pela-campanha-de-zema/",
+      "source": "Drops de Jogos",
+      "lang": "pt",
+      "region": "BR",
+      "category": "influencer",
+      "kind": "noticia",
+      "published": "2026-09-29",
+      "raw_summary": "YouTuber Davy Jones publicou um vídeo hoje em que afirma não ter dado autorização para o uso de sua voz e imagem para um personagem",
+      "title_pt": "",
+      "summary_pt": "Conflito de marca pessoal e propriedade de imagem em parceria com marca, sem autorização expressa.",
+      "angle_pt": "",
+      "pme_pt": "",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 11,
+      "fetched_at": "2026-10-23T10:45:12.472585+00:00",
+      "id": "0292e3e7d1f235aa"
+    },
+    {
       "title": "Target reforça aposta em design acessível para renovar conexão com consumidores - Mercado&Consumo",
       "link": "https://mercadoeconsumo.com.br/29/09/2026/noticias-varejo/target-reforca-aposta-em-design-acessivel-para-renovar-conexao-com-consumidores/amp/",
       "source": "Mercado&Consumo",
@@ -821,27 +842,6 @@
       "score": 10,
       "fetched_at": "2026-10-01T12:06:56.533267+00:00",
       "id": "a97f8f84e301e130"
-    },
-    {
-      "title": "Confiança do consumidor nos EUA está próxima da menor marca em 12 anos e meio em meio a temores sobre o mercado de trabalho - br.tradingview.com",
-      "link": "https://br.tradingview.com/news/reuters.com,2026:newsml_L1N45L0VK:0/",
-      "source": "br.tradingview.com",
-      "lang": "pt",
-      "region": "BR",
-      "category": "pesquisa",
-      "kind": "noticia",
-      "published": "2026-09-29",
-      "raw_summary": "Por Lucia MutikaniA confiança do consumidor nos EUA despencou para o menor nível em quase 12 anos e meio em setembro, com as famílias prevendo uma deterioração nas condições dos negócios e do mercado de trabalho nos próximos seis meses, em meio ao conflito no Oriente Médio e ao aumento das taxas de…",
-      "title_pt": "",
-      "summary_pt": "Índice de confiança do consumidor americano despenca devido a temores sobre mercado de trabalho e geopolítica.",
-      "angle_pt": "",
-      "pme_pt": "",
-      "roteiro_pt": "",
-      "link_kelly": "",
-      "authors": "",
-      "score": 10,
-      "fetched_at": "2026-09-30T11:38:45.674122+00:00",
-      "id": "63a6bce7058b4119"
     }
   ]
 }
