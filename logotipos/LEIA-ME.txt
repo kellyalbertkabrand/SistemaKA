@@ -1,0 +1,9 @@
+Logotipos - Nucleo de Negocios Conecta / ACIGRA
+================================================
+
+Conecta/   - simbolo e nome do Conecta (azul-marinho e branco, PNG transparente)
+Parceiros/ - ACIGRA e EMPREENDER (azul-marinho e branco, PNG transparente)
+Nucleados/ - logotipos finais dos 33 nucleados usados no banner (PNG)
+
+Todos em PNG com fundo transparente (exceto os que tem fundo proprio da marca,
+como Mundo Fit, Central de Imoveis, Zila, Fusoparq e Autock).
