@@ -1,6 +1,6 @@
 {
   "date": "2026-10-12",
-  "generated_at": "2026-10-14T10:57:59.272318+00:00",
+  "generated_at": "2026-11-01T12:27:33.206946+00:00",
   "count": 40,
   "items": [
     {
@@ -655,6 +655,27 @@
       "id": "9c4e6bef73630524"
     },
     {
+      "title": "Vini Jr. Exclui Foto Polêmica Com Virginia Fonseca Um Dia Após Anunciar Término - InMagazine",
+      "link": "https://inmagazine.ig.com.br/celebridades/vini-jr-exclui-foto-virginia",
+      "source": "InMagazine",
+      "lang": "pt",
+      "region": "BR",
+      "category": "influencer",
+      "kind": "noticia",
+      "published": "2026-10-12",
+      "raw_summary": "Jogador deletou a imagem capturada nos bastidores do GP da Espanha em Madri, embora mantenha públicas outras memórias do ex-casal em sua conta",
+      "title_pt": "",
+      "summary_pt": "Celebridade gerencia presença online após ruptura pessoal para controlar narrativa pública.",
+      "angle_pt": "",
+      "pme_pt": "",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 9,
+      "fetched_at": "2026-11-01T12:23:03.631626+00:00",
+      "id": "20fb624cc938c8df"
+    },
+    {
       "title": "Legado se constrói todos os dias",
       "link": "https://propmark.com.br/artigos/legado-se-constroi-todos-os-dias/",
       "source": "Propmark",
@@ -821,27 +842,6 @@
       "score": 5,
       "fetched_at": "2026-10-12T13:58:04.241687+00:00",
       "id": "24be10a61b932895"
-    },
-    {
-      "title": "Beyond Opinions: 5 Advertising Insight Myths We Put to the Test - Ipsos",
-      "link": "https://www.ipsos.com/en-us/beyond-opinions-5-advertising-insight-myths-we-put-test",
-      "source": "Ipsos",
-      "lang": "en",
-      "region": "world",
-      "category": "campanha",
-      "kind": "noticia",
-      "published": "2026-10-12",
-      "raw_summary": "We put common industry beliefs about advertising insights to the test with real audiences, challenging long-held opinions on whether they matter and what makes them work.",
-      "title_pt": "Além das Opiniões: 5 Mitos sobre Insights em Publicidade que Testamos",
-      "summary_pt": "Pesquisa desafia crenças comuns sobre o que realmente funciona em insights publicitários com audiências reais.",
-      "angle_pt": "",
-      "pme_pt": "Ajuda a PME a questionar suposições sobre comunicação e validar estratégias com dados reais, não achismo.",
-      "roteiro_pt": "",
-      "link_kelly": "Mentoria (apoio estratégico ao vivo em grupo)",
-      "authors": "",
-      "score": 5,
-      "fetched_at": "2026-10-12T13:58:26.553431+00:00",
-      "id": "d04c00a9c8b96881"
     }
   ]
 }
