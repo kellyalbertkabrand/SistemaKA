@@ -5010,3 +5010,65 @@ a.btn-mini {
   outline-offset: 2px;
   border-radius: 12px;
 }
+
+/* ---- Leads (ferramentas do site: Teste Valor real × Valor percebido) ---- */
+.lead-sub {
+  font-size: 0.78rem;
+  color: var(--t-500);
+  margin: 2px 0 0;
+}
+.fin-card__valor.lead-card__texto {
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
+.lead-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
+  margin-bottom: 0.8rem;
+}
+.lead-filtros .busca {
+  flex: 1 1 240px;
+  margin: 0;
+}
+.lead-filtros__perfil,
+.lead-status {
+  min-height: 40px;
+  border-radius: 999px;
+  padding: 0 0.9rem;
+  border: 1px solid rgba(15, 25, 35, 0.15);
+  background: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+}
+.lead-status {
+  font-weight: 700;
+  cursor: pointer;
+}
+.lead-ficha__topo {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+.lead-contato {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.92rem;
+}
+.lead-rot {
+  display: inline-block;
+  min-width: 78px;
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--dourado);
+}
+.btn.btn--whats-lead {
+  background: #25d366;
+  border-color: #25d366;
+  color: #0b2615;
+}

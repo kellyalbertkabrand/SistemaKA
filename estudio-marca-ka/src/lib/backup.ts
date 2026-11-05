@@ -31,6 +31,7 @@ export const COLECOES_BACKUP = [
   'grafismos',
   'kit_marca',
   'noticias',
+  'leads',
   'usuarios',
   'convites',
 ] as const

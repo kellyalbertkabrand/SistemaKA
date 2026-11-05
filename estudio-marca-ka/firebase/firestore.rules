@@ -77,6 +77,13 @@ service cloud.firestore {
 //     // Caixa pessoal da KA (Financeiro: entradas e saídas): só a KA.
 //     match /caixa/{id} { allow read, write: if ehKA(); }
 //
+//     // Leads das ferramentas do site (Teste Valor real × Valor percebido):
+//     // o site GRAVA (create público, via Netlify Function); só a KA lê e edita.
+//     match /leads/{id} {
+//       allow create: if true;
+//       allow read, update, delete: if ehKA();
+//     }
+//
 //     // Métricas de acesso ao site (Relatórios → Desempenho do site): só a KA.
 //     match /site_metricas/{id} { allow read, write: if ehKA(); }
 //

@@ -1460,6 +1460,30 @@ público** e envia (WhatsApp). O cliente preenche em `/formulario/:token`
   HTML (antes do catch-all do SPA). Novas rotas com prévia própria entram no
   array `paginas` do script.
 
+### Leads (aba dentro do SaaS — nov/2026)
+
+Aba **Leads 🔒** (`/leads`, grupo "Gestão do negócio" da home + menu Gestão,
+`GestaoLeads.tsx` + `src/lib/leads.ts`): quem fez as ferramentas do site
+**kellyalbert.com.br** — hoje o **Teste "O que sua marca entrega × O que seu
+cliente enxerga"** (`/valorpercebido`). Quem GRAVA é a Netlify Function
+**`salvar-lead`** do repositório do site (`kellyalbert-site`), na coleção
+**`leads`** deste Firestore (REST + apiKey pública, como as notícias). O app só
+lê, muda o **status** (Novo → Contatado → Inscrito na aula → Sem interesse),
+guarda **anotações** (`nota`) e exclui (lixeira).
+
+- **Doc de `leads`:** `criado_em`, `ferramenta`, `nome`, `email`, `whatsapp`,
+  `segmento`, `consentimento`, `valor_real`, `valor_percebido`, `distancia`,
+  `perfil`, `respostas` (`{id, pergunta, resposta, pontos}`), `origem`,
+  `utm_source/medium/campaign`, `status`, `nota`.
+- **Tela:** 4 cards (total + novos para chamar, média valor real × percebido,
+  perfil mais comum, segmento que mais respondeu), chips por status, busca,
+  filtro por perfil, tabela (vira cartão no celular), **⤓ Baixar em Excel**
+  (`useArquivoXlsx`). A ficha mostra as notas, contato, origem/UTM, as 11
+  respostas por bloco e **Chamar no WhatsApp** (`mensagemLead` já escreve o
+  resultado da pessoa); chamar um lead "Novo" marca "Contatado".
+- **Regra Firestore (modo produção):** `leads` = `create` público (o site
+  grava), leitura/edição só a KA. Entra no backup e na lixeira.
+
 ### Notícias (aba dentro do SaaS — jul/2026)
 
 Aba **Notícias** (`/noticias`, no grupo "Criação" da home + menu topo,
