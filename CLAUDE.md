@@ -1483,6 +1483,15 @@ guarda **anotações** (`nota`) e exclui (lixeira).
   resultado da pessoa); chamar um lead "Novo" marca "Contatado".
 - **Regra Firestore (modo produção):** `leads` = `create` público (o site
   grava), leitura/edição só a KA. Entra no backup e na lixeira.
+- **Mesma pessoa refazendo o teste (nov/2026):** não vira lead novo. A função
+  `salvar-lead` procura por e-mail e depois por WhatsApp (`runQuery`); achou →
+  atualiza o lead com o resultado mais recente, soma `testes`, guarda o anterior
+  em `historico` (`{data, valor_real, valor_percebido, distancia, perfil,
+  segmento}`) e grava `ultimo_teste_em`/`refez_em` (status e nota ficam). No app,
+  `agruparLeads()` (`src/lib/leads.ts`) ainda junta registros antigos da mesma
+  pessoa (mesmo e-mail OU WhatsApp) numa linha só: etiqueta **"↻ Fez N testes"**
+  na lista, data do último teste + "1º em", e o card **Histórico de testes** na
+  ficha. Excluir manda todos os registros do grupo para a lixeira.
 
 ### Notícias (aba dentro do SaaS — jul/2026)
 

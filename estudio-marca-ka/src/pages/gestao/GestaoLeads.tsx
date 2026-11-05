@@ -8,6 +8,8 @@ import { formatarData } from '../../lib/gestao'
 import { abrirWhatsApp } from '../../lib/whatsapp'
 import {
   STATUS_LEAD,
+  agruparLeads,
+  ultimaAtividade,
   atualizarLead,
   excluirLead,
   listarLeads,
@@ -75,7 +77,7 @@ export function GestaoLeads() {
   async function recarregar() {
     try {
       setCarregando(true)
-      setLista(await listarLeads())
+      setLista(agruparLeads(await listarLeads()))
       setErro(null)
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
@@ -108,9 +110,10 @@ export function GestaoLeads() {
     [
       'Data', 'Nome', 'E-mail', 'WhatsApp', 'Segmento', 'Valor real (%)', 'Valor percebido (%)',
       'Distância', 'Perfil', 'Status', 'Anotação', 'Origem', 'utm_source', 'utm_campaign', 'Respostas',
+      'Testes feitos', 'Primeiro teste',
     ],
     filtrada.map((l) => [
-      dataHora(l.criado_em),
+      dataHora(ultimaAtividade(l)),
       l.nome,
       l.email ?? '',
       l.whatsapp ?? '',
@@ -125,6 +128,8 @@ export function GestaoLeads() {
       l.utm_source ?? '',
       l.utm_campaign ?? '',
       (l.respostas ?? []).map((r) => `${r.id}: ${r.resposta} (${r.pontos})`).join(' | '),
+      l.testes ?? 1,
+      dataHora(l.primeiro_em || l.criado_em),
     ]),
     'Leads',
   )
@@ -144,7 +149,7 @@ export function GestaoLeads() {
     if (!(await confirmar(`Mover o lead de ${l.nome} para a lixeira?`, { perigo: true, confirmar: 'Excluir' }))) return
     setLista((ls) => ls.filter((x) => x.id !== l.id))
     try {
-      await excluirLead(l.id)
+      await excluirLead(l.id, l.ids_extras ?? [])
       mostrar('Lead movido para a lixeira.', 'ok')
       if (idAberto === l.id) fechar()
     } catch (e) {
@@ -178,6 +183,7 @@ export function GestaoLeads() {
   }
 
   const novos = contagem('novo')
+  const refizeram = lista.filter((l) => (l.testes ?? 1) > 1).length
   const mVR = media(lista.map((l) => l.valor_real))
   const mVP = media(lista.map((l) => l.valor_percebido))
   const perfilTop = maisComum(lista.map((l) => l.perfil))
@@ -218,7 +224,10 @@ export function GestaoLeads() {
           <div className="fin-card">
             <div className="fin-card__quem">Leads</div>
             <div className="fin-card__valor">{lista.length}</div>
-            <div className="fin-card__mensal">{novos} {novos === 1 ? 'novo' : 'novos'} para chamar</div>
+            <div className="fin-card__mensal">
+              {novos} {novos === 1 ? 'novo' : 'novos'} para chamar
+              {refizeram > 0 && ` · ${refizeram} ${refizeram === 1 ? 'refez' : 'refizeram'} o teste`}
+            </div>
           </div>
           <div className="fin-card">
             <div className="fin-card__quem">Média do teste</div>
@@ -288,12 +297,16 @@ export function GestaoLeads() {
                       {l.nome}
                     </button>
                     <div className="lead-sub">{l.segmento || 'Segmento não informado'}</div>
+                    {(l.testes ?? 1) > 1 && <span className="lead-badge">↻ Fez {l.testes} testes</span>}
                   </td>
                   <td data-label="Resultado">
                     <strong>{l.valor_real ?? '-'}%</strong> × <strong>{l.valor_percebido ?? '-'}%</strong>
                     <div className="lead-sub">{l.perfil ?? ''}</div>
                   </td>
-                  <td data-label="Data">{formatarData(l.criado_em)}</td>
+                  <td data-label="Data">
+                    {formatarData(ultimaAtividade(l))}
+                    {(l.testes ?? 1) > 1 && <div className="lead-sub">1º em {formatarData(l.primeiro_em || l.criado_em)}</div>}
+                  </td>
                   <td data-label="Status">
                     <select
                       className={`lead-status ${CLASSE_STATUS[statusDe(l)]}`}
@@ -372,9 +385,14 @@ function FichaLead({
           <div>
             <h3 style={{ margin: 0 }}>{l.nome}</h3>
             <p className="lead-sub">
-              {l.segmento || 'Segmento não informado'} · {dataHora(l.criado_em)}
+              {l.segmento || 'Segmento não informado'} · {dataHora(ultimaAtividade(l))}
               {l.ferramenta ? ` · ${l.ferramenta}` : ''}
             </p>
+            {(l.testes ?? 1) > 1 && (
+              <p className="lead-badge" style={{ marginTop: '.4rem' }}>
+                ↻ Fez {l.testes} testes · o primeiro em {formatarData(l.primeiro_em || l.criado_em)}
+              </p>
+            )}
           </div>
           <select
             className={`lead-status ${CLASSE_STATUS[statusDe(l)]}`}
@@ -447,9 +465,31 @@ function FichaLead({
         </div>
       </div>
 
+      {(l.historico ?? []).length > 0 && (
+        <div className="card">
+          <h3>Histórico de testes</h3>
+          <ul className="lead-hist">
+            <li className="lead-hist__atual">
+              <span className="lead-hist__data">{dataHora(ultimaAtividade(l))} · mais recente</span>
+              <span>
+                <strong>{l.valor_real ?? '-'}% × {l.valor_percebido ?? '-'}%</strong> · {l.perfil ?? '-'}
+              </span>
+            </li>
+            {(l.historico ?? []).map((h, i) => (
+              <li key={i}>
+                <span className="lead-hist__data">{dataHora(h.data)}</span>
+                <span>
+                  <strong>{h.valor_real ?? '-'}% × {h.valor_percebido ?? '-'}%</strong> · {h.perfil ?? '-'}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {(l.respostas ?? []).length > 0 && (
         <div className="card">
-          <h3>Respostas do teste</h3>
+          <h3>Respostas do teste{(l.testes ?? 1) > 1 ? ' (mais recente)' : ''}</h3>
           {[
             ['Bloco 1 · Valor real', bloco1],
             ['Bloco 2 · Valor percebido', bloco2],
