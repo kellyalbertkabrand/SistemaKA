@@ -3,9 +3,18 @@
 // sucinta e clara para o cliente — e atualize a VERSAO (data da publicação).
 // É exibido na página pública /atualizacoes, que pode ser enviada ao cliente.
 
-export const VERSAO = '16/10/2026';
+export const VERSAO = '06/11/2026';
 
 export const CHANGELOG = [
+  {
+    data: '06/11/2026',
+    titulo: 'Indicador de Administração na obra',
+    itens: [
+      'As obras com gestão agora mostram um indicador "Administração" com o valor do honorário de gestão (o seu percentual aplicado sobre a obra).',
+      'Ele fica ao lado dos outros indicadores, mas é separado — não entra na soma do "Pago".',
+      'O percentual continua sendo definido em "Editar obra" (campo "Percentual do escritório — gestão").',
+    ],
+  },
   {
     data: '16/10/2026',
     titulo: 'Atalho do cliente no Android abre como aplicativo',

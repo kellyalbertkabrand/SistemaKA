@@ -501,6 +501,8 @@ body.modal-aberto { overflow: hidden; }
 
 /* ---- KPIs (detalhe) ---- */
 .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: .7rem; margin-bottom: 1rem; }
+/* Quando há a caixa "Administração" (honorário de gestão), vira 6 colunas. */
+.kpis.tem-admin { grid-template-columns: repeat(6, 1fr); }
 .kpi { background: var(--card); border: 1px solid var(--linha); border-radius: var(--raio); padding: .95rem 1rem; box-shadow: var(--sombra-sm); }
 .kpi small { color: var(--muted); font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; display: block; margin-bottom: .2rem; }
 .kpi strong { font-size: 1.2rem; font-family: var(--fonte); font-weight: 600; }
@@ -508,6 +510,8 @@ body.modal-aberto { overflow: hidden; }
    verde claro — nos dois painéis (interno e do cliente). */
 .kpi strong.val-orcado, .pub-num strong.val-orcado { color: #c99a2e; }
 .kpi strong.val-saldo, .pub-num strong.val-saldo { color: #4e9c6b; }
+/* Administração (honorário do escritório) na cor da marca. */
+.kpi strong.val-admin { color: var(--acento); }
 
 /* ---- Dashboard / resumo geral ---- */
 .resumo-geral h2 { font-size: 1.1rem; }
@@ -761,7 +765,7 @@ body.modal-aberto { overflow: hidden; }
 
 /* ---- Responsivo ---- */
 @media (max-width: 720px) {
-  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .kpis, .kpis.tem-admin { grid-template-columns: repeat(2, 1fr); }
   .form-grid { grid-template-columns: 1fr; }
   .pub-hero h1 { font-size: 1.7rem; }
   .tabela { font-size: .82rem; }

@@ -10,7 +10,7 @@ import { reconhecimentoDisponivel, ouvir, parar } from '../lib/voice.js';
 import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
 import { baixarBlob, montarExcelHTML, numBR } from '../lib/exportar.js';
-import { baixarPdfReembolso, baixarExcelReembolso, montarMensagemWhatsApp } from '../lib/reembolso.js';
+import { baixarPdfReembolso, baixarExcelReembolso, montarMensagemWhatsApp, calcularReembolso } from '../lib/reembolso.js';
 import { comprimirParaDataURL, arquivoParaDataURL, dataURLBytes, dataURLParaBytes, dataURLParaBlob } from '../lib/imagem.js';
 import { criarZip } from '../lib/zip.js';
 import { abrirLightbox, baixarImagem, abrirAnexo } from '../lib/lightbox.js';
@@ -79,6 +79,12 @@ export async function renderObra(container, obraId, opts = {}) {
   const pendente = soma(lancamentos.filter((l) => l.status === 'pendente'));
   const saldo = Number(obra.orcamento || 0) - executado;
 
+  // Administração (honorário de gestão): o VALOR do percentual do escritório
+  // sobre toda a obra. É um indicador próprio, à parte — NÃO entra no "Pago"
+  // (quem quiser o total é só somar). Só aparece nas obras com gestão.
+  const { honorario: administracao, pctEsc, pctFmt } = calcularReembolso(lancamentos, obra);
+  const temGestao = obra.gestao !== false;
+
   const linkPublico = `${window.location.origin}/obra/${obra.slug}`;
 
   container.innerHTML = `
@@ -135,12 +141,13 @@ export async function renderObra(container, obraId, opts = {}) {
         <p class="erro" id="ed-erro" hidden></p>
       </form>
 
-      <section class="kpis">
+      <section class="kpis${temGestao ? ' tem-admin' : ''}">
         ${kpi('Orçado', moeda(obra.orcamento), 'val-orcado')}
         ${kpi('Executado', moeda(executado))}
         ${kpi('Saldo', moeda(saldo), saldo < 0 ? 'neg' : 'val-saldo')}
         ${kpi('Pago', moeda(pago))}
         ${kpi('Pendente', moeda(pendente))}
+        ${temGestao ? kpi(pctEsc > 0 ? `Administração (${pctFmt}%)` : 'Administração', moeda(administracao), 'val-admin') : ''}
       </section>
 
       <section class="card link-cliente">
