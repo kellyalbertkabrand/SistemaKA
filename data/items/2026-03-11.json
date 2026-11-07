@@ -1,7 +1,7 @@
 {
   "date": "2026-03-11",
-  "generated_at": "2026-10-25T10:31:26.467514+00:00",
-  "count": 1,
+  "generated_at": "2026-11-07T12:12:50.676624+00:00",
+  "count": 2,
   "items": [
     {
       "title": "Ana Castela toma atitude em relação a Virginia Fonseca após polêmica - Metrópoles",
@@ -23,6 +23,27 @@
       "score": 9,
       "fetched_at": "2026-10-25T10:27:33.211890+00:00",
       "id": "c64e55352e64f701"
+    },
+    {
+      "title": "Entenda o estopim da polêmica entre Virginia Fonseca e Ana Castela - Metrópoles",
+      "link": "https://www.metropoles.com/colunas/fabia-oliveira/entenda-o-estopim-da-polemica-entre-virginia-fonseca-e-ana-castela",
+      "source": "Metrópoles",
+      "lang": "pt",
+      "region": "BR",
+      "category": "influencer",
+      "kind": "noticia",
+      "published": "2026-03-11",
+      "raw_summary": "Um “desconforto” teria motivado o desentendimento público entre a influenciadora Virginia Fonseca e a cantora Ana Castela; entenda",
+      "title_pt": "",
+      "summary_pt": "Desconforto motiva desentendimento público entre influenciadora e cantora.",
+      "angle_pt": "",
+      "pme_pt": "",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 9,
+      "fetched_at": "2026-11-07T12:09:42.984547+00:00",
+      "id": "7f11369ff95e17bd"
     }
   ]
 }
