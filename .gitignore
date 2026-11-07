@@ -8,3 +8,4 @@ venv/
 /public/
 
 # O histórico em /data/ É versionado de propósito (memória do sistema).
+.claude/settings.local.json
