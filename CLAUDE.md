@@ -1483,6 +1483,15 @@ guarda **anotações** (`nota`) e exclui (lixeira).
   resultado da pessoa); chamar um lead "Novo" marca "Contatado".
 - **Regra Firestore (modo produção):** `leads` = `create` público (o site
   grava), leitura/edição só a KA. Entra no backup e na lixeira.
+- **APAGAR um lead pela LISTA (nov/2026):** o botão **Excluir** passou a ficar
+  também em cada linha da lista (ao lado de WhatsApp e Ver) — antes existia só
+  dentro da ficha (Ver → Excluir) e a KA não o encontrava. É o mesmo
+  `excluir(l)`: manda para a **lixeira** (dá para restaurar), com a confirmação
+  própria (`confirmar()`, nada de `window.confirm`). Como uma linha pode juntar
+  vários envios da mesma pessoa (ela refez o teste), o aviso diz quantos vão
+  junto — "Mover para a lixeira os 2 registros de X?" — e todos os `ids_extras`
+  vão com ele. Caso de uso que motivou: a própria KA testa a ferramenta do site
+  e precisa limpar os registros dos testes dela.
 - **Mesma pessoa refazendo o teste (nov/2026):** não vira lead novo. A função
   `salvar-lead` procura por e-mail e depois por WhatsApp (`runQuery`); achou →
   atualiza o lead com o resultado mais recente, soma `testes`, guarda o anterior

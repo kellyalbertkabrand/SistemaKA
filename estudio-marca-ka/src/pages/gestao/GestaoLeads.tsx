@@ -146,7 +146,14 @@ export function GestaoLeads() {
   }
 
   async function excluir(l: Lead) {
-    if (!(await confirmar(`Mover o lead de ${l.nome} para a lixeira?`, { perigo: true, confirmar: 'Excluir' }))) return
+    // Uma linha pode juntar vários envios da mesma pessoa (ela refez o teste) —
+    // todos vão juntos para a lixeira, então o aviso diz quantos são.
+    const juntos = 1 + (l.ids_extras?.length ?? 0)
+    const aviso =
+      juntos > 1
+        ? `Mover para a lixeira os ${juntos} registros de ${l.nome}?`
+        : `Mover o lead de ${l.nome} para a lixeira?`
+    if (!(await confirmar(aviso, { perigo: true, confirmar: 'Excluir' }))) return
     setLista((ls) => ls.filter((x) => x.id !== l.id))
     try {
       await excluirLead(l.id, l.ids_extras ?? [])
@@ -327,6 +334,9 @@ export function GestaoLeads() {
                     </button>
                     <button className="btn-mini" onClick={() => abrir(l.id)}>
                       Ver
+                    </button>
+                    <button className="btn-mini btn-mini--perigo" onClick={() => void excluir(l)}>
+                      Excluir
                     </button>
                   </td>
                 </tr>
