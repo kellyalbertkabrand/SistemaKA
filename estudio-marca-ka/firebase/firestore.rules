@@ -84,6 +84,12 @@ service cloud.firestore {
 //       allow read, update, delete: if ehKA();
 //     }
 //
+//     // PROSPECÇÃO (empresas para conquistar) + perfil ideal: só a KA. O Radar
+//     // diário (SistemaKA) grava hoje pela chave pública (modo teste); no modo
+//     // seguro ele precisará de conta de serviço (como as notícias).
+//     match /prospeccao/{id} { allow read, write: if ehKA(); }
+//     match /prospeccao_config/{id} { allow read, write: if ehKA(); }
+//
 //     // Métricas de acesso ao site (Relatórios → Desempenho do site): só a KA.
 //     match /site_metricas/{id} { allow read, write: if ehKA(); }
 //

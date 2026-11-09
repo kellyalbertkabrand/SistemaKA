@@ -18,6 +18,7 @@ import { GestaoRelatorios } from './gestao/GestaoRelatorios'
 import { GestaoFormularios } from './gestao/GestaoFormularios'
 import { GestaoLixeira } from './gestao/GestaoLixeira'
 import { GestaoLeads } from './gestao/GestaoLeads'
+import { GestaoProspeccao } from './gestao/GestaoProspeccao'
 import '../styles/painel.css'
 import '../styles/gestao.css'
 
@@ -35,6 +36,7 @@ type Aba =
   | 'cuidadoras'
   | 'formularios'
   | 'leads'
+  | 'prospeccao'
   | 'lixeira'
 
 // Atalhos da HOME, agrupados por categoria. Ícones de linha (elegantes, no
@@ -58,6 +60,7 @@ const GRUPOS: { titulo: string; itens: { id: Aba; rotulo: string; icone: string;
       { id: 'financeiro', rotulo: 'Financeiro', icone: 'financeiro', tom: 'dinheiro' },
       { id: 'formularios', rotulo: 'Formulários', icone: 'formularios' },
       { id: 'leads', rotulo: 'Leads', icone: 'leads' },
+      { id: 'prospeccao', rotulo: 'Prospecção', icone: 'prospeccao' },
       { id: 'relatorios', rotulo: 'Relatórios', icone: 'relatorios' },
     ],
   },
@@ -161,6 +164,14 @@ function IconeAtalho({ nome }: { nome: string }) {
           <circle cx="12" cy="12" r="1" />
         </svg>
       )
+    case 'prospeccao':
+      return (
+        <svg {...p}>
+          <circle cx="10.5" cy="10.5" r="6" />
+          <path d="M15 15l5 5" />
+          <path d="M8 10.5h5M10.5 8v5" />
+        </svg>
+      )
     case 'formularios':
       return (
         <svg {...p}>
@@ -190,6 +201,7 @@ const MENU: ItemMenu[] = [
       { id: 'contratos', rotulo: 'Contratos' },
       { id: 'cobrancas', rotulo: 'Cobranças' },
       { id: 'leads', rotulo: 'Leads' },
+      { id: 'prospeccao', rotulo: 'Prospecção' },
       { id: 'financeiro', rotulo: 'Financeiro' },
       { id: 'relatorios', rotulo: 'Relatórios' },
     ],
@@ -213,6 +225,7 @@ const CABECALHOS: Record<Aba, { titulo: string; sub: string }> = {
   cuidadoras: { titulo: 'Cuidadoras 🔒', sub: 'Seu controle pessoal — cadastro pelo link, ficha e documentos de cada cuidadora.' },
   formularios: { titulo: 'Formulários 🔒', sub: 'Etapas do Marca com Essência© — envie o link, o cliente preenche e salva sozinho.' },
   leads: { titulo: 'Leads 🔒', sub: 'Quem fez o teste do site: resultado, segmento e WhatsApp para chamar.' },
+  prospeccao: { titulo: 'Prospecção 🔒', sub: 'Empresas médias para conquistar: radar diário, Google Maps, tamanho pelo CNPJ e abordagem pronta.' },
   lixeira: { titulo: 'Lixeira 🗑️', sub: 'Itens excluídos. Restaure o que apagou por engano ou esvazie de vez.' },
 }
 
@@ -229,6 +242,7 @@ const ABAS_VALIDAS: Aba[] = [
   'cuidadoras',
   'formularios',
   'leads',
+  'prospeccao',
   'lixeira',
 ]
 
@@ -434,6 +448,11 @@ export function AdminPanel() {
             {aba === 'leads' && (
               <GateAdmin>
                 <GestaoLeads />
+              </GateAdmin>
+            )}
+            {aba === 'prospeccao' && (
+              <GateAdmin>
+                <GestaoProspeccao />
               </GateAdmin>
             )}
             {aba === 'lixeira' && (

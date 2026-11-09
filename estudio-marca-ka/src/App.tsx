@@ -61,6 +61,7 @@ export default function App() {
             'cuidadoras',
             'formularios',
             'leads',
+            'prospeccao',
             'lixeira',
           ].map((secao) => (
             <Route key={secao} path={`/${secao}`} element={<AdminPanel />} />

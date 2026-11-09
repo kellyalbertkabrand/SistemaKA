@@ -5104,3 +5104,49 @@ a.btn-mini {
   font-size: 0.75rem;
   color: var(--t-500);
 }
+
+/* ---- Prospecção (nov/2026) ---- */
+.prosp-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.2rem 0.9rem;
+}
+.prosp-form__largo { grid-column: 1 / -1; }
+.prosp-linha { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+.prosp-linha input { flex: 1 1 180px; min-width: 0; }
+.prosp-sinal {
+  font-size: 0.82rem;
+  line-height: 1.35;
+  max-width: 34ch;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.prosp-receita {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.86rem;
+  margin-top: 0.4rem;
+}
+.prosp-porque { margin-top: 0.9rem; font-size: 0.85rem; }
+.prosp-porque summary { cursor: pointer; font-weight: 600; color: var(--t-600, #4a5560); }
+.prosp-porque ul { margin: 0.5rem 0 0; padding-left: 1.1rem; line-height: 1.55; }
+.prosp-links { display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem; font-size: 0.85rem; margin: 0.8rem 0; }
+.prosp-msg {
+  border: 1px solid rgba(15, 25, 35, 0.1);
+  border-radius: 12px;
+  padding: 0.8rem 0.9rem;
+  margin-top: 0.8rem;
+  background: var(--bg-1);
+}
+.prosp-msg pre {
+  white-space: pre-wrap;
+  font-family: var(--body);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 0.4rem 0 0.6rem;
+}
+@media (max-width: 640px) {
+  .prosp-sinal { max-width: none; }
+}

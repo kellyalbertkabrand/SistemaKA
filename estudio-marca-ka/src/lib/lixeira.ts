@@ -40,6 +40,7 @@ const FONTES: { colecao: string; tipo: string; nome: (d: Record<string, unknown>
   { colecao: 'cuidadoras', tipo: 'Cuidadora', nome: (d) => String(d.nome ?? 'Cuidadora') },
   { colecao: 'atividades', tipo: 'Atividade', nome: (d) => String(d.titulo ?? 'Atividade') },
   { colecao: 'leads', tipo: 'Lead', nome: (d) => String(d.nome ?? 'Lead') },
+  { colecao: 'prospeccao', tipo: 'Prospecção', nome: (d) => String(d.empresa ?? 'Empresa') },
 ]
 
 export interface ItemLixeira {

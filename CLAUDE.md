@@ -1502,6 +1502,50 @@ guarda **anotações** (`nota`) e exclui (lixeira).
   na lista, data do último teste + "1º em", e o card **Histórico de testes** na
   ficha. Excluir manda todos os registros do grupo para a lixeira.
 
+### Prospecção (aba dentro do SaaS — nov/2026)
+
+Aba **Prospecção 🔒** (`/prospeccao`, grupo "Gestão do negócio" da home + menu
+Gestão, `GestaoProspeccao.tsx` + `src/lib/prospeccao.ts` + função
+`netlify/functions/prospeccao.mjs`). É a prospecção ATIVA: empresas médias
+que a KA quer conquistar (projetos de posicionamento de R$ 12 a 40 mil). A aba
+**Leads** continua sendo só quem veio sozinho pelo teste do site.
+
+- **De onde vêm as empresas (`origem`):** `noticia` e `vaga` = Radar diário do
+  SistemaKA (Python, branch padrão do repo; `sistemaka/leads.py` +
+  `prospeccao_publish.py`) grava sozinho as empresas em momento de virada
+  (fusão, sucessão, expansão, aniversário, franquia, aporte…) e as que estão
+  contratando marketing (Gupy); `google` = busca no Google Maps pela aba;
+  `manual` / `indicacao` / `evento` = cadastro ou lista colada.
+- **Três visões (`.seg`):** **Funil** (cards, chips por status, busca, filtro
+  por origem, tabela com nota, ⤓ Excel), **Buscar empresas** (Google Maps por
+  segmento + cidade, filtro por nº de avaliações, "+ Prospectar"; e "Colar uma
+  lista" `Empresa; Cidade/UF; CNPJ; Site; Telefone; Segmento`) e **Seu cliente
+  ideal** (ticket, segmentos, regiões, capital mínimo, idade mínima — doc
+  `prospeccao_config/icp`; e a tabela dos clientes da KA com o total dos
+  orçamentos APROVADOS + **Medir pelo CNPJ**: porte, Simples, capital, idade).
+- **Nota 0–100 (`notaProspect` / `explicarNota`):** base 30 + porte (Demais
+  +25, EPP +12, ME −10, MEI −40), fora do Simples +12, capital social, anos de
+  empresa, sócios, avaliações no Google, site, segmento e região do perfil,
+  origem (notícia +12, vaga +10, indicação +15) e encaixe da IA do radar. A
+  ficha mostra a conta item a item. 70+ Quente · 50+ Morno.
+- **Função `prospeccao`:** `acao:'cnpj'` → BrasilAPI (fallback Minha Receita),
+  grátis, sem chave; `acao:'buscar'` → Google Places API (New) Text Search,
+  precisa de **`GOOGLE_PLACES_API_KEY`** no Netlify (sem ela, a aba avisa).
+  Faturamento não é público no Brasil: porte + Simples + capital social são o
+  retrato possível.
+- **Status:** Novo → Qualificado (consultou CNPJ) → Contatado (ao "Abordar")
+  → Em conversa → Proposta enviada → Virou cliente / Descartado.
+- **Abordagem:** mensagem no tom da Kelly por origem (`mensagemAbordagem`;
+  se o radar escreveu com IA, usa a dele), WhatsApp, e-mail (mailto), links
+  para achar o decisor no LinkedIn e o Instagram. Não raspa LinkedIn.
+- **Doc de `prospeccao`:** `empresa`, `segmento`, `cidade`, `uf`, `site`,
+  `telefone`, `email`, `instagram`, `cnpj`, `origem`, `sinal`, `sinal_url`,
+  `sinal_data`, `gatilho`, `por_que_agora`, `decisor`, `pessoa_citada`,
+  `msg_linkedin`, `email_assunto`, `email_corpo`, `google{}`, `receita{}`,
+  `encaixe_ia`, `radar_score`, `status`, `nota`, `criado_em`, `atualizado_em`.
+  Docs do radar têm ID `radar-<chave>` e o radar só atualiza os campos dele.
+- Entra na **lixeira** e no **backup**. Regra no `firestore.rules` (só a KA).
+
 ### Notícias (aba dentro do SaaS — jul/2026)
 
 Aba **Notícias** (`/noticias`, no grupo "Criação" da home + menu topo,
