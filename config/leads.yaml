@@ -26,16 +26,22 @@ expire_days: 120
 # -----------------------------------------------------------------------------
 icp:
   descricao: >
-    Empresas brasileiras pequenas e médias (de ~20 a ~1.000 funcionários, ou
-    faturamento de ~R$ 5 milhões a ~R$ 500 milhões), muitas vezes familiares
-    ou ainda lideradas pelos fundadores, que estão num momento de virada e cuja
-    marca não acompanhou o crescimento. Quem decide é o fundador(a), sócio(a)
-    ou CEO — em empresas médias, também o(a) diretor(a) ou gerente de marketing.
+    Empresas brasileiras MÉDIAS (não gigantes): de ~20 a ~500 funcionários ou
+    faturamento de ~R$ 3 milhões a ~R$ 100 milhões por ano, que podem investir
+    de R$ 12 mil a R$ 40 mil num projeto de posicionamento/reposicionamento de
+    marca. Perfil de quem não quer (ou não pode) pagar um estúdio de design caro
+    de São Paulo, mas quer método e estratégia de verdade. Muitas vezes
+    familiares ou ainda lideradas pelos fundadores, num momento de virada, com a
+    marca atrás do crescimento. Referência real: clínica/rede de odontologia
+    (Sabre Odonto, projeto de R$ 20 mil), indústria de calçados (Ramarim,
+    ComfortFlex), hospital veterinário (Amor de Bicho), estúdio de design
+    autoral (Shapes). Quem decide é o fundador(a), sócio(a) ou CEO; em empresa
+    média, também o(a) gerente de marketing.
   setores_prioritarios:
     - "Indústria (calçados, moda, móveis, alimentos, cosméticos)"
     - "Varejo e redes regionais"
     - "Franquias em expansão"
-    - "Saúde e clínicas"
+    - "Saúde: odontologia, clínicas, hospital veterinário"
     - "Construção, incorporação e arquitetura"
     - "Agronegócio e cooperativas"
     - "Serviços B2B e tecnologia"
@@ -183,6 +189,17 @@ gatilhos:
       - '"dobrou o faturamento"'
       - '"cresceu" "% em 2026" empresa faturamento'
 
+  # Gatilho alimentado pelo RADAR DE VAGAS (seção `vagas` abaixo), não por
+  # notícias: empresa contratando gente de marketing tem verba e está
+  # estruturando a área — hora de definir o posicionamento antes de escalar.
+  - id: vaga
+    nome: "Contratando marketing"
+    peso: 3
+    por_que: >
+      Quem contrata para o marketing vai começar a comunicar mais. Se o
+      posicionamento não estiver claro, o time novo vai multiplicar a confusão.
+    buscas: []
+
   - id: rebranding
     nome: "Já falando em nova marca"
     peso: 2
@@ -193,3 +210,23 @@ gatilhos:
       - '"nova identidade visual" empresa'
       - '"muda de nome" empresa'
       - '"reposicionamento de marca" empresa'
+
+# -----------------------------------------------------------------------------
+# RADAR DE VAGAS — empresas contratando para o marketing (plataforma Gupy,
+# que publica as vagas abertas de milhares de empresas brasileiras).
+# Empresa que contrata coordenador/analista de marketing tem verba e está
+# estruturando a área: ótimo momento para falar de posicionamento.
+# -----------------------------------------------------------------------------
+vagas:
+  ativo: true
+  dias: 7                 # só vagas publicadas nos últimos N dias
+  max_empresas: 40
+  buscas:
+    - "coordenador de marketing"
+    - "gerente de marketing"
+    - "analista de marketing"
+    - "analista de branding"
+    - "especialista em marca"
+  # Opcional: só estes estados (vazio = Brasil todo). A nota no app já dá bônus
+  # para as regiões do seu perfil ideal.
+  estados: []

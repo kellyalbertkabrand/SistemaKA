@@ -233,6 +233,83 @@ def collect_signals(cfg: dict, window: int | None = None) -> list[Signal]:
 
 
 # ---------------------------------------------------------------------------
+# Radar de vagas (Gupy)
+# ---------------------------------------------------------------------------
+
+GUPY_URL = "https://portal.api.gupy.io/api/v1/jobs"
+
+
+def collect_vagas(cfg: dict) -> tuple[list[Signal], list[dict]]:
+    """Vagas de marketing abertas → (sinais, análises prontas).
+
+    A empresa vem estruturada da plataforma (não precisa de IA para achar o
+    nome). Devolve as análises no mesmo formato da IA, para o merge.
+    """
+    vcfg = cfg.get("vagas", {}) or {}
+    if not vcfg.get("ativo"):
+        return [], []
+    dias = int(vcfg.get("dias", 7))
+    limite = (datetime.now(timezone.utc) - timedelta(days=dias)).date().isoformat()
+    estados = {e.upper() for e in vcfg.get("estados", []) or []}
+    gat = _gatilhos_by_id(cfg).get("vaga", {})
+    por_que_base = " ".join((gat.get("por_que") or "").split())
+    session = requests.Session()
+    vistos: set[str] = set()
+    sinais: list[Signal] = []
+    analises: list[dict] = []
+    for termo in vcfg.get("buscas", []) or []:
+        try:
+            r = session.get(GUPY_URL, params={"jobName": termo, "limit": 100},
+                            timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+            r.raise_for_status()
+            vagas = r.json().get("data", []) or []
+        except Exception as exc:  # noqa: BLE001
+            log.warning("Radar de vagas falhou (%s): %s", termo, exc)
+            continue
+        for v in vagas:
+            empresa = (v.get("careerPageName") or "").strip()
+            data = (v.get("publishedDate") or "")[:10]
+            uf = (v.get("state") or "").strip()
+            uf = UFS.get(_ascii(uf), uf.upper()[:2]) if uf else ""
+            if not empresa or not data or data < limite:
+                continue
+            if estados and uf not in estados:
+                continue
+            k = company_key(empresa)
+            if not k or k in vistos or _excluded(cfg, empresa):
+                continue
+            vistos.add(k)
+            cargo = (v.get("name") or termo).strip()
+            cidade = (v.get("city") or "").strip()
+            sinais.append(Signal(gatilho="vaga", titulo=f"Vaga: {cargo}",
+                                 link=v.get("jobUrl") or v.get("careerPageUrl") or "",
+                                 fonte="Gupy", data=data))
+            analises.append({
+                "i": len(sinais) - 1, "empresa": empresa, "setor": "",
+                "local": f"{cidade}/{uf}" if cidade and uf else cidade or uf,
+                "porte": "?", "encaixe": 5,
+                "por_que_agora": f"Está contratando {cargo.lower()}. {por_que_base}",
+                "decisor": "Gestor(a) de marketing ou sócio(a)",
+                "_fraco": True,  # não sobrescreve análise de notícia já feita
+            })
+            if len(sinais) >= int(vcfg.get("max_empresas", 40)):
+                break
+        time.sleep(0.5)
+    log.info("Radar de vagas: %d empresas contratando marketing", len(sinais))
+    return sinais, analises
+
+
+UFS = {
+    "acre": "AC", "alagoas": "AL", "amapa": "AP", "amazonas": "AM", "bahia": "BA", "ceara": "CE",
+    "distrito federal": "DF", "espirito santo": "ES", "goias": "GO", "maranhao": "MA",
+    "mato grosso": "MT", "mato grosso do sul": "MS", "minas gerais": "MG", "para": "PA",
+    "paraiba": "PB", "parana": "PR", "pernambuco": "PE", "piaui": "PI", "rio de janeiro": "RJ",
+    "rio grande do norte": "RN", "rio grande do sul": "RS", "rondonia": "RO", "roraima": "RR",
+    "santa catarina": "SC", "sao paulo": "SP", "sergipe": "SE", "tocantins": "TO",
+}
+
+
+# ---------------------------------------------------------------------------
 # Análise (IA ou regras)
 # ---------------------------------------------------------------------------
 
@@ -432,7 +509,8 @@ def merge(cfg: dict, existing: list[Lead], signals: list[Signal],
         lead.gatilho = best.get("gatilho", "")
         lead.gatilho_nome = gats.get(lead.gatilho, {}).get("nome", lead.gatilho)
         # textos: o sinal mais novo atualiza a abordagem (IA vence regra)
-        if use_ai or not lead.confirmado:
+        fraco = bool(a.get("_fraco")) and lead.confirmado
+        if (use_ai and not fraco) or not lead.confirmado:
             for f in ("setor", "local", "porte", "por_que_agora", "decisor",
                       "pessoa_citada", "msg_linkedin", "email_assunto", "email_corpo"):
                 val = (a.get(f) or "")
@@ -512,8 +590,19 @@ def run(window: int | None = None) -> list[Lead]:
         log.info("Analisando %d sinais com IA (%s).", len(signals), config.leads_model())
         analyses = _analyze_with_claude(cfg, signals)
     leads = merge(cfg, existing, signals, analyses)
+
+    vagas, analises_vagas = collect_vagas(cfg)
+    if vagas:  # o merge já ignora a mesma vaga vista em dias anteriores
+        leads = merge(cfg, leads, vagas, analises_vagas)
+
     save_db(leads)
     log.info("Radar de Leads: %d leads na base.", len(leads))
+
+    from . import prospeccao_publish
+    try:
+        prospeccao_publish.publish(leads)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Gravação na Prospecção do app falhou: %s", exc)
     return leads
 
 

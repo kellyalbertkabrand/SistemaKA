@@ -149,6 +149,14 @@ Sem a chave, o radar continua rodando com regras simples e marca os cards como
   empresa somam ao histórico e sobem a nota. Leads sem sinal novo há 120 dias saem.
 - **Ajustes** (sem código): `config/leads.yaml` — gatilhos, buscas, pesos, perfil
   de cliente ideal, regiões com bônus e empresas a excluir.
+- **Vagas de marketing**: além das notícias, o radar procura empresas que
+  estão contratando coordenador/analista/gerente de marketing (plataforma
+  Gupy) — sinal de verba e de área sendo estruturada (seção `vagas` do yaml).
+- **Grava no Estúdio de Marca**: cada empresa identificada vai para a aba
+  **Prospecção** do app (coleção `prospeccao` do Firestore,
+  `sistemaka/prospeccao_publish.py`). Cria com status "Novo" e, nas próximas
+  coletas, só atualiza os campos do radar — nunca o status, as anotações ou o
+  CNPJ que a Kelly preencheu. `SISTEMAKA_PROSPECCAO_PUBLISH=0` desliga.
 - **Rodar só o radar**: `python -m sistemaka leads`.
 - Variáveis: `SISTEMAKA_LEADS=0` desliga; `SISTEMAKA_LEADS_MODEL` troca o modelo
   que escreve as abordagens (padrão: o mesmo de `SISTEMAKA_MODEL`).
