@@ -1,0 +1,195 @@
+# =============================================================================
+# SistemaKA · RADAR DE LEADS — prospecção por GATILHOS DE MOMENTO
+# -----------------------------------------------------------------------------
+# A lógica: ninguém compra posicionamento "do nada". A empresa compra quando
+# vive um MOMENTO que deixa a marca antiga pequena demais para o negócio novo:
+# expansão, aporte, fusão, sucessão, aniversário, franquia, novo líder...
+#
+# Todo dia o robô procura essas notícias nas fontes públicas (Google Notícias
+# do Brasil), identifica a EMPRESA, estima o porte, dá uma nota de encaixe e
+# escreve a primeira mensagem de abordagem no tom da Kelly.
+#
+# Você edita tudo aqui, sem mexer no código: gatilhos, buscas, pesos, setores.
+# =============================================================================
+
+# Quantos dias para trás buscar notícias em cada coleta diária.
+window_days: 3
+
+# Teto de notícias analisadas por coleta (controla tempo e custo de IA).
+max_items: 60
+
+# Leads mais antigos que isso (sem nenhum sinal novo) saem da base.
+expire_days: 120
+
+# -----------------------------------------------------------------------------
+# PERFIL DE CLIENTE IDEAL (ICP) — usado pela IA para dar a nota de encaixe.
+# -----------------------------------------------------------------------------
+icp:
+  descricao: >
+    Empresas brasileiras pequenas e médias (de ~20 a ~1.000 funcionários, ou
+    faturamento de ~R$ 5 milhões a ~R$ 500 milhões), muitas vezes familiares
+    ou ainda lideradas pelos fundadores, que estão num momento de virada e cuja
+    marca não acompanhou o crescimento. Quem decide é o fundador(a), sócio(a)
+    ou CEO — em empresas médias, também o(a) diretor(a) ou gerente de marketing.
+  setores_prioritarios:
+    - "Indústria (calçados, moda, móveis, alimentos, cosméticos)"
+    - "Varejo e redes regionais"
+    - "Franquias em expansão"
+    - "Saúde e clínicas"
+    - "Construção, incorporação e arquitetura"
+    - "Agronegócio e cooperativas"
+    - "Serviços B2B e tecnologia"
+  # Regiões com bônus de nota (atendimento presencial é mais fácil). Deixe vazio
+  # para tratar o Brasil todo igual.
+  regioes_bonus:
+    - "RS"
+    - "Rio Grande do Sul"
+    - "Porto Alegre"
+    - "Serra Gaúcha"
+    - "SC"
+    - "Santa Catarina"
+  # Nunca é lead: gigantes e concorrentes. (A IA também filtra, isto é reforço.)
+  excluir_empresas:
+    - "Petrobras"
+    - "Vale"
+    - "Itaú"
+    - "Bradesco"
+    - "Santander"
+    - "Banco do Brasil"
+    - "Caixa"
+    - "Ambev"
+    - "Magazine Luiza"
+    - "Natura"
+    - "Nubank"
+    - "Governo"
+    - "Prefeitura"
+  excluir_termos:
+    - "agência de branding"
+    - "agência de publicidade"
+    - "agência de marketing"
+    - "prefeitura"
+    - "governo federal"
+
+# -----------------------------------------------------------------------------
+# GATILHOS DE MOMENTO — cada um vira uma etiqueta no painel de leads.
+#   peso: 1 a 5 (quanto esse momento costuma gerar projeto de posicionamento)
+#   por_que: argumento central da abordagem (a IA usa para escrever a mensagem)
+#   buscas: termos do Google Notícias (o robô adiciona a janela de dias)
+# -----------------------------------------------------------------------------
+gatilhos:
+  - id: fusao
+    nome: "Fusão ou aquisição"
+    peso: 5
+    por_que: >
+      Duas culturas e duas marcas viram uma. Se ninguém define o que a nova
+      empresa é, o mercado decide sozinho — e geralmente decide errado.
+    buscas:
+      - '"fusão" empresa gaúcha OR catarinense OR paulista'
+      - '"adquire" empresa "de médio porte"'
+      - '"anuncia a compra" empresa familiar'
+      - '"aquisição" "empresa familiar"'
+
+  - id: sucessao
+    nome: "Sucessão / nova liderança"
+    peso: 5
+    por_que: >
+      A nova geração assume e quer deixar a sua marca, sem perder o que o
+      fundador construiu. É o momento clássico de reposicionamento.
+    buscas:
+      - '"sucessão familiar" empresa assume'
+      - '"segunda geração" assume empresa'
+      - '"novo CEO" empresa familiar'
+      - '"assume a presidência" empresa fundada'
+      - '"novo diretor de marketing" OR "nova diretora de marketing"'
+
+  - id: aniversario
+    nome: "Aniversário de marca"
+    peso: 4
+    por_que: >
+      Marca que completa 20, 30, 50 anos precisa provar que é tradicional sem
+      parecer ultrapassada. Data redonda é o pretexto perfeito para se renovar.
+    buscas:
+      - '"completa 30 anos" empresa'
+      - '"completa 40 anos" empresa'
+      - '"completa 50 anos" empresa'
+      - '"anos de história" empresa celebra marca'
+
+  - id: expansao
+    nome: "Expansão (nova unidade, fábrica, estado)"
+    peso: 4
+    por_que: >
+      Quando a empresa chega a um mercado novo, ninguém ali conhece a história
+      dela. A marca precisa falar sozinha — e precisa estar clara.
+    buscas:
+      - '"inaugura nova fábrica"'
+      - '"nova unidade" empresa investe milhões'
+      - '"expande para" empresa gaúcha OR catarinense'
+      - '"chega a São Paulo" marca'
+      - '"abre loja" rede regional expansão'
+
+  - id: franquia
+    nome: "Virando franquia"
+    peso: 4
+    por_que: >
+      Franquia é vender a marca para outra pessoa operar. Sem posicionamento
+      claro, cada franqueado comunica de um jeito e a rede perde força.
+    buscas:
+      - '"modelo de franquias" começa a franquear'
+      - '"lança franquia" marca'
+      - '"plano de expansão" franquias "novas unidades"'
+
+  - id: investimento
+    nome: "Aporte / investimento recebido"
+    peso: 4
+    por_que: >
+      Dinheiro novo cobra crescimento rápido. Crescer com a marca confusa custa
+      mais caro em mídia e em vendas. Posicionar antes de acelerar é economia.
+    buscas:
+      - '"recebe aporte" empresa'
+      - '"rodada de investimento" startup brasileira'
+      - '"capta R$" milhões empresa'
+      - '"fundo de investimento" "participação" empresa familiar'
+
+  - id: exportacao
+    nome: "Internacionalização"
+    peso: 3
+    por_que: >
+      Lá fora a empresa não tem o "boca a boca" que tem aqui. A marca precisa
+      contar quem ela é em poucos segundos, em outra cultura.
+    buscas:
+      - '"começa a exportar" empresa'
+      - '"mercado internacional" marca brasileira expande'
+      - '"abre operação" Estados Unidos OR Europa empresa brasileira'
+
+  - id: novo_produto
+    nome: "Nova linha / nova categoria"
+    peso: 3
+    por_que: >
+      Quando a empresa entra numa categoria nova, a marca antiga pode não
+      caber mais. É hora de decidir: marca única, submarca ou marca nova.
+    buscas:
+      - '"lança nova linha" marca'
+      - '"nova categoria" empresa lança'
+      - '"diversifica" portfólio empresa'
+
+  - id: crescimento
+    nome: "Crescimento forte / ranking"
+    peso: 3
+    por_que: >
+      Empresa que cresce rápido costuma ter a marca do tamanho que ela tinha
+      lá atrás. O negócio subiu de patamar; a percepção ainda não.
+    buscas:
+      - '"empresas que mais crescem" ranking'
+      - '"dobrou o faturamento"'
+      - '"cresceu" "% em 2026" empresa faturamento'
+
+  - id: rebranding
+    nome: "Já falando em nova marca"
+    peso: 2
+    por_que: >
+      A empresa já percebeu que precisa mudar. Muitas vezes troca só o logo e
+      esquece o posicionamento — e o problema volta. Vale oferecer a base.
+    buscas:
+      - '"nova identidade visual" empresa'
+      - '"muda de nome" empresa'
+      - '"reposicionamento de marca" empresa'

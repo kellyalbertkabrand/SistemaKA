@@ -37,6 +37,8 @@ def run_daily(window: int | None = None) -> list[str]:
             store.save_bulletin(day, html)
             log.info("Boletim do dia gerado para %s", day)
 
+    run_leads()
+
     build_site()
     log.info("=== Concluído: %d itens em %d dia(s): %s ===",
              len(selected), len(days), ", ".join(days) or "—")
@@ -80,6 +82,18 @@ def refresh_history(resummarize: bool = True) -> list[str]:
     build_site()
     log.info("=== Refresh concluído: %d dia(s) atualizados ===", len(days))
     return days
+
+
+def run_leads(window: int | None = None) -> None:
+    """Radar de Leads (isolado: se falhar, não derruba a coleta de notícias)."""
+    if not config.leads_enabled():
+        log.info("Radar de Leads desligado (SISTEMAKA_LEADS=0).")
+        return
+    try:
+        from . import leads
+        leads.run(window)
+    except Exception as exc:  # noqa: BLE001
+        log.exception("Radar de Leads falhou: %s", exc)
 
 
 def rebuild_site() -> None:

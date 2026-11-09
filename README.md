@@ -127,6 +127,38 @@ Sem essa chave, o post continua sendo gerado — só que sem imagem.
 
 ---
 
+## Radar de Leads (prospecção por gatilho de momento)
+
+Todo dia, junto com a coleta de notícias, o robô procura **empresas que acabaram
+de entrar num momento de virada** e que, por isso, têm motivo real para repensar
+o posicionamento agora: fusão/aquisição, sucessão e nova liderança, aniversário de
+marca, expansão, virar franquia, aporte, exportação, nova linha, crescimento forte
+e empresas já falando em "nova marca".
+
+Para cada notícia, a IA (com `ANTHROPIC_API_KEY`) identifica a **empresa**, setor,
+cidade, porte, dá uma **nota de encaixe** com o cliente ideal, diz **quem decide**
+e escreve a **1ª mensagem** (nota de conexão do LinkedIn + e-mail) no tom da Kelly.
+Sem a chave, o radar continua rodando com regras simples e marca os cards como
+"a confirmar".
+
+- **Painel**: aba **Leads** (`public/leads.html`), com filtros por gatilho, busca,
+  status de cada lead (Novo → Contatado → Reunião → Proposta → Cliente), botão de
+  copiar mensagem e link para achar o decisor no LinkedIn.
+- **Planilha**: `public/leads.csv` (abre no Excel/Google Sheets, importa em CRM).
+- **Base**: `data/leads/leads.json` — uma linha por empresa; novos sinais da mesma
+  empresa somam ao histórico e sobem a nota. Leads sem sinal novo há 120 dias saem.
+- **Ajustes** (sem código): `config/leads.yaml` — gatilhos, buscas, pesos, perfil
+  de cliente ideal, regiões com bônus e empresas a excluir.
+- **Rodar só o radar**: `python -m sistemaka leads`.
+- Variáveis: `SISTEMAKA_LEADS=0` desliga; `SISTEMAKA_LEADS_MODEL` troca o modelo
+  que escreve as abordagens (padrão: o mesmo de `SISTEMAKA_MODEL`).
+
+Só usa notícias públicas. Não raspa LinkedIn nem coleta e-mail pessoal. A página
+de leads tem `noindex` (não aparece no Google), mas fica no mesmo site do painel:
+quem tiver o link consegue ver.
+
+---
+
 ## Rodar localmente (opcional)
 
 ```bash
@@ -172,6 +204,7 @@ código. Você pode:
 
 ```
 config/sources.yaml      # o que buscar (você edita aqui)
+config/leads.yaml        # Radar de Leads: gatilhos e cliente ideal
 config/casos.yaml        # biblioteca de "Casos de Virada" (você edita aqui)
 sistemaka/
   fetch.py               # coleta (Google News, RSS, Crossref, arXiv)
@@ -179,6 +212,7 @@ sistemaka/
   summarize.py           # resumo/tradução em PT (IA) + resumo mensal + boletim
   content.py             # post pronto do dia: legenda (IA) + imagem (OpenAI)
   firestore_publish.py   # publica cada matéria no app da Kelly (Firestore)
+  leads.py               # Radar de Leads (sinais → empresa → nota → abordagem)
   store.py               # histórico em /data/items/AAAA-MM-DD.json
   site.py                # geração do painel (HTML/CSS) + do post pronto
   templates/             # layout do painel

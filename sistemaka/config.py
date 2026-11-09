@@ -52,6 +52,16 @@ def anthropic_model() -> str:
     return os.environ.get("SISTEMAKA_MODEL", "claude-haiku-4-5-20251001").strip()
 
 
+def leads_model() -> str:
+    """Modelo do Radar de Leads (escreve as abordagens). Padrão: o mesmo do
+    resto do sistema; troque via SISTEMAKA_LEADS_MODEL por um mais caprichoso."""
+    return os.environ.get("SISTEMAKA_LEADS_MODEL", "").strip() or anthropic_model()
+
+
+def leads_enabled() -> bool:
+    return os.environ.get("SISTEMAKA_LEADS", "1").strip() != "0"
+
+
 # ---- Configuração da geração de imagem (opcional) --------------------------
 
 def openai_api_key() -> str | None:

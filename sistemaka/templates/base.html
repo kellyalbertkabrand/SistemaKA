@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% block head %}{% endblock %}
   <title>{% block title %}{{ site_title }}{% endblock %}</title>
   <link rel="stylesheet" href="{{ rel }}styles.css">
 </head>
@@ -14,6 +15,7 @@
     </a>
     <nav class="topnav">
       <a href="{{ rel }}index.html">Hoje</a>
+      <a href="{{ rel }}leads.html">Leads</a>
       <a href="{{ rel }}casos.html">Casos de Virada</a>
       <a href="{{ rel }}arquivo.html">Arquivo</a>
     </nav>

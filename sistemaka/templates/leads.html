@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% block head %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{% block title %}Radar de Leads · {{ site_title }}{% endblock %}
+{% block content %}
+  <div class="page-head">
+    <p class="eyebrow">Prospecção por gatilho de momento</p>
+    <h1>Radar de Leads</h1>
+    <p class="lead">
+      Empresas que <strong>acabaram de entrar num momento de virada</strong> (fusão,
+      sucessão, expansão, aporte, aniversário, franquia...) e que, por isso, têm
+      motivo real para repensar o posicionamento <em>agora</em>. Atualizado todo dia
+      pelo robô. Cada card traz a notícia de origem, quem decide e a primeira
+      mensagem pronta.
+    </p>
+    <p class="leads-kpis">
+      <span><strong>{{ leads|length }}</strong> empresas na base</span>
+      <span><strong>{{ quentes }}</strong> quentes (nota 90+)</span>
+      <a class="btn-csv" href="leads.csv" download>⬇ Baixar planilha (CSV)</a>
+    </p>
+  </div>
+
+  {% if not leads %}
+    <div class="notice">Ainda não há leads. Eles aparecem depois da próxima coleta
+      (todo dia de madrugada, ou no botão “Atualizar agora”).</div>
+  {% else %}
+  <div class="leads-filters">
+    <input type="search" id="lead-search" placeholder="Buscar empresa, setor, cidade…">
+    <div class="chips">
+      <button type="button" class="chip is-on" data-filter="">Todos</button>
+      {% for g in gatilhos if g.n %}
+      <button type="button" class="chip" data-filter="{{ g.id }}">{{ g.nome }} · {{ g.n }}</button>
+      {% endfor %}
+    </div>
+    <div class="chips">
+      <button type="button" class="chip chip-status is-on" data-status="">Qualquer status</button>
+      <button type="button" class="chip chip-status" data-status="novo">Novos</button>
+      <button type="button" class="chip chip-status" data-status="ativo">Em andamento</button>
+    </div>
+  </div>
+
+  <div class="group" id="leads-list">
+    {% for ld in leads %}
+    {% set sp = ld.sinal_principal %}
+    <article class="item lead-card" data-lead="{{ ld.id }}" data-gatilho="{{ ld.gatilho }}"
+             data-text="{{ (ld.empresa ~ ' ' ~ ld.setor ~ ' ' ~ ld.local ~ ' ' ~ ld.gatilho_nome)|lower }}">
+      <div class="lead-top">
+        <span class="lead-score {% if ld.score >= 90 %}hot{% elif ld.score >= 70 %}warm{% endif %}"
+              title="Nota de prioridade">{{ ld.score }}</span>
+        <div class="item-tags">
+          <span class="tag tag-gatilho">{{ ld.gatilho_nome }}</span>
+          {% if ld.porte and ld.porte != '?' %}<span class="tag tag-region">{{ ld.porte }}</span>{% endif %}
+          {% if ld.local %}<span class="tag tag-region">📍 {{ ld.local }}</span>{% endif %}
+          {% if not ld.confirmado %}<span class="tag tag-warn">a confirmar</span>{% endif %}
+        </div>
+        <select class="lead-status" aria-label="Status do lead">
+          <option value="novo">🆕 Novo</option>
+          <option value="contatado">📨 Contatado</option>
+          <option value="respondeu">💬 Respondeu</option>
+          <option value="reuniao">📅 Reunião marcada</option>
+          <option value="proposta">📄 Proposta enviada</option>
+          <option value="cliente">🏆 Virou cliente</option>
+          <option value="descartado">✖ Descartado</option>
+        </select>
+      </div>
+      <h3 class="item-title">{{ ld.empresa }}{% if ld.setor %} <small>· {{ ld.setor }}</small>{% endif %}</h3>
+      {% if ld.por_que_agora %}<p class="item-summary">🎯 <strong>Por que agora:</strong> {{ ld.por_que_agora }}</p>{% endif %}
+      <p class="item-pme">👤 <strong>Quem decide:</strong> {{ ld.decisor or "Fundador(a) / CEO" }}
+        {% if ld.pessoa_citada %} — citado na notícia: <strong>{{ ld.pessoa_citada }}</strong>{% endif %}</p>
+
+      <details class="lead-msgs">
+        <summary>✉️ Mensagens prontas (LinkedIn e e-mail)</summary>
+        {% if ld.msg_linkedin %}
+        <div class="msg">
+          <p class="msg-label">Nota de conexão · LinkedIn</p>
+          <pre class="msg-text">{{ ld.msg_linkedin }}</pre>
+          <button type="button" class="copy-btn">Copiar</button>
+        </div>
+        {% endif %}
+        {% if ld.email_corpo %}
+        <div class="msg">
+          <p class="msg-label">E-mail · assunto: <strong>{{ ld.email_assunto }}</strong></p>
+          <pre class="msg-text">{{ ld.email_corpo }}</pre>
+          <button type="button" class="copy-btn">Copiar</button>
+        </div>
+        {% endif %}
+      </details>
+
+      <p class="item-meta">
+        <a href="{{ ld.linkedin_busca }}" target="_blank" rel="noopener">🔎 Achar o decisor no LinkedIn ↗</a> ·
+        <a href="{{ ld.google_busca }}" target="_blank" rel="noopener">🌐 Site da empresa ↗</a>
+      </p>
+      <p class="item-meta lead-signals"><strong>Sinais:</strong>
+        {% for s in ld.sinais[:3] %}
+          <a href="{{ s.link }}" data-ext target="_blank" rel="noopener">{{ s.titulo }} ({{ s.fonte }}, {{ s.data|br_date }}) ↗</a>{% if not loop.last %} · {% endif %}
+        {% endfor %}
+      </p>
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <script>
+  // Status, filtros e "copiar" — o status fica salvo neste aparelho.
+  (function () {
+    var KEY = 'ka_leads_status';
+    var st = {};
+    try { st = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+    function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} }
+    var gat = '', stat = '', q = '';
+    var cards = document.querySelectorAll('[data-lead]');
+    function apply() {
+      cards.forEach(function (c) {
+        var s = st[c.getAttribute('data-lead')] || 'novo';
+        var okG = !gat || c.getAttribute('data-gatilho') === gat;
+        var okS = !stat || (stat === 'novo' ? s === 'novo' : (s !== 'novo' && s !== 'descartado'));
+        var okQ = !q || c.getAttribute('data-text').indexOf(q) !== -1;
+        c.style.display = (okG && okS && okQ && (s !== 'descartado' || stat === '')) ? '' : 'none';
+        c.classList.toggle('is-dismissed', s === 'descartado');
+      });
+    }
+    cards.forEach(function (c) {
+      var sel = c.querySelector('.lead-status');
+      sel.value = st[c.getAttribute('data-lead')] || 'novo';
+      sel.addEventListener('change', function () {
+        st[c.getAttribute('data-lead')] = sel.value; save(); apply();
+      });
+    });
+    document.addEventListener('click', function (e) {
+      var ch = e.target.closest('.chip');
+      if (ch) {
+        var isStatus = ch.classList.contains('chip-status');
+        ch.parentNode.querySelectorAll('.chip').forEach(function (x) { x.classList.remove('is-on'); });
+        ch.classList.add('is-on');
+        if (isStatus) stat = ch.getAttribute('data-status'); else gat = ch.getAttribute('data-filter');
+        apply(); return;
+      }
+      var cp = e.target.closest('.copy-btn');
+      if (cp) {
+        var t = cp.parentNode.querySelector('.msg-text').textContent;
+        (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject())
+          .then(function () { cp.textContent = '✓ Copiado'; setTimeout(function () { cp.textContent = 'Copiar'; }, 1500); })
+          .catch(function () { cp.textContent = 'Selecione e copie'; });
+      }
+    });
+    var sb = document.getElementById('lead-search');
+    if (sb) sb.addEventListener('input', function () { q = sb.value.toLowerCase().trim(); apply(); });
+    apply();
+  })();
+  </script>
+{% endblock %}
+
+{% block sidebar %}
+  <div class="card">
+    <h3>Como usar (20 min/dia)</h3>
+    <ol class="playbook">
+      <li><strong>Escolha 3 a 5 leads</strong> de nota mais alta.</li>
+      <li><strong>Ache o decisor</strong> no botão do LinkedIn (fundador, sócio, CEO).</li>
+      <li><strong>Dia 1:</strong> convite com a nota de conexão pronta.</li>
+      <li><strong>Dia 3:</strong> aceitou? Mande a mensagem comentando a notícia e ofereça
+        uma <em>leitura gratuita da marca</em>.</li>
+      <li><strong>Dia 7:</strong> e-mail (site da empresa → contato/comercial).</li>
+      <li><strong>Dia 14:</strong> último toque com um Caso de Virada parecido.</li>
+      <li>Atualize o <strong>status</strong> do card a cada passo.</li>
+    </ol>
+  </div>
+  <div class="card">
+    <h3>Nota de prioridade</h3>
+    <p class="hint">Soma a força do gatilho, o encaixe com o seu cliente ideal (IA),
+      o porte (média pesa mais), o bônus de região e o quanto a notícia é recente.
+      Mais de um sinal da mesma empresa faz a nota subir.</p>
+    <p class="hint"><strong>90+</strong> quente · <strong>70+</strong> morno.</p>
+  </div>
+  <div class="card">
+    <h3>Ajustar o radar</h3>
+    <p class="hint">Gatilhos, buscas, setores e regiões ficam em
+      <code>config/leads.yaml</code>. O status dos cards fica salvo neste aparelho;
+      para o time inteiro, use a planilha CSV no Google Sheets.</p>
+  </div>
+{% endblock %}

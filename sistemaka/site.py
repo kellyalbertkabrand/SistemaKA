@@ -192,12 +192,32 @@ def build_site() -> None:
     _render(env, "casos.html", config.SITE_DIR / "casos.html", rel="", **common,
             casos=config.load_casos())
 
+    # ---- Radar de Leads (base de prospecção + planilha CSV) ----
+    _build_leads_page(env, common)
+
     # ---- Página 404 (datas/links inexistentes) ----
     _render(env, "notfound.html", config.SITE_DIR / "404.html", rel="", **common)
 
     shutil.copy(config.TEMPLATES_DIR / "styles.css", config.SITE_DIR / "styles.css")
     log.info("Site gerado (%d dias com matérias, %d páginas de dia)",
              len(data_days), len(all_dates))
+
+
+def _build_leads_page(env: Environment, common: dict) -> None:
+    from . import leads as leads_mod
+    try:
+        base = leads_mod.load_db()
+        leads_mod.write_csv(base, config.SITE_DIR / "leads.csv")
+        gat_counts: dict[str, int] = defaultdict(int)
+        for ld in base:
+            gat_counts[ld.gatilho] += 1
+        gatilhos = [dict(g, n=gat_counts.get(g["id"], 0))
+                    for g in leads_mod.gatilhos_for_site()]
+        _render(env, "leads.html", config.SITE_DIR / "leads.html", rel="", **common,
+                leads=base, gatilhos=gatilhos,
+                quentes=sum(1 for ld in base if ld.score >= 90))
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Página de leads não gerada: %s", exc)
 
 
 def _existing_daily_post(day: str) -> dict | None:

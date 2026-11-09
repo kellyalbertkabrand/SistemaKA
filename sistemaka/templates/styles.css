@@ -235,3 +235,42 @@ a { color: inherit; }
   margin: 0 0 8px; padding: 8px 12px; font-size: 14px; border-radius: 10px;
   background: rgba(255,170,60,.12); border: 1px solid rgba(255,170,60,.3); color: #ffd9a8;
 }
+
+/* Radar de Leads */
+.leads-kpis { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; margin: 14px 0 0; color: var(--muted); }
+.leads-kpis strong { color: var(--text); }
+.btn-csv { background: var(--panel-2); border: 1px solid var(--line); padding: 7px 12px;
+  border-radius: 999px; text-decoration: none; font-weight: 600; }
+.btn-csv:hover { border-color: var(--accent); }
+.leads-filters { margin: 8px 0 18px; display: grid; gap: 10px; }
+.leads-filters input[type=search] { width: 100%; padding: 10px 12px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--text); font-size: 15px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { background: var(--panel); color: var(--muted); border: 1px solid var(--line);
+  border-radius: 999px; padding: 5px 11px; font-size: 13px; cursor: pointer; }
+.chip.is-on { color: #fff; border-color: var(--accent); background: rgba(255,90,60,.18); }
+.lead-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 4px; }
+.lead-top .item-tags { margin: 0; flex: 1; }
+.lead-score { display: grid; place-items: center; min-width: 42px; height: 42px; border-radius: 12px;
+  background: var(--panel-2); border: 1px solid var(--line); font-weight: 800; font-size: 16px; }
+.lead-score.warm { border-color: #d9a441; color: #f5cf7d; }
+.lead-score.hot { border-color: var(--accent); color: #fff; background: rgba(255,90,60,.25); }
+.lead-status { background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+  border-radius: 8px; padding: 6px 8px; font-size: 13px; }
+.tag-gatilho { background: rgba(255,90,60,.16); color: #ffae9a; }
+.tag-warn { background: rgba(217,164,65,.16); color: #f5cf7d; }
+.item-title small { color: var(--muted); font-weight: 500; font-size: 14px; }
+.lead-msgs { margin: 10px 0; background: var(--panel-2); border: 1px solid var(--line);
+  border-radius: 10px; padding: 8px 12px; }
+.lead-msgs summary { cursor: pointer; font-weight: 600; }
+.msg { margin: 10px 0 4px; }
+.msg-label { margin: 0 0 4px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; }
+.msg-text { white-space: pre-wrap; font-family: inherit; font-size: 14px; margin: 0 0 6px;
+  background: var(--panel); border-radius: 8px; padding: 10px; border: 1px solid var(--line); }
+.copy-btn { background: var(--accent); color: #fff; border: 0; border-radius: 8px;
+  padding: 6px 12px; cursor: pointer; font-weight: 600; }
+.lead-signals { margin-top: 6px; }
+.lead-card.is-dismissed { opacity: .45; }
+.playbook { margin: 0; padding-left: 18px; font-size: 14px; color: var(--muted); }
+.playbook li { margin-bottom: 6px; }
+.playbook strong { color: var(--text); }
