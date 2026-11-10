@@ -1516,7 +1516,7 @@ que a KA quer conquistar (projetos de posicionamento de R$ 12 a 40 mil). A aba
   (fusão, sucessão, expansão, aniversário, franquia, aporte…) e as que estão
   contratando marketing (Gupy); `google` = busca no Google Maps pela aba;
   `manual` / `indicacao` / `evento` = cadastro ou lista colada.
-- **Três visões (`.seg`):** **Funil** (cards, chips por status, busca, filtro
+- **Visões (`.seg seg--prosp`):** **Funil** (cards, chips por status, busca, filtro
   por origem, tabela com nota, ⤓ Excel), **Buscar empresas** (Google Maps por
   segmento + cidade, filtro por nº de avaliações, "+ Prospectar"; e "Colar uma
   lista" `Empresa; Cidade/UF; CNPJ; Site; Telefone; Segmento`) e **Seu cliente
@@ -1545,6 +1545,20 @@ que a KA quer conquistar (projetos de posicionamento de R$ 12 a 40 mil). A aba
   `encaixe_ia`, `radar_score`, `status`, `nota`, `criado_em`, `atualizado_em`.
   Docs do radar têm ID `radar-<chave>` e o radar só atualiza os campos dele.
 - Entra na **lixeira** e no **backup**. Regra no `firestore.rules` (só a KA).
+- **Onde procurar (4ª visão, nov/2026 — `OndeProcurar.tsx` +
+  `src/lib/fontesProspeccao.ts`):** o MAPA de todas as fontes, em 6 grupos —
+  Sinais de momento (Google Notícias e vagas Gupy = robô; imprensa do RS,
+  LinkedIn Vagas/Indeed), **LinkedIn** (decisores, páginas de empresa, posts
+  do último mês), **Redes sociais** (Instagram por hashtag, Biblioteca de
+  Anúncios da Meta = quem está pagando anúncio, TikTok/YouTube), Mapas e
+  cadastros (Google Maps e CNPJ = na aba; Casa dos Dados, diretórios),
+  Rankings (500 Maiores do Sul, PMEs que mais crescem, Marcas de Quem Decide) e
+  Relacionamento (associações/ACIGRA, feiras com lista de expositores,
+  indicação, parceiros). Cada fonte tem `modo` (`robo` / `aba` / `link`), o
+  "por que serve" e LINKS DE BUSCA montados com o segmento + cidade escolhidos
+  (datalist do perfil ideal). ⚠️ LinkedIn e Instagram são `link` de propósito:
+  os termos de uso proíbem robô de coleta (risco de bloquear a conta da KA).
+  Para incluir uma fonte nova, é só acrescentar um item em `GRUPOS_FONTES`.
 
 ### Notícias (aba dentro do SaaS — jul/2026)
 

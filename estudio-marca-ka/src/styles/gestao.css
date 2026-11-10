@@ -5114,6 +5114,15 @@ a.btn-mini {
 .prosp-form__largo { grid-column: 1 / -1; }
 .prosp-linha { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
 .prosp-linha input { flex: 1 1 180px; min-width: 0; }
+.prosp-linha input:not([type='checkbox']) {
+  font-family: var(--body);
+  font-size: 0.9rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid rgba(15, 25, 35, 0.15);
+  border-radius: 10px;
+  background: #fff;
+  color: inherit;
+}
 .prosp-sinal {
   font-size: 0.82rem;
   line-height: 1.35;
@@ -5150,3 +5159,41 @@ a.btn-mini {
 @media (max-width: 640px) {
   .prosp-sinal { max-width: none; }
 }
+
+/* ---- Prospecção · Onde procurar (nov/2026) ---- */
+.onde-grupo { margin: 1.4rem 0 0.6rem; }
+.onde-grupo__tit {
+  font-family: var(--body);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8a5a1f;
+  margin: 0 0 0.6rem;
+}
+.onde-grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.8rem;
+}
+.onde-card {
+  background: var(--bg-1, #fff);
+  border: 1px solid rgba(15, 25, 35, 0.1);
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.onde-card__topo { display: flex; flex-direction: column; align-items: flex-start; gap: 0.35rem; }
+.onde-card__topo strong { font-size: 0.98rem; line-height: 1.3; }
+.onde-card__topo .badge { font-size: 0.64rem; }
+.onde-card__como, .onde-card__porque { margin: 0; font-size: 0.84rem; line-height: 1.45; }
+.onde-card__porque { color: var(--t-600, #4a5560); }
+.onde-card__links { display: flex; flex-direction: column; gap: 0.3rem; margin-top: 0.2rem; font-size: 0.84rem; }
+.onde-card__links a { word-break: break-word; }
+@media (max-width: 640px) {
+  .onde-grade { grid-template-columns: 1fr; }
+  .onde-card__links a { padding: 0.35rem 0; }
+}
+.seg--prosp { flex-wrap: wrap; border-radius: 18px; }

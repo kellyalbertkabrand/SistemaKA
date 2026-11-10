@@ -7,6 +7,7 @@ import { confirmar } from '../../lib/confirmar'
 import { formatarBRL, formatarData, listarOrcamentos } from '../../lib/gestao'
 import { listarClientes } from '../../lib/api'
 import { abrirWhatsApp } from '../../lib/whatsapp'
+import { OndeProcurar } from './OndeProcurar'
 import {
   ORIGENS,
   PERFIL_PADRAO,
@@ -50,7 +51,7 @@ import {
 // e vagas de marketing.
 // ============================================================================
 
-type Visao = 'funil' | 'buscar' | 'perfil'
+type Visao = 'funil' | 'onde' | 'buscar' | 'perfil'
 type FiltroStatus = 'ativos' | 'todos' | StatusProspect
 
 const CLASSE_STATUS: Record<StatusProspect, string> = {
@@ -220,9 +221,12 @@ export function GestaoProspeccao() {
 
   return (
     <>
-      <div className="seg" style={{ marginBottom: '1rem' }}>
+      <div className="seg seg--prosp" style={{ marginBottom: '1rem' }}>
         <button className={visao === 'funil' ? 'seg__on' : ''} onClick={() => setVisao('funil')}>
           Funil
+        </button>
+        <button className={visao === 'onde' ? 'seg__on' : ''} onClick={() => setVisao('onde')}>
+          Onde procurar
         </button>
         <button className={visao === 'buscar' ? 'seg__on' : ''} onClick={() => setVisao('buscar')}>
           Buscar empresas
@@ -235,6 +239,7 @@ export function GestaoProspeccao() {
       {erro && <div className="erro-msg">{erro}</div>}
       {carregando && <p style={{ color: 'var(--t-500)', fontSize: '0.85rem' }}>Carregando…</p>}
 
+      {visao === 'onde' && <OndeProcurar icp={icp} />}
       {visao === 'buscar' && <BuscarEmpresas icp={icp} chaves={chaves} aoAdicionar={adicionar} />}
       {visao === 'perfil' && (
         <PerfilIdealView
