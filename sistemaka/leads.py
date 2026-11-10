@@ -236,7 +236,26 @@ def collect_signals(cfg: dict, window: int | None = None) -> list[Signal]:
 # Radar de vagas (Gupy)
 # ---------------------------------------------------------------------------
 
-GUPY_URL = "https://portal.api.gupy.io/api/v1/jobs"
+# Endpoints públicos que o portal de vagas da Gupy usa (o 1º é o atual; o 2º
+# fica de reserva). Se a Gupy mudar, o radar só registra o aviso e segue.
+GUPY_ENDPOINTS = [
+    ("https://portal.api.gupy.io/api/job", "name"),
+    ("https://portal.api.gupy.io/api/v1/jobs", "jobName"),
+]
+
+
+def _buscar_gupy(session: requests.Session, termo: str) -> list[dict]:
+    erros = []
+    for url, campo in GUPY_ENDPOINTS:
+        try:
+            r = session.get(url, params={campo: termo, "offset": 0, "limit": 100},
+                            timeout=20, headers={"User-Agent": "Mozilla/5.0",
+                                                 "Accept": "application/json"})
+            r.raise_for_status()
+            return r.json().get("data", []) or []
+        except Exception as exc:  # noqa: BLE001
+            erros.append(f"{url}: {exc}")
+    raise RuntimeError(" | ".join(erros))
 
 
 def collect_vagas(cfg: dict) -> tuple[list[Signal], list[dict]]:
@@ -259,10 +278,7 @@ def collect_vagas(cfg: dict) -> tuple[list[Signal], list[dict]]:
     analises: list[dict] = []
     for termo in vcfg.get("buscas", []) or []:
         try:
-            r = session.get(GUPY_URL, params={"jobName": termo, "limit": 100},
-                            timeout=20, headers={"User-Agent": "Mozilla/5.0"})
-            r.raise_for_status()
-            vagas = r.json().get("data", []) or []
+            vagas = _buscar_gupy(session, termo)
         except Exception as exc:  # noqa: BLE001
             log.warning("Radar de vagas falhou (%s): %s", termo, exc)
             continue
@@ -336,12 +352,16 @@ GATILHOS DE MOMENTO (por que a notícia indica compra):
 
 Para cada notícia recebida, devolva um objeto JSON com:
 - "i": o índice recebido
-- "empresa": nome da empresa PROTAGONISTA do momento (a que vive a mudança). Use null se:
-  não houver uma empresa clara; for órgão público; for multinacional/gigante listada
-  (Petrobras, Ambev, bancos grandes etc.); for agência de comunicação/branding (concorrente);
-  ou a notícia não for sobre um momento de negócio da empresa.
+- "empresa": o NOME PRÓPRIO da empresa protagonista do momento (a que vive a mudança).
+  Use null (sem aspas) se: o nome não aparece no título (NUNCA invente nem escreva
+  descrições como "Empresa familiar", "nome não identificado", "uma indústria"); for
+  órgão público, prefeitura, escola/cursinho, ONG, coletivo, clube, cooperativa de
+  crédito ou entidade sem fins lucrativos; for grande rede nacional, multinacional ou
+  marca muito conhecida no país inteiro (Havan, Heinz, Magalu, Ambev, bancos, Petrobras
+  etc.) — essas não contratam um escritório como a KA; for agência de comunicação/branding
+  (concorrente); ou a notícia não for sobre um momento de negócio da empresa.
 - "setor": setor em poucas palavras
-- "local": cidade/UF, se der para saber (senão "")
+- "local": "Cidade/UF" (ex.: "Lajeado/RS"), só se der para saber; senão ""
 - "porte": "pequena" | "média" | "grande" | "?"
 - "encaixe": 0 a 10 — quanto essa empresa, NESTE momento, tem cara de comprar um projeto de
   posicionamento/reposicionamento da KA (PMEs e médias, lideradas por fundadores, em virada = nota alta;
@@ -449,6 +469,16 @@ def _fallback_analysis(cfg: dict, s: Signal) -> dict:
 # Pontuação e mescla na base
 # ---------------------------------------------------------------------------
 
+_GENERICOS = re.compile(
+    r"n[aã]o identificad|n[aã]o informad|desconhecid|^empresa\b|^uma\b|^um\b|\?|^null$|^none$",
+    re.I)
+
+
+def nome_generico(empresa: str) -> bool:
+    """True para 'Empresa familiar (nome não identificado)' e afins."""
+    return bool(_GENERICOS.search(empresa.strip()))
+
+
 def _excluded(cfg: dict, empresa: str) -> bool:
     lista = [_ascii(e) for e in (cfg.get("icp", {}) or {}).get("excluir_empresas", []) or []]
     n = _ascii(empresa)
@@ -487,7 +517,7 @@ def merge(cfg: dict, existing: list[Lead], signals: list[Signal],
         if not a:
             a = _fallback_analysis(cfg, s)
         empresa = (a.get("empresa") or "").strip()
-        if not empresa or _excluded(cfg, empresa):
+        if not empresa or _excluded(cfg, empresa) or nome_generico(empresa):
             continue
         key = company_key(empresa)
         if not key:

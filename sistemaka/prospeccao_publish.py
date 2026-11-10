@@ -99,6 +99,29 @@ def lead_to_doc(lead) -> dict:
     }
 
 
+ENCAIXE_MINIMO = int(os.environ.get("SISTEMAKA_PROSPECCAO_ENCAIXE_MIN", "6"))
+
+
+def aprovado(lead) -> bool:
+    """Só vai para o Funil do app quem tem cara de cliente da KA.
+
+    Fica fora (continua só na base do radar): análise sem IA, nome genérico,
+    porte "grande" e encaixe abaixo do mínimo (padrão 6/10). Vagas passam
+    (a nota do app, com o CNPJ, decide depois).
+    """
+    from .leads import nome_generico
+    is_vaga = any(x.get("gatilho") == "vaga" for x in lead.sinais)
+    if nome_generico(lead.empresa):
+        return False
+    if is_vaga and not any(x.get("gatilho") != "vaga" for x in lead.sinais):
+        return True
+    if not lead.confirmado:
+        return False
+    if (lead.porte or "").lower() == "grande":
+        return False
+    return int(lead.encaixe or 0) >= ENCAIXE_MINIMO
+
+
 def publish(leads: list) -> int:
     if not enabled():
         log.info("Gravação na Prospecção do app desligada (SISTEMAKA_PROSPECCAO_PUBLISH=0).")
@@ -106,8 +129,7 @@ def publish(leads: list) -> int:
     key = config.firestore_api_key()
     sent = 0
     for lead in leads:
-        is_vaga = any(x.get("gatilho") == "vaga" for x in lead.sinais)
-        if not (lead.confirmado or is_vaga):
+        if not aprovado(lead):
             continue
         doc = lead_to_doc(lead)
         doc_id = f"radar-{lead.id}"
@@ -127,5 +149,39 @@ def publish(leads: list) -> int:
             sent += 1
         except Exception as exc:  # noqa: BLE001
             log.warning("Falha ao gravar %r na Prospecção: %s", lead.empresa, exc)
-    log.info("Prospecção (app): %d empresa(s) gravada(s)/atualizada(s).", sent)
+    retiradas = _retirar_reprovados(leads, key)
+    log.info("Prospecção (app): %d empresa(s) retirada(s) do Funil (lixeira) por não "
+             "passarem no filtro.", retiradas)
+    log.info("Prospecção (app): %d empresa(s) gravada(s)/atualizada(s); %d ficaram fora "
+             "pelo filtro de qualidade.", sent, sum(1 for ld in leads if not aprovado(ld)))
     return sent
+
+
+def _retirar_reprovados(leads: list, key: str) -> int:
+    """Manda para a LIXEIRA do app (soft delete, dá para restaurar) os docs que o
+    próprio radar gravou antes e que hoje não passam no filtro de qualidade.
+
+    Só mexe em doc que a Kelly ainda não tocou: status "novo" e sem anotação.
+    """
+    n = 0
+    for lead in leads:
+        if aprovado(lead):
+            continue
+        url = f"{_base()}/radar-{lead.id}"
+        try:
+            r = requests.get(url, params={"key": key}, timeout=20)
+            if r.status_code == 404:
+                continue
+            r.raise_for_status()
+            f = r.json().get("fields", {})
+            status = (f.get("status") or {}).get("stringValue", "novo")
+            if status != "novo" or f.get("nota") or f.get("excluido_em"):
+                continue
+            agora = datetime.now(timezone.utc).isoformat()
+            r = requests.patch(url, params=[("key", key), ("updateMask.fieldPaths", "excluido_em")],
+                               json={"fields": {"excluido_em": {"stringValue": agora}}}, timeout=20)
+            r.raise_for_status()
+            n += 1
+        except Exception as exc:  # noqa: BLE001
+            log.warning("Não consegui retirar %r do Funil: %s", lead.empresa, exc)
+    return n
