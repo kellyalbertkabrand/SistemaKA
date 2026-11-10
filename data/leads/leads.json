@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-10T10:44:58.592855+00:00",
-  "count": 15,
+  "generated_at": "2026-11-10T14:06:39.417881+00:00",
+  "count": 18,
   "leads": [
     {
       "empresa": "Macromix Atacado",
@@ -117,6 +117,35 @@
       "primeiro_sinal": "2026-11-09",
       "ultimo_sinal": "2026-11-09",
       "id": "b06bd4252042"
+    },
+    {
+      "empresa": "Eu Acho é Pouco",
+      "setor": "Varejo / comércio regional",
+      "local": "Olinda/PE",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Marca com 50 anos tem o pretexto perfeito para provar que é tradicional sem parecer ultrapassada; momento ideal para renovar posicionamento e falar quem ela é hoje para as novas gerações.",
+      "decisor": "Fundador(a) / Sócio(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "50 anos de história é motivo de celebração e também de reflexão. Uma marca tradicional que cresce merece contar sua história de forma clara e relevante. Que tal fazer isso com estratégia?",
+      "email_assunto": "50 anos do Eu Acho é Pouco: o momento de renovar o posicionamento",
+      "email_corpo": "Parabéns pelos 50 anos! Marca com essa trajetória tem uma oportunidade rara: provar que é sólida sem soar antiga. A maioria apenas troca a identidade visual nessa hora. E depois a confusão volta. O posicionamento claro antes da campanha de aniversário garante que a renovação grude mesmo. Bora conversar em 15 minutos como você quer ser lembrado daqui pra frente?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 95,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Eu Acho é Pouco prepara programação especial para celebrar 50 anos de história em Olinda - Brasil de Fato",
+          "link": "https://www.brasildefato.com.br/2026/11/09/eu-acho-e-pouco-prepara-programacao-especial-para-celebrar-50-anos-de-historia-em-olinda/",
+          "fonte": "Brasil de Fato",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "fc23a7f66793"
     },
     {
       "empresa": "Divishop",
@@ -380,6 +409,35 @@
       "id": "d388cbbf0976"
     },
     {
+      "empresa": "Frooty",
+      "setor": "Alimentos / açaí",
+      "local": "",
+      "porte": "?",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Marca é lembrada em SP, mas a notícia foca em lembrança, não em um momento de mudança ou virada que justifique investimento em posicionamento agora.",
+      "decisor": "Diretor(a) de Marketing / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 4,
+      "score": 70,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Frooty é a marca de açaí mais lembrada no estado de São Paulo - ABC da Comunicação",
+          "link": "https://www.abcdacomunicacao.com.br/frooty-e-a-marca-de-acai-mais-lembrada-no-estado-de-sao-paulo/",
+          "fonte": "ABC da Comunicação",
+          "data": "2026-11-10"
+        }
+      ],
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "03e299e10c70"
+    },
+    {
       "empresa": "Havan",
       "setor": "Varejo / magazine",
       "local": "Espírito Santo",
@@ -450,6 +508,35 @@
       "primeiro_sinal": "2026-11-09",
       "ultimo_sinal": "2026-11-09",
       "id": "8cf75174da29"
+    },
+    {
+      "empresa": "Ypê",
+      "setor": "Higiene e limpeza",
+      "local": "São Paulo/SP",
+      "porte": "grande",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Empresa grande (multinacional/nacional consolidada) não é cliente ideal da KA — já tem estrutura de marketing e branding própria; aniversário é pretexto para PR, não para reposicionamento estratégico.",
+      "decisor": "Diretor(a) de Marketing / Comunicação",
+      "pessoa_citada": "",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 2,
+      "score": 50,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Ypê celebra 76 anos e acelera expansão com foco em inovação e novos mercados - SuperHiper",
+          "link": "https://www.superhiper.com.br/ype-celebra-76-anos-e-acelera-expansao-com-foco-em-inovacao-e-novos-mercados/",
+          "fonte": "SuperHiper",
+          "data": "2026-11-10"
+        }
+      ],
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "7fc1e3b62bfe"
     }
   ]
 }
