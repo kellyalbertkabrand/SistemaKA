@@ -1,0 +1,455 @@
+{
+  "generated_at": "2026-11-10T10:29:47.527748+00:00",
+  "count": 15,
+  "leads": [
+    {
+      "empresa": "Macromix Atacado",
+      "setor": "Varejo / Atacado",
+      "local": "Dois Irmãos, RS",
+      "porte": "média",
+      "gatilho": "expansao",
+      "gatilho_nome": "Expansão (nova unidade, fábrica, estado)",
+      "por_que_agora": "Nova unidade em mercado local; sem posicionamento claro, marca antiga não fala sozinha — é o momento de definir como a rede se comunica.",
+      "decisor": "Fundador(a) / CEO ou Diretor(a) de Marketing",
+      "pessoa_citada": "",
+      "msg_linkedin": "Macromix Atacado abre em Dois Irmãos com investimento de R$ 15 milhões. Expansão local é o momento certo para deixar a marca claro — sem depender de boca a boca.",
+      "email_assunto": "marca clara para crescer em dois irmãos",
+      "email_corpo": "Parabéns pelo investimento em Dois Irmãos. Quando a empresa abre numa cidade nova, a marca precisa contar quem você é em poucos segundos, sem o boca a boca que você tem em casa. A gente revela a essência que já está na Macromix e transforma em posicionamento que funciona em qualquer lugar. Quer conhecer como?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 103,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "expansao",
+          "titulo": "Com investimento de R$ 15 milhões, Dois Irmãos ganha seu Macromix Atacado - Portal Martin Behrend",
+          "link": "https://martinbehrend.com.br/investimento/com-investimento-de-r-15-milhoes-dois-irmaos-ganha-seu-macromix-atacado",
+          "fonte": "Portal Martin Behrend",
+          "data": "2026-11-10"
+        }
+      ],
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "0334235fd315"
+    },
+    {
+      "empresa": "Empresa familiar (nome não identificado)",
+      "setor": "Serralheria e empreendimentos",
+      "local": "Porto Alegre, RS",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "50 anos é data redonda perfeita para renovar a percepção sem perder tradição; empresa familiar na hora de contar sua história de jeito novo.",
+      "decisor": "Fundador(a) / Sócio(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "50 anos é mais que história—é o momento certo para a marca contar quem você virou. Quer transformar tradição em posicionamento que conversa com hoje?",
+      "email_assunto": "seu aniversário de 50 anos vale uma conversa sobre posicionamento",
+      "email_corpo": "Vi que a empresa completa 50 anos. Data redonda assim é o pretexto perfeito: você pode provar que é tradicional sem parecer ultrapassada. Muitas vezes, o mercado ainda vê só a serralheria de lá atrás, quando vocês já viraram muito mais. Marca moderna, raízes fortes—isso vende. Quer uma conversa rápida (15 minutos) sobre como a percepção do seu público está hoje?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 102,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Da pequena serralheria a grandes empreendimentos: empresa familiar celebra 50 anos de história em Porto Alegre - Jornal O Sul",
+          "link": "https://www.osul.com.br/da-pequena-serralheria-a-grandes-empreendimentos-empresa-familiar-celebra-50-anos-de-historia-em-porto-alegre/amp/",
+          "fonte": "Jornal O Sul",
+          "data": "2026-11-07"
+        }
+      ],
+      "primeiro_sinal": "2026-11-07",
+      "ultimo_sinal": "2026-11-07",
+      "id": "ed0302206b9e"
+    },
+    {
+      "empresa": "Artefacto",
+      "setor": "Design / Móveis e decoração",
+      "local": "",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Artefacto completa 50 anos e precisa provar que longevidade é diferencial, não conservadorismo — é o momento clássico de reposicionamento sem perder o que construiu.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "50 anos de Artefacto: design e história. Marca madura tem que ser forte sem parecer antiga. Se quiser contar melhor quem vocês são agora, a gente conversa.",
+      "email_assunto": "artefacto aos 50 anos: hora de clarear o posicionamento",
+      "email_corpo": "Parabéns pelos 50 anos de Artefacto. Marca que dura assim é porque tem essência — mas aos 50, muita gente não sabe exatamente o que a torna diferente. Vocês chegaram aqui porque têm história; agora precisam contar que essa história tem propósito. A gente faz exatamente isso: revela a essência que já existe e transforma em posicionamento claro. Quer uma conversa de 15 minutos?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 8,
+      "score": 100,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Artefacto celebra 50 anos de história, design e longevidade - Portal Mazé Mourão",
+          "link": "https://portalmazemourao.com.br/arquitetura-e-decoracao/artefacto-celebra-50-anos-de-historia-design-e-longevidade/",
+          "fonte": "Portal Mazé Mourão",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "c05e0292ccf5"
+    },
+    {
+      "empresa": "Arcobaleno Resort",
+      "setor": "Hospitalidade / Hotelaria",
+      "local": "? (não especificado)",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "30 anos de mercado é o momento clássico para provar que é tradicional sem parecer ultrapassada; a marca precisa falar quem é hoje.",
+      "decisor": "Proprietário(a) / Gerente Geral",
+      "pessoa_citada": "",
+      "msg_linkedin": "Parabéns pelos 30 anos. Marca consolidada merece posicionamento claro para atrair a nova geração de viajantes sem perder sua essência.",
+      "email_assunto": "30 anos de Arcobaleno: hora de renovar a percepção da marca",
+      "email_corpo": "Oi! Vi que o Arcobaleno completa 30 anos — que marca! Nessa idade, a gente enfrenta um desafio: ser tradicional de verdade sem parecer coisa de época. A maioria das hospedarias tenta só trocar o logo. A gente trabalha diferente: a partir dos fundadores e da essência que já existe, a gente ajuda a marca falar claro e contemporâneo. Tá aberto pra uma conversa rápida (15 minutos) sobre como o Arcobaleno é visto hoje? Kelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 95,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Arcobaleno Resort completa 30 anos de hospitalidade e bem servir - Revista Hotéis",
+          "link": "https://revistahoteis.com.br/arcobaleno-resort-completa-30-anos-de-hospitalidade-e-bem-servir/",
+          "fonte": "Revista Hotéis",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "b06bd4252042"
+    },
+    {
+      "empresa": "Divishop",
+      "setor": "Varejo / E-commerce",
+      "local": "Divinópolis, MG",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "30 anos de varejo regional é momento de se reposicionar para novos públicos; campanhas de aniversário indicam abertura para mudanças.",
+      "decisor": "Proprietário(a) / Diretor(a) de Marketing",
+      "pessoa_citada": "",
+      "msg_linkedin": "30 anos em Divinópolis é marca forte. Agora vem o desafio: manter a lealdade dos antigos e conquistar quem cresceu depois.",
+      "email_assunto": "Divishop aos 30: marca regional pronta pra próximo patamar",
+      "email_corpo": "Oi! Varejo que dura 30 anos tem DNA de verdade — a gente vê isso. Só que marca consolidada localmente pode não falar clara pra quem quer chegar além de Divinópolis. Posicionamento não é trocar logo: é deixar a essência real virar comunicação que atrai novo público. Bora conversar? Kelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 6,
+      "score": 90,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Divishop celebra 30 anos com sorteio de quatro motos elétricas em Divinópolis - G1",
+          "link": "https://g1.globo.com/mg/centro-oeste/especial-publicitario/divishop/noticia/2026/11/09/divishop-celebra-30-anos-com-sorteio-de-quatro-motos-eletricas-em-divinopolis.ghtml",
+          "fonte": "G1",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "494b0360543b"
+    },
+    {
+      "empresa": "Dual",
+      "setor": "Agronegócio / Biocombustíveis",
+      "local": "",
+      "porte": "média",
+      "gatilho": "expansao",
+      "gatilho_nome": "Expansão (nova unidade, fábrica, estado)",
+      "por_que_agora": "Captação de R$ 356,5 milhões deve acelerar expansão; crescimento rápido cobra clareza de posicionamento antes de se expandir.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Dual captou R$ 356,5 milhões para proteína de caroço de algodão e biodiesel. Crescimento assim exige marca que fale sozinha no mercado — e custa menos posicionar antes de acelerar.",
+      "email_assunto": "posicionamento na próxima fase da dual",
+      "email_corpo": "Parabéns pela captação de R$ 356,5 milhões. Quando dinheiro novo entra, crescimento rápido cobra clareza: sem posicionamento firme, cada comunicação custa mais caro em mídia e vendas. A gente ajuda a marca contar quem você é antes de escalar. Quer uma conversa curta (15 min) sobre como a Dual está sendo percebida?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 6,
+      "score": 90,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "expansao",
+          "titulo": "Dual capta R$ 356,5 milhões para proteína de caroço de algodão e biodiesel - CNN Brasil",
+          "link": "https://www.cnnbrasil.com.br/agro/dual-capta-r-3565-milhoes-para-proteina-de-caroco-de-algodao-e-biodiesel/",
+          "fonte": "CNN Brasil",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "618693d4c2af"
+    },
+    {
+      "empresa": "Sicoob Crediauc",
+      "setor": "Cooperativa de crédito",
+      "local": "Aratiba, RS",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Cooperativa que completa 42 anos tem uma base sólida de associados, mas aniversário é o pretexto perfeito para se reposicionar como parceira moderna, não apenas tradicional.",
+      "decisor": "Presidente / Gerente Geral",
+      "pessoa_citada": "",
+      "msg_linkedin": "42 anos de Sicoob Crediauc. Marca cooperativista que sobrevive e cresce tem identidade forte — mas consegue comunicar isso de jeito que o mercado local realmente entenda?",
+      "email_assunto": "momento de mostrar quem a marca realmente é",
+      "email_corpo": "Vi a notícia dos 42 anos do Sicoob Crediauc. Cooperativas que duram são raras, e a sua está aí. Mas muitas vezes, marcas cooperativistas ficam escondidas atrás da história, sem deixar claro para quem quer entrar por que escolher vocês. A gente ajuda a traduzir isso. Conversa rápida?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 4,
+      "score": 88,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Sicoob Crediauc celebra 42 anos de história - Rádio Aratiba Am 900 de Aratiba - RS",
+          "link": "https://www.radioaratiba.com.br/sicoob-crediauc-celebra-42-anos-de-historia/",
+          "fonte": "Rádio Aratiba Am 900 de Aratiba - RS",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "a96508f95c1b"
+    },
+    {
+      "empresa": "Parque do Pedroso",
+      "setor": "Parques e lazer",
+      "local": "Grande ABC, SP",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Marca tradicional que completa 50 anos precisa renovar a percepção sem perder credibilidade — é o momento certo para reposicionar como destino moderno mantendo a herança.",
+      "decisor": "Diretor(a) Geral / Sócio(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "50 anos de histórias e memórias. E agora? A marca do Parque do Pedroso pode falar muito mais alto se souber exatamente quem é e por que as pessoas vão lá — além de tradição.",
+      "email_assunto": "marca que virou referência merece pensar no amanhã",
+      "email_corpo": "Vi que o Parque do Pedroso está celebrando 50 anos. Marca que dura cinco décadas tem algo especial — mas muitas vezes não consegue comunicar o que realmente é, além de \"aquele lugar antigo\". É exatamente nesse momento que um posicionamento claro ajuda a renovar a percepção sem apagar a história. A gente faz isso. Se quiser conversar 15 minutos, topo.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 5,
+      "score": 85,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Parque do Pedroso completa 50 anos com histórias de lazer e casamento - Diário do Grande ABC",
+          "link": "https://www.dgabc.com.br/Noticia/4367506/parque-do-pedroso-completa-50-anos-com-historias-de-lazer-e-casamento",
+          "fonte": "Diário do Grande ABC",
+          "data": "2026-11-08"
+        }
+      ],
+      "primeiro_sinal": "2026-11-08",
+      "ultimo_sinal": "2026-11-08",
+      "id": "9d9c4f984b2e"
+    },
+    {
+      "empresa": "Piccoli Transportes",
+      "setor": "Transporte de cargas",
+      "local": "Tangará, MT",
+      "porte": "pequena",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Empresa familiar em crescimento pode estar num momento de mudança geracional e precisar clarificar marca enquanto expande operações.",
+      "decisor": "Fundador(a) / Sócio(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "Tangará está de olho em Piccoli Transportes — trajetória familiar no transporte é base sólida. Marca forte na região abre portas pra expansão.",
+      "email_assunto": "Pequeno transporte com história grande: hora de posicionar",
+      "email_corpo": "Oi! Pequena transportadora familiar tem tudo pra crescer além da região — história, confiança, operação. O que geralmente falta é a marca clara que fale sozinha fora de Tangará. A gente faz isso: pega a essência dos fundadores e transforma em posicionamento que viaja. Tá aberto pra a gente entender melhor a trajetória de vocês? Kelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 5,
+      "score": 81,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "EMPREENDEDORISMO - Piccoli Transportes: chegada da família a Tangará marca início de trajetória no transporte de cargas - Diário da Serra",
+          "link": "https://diariodaserra.com.br/noticia/empreendedorismo-piccoli-transportes-chegada-da-familia-a-tangara",
+          "fonte": "Diário da Serra",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "45837246c699"
+    },
+    {
+      "empresa": "Castro's Park Hotel",
+      "setor": "Hotelaria / hospedagem",
+      "local": "",
+      "porte": "pequena",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "40 anos é um marco que pede reposicionamento: provar tradição sem parecer desatualizado é exatamente o gatilho clássico de renovação de marca.",
+      "decisor": "Proprietário(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "40 anos de Castro's Park Hotel é marco que merecia mais do que bolo: é hora de redesenhar como a marca fala quem ela é para quem não a conhece ainda.",
+      "email_assunto": "40 anos de marca: momento de clareza, não só comemoração",
+      "email_corpo": "Parabéns pelos 40 anos do Castro's Park Hotel. Marca tradicional em hospedagem é ativo valioso — mas só se o mercado enxergar a tradição como qualidade, não como coisa velha. Há um caminho entre \"sempre aqui\" e \"antenada\". Vale uma conversa curta sobre como sua marca está sendo lida agora e como poderia estar em 2027. Estou aqui.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 5,
+      "score": 81,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Castro's Park Hotel completa 40 anos com música boa e bolo para os hóspedes - Metrópoles",
+          "link": "https://www.metropoles.com/conteudo-especial/castros-park-hotel",
+          "fonte": "Metrópoles",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "378e63685681"
+    },
+    {
+      "empresa": "Coletivoz",
+      "setor": "Mídia / Comunicação",
+      "local": "Ribeirão das Neves, MG",
+      "porte": "pequena",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Coletivoz expande circulação itinerante no momento em que comemora 18 anos; precisa de marca forte que se comunique sozinha em novo território.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Coletivoz chega em Ribeirão das Neves e completa 18 anos. Expansão é o melhor momento para clarear quem você é — para o novo mercado te conhecer de verdade.",
+      "email_assunto": "coletivoz se expande: posicione antes de crescer",
+      "email_corpo": "Ótimo timing: Coletivoz circulando em novo território no mesmo ano em que faz 18 anos. Em lugar novo, ninguém conhece sua história de boca em boca — a marca precisa falar sozinha. Sem posicionamento claro, cada ação comunica de um jeito. A gente revela a essência de quem você é e transforma em direção estratégica que funciona em qualquer lugar. Conversa de 15 minutos?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 5,
+      "score": 81,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Coletivoz desembarca em Ribeirão das Neves para iniciar circulação itinerante e celebrar 18 anos de história - RibeiraoDasNeves.net",
+          "link": "https://ribeiraodasneves.net/38-noticias/cultura/12454-coletivoz-desembarca-em-ribeirao-das-neves-para-iniciar-circulacao-itinerante-e-celebrar-18-anos-de-historia",
+          "fonte": "RibeiraoDasNeves.net",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "a4c0e9634aa1"
+    },
+    {
+      "empresa": "Cursinho Popular de São José de Piranhas",
+      "setor": "Educação",
+      "local": "São José de Piranhas, PB",
+      "porte": "pequena",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Cursinho completa 13 anos e projeta crescimento (recorde de aprovação), mas modelo de negócio local/sem fins lucrativos limita potencial de projeto de posicionamento comercial.",
+      "decisor": "Diretor(a) / coordenador(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 4,
+      "score": 76,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Cursinho Popular de São José de Piranhas celebra 13 anos de história e projeta recorde de aprovação no Enem 2026 - Radar Sertanejo",
+          "link": "https://www.radarsertanejo.com/2026/11/08/cursinho-popular-de-sao-jose-de-piranhas-celebra-13-anos-de-historia-e-projeta-recorde-de-aprovacao-no-enem-2026/",
+          "fonte": "Radar Sertanejo",
+          "data": "2026-11-08"
+        }
+      ],
+      "primeiro_sinal": "2026-11-08",
+      "ultimo_sinal": "2026-11-08",
+      "id": "8bc4fa6dbaee"
+    },
+    {
+      "empresa": "Adão Negro",
+      "setor": "Música / Entretenimento",
+      "local": "Bahia",
+      "porte": "pequena",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Banda musical em aniversário; sem evidência de crescimento de negócio, expansão ou momento de virada que demande posicionamento estratégico.",
+      "decisor": "Artista(s) / produtor",
+      "pessoa_citada": "",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 3,
+      "score": 71,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Adão Negro comemora 30 anos de história no palco do República do Reggae - Anota Bahia",
+          "link": "https://anotabahia.com/adao-negro-comemora-30-anos-de-historia-no-palco-do-republica-do-reggae/",
+          "fonte": "Anota Bahia",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "d388cbbf0976"
+    },
+    {
+      "empresa": "Havan",
+      "setor": "Varejo / magazine",
+      "local": "Espírito Santo",
+      "porte": "grande",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Duplicação de notícia sobre Havan com ação de marketing — empresa grande, fora do perfil de cliente ideal.",
+      "decisor": "CEO / Dono",
+      "pessoa_citada": "Dono da Havan (não identificado nominalmente na notícia)",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 1,
+      "score": 69,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Estátua da Liberdade percorre 1,5 mil km até Havan de Vila Velha - Folha Vitória",
+          "link": "https://www.folhavitoria.com.br/economia/estatua-da-liberdade-inicia-viagem-de-8-dias-ate-a-nova-loja-da-havan-em-vila-velha/",
+          "fonte": "Folha Vitória",
+          "data": "2026-11-09"
+        },
+        {
+          "gatilho": "aniversario",
+          "titulo": "Estátua da Liberdade da Havan começa viagem de 1,5 mil km até Vila Velha - Tribuna Online",
+          "link": "https://tribunaonline.com.br/cidades/estatua-da-liberdade-da-havan-comeca-viagem-de-15-mil-km-ate-vila-velha-334491?_\\u003damp",
+          "fonte": "Tribuna Online",
+          "data": "2026-11-09"
+        },
+        {
+          "gatilho": "aniversario",
+          "titulo": "Dono da Havan convidou Ratinho e Celso Portiolli para inauguração da loja de número 200 da rede, com mais de 20 mil m² em Boa Vista - www.abcmais.com",
+          "link": "https://www.abcmais.com/trends/dono-da-havan-convidou-ratinho-e-celso-portiolli-para-inauguracao-da-loja-de-numero-200-da-rede-com-mais-de-20-mil-m%C2%B2-em-boa-vista/",
+          "fonte": "www.abcmais.com",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "b3f96c693fbf"
+    },
+    {
+      "empresa": "Heinz",
+      "setor": "Alimentos / Condimentos",
+      "local": "Brasil",
+      "porte": "grande",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Investimento em crescimento pode exigir clareza de posicionamento, mas Heinz é multinacional consolidada, não PME média.",
+      "decisor": "CEO / Diretor de Marketing",
+      "pessoa_citada": "",
+      "msg_linkedin": "R$ 85 milhões de investimento é um sinal forte. Crescimento rápido exige marca ainda mais clara para que a comunicação multiplique força em vez de dispersar.",
+      "email_assunto": "crescimento heinz brasil: posicionamento antes de acelerar",
+      "email_corpo": "Ótima notícia o investimento para dobrar o faturamento. Crescer é o momento exato para revisar se a marca está dizendo o que vocês realmente querem que o Brasil inteiro entenda sobre Heinz. A gente tem método para isso, em 4 passos. Topa uma conversa rápida de 15 minutos?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 2,
+      "score": 60,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Heinz investe R$ 85 milhões para dobrar o faturamento - SuperVarejo",
+          "link": "https://www.supervarejo.com.br/industria/heinz-investe-r-85-milhoes-para-dobrar-o-faturamento",
+          "fonte": "SuperVarejo",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "8cf75174da29"
+    }
+  ]
+}
