@@ -218,7 +218,9 @@ gatilhos:
 # estruturando a área: ótimo momento para falar de posicionamento.
 # -----------------------------------------------------------------------------
 vagas:
-  ativo: true
+  # DESLIGADO (10/11/2026): os endereços públicos da Gupy testados respondem
+  # 404. Religar (true) quando o endereço certo for confirmado.
+  ativo: false
   dias: 7                 # só vagas publicadas nos últimos N dias
   max_empresas: 40
   buscas:
