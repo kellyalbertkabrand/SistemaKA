@@ -1,7 +1,43 @@
 {
-  "generated_at": "2026-11-10T14:06:39.417881+00:00",
-  "count": 18,
+  "generated_at": "2026-11-11T13:22:25.767633+00:00",
+  "count": 28,
   "leads": [
+    {
+      "empresa": "Casarão Alpina",
+      "setor": "Hospedagem / Turismo",
+      "local": "Mucugê/BA",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Casarão Alpina moderniza com retrofit; marca tradicional de 30 anos precisa comunicar renovação sem perder identidade construída.",
+      "decisor": "Fundador(a) / Proprietário(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "Retrofit no Casarão Alpina: obra física pronta. Agora falta a marca acompanhar — e contar essa história com clareza.",
+      "email_assunto": "marca do Casarão Alpina: hora de renovar junto com o retrofit",
+      "email_corpo": "O Casarão Alpina está investindo em retrofit para elevar o padrão. Perfeito — mas aí entra a pergunta: a marca está comunicando essa mudança? Muitas vezes a gente renova o lugar e esquece de renovar como o mundo nos vê. Vale conversar sobre posicionamento: como você quer que as pessoas entendam essa nova versão do Casarão.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 107,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Casarão Alpina comemora 30 anos com retrofit que eleva o padrão de hospedagem em Mucugê - Conectado News",
+          "link": "https://conectadonews.com.br/noticia/18325/casarao-alpina-comemora-30-anos-com-retrofit-que-eleva-o-padrao-de-hospedagem-em-mucuge",
+          "fonte": "Conectado News",
+          "data": "2026-11-10"
+        },
+        {
+          "gatilho": "aniversario",
+          "titulo": "Mucugê: Casarão Alpina completa 30 anos e recebe investimento de R$ 6 milhões em modernização - Se Liga Chapada",
+          "link": "https://www.seligachapada.com.br/casarao-alpina-30-anos-retrofit-mucuge/",
+          "fonte": "Se Liga Chapada",
+          "data": "2026-11-10"
+        }
+      ],
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "eeac591c9c9b"
+    },
     {
       "empresa": "Macromix Atacado",
       "setor": "Varejo / Atacado",
@@ -61,6 +97,35 @@
       "id": "ed0302206b9e"
     },
     {
+      "empresa": "GBarbosa",
+      "setor": "Varejo / supermercados",
+      "local": "Aracaju/SE",
+      "porte": "média",
+      "gatilho": "fusao",
+      "gatilho_nome": "Fusão ou aquisição",
+      "por_que_agora": "Expansão com novo conceito de experiência de compras: momento de a marca se comunicar clara e coerente na nova unidade e reforçar quem ela é pra quem nunca ouviu falar.",
+      "decisor": "Fundador(a) / CEO ou Diretor(a) de Marketing",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que o GBarbosa RioMar acaba de inaugurar com um novo conceito de experiência. Legal demais. Momento perfeito pra marca contar quem ela é de verdade pro mercado.",
+      "email_assunto": "expansão do gbarbosa: e aí, a marca está pronta?",
+      "email_corpo": "Oi, tudo bem? Vi que o GBarbosa RioMar acaba de abrir com novo conceito de experiência de compras. Toda expansão traz uma chance de ouro: a marca precisa falar sozinha pra quem nunca ouviu falar dela. A gente ajuda a deixar clara a essência da marca (o que o fundador construiu) e transformar isso em posicionamento que gruda na cabeça do cliente novo. Quer conversar por 15 minutos pra a gente entender se faz sentido?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 6,
+      "score": 100,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "fusao",
+          "titulo": "GBarbosa RioMar inaugura expansão com novo conceito de experiência de compras - Click Sergipe",
+          "link": "https://www.clicksergipe.com.br/pais/18/111995/gbarbosa-riomar-inaugura-expansao-com-novo-conceito-de-experiencia-de-compras.html",
+          "fonte": "Click Sergipe",
+          "data": "2026-11-10"
+        }
+      ],
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "3b4e614c6991"
+    },
+    {
       "empresa": "Artefacto",
       "setor": "Design / Móveis e decoração",
       "local": "",
@@ -88,6 +153,64 @@
       "primeiro_sinal": "2026-11-09",
       "ultimo_sinal": "2026-11-09",
       "id": "c05e0292ccf5"
+    },
+    {
+      "empresa": "Confraria Mineira do Queijo Artesanal",
+      "setor": "Alimentos / Queijo artesanal",
+      "local": "Minas Gerais/MG",
+      "porte": "pequena",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Nova geração de produtores assume negócio familiar; marca precisa contar que é tradição com inovação, não só queijo antigo.",
+      "decisor": "Produtor(a) / Fundador(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que a Confraria está debatendo sucessão familiar. Quando a nova geração chega, a marca precisa falar sozinha — ou herda só o nome do avô. Conversa rápida sobre como posicionar?",
+      "email_assunto": "queijo artesanal + nova geração = marca clara",
+      "email_corpo": "Oi! A gente viu que a Confraria está no debate sobre sucessão e os desafios da nova geração. É exatamente o momento: quando quem assume quer inovar sem perder a tradição, a marca confunde. A gente tem método que revela a essência (o que o fundador construiu) e transforma em direção clara para quem chega. Vale uma conversa de 15 minutos? Kelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 6,
+      "score": 96,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Confraria Mineira do Queijo Artesanal debate sucessão familiar e os desafios da nova geração de produtores - rolecomfish.com.br",
+          "link": "https://rolecomfish.com.br/noticia/5313/confraria-mineira-do-queijo-artesanal-debate-sucessao-familiar-e-os-desafios-da-nova-geracao-de-produtores",
+          "fonte": "rolecomfish.com.br",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "fc7daa5e2ebc"
+    },
+    {
+      "empresa": "Estação Estudantes",
+      "setor": "Varejo / Moda",
+      "local": "Mogi das Cruzes/SP",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "50 anos é marco que exige renovação de marca; loja tradicional que precisa provar que é moderna sem perder raiz.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Estação Estudantes em 5 décadas — só quem dura assim merece comunicar o que realmente é. Bora conversar sobre posicionamento?",
+      "email_assunto": "50 anos de Estação Estudantes: marca à altura da história",
+      "email_corpo": "Parabéns pelos 50 anos. Data redonda é momento clássico: a marca precisa provar que é tradicional sem parecer ultrapassada. A gente vê muito isso — empresas que cresceram junto com São Paulo mas a marca ainda fala como lá atrás. Quer conversar 15 minutos sobre como sua marca está sendo percebida?",
+      "encaixe": 7,
+      "score": 95,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Estação Estudantes completa 50 anos em Mogi das Cruzes - G1",
+          "link": "https://g1.globo.com/sp/mogi-das-cruzes-suzano/videos-diario-tv-1-edicao/video/estacao-estudantes-completa-50-anos-em-mogi-das-cruzes-15176391.ghtml",
+          "fonte": "G1",
+          "data": "2026-11-10"
+        }
+      ],
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "ef1eeb5f2781"
     },
     {
       "empresa": "Arcobaleno Resort",
@@ -206,6 +329,93 @@
       "id": "618693d4c2af"
     },
     {
+      "empresa": "Verta",
+      "setor": "Tecnologia da Informação",
+      "local": "",
+      "porte": "?",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Nova liderança é o momento clássico para alinhar a marca com a visão do novo CEO e garantir que a percepção do mercado acompanhe a mudança de comando.",
+      "decisor": "CEO / Fundador(a)",
+      "pessoa_citada": "Nycholas Szucko, novo CEO",
+      "msg_linkedin": "Nycholas, bem-vindo ao comando da Verta. Transição de liderança é oportunidade para clarear quem a empresa é agora. Se quiser conversar sobre posicionamento, a gente marca 15 minutos.",
+      "email_assunto": "novo CEO na Verta: o momento certo para clareza de marca",
+      "email_corpo": "Nycholas, parabéns pela chegada como novo CEO da Verta. Transições de liderança são raras e valiosas: é quando a empresa consegue renovar sem perder o que já construiu. Muitos CEOs novos descobrem que a marca antiga não cabe mais na visão deles — e o mercado sente essa confusão. Se fizer sentido, podemos conversar sobre como clarear o posicionamento antes de comunicar os próximos passos.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 6,
+      "score": 90,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Nycholas Szucko assume como novo CEO da Verta - TI INSIDE Online",
+          "link": "https://tiinside.com.br/09/11/2026/nycholas-szucko-assume-como-novo-ceo-da-verta/",
+          "fonte": "TI INSIDE Online",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "f493ef30b0a4"
+    },
+    {
+      "empresa": "Wipe Metalúrgica",
+      "setor": "Metalmecânico",
+      "local": "",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "40 anos é marco que merece provar tradição sem parecer obsoleta; momento perfeito para reposicionar e mostrar evolução.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Wipe Metalúrgica completando 4 décadas no setor metalmecânico — que momento para deixar a marca tão forte quanto sua história. Vamos conversar sobre isso?",
+      "email_assunto": "40 anos de Wipe: hora de a marca contar essa história",
+      "email_corpo": "Vi que a Wipe completa 40 anos de trajetória no metalmecânico. Aniversário redondo é pretexto raro para renovar a marca sem perder o que o fundador construiu. Muitas empresas dessa fase confundem renovação com redesign — e o problema volta. A gente conversa em 15 minutos sobre como sua marca está sendo percebida?",
+      "encaixe": 6,
+      "score": 90,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Wipe Metalúrgica celebra 40 anos de história e evolução no setor metalmecânico - OCP News",
+          "link": "https://ocp.news/informe/wipe-metalurgica-celebra-40-anos-de-historia-e-evolucao-no-setor-metalmecanico",
+          "fonte": "OCP News",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "bbdd43ec3a30"
+    },
+    {
+      "empresa": "Alumasa",
+      "setor": "Indústria de alumínio / Manufatura",
+      "local": "Urussanga/SC",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Alumasa recebe homenagem do Legislativo Catarinense; momento de visibilidade que pode servir como pretexto para revisar posicionamento e história da marca.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Parabéns à Alumasa pela Comenda do Legislativo! Reconhecimento assim é chance de a marca contar melhor quem você é — para o mercado inteiro.",
+      "email_assunto": "Alumasa: a homenagem como ponto de partida para posicionar a marca",
+      "email_corpo": "Vi que a Alumasa foi homenageada pelo Legislativo Catarinense — excelente reconhecimento. Esses momentos são ouro para revisitar o posicionamento: é hora de contar quem você é, de verdade, para quem ainda não conhece. A gente faz isso em conversa rápida, sem compromisso. Interessado?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 4,
+      "score": 88,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Alumasa, de Urussanga, é homenageada com a Comenda do Legislativo Catarinense 2026 - Reporter Sul",
+          "link": "https://www.reportersul.com.br/alumasa-de-urussanga-e-homenageada-com-a-comenda-do-legislativo-catarinense-2026/",
+          "fonte": "Reporter Sul",
+          "data": "2026-11-10"
+        }
+      ],
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "6b091bc6f86a"
+    },
+    {
       "empresa": "Sicoob Crediauc",
       "setor": "Cooperativa de crédito",
       "local": "Aratiba, RS",
@@ -235,6 +445,35 @@
       "id": "a96508f95c1b"
     },
     {
+      "empresa": "BVIX",
+      "setor": "Serviços Financeiros / Seguros",
+      "local": "",
+      "porte": "?",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Novo CEO é sinal de transição; se BVIX for empresa média em crescimento, é hora de clarear posicionamento antes que a nova liderança comunique mudanças ao mercado.",
+      "decisor": "CEO / Fundador(a)",
+      "pessoa_citada": "Carlos Hermida, novo CEO",
+      "msg_linkedin": "Carlos, bem-vindo à liderança da BVIX. Novo CEO + mercado que muda = oportunidade para reposicionar. Se quiser conversar sobre como clarear quem a empresa é, chama.",
+      "email_assunto": "novo CEO da BVIX: hora de clarear o posicionamento",
+      "email_corpo": "Carlos, parabéns pela chegada como novo CEO da BVIX. Todo CEO novo enfrenta a mesma questão: a marca que herdou comunica quem você é agora? Muitas vezes não. E o mercado sente essa falta de clareza. Se fizer sentido, podemos conversar sobre como alinhar posicionamento à sua visão — em 15 minutos sabemos se é caminho.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 5,
+      "score": 85,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Carlos Hermida é o novo CEO da BVIX - Revista Apólice",
+          "link": "https://revistaapolice.com.br/2026/11/carlos-hermida-e-o-novo-ceo-da-bvix/",
+          "fonte": "Revista Apólice",
+          "data": "2026-11-10"
+        }
+      ],
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "9fd33477e4c6"
+    },
+    {
       "empresa": "Parque do Pedroso",
       "setor": "Parques e lazer",
       "local": "Grande ABC, SP",
@@ -248,7 +487,7 @@
       "email_assunto": "marca que virou referência merece pensar no amanhã",
       "email_corpo": "Vi que o Parque do Pedroso está celebrando 50 anos. Marca que dura cinco décadas tem algo especial — mas muitas vezes não consegue comunicar o que realmente é, além de \"aquele lugar antigo\". É exatamente nesse momento que um posicionamento claro ajuda a renovar a percepção sem apagar a história. A gente faz isso. Se quiser conversar 15 minutos, topo.\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 5,
-      "score": 85,
+      "score": 84,
       "confirmado": true,
       "sinais": [
         {
@@ -364,7 +603,7 @@
       "email_assunto": "",
       "email_corpo": "",
       "encaixe": 4,
-      "score": 76,
+      "score": 75,
       "confirmado": true,
       "sinais": [
         {
@@ -481,6 +720,35 @@
       "id": "b3f96c693fbf"
     },
     {
+      "empresa": "Brasil Terrenos",
+      "setor": "Incorporação imobiliária",
+      "local": "",
+      "porte": "grande",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Listagem na B3 exige que a marca comunique clareza e confiança a investidores, mas empresas de real estate dessa escala raramente contratam posicionamento estratégico antes de abrir capital.",
+      "decisor": "Diretor(a) de Investidor Relations / CFO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Brasil Terrenos abrindo capital — momento em que marca precisa falar claro para investidor. Raramente acontece, mas quando acontece, muda tudo.",
+      "email_assunto": "marca clara antes de abrir capital",
+      "email_corpo": "Conheço bem o jeito que incorporadora comunica para fora quando entra na B3. A maioria chega lá com a marca do tamanho que tinha lá atrás. Você tem a chance de fazer diferente: posicionar antes, não depois. Se quiser conversar como a gente faria isso em 15 minutos, me chama.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 2,
+      "score": 60,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Brasil Terrenos obtém registro de companhia aberta na CVM e avança em listagem na B3 - InfoMoney",
+          "link": "https://www.infomoney.com.br/mercados/brasil-terrenos-obtem-registro-de-companhia-aberta-na-cvm-e-avanca-em-listagem-na-b3/",
+          "fonte": "InfoMoney",
+          "data": "2026-11-10"
+        }
+      ],
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "8900c950394c"
+    },
+    {
       "empresa": "Heinz",
       "setor": "Alimentos / Condimentos",
       "local": "Brasil",
@@ -508,6 +776,35 @@
       "primeiro_sinal": "2026-11-09",
       "ultimo_sinal": "2026-11-09",
       "id": "8cf75174da29"
+    },
+    {
+      "empresa": "Boluda",
+      "setor": "Logística / serviços marítimos",
+      "local": "",
+      "porte": "grande",
+      "gatilho": "fusao",
+      "gatilho_nome": "Fusão ou aquisição",
+      "por_que_agora": "Aquisição de frota aumenta capacidade operacional, mas grande empresa multinacional não é cliente típico da KA.",
+      "decisor": "",
+      "pessoa_citada": "",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 2,
+      "score": 60,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "fusao",
+          "titulo": "Boluda adquire Muller Dordrecht: 16 rebocadores e 8 barcaças para a frota - Notícias e Estatísticas - IndexBox",
+          "link": "https://www.indexbox.io/pt-br/blog/boluda-acquires-muller-dordrecht-to-expand-offshore-towage-fleet/",
+          "fonte": "IndexBox",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "668668c17864"
     },
     {
       "empresa": "Ypê",
