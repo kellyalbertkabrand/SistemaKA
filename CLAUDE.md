@@ -635,6 +635,18 @@ O painel da KA tem **abas**: Estúdio (aberto) e Clientes & Acessos / Orçamento
     (o cabeçalho do grupo já diz, agora também em caramelo,
     `.mes-grupo__nome--cli`) e o topo do cartão passa a mostrar o **vencimento**
     (`.cob-card__venc-topo`), que é o que distingue uma cobrança da outra ali.
+  - **DESFAZER O PAGAMENTO (nov/2026):** o cartão de uma cobrança **paga**
+    passou a ter **"↩ Desfazer pagamento"**. Antes, marcar paga era um caminho
+    sem volta pela tela: `ativa = status !== 'paga' && status !== 'cancelada'`
+    escondia TODO o bloco `.cob-card__acoes`, então o cartão pago ficava só com
+    o "Excluir" — e a KA tinha marcado como pagas contas de novembro que ainda
+    nem venceram. `desfazerPaga(c)` grava `{ status:'pendente', pago_em:null }`
+    com a confirmação própria (`confirmar()`). ⚠️ Limpar o `pago_em` é parte da
+    correção, não detalhe: o Financeiro e os Relatórios datam a entrada por
+    `pago_em ?? vencimento`, então deixá-lo preenchido manteria a cobrança
+    "recebida" naquele mês. O aviso diz a data que vai sumir e que ela sai das
+    entradas do Financeiro. (Cobrança **cancelada** continua sem ação —
+    a KA não pediu; se um dia quiser, é o mesmo caminho.)
   - **MUDAR A DATA DE TODAS AS PARCELAS (ago/2026):** quando a KA edita uma
     cobrança que é parcela de um parcelamento (descrição terminada em `(k/n)`,
     lida por `parcelaDe()`) e **muda o vencimento**, aparece a caixa **"Mudar

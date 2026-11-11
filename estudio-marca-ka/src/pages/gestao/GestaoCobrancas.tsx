@@ -566,7 +566,36 @@ export function GestaoCobrancas() {
       await marcarCobrancaPaga(pagarPara, pagarData || hojeLocal())
       setPagarPara(null)
       await recarregar()
-      mostrar('Cobrança marcada como paga ✓', 'ok')
+      mostrar('Cobrança marcada como paga', 'ok')
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : String(e))
+    } finally {
+      setOcupado(null)
+    }
+  }
+
+  /**
+   * Desfaz o "Marcar paga" — a cobrança volta a pendente e PERDE a data do
+   * pagamento (senão continuaria aparecendo como recebida no Financeiro).
+   * Existe porque marcar pago é um clique só e acontece de marcar a linha
+   * errada; sem isto não havia como voltar atrás (o cartão pago fica sem
+   * nenhum botão).
+   */
+  async function desfazerPaga(c: Cobranca) {
+    const quando = c.pago_em ? ` (paga em ${formatarData(c.pago_em)})` : ''
+    if (
+      !(await confirmar(
+        `Desfazer o pagamento de "${c.descricao}"${quando}? Ela volta a ficar em aberto ` +
+          'e sai das entradas do Financeiro.',
+        { confirmar: 'Desfazer pagamento' },
+      ))
+    )
+      return
+    setOcupado(c.id)
+    try {
+      await atualizarCobranca(c.id, { status: 'pendente', pago_em: null })
+      await recarregar()
+      mostrar('Pagamento desfeito — a cobrança voltou para em aberto', 'ok')
     } catch (e) {
       setErro(e instanceof Error ? e.message : String(e))
     } finally {
@@ -1067,6 +1096,20 @@ export function GestaoCobrancas() {
                       </button>
                       <button className="btn-mini btn-mini--perigo" disabled={ocupado === c.id} onClick={() => void cancelar(c)}>
                         Cancelar
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Marcou pago sem querer? O cartão pago não tinha ação nenhuma. */}
+                  {c.status === 'paga' && (
+                    <div className="cob-card__acoes">
+                      <button
+                        className="btn-mini"
+                        disabled={ocupado === c.id}
+                        onClick={() => void desfazerPaga(c)}
+                        title="A cobrança volta a ficar em aberto"
+                      >
+                        ↩ Desfazer pagamento
                       </button>
                     </div>
                   )}
