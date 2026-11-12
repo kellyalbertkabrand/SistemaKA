@@ -11,6 +11,7 @@ import { ordenarLancamentos, seletorOrdem } from '../lib/ordenar.js';
 import { ETAPAS_PADRAO } from '../lib/etapasPadrao.js';
 import { baixarBlob, montarExcelHTML, numBR } from '../lib/exportar.js';
 import { baixarPdfReembolso, baixarExcelReembolso, montarMensagemWhatsApp, calcularReembolso } from '../lib/reembolso.js';
+import { baixarPdfAndamento } from '../lib/relatorioAndamento.js';
 import { comprimirParaDataURL, arquivoParaDataURL, dataURLBytes, dataURLParaBytes, dataURLParaBlob } from '../lib/imagem.js';
 import { criarZip } from '../lib/zip.js';
 import { abrirLightbox, baixarImagem, abrirAnexo } from '../lib/lightbox.js';
@@ -170,6 +171,17 @@ export async function renderObra(container, obraId, opts = {}) {
           </div>
         </div>
         <div id="whats-link-saida"></div>
+      </section>
+
+      <section class="card">
+        <div class="row-between">
+          <div>
+            <strong>Relatório de andamento (PDF)</strong>
+            <p class="muted" style="margin:.15rem 0 0">Gráfico de Orçado × Realizado por etapa, com a economia — pronto para enviar ao cliente.</p>
+          </div>
+          <button class="btn btn-mini" id="btn-andamento">📊 Gerar PDF</button>
+        </div>
+        <p class="erro" id="andamento-erro" hidden></p>
       </section>
 
       <section class="card">
@@ -439,6 +451,23 @@ export async function renderObra(container, obraId, opts = {}) {
   });
 
   // ---- Relatório de reembolso (PDF por período) ----
+  // Relatório de andamento (Orçado × Realizado por etapa).
+  const btnAndamento = container.querySelector('#btn-andamento');
+  const andamentoErro = container.querySelector('#andamento-erro');
+  btnAndamento.addEventListener('click', async () => {
+    andamentoErro.hidden = true;
+    const txt = btnAndamento.textContent;
+    btnAndamento.disabled = true; btnAndamento.textContent = 'Gerando…';
+    try {
+      await baixarPdfAndamento({ obra, etapas, lancamentos });
+    } catch (err) {
+      andamentoErro.textContent = 'Não foi possível gerar o PDF: ' + (err?.message || err);
+      andamentoErro.hidden = false;
+    } finally {
+      btnAndamento.disabled = false; btnAndamento.textContent = txt;
+    }
+  });
+
   const abrirReembolso = container.querySelector('#abrir-reembolso');
   const formReembolso = container.querySelector('#form-reembolso');
   const reembErro = container.querySelector('#reemb-erro');
@@ -1550,6 +1579,8 @@ function tabelaEtapas(etapas, lancamentos) {
       </tr>`;
   };
 
+  const totOrcado = etapas.reduce((t, e) => t + Number(e.orcado || 0), 0);
+  const totReal = Object.values(realizado).reduce((t, v) => t + v, 0);
   return `
     <table class="tabela">
       <thead>
@@ -1559,6 +1590,14 @@ function tabelaEtapas(etapas, lancamentos) {
         ${etapas.map((e) => linhaEtapa(e.nome, Number(e.orcado || 0), e.id)).join('')}
         ${extras.map((n) => linhaEtapa(n, 0, null)).join('')}
       </tbody>
+      <tfoot>
+        <tr class="tabela-total">
+          <td><strong>Total</strong></td>
+          <td class="num"><strong>${moeda(totOrcado)}</strong></td>
+          <td class="num"><strong>${moeda(totReal)}</strong></td>
+          <td colspan="2"></td>
+        </tr>
+      </tfoot>
     </table>`;
 }
 
@@ -1684,6 +1723,9 @@ function gridFotos(fotos) {
 // abre o popup com todos os detalhes e a edição.
 function listaLancamentos(lancamentos) {
   if (lancamentos.length === 0) return `<p class="muted">Nenhum lançamento ainda.</p>`;
+  const totGeral = soma(lancamentos);
+  const totPago = soma(lancamentos.filter((l) => l.status === 'pago'));
+  const totPend = soma(lancamentos.filter((l) => l.status === 'pendente'));
   return `<div class="lanc-lista">
     ${lancamentos.map((l) => {
       const temNF = Boolean(l.reciboDataUrl || l.reciboUrl || l.temRecibo || l.reciboNome);
@@ -1705,6 +1747,11 @@ function listaLancamentos(lancamentos) {
         </span>
       </button>`;
     }).join('')}
+  </div>
+  <div class="lanc-total">
+    <div class="lanc-total-linha"><span>Pago</span><strong>${moeda(totPago)}</strong></div>
+    <div class="lanc-total-linha"><span>Pendente</span><strong class="${totPend > 0 ? 'neg' : ''}">${moeda(totPend)}</strong></div>
+    <div class="lanc-total-linha lanc-total-geral"><span>Total (${lancamentos.length} ${lancamentos.length === 1 ? 'lançamento' : 'lançamentos'})</span><strong>${moeda(totGeral)}</strong></div>
   </div>`;
 }
 

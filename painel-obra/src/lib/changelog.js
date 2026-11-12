@@ -8,6 +8,15 @@ export const VERSAO = '12/11/2026';
 export const CHANGELOG = [
   {
     data: '12/11/2026',
+    titulo: 'Totais dos lançamentos e relatório de andamento',
+    itens: [
+      'No fim da lista de lançamentos agora aparece o total: Pago, Pendente e Total geral.',
+      'A tabela de etapas ganhou uma linha de Total (orçado e realizado somados).',
+      'Novo "Relatório de andamento (PDF)": gráfico de Orçado × Realizado por etapa, com a economia — pronto para enviar ao cliente.',
+    ],
+  },
+  {
+    data: '12/11/2026',
     titulo: 'Microfone mais estável (principalmente no iPhone)',
     itens: [
       'Ao apertar "Parar", o sistema processa na hora o que você falou e o botão volta para "Falar" — antes, no iPhone, o botão às vezes travava em "Parar" e o microfone ficava ligado.',

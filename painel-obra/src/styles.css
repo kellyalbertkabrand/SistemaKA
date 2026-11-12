@@ -513,6 +513,15 @@ body.modal-aberto { overflow: hidden; }
 /* Administração (honorário do escritório) na cor da marca. */
 .kpi strong.val-admin { color: var(--acento); }
 
+/* Total no fim da lista de lançamentos. */
+.lanc-total { margin-top: .7rem; padding: .7rem .9rem; border: 1px solid var(--linha); border-radius: var(--raio); background: var(--card); box-shadow: var(--sombra-sm); }
+.lanc-total-linha { display: flex; justify-content: space-between; align-items: baseline; padding: .18rem 0; font-size: .92rem; color: var(--tinta-2); }
+.lanc-total-linha strong { font-family: var(--fonte); }
+.lanc-total-geral { margin-top: .3rem; padding-top: .45rem; border-top: 1px solid var(--linha); font-size: 1.02rem; color: var(--tinta); }
+.lanc-total-geral strong { font-size: 1.15rem; }
+/* Linha de total na tabela de etapas. */
+.tabela tfoot .tabela-total td { border-top: 2px solid var(--linha-forte); padding-top: .5rem; }
+
 /* Confirmação de mudança de status via IA (lista de alvos). */
 .status-alvos { display: flex; flex-direction: column; gap: .4rem; margin: .5rem 0; }
 .status-alvo { display: flex; gap: .55rem; align-items: flex-start; padding: .55rem .65rem; border: 1px solid var(--linha); border-radius: var(--raio); background: var(--card); max-width: 100%; box-sizing: border-box; }
