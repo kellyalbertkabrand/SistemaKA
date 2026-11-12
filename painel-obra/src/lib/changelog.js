@@ -8,6 +8,14 @@ export const VERSAO = '12/11/2026';
 export const CHANGELOG = [
   {
     data: '12/11/2026',
+    titulo: 'Desfazer ao editar ou excluir uma etapa',
+    itens: [
+      'Ao excluir uma etapa, aparece uma barra "↩ Desfazer" para recuperar a etapa (com o orçado), caso tenha sido sem querer.',
+      'Ao editar uma etapa (nome ou orçado), também é possível desfazer e voltar ao que estava antes — inclusive o nome nos lançamentos.',
+    ],
+  },
+  {
+    data: '12/11/2026',
     titulo: 'Totais dos lançamentos e relatório de andamento',
     itens: [
       'No fim da lista de lançamentos agora aparece o total: Pago, Pendente e Total geral.',

@@ -687,8 +687,16 @@ export async function renderObra(container, obraId, opts = {}) {
   });
   container.querySelectorAll('[data-del-etapa]').forEach((b) => {
     b.addEventListener('click', async () => {
-      await excluirEtapa(b.getAttribute('data-del-etapa'));
+      const id = b.getAttribute('data-del-etapa');
+      // Guarda os dados da etapa para poder DESFAZER (recriar).
+      const nomeBkp = b.getAttribute('data-nome') || '';
+      const orcadoBkp = Number(b.getAttribute('data-orcado') || 0);
+      await excluirEtapa(id);
       recarregar();
+      toastDesfazer(`Etapa "${nomeBkp}" excluída.`, async () => {
+        await criarEtapa({ obraId: obra.id, nome: nomeBkp, orcado: orcadoBkp });
+        recarregar();
+      });
     });
   });
   // Editar etapa (nome + orçado) inline na própria linha da tabela.
@@ -716,15 +724,23 @@ export async function renderObra(container, obraId, opts = {}) {
         if (!novoNome) { inNome.focus(); return; }
         const salvar = tr.querySelector('.ed-et-salvar');
         salvar.disabled = true; salvar.textContent = 'Salvando…';
+        const orcadoBkp = Number(orcadoAtual || 0);
         try {
           await atualizarEtapa(id, { nome: novoNome, orcado: novoOrcado });
           // Se renomeou, repassa o novo nome aos lançamentos (o "realizado"
           // casa pelo nome da etapa).
+          const afetadosIds = [];
           if (novoNome !== nomeAtual) {
             const afetados = lancamentos.filter((l) => l.etapa === nomeAtual);
-            for (const l of afetados) await atualizarLancamento(l.id, { etapa: novoNome });
+            for (const l of afetados) { await atualizarLancamento(l.id, { etapa: novoNome }); afetadosIds.push(l.id); }
           }
           recarregar();
+          // Desfazer: volta nome/orçado e desfaz o repasse nos lançamentos.
+          toastDesfazer('Etapa atualizada.', async () => {
+            await atualizarEtapa(id, { nome: nomeAtual, orcado: orcadoBkp });
+            for (const lid of afetadosIds) await atualizarLancamento(lid, { etapa: nomeAtual });
+            recarregar();
+          });
         } catch (err) {
           salvar.disabled = false; salvar.textContent = 'Salvar';
           alert('Erro ao salvar: ' + (err?.message || err));
@@ -1574,7 +1590,7 @@ function tabelaEtapas(etapas, lancamentos) {
         <td class="acoes" style="white-space:nowrap">
           ${idEtapa ? `
             <button class="btn btn-x" data-edit-etapa="${esc(idEtapa)}" data-nome="${esc(nome)}" data-orcado="${orcado}" title="Editar etapa">✎</button>
-            <button class="btn btn-x" data-del-etapa="${esc(idEtapa)}" title="Remover etapa">×</button>` : ''}
+            <button class="btn btn-x" data-del-etapa="${esc(idEtapa)}" data-nome="${esc(nome)}" data-orcado="${orcado}" title="Remover etapa">×</button>` : ''}
         </td>
       </tr>`;
   };
@@ -1806,6 +1822,37 @@ function flash(btn, msg) {
   const original = btn.textContent;
   btn.textContent = msg;
   setTimeout(() => { btn.textContent = original; }, 1500);
+}
+
+// Barra flutuante "Desfazer" (fica em cima de tudo, no rodapé). Chama
+// `aoDesfazer` quando clicada e some sozinha em ~8s. Fica presa ao <body>,
+// então sobrevive ao recarregar da tela.
+function toastDesfazer(mensagem, aoDesfazer) {
+  document.querySelector('.toast-desfazer')?.remove();
+  const el = document.createElement('div');
+  el.className = 'toast-desfazer';
+  el.innerHTML = `<span class="toast-msg"></span><button type="button" class="toast-undo">↩ Desfazer</button>`;
+  el.querySelector('.toast-msg').textContent = mensagem;
+  document.body.appendChild(el);
+
+  let fechado = false;
+  const fechar = () => {
+    if (fechado) return; fechado = true;
+    clearTimeout(timer);
+    el.classList.remove('visivel');
+    setTimeout(() => el.remove(), 250);
+  };
+  const timer = setTimeout(fechar, 8000);
+
+  el.querySelector('.toast-undo').addEventListener('click', async () => {
+    const btn = el.querySelector('.toast-undo');
+    btn.disabled = true; btn.textContent = 'Desfazendo…';
+    try { await aoDesfazer(); }
+    catch (e) { btn.disabled = false; btn.textContent = '↩ Desfazer'; alert('Não consegui desfazer: ' + (e?.message || e)); return; }
+    fechar();
+  });
+
+  requestAnimationFrame(() => el.classList.add('visivel'));
 }
 
 // Mensagem do PRIMEIRO ENVIO: apresenta o link, deixa claro que ele funciona
