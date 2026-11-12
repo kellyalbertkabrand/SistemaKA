@@ -56,6 +56,11 @@ service cloud.firestore {
     match /contratos/{id} {
       allow read, write: if logado();
     }
+    // Lixeira — itens excluídos (etapas/lançamentos) guardados p/ restaurar.
+    // Só o escritório logado (nunca público).
+    match /lixeira/{id} {
+      allow read, write: if logado();
+    }
     // Briefings — o cliente preenche pelo link público (token de convite válido);
     // só o escritório logado lê/edita/exclui.
     // Briefings — o cliente preenche pelo link público e as respostas vão sendo

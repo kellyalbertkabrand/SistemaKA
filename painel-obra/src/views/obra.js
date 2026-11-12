@@ -1,6 +1,7 @@
 import {
   obterObra, listarEtapas, listarLancamentos, atualizarObra, excluirObra, definirPublicado,
-  criarEtapa, atualizarEtapa, excluirEtapa, criarLancamento, atualizarLancamento, excluirLancamento, restaurarLancamento, sair,
+  criarEtapa, atualizarEtapa, excluirEtapa, criarLancamento, atualizarLancamento, excluirLancamento,
+  moverParaLixeira, restaurarDaLixeira, sair,
   anexarRecibo, removerRecibo, obterRecibo, enviarFoto, listarFotos, excluirFoto, atualizarFoto, obterFotoBin, salvarFotoBin, excluirBin,
   listarFornecedores, listarContratosDaObra, listarBriefingsDaObra,
 } from '../dados.js';
@@ -691,9 +692,14 @@ export async function renderObra(container, obraId, opts = {}) {
       // Guarda os dados da etapa para poder DESFAZER (recriar).
       const nomeBkp = b.getAttribute('data-nome') || '';
       const orcadoBkp = Number(b.getAttribute('data-orcado') || 0);
+      const lixId = await moverParaLixeira({
+        tipo: 'etapa', obraId: obra.id, obraNome: obra.nome,
+        dados: { obraId: obra.id, nome: nomeBkp, orcado: orcadoBkp },
+        rotulo: `Etapa "${nomeBkp}"`,
+      });
       await excluirEtapa(id);
-      toastDesfazer(`Etapa "${nomeBkp}" excluída.`, async () => {
-        await criarEtapa({ obraId: obra.id, nome: nomeBkp, orcado: orcadoBkp });
+      toastDesfazer(`Etapa "${nomeBkp}" movida para a lixeira.`, async () => {
+        await restaurarDaLixeira(lixId);
         recarregar();
       });
       recarregar();
@@ -814,15 +820,21 @@ export async function renderObra(container, obraId, opts = {}) {
     if (excluir) {
       if (!confirm('Excluir este lançamento?')) return;
       const id = excluir.getAttribute('data-excluir-lanc-modal');
-      // Guarda o lançamento inteiro para poder DESFAZER (recria com o mesmo id).
+      // Guarda o lançamento inteiro na lixeira (recria com o mesmo id ao restaurar).
       const bkp = lancamentos.find((l) => l.id === id);
-      await excluirLancamento(id);
       if (bkp) {
         const { id: _ignora, ...dados } = bkp;
-        toastDesfazer('Lançamento excluído.', async () => {
-          await restaurarLancamento(id, dados);
+        const lixId = await moverParaLixeira({
+          tipo: 'lancamento', origemId: id, obraId: obra.id, obraNome: obra.nome, dados,
+          rotulo: `${bkp.etapa || 'Lançamento'}${bkp.descricao ? ' · ' + bkp.descricao : ''} · ${moeda(bkp.valor || 0)}`,
+        });
+        await excluirLancamento(id);
+        toastDesfazer('Lançamento movido para a lixeira.', async () => {
+          await restaurarDaLixeira(lixId);
           recarregar();
         });
+      } else {
+        await excluirLancamento(id);
       }
       fecharModal(); recarregar(); return;
     }

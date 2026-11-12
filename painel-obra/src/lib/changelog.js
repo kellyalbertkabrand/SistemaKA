@@ -8,10 +8,12 @@ export const VERSAO = '12/11/2026';
 export const CHANGELOG = [
   {
     data: '12/11/2026',
-    titulo: 'Desfazer em etapas e lançamentos',
+    titulo: 'Lixeira: recupere o que foi excluído',
     itens: [
-      'Ao excluir ou editar uma etapa, aparece a barra "↩ Desfazer" para voltar ao que estava (recupera a etapa com o orçado, ou reverte a edição — inclusive o nome nos lançamentos).',
-      'Nos lançamentos também: ao excluir, editar ou mudar o status (pago/pendente), dá para desfazer. A exclusão recupera o lançamento igualzinho, com a nota fiscal.',
+      'Nova Lixeira (no menu inicial): tudo que você excluir — etapas e lançamentos — vai para lá em vez de sumir.',
+      'Na Lixeira você pode "Restaurar" um item (volta para onde estava, o lançamento com a nota fiscal) ou "Excluir definitivamente".',
+      'Botão "Esvaziar lixeira" para limpar de uma vez quando quiser.',
+      'Ao excluir, continua aparecendo a barra "↩ Desfazer" para restaurar na hora; e editar etapa/lançamento ou mudar status também tem o "Desfazer".',
     ],
   },
   {

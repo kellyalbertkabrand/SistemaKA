@@ -513,6 +513,15 @@ body.modal-aberto { overflow: hidden; }
 /* Administração (honorário do escritório) na cor da marca. */
 .kpi strong.val-admin { color: var(--acento); }
 
+/* Lixeira — lista de itens excluídos. */
+.lixo-lista { display: flex; flex-direction: column; gap: .5rem; }
+.lixo-item { display: flex; align-items: center; gap: .7rem; padding: .6rem .7rem; border: 1px solid var(--linha); border-radius: var(--raio); background: var(--card); }
+.lixo-icone { flex: 0 0 auto; font-size: 1.2rem; }
+.lixo-info { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: .1rem; }
+.lixo-info strong { font-size: .95rem; overflow-wrap: break-word; }
+.lixo-info small { font-size: .76rem; }
+.lixo-acoes { flex: 0 0 auto; display: flex; gap: .35rem; align-items: center; }
+
 /* Barra flutuante "Desfazer" — visível por padrão (a animação é só enfeite). */
 .toast-desfazer {
   position: fixed; left: 50%; bottom: 20px; transform: translate(-50%, 0);

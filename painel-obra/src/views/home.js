@@ -13,6 +13,7 @@ export function renderHome(container) {
     { href: '/briefings', icone: '📝', titulo: 'Briefing', desc: 'Link do briefing do projeto e respostas do cliente' },
     { href: '/clientes', icone: '👥', titulo: 'Clientes', desc: 'Cadastro e dados para contrato' },
     { href: '/fornecedores', icone: '🏢', titulo: 'Fornecedores', desc: 'Sua lista de fornecedores' },
+    { href: '/lixeira', icone: '🗑', titulo: 'Lixeira', desc: 'Etapas e lançamentos excluídos — restaurar ou esvaziar' },
   ];
 
   container.innerHTML = `

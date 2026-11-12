@@ -228,6 +228,67 @@ export async function restaurarLancamento(id, dados) {
 }
 
 // ---------------------------------------------------------------------------
+// Lixeira — itens excluídos (etapas e lançamentos) ficam guardados aqui até a
+// arquiteta restaurar ou esvaziar. Guardamos uma cópia dos dados para recriar.
+// ---------------------------------------------------------------------------
+export async function moverParaLixeira({ tipo, origemId, dados, obraId, obraNome, rotulo }) {
+  const ref = await addDoc(collection(db, 'lixeira'), {
+    tipo,                       // 'etapa' | 'lancamento'
+    origemId: origemId || null, // id original (lançamento: p/ recriar com o mesmo)
+    dados: dados || {},         // dados para recriar o item
+    obraId: obraId || null,
+    obraNome: obraNome || null,
+    rotulo: rotulo || '',       // texto curto para a lista
+    excluidoEm: Date.now(),
+    ownerId: uid(),
+  });
+  return ref.id;
+}
+
+export async function listarLixeira() {
+  const snap = await getDocs(collection(db, 'lixeira'));
+  return docsComId(snap).sort((a, b) => (b.excluidoEm || 0) - (a.excluidoEm || 0));
+}
+
+export async function restaurarDaLixeira(id) {
+  const ref = doc(db, 'lixeira', id);
+  const d = await getDoc(ref);
+  if (!d.exists()) return;
+  const item = d.data();
+  if (item.tipo === 'etapa') {
+    await addDoc(collection(db, 'etapas'), { ...(item.dados || {}), ownerId: uid(), criadoEm: Date.now() });
+  } else if (item.tipo === 'lancamento') {
+    // Recria com o MESMO id p/ reaproveitar a nota fiscal (recibos/{id}).
+    if (item.origemId) await setDoc(doc(db, 'lancamentos', item.origemId), item.dados || {});
+    else await addDoc(collection(db, 'lancamentos'), item.dados || {});
+  }
+  await deleteDoc(ref);
+}
+
+export async function excluirDaLixeira(id) {
+  const ref = doc(db, 'lixeira', id);
+  const d = await getDoc(ref);
+  if (d.exists()) {
+    const item = d.data();
+    if (item.tipo === 'lancamento' && item.origemId) {
+      await deleteDoc(doc(db, 'recibos', item.origemId)).catch(() => {});
+    }
+  }
+  await deleteDoc(ref);
+}
+
+export async function esvaziarLixeira() {
+  const snap = await getDocs(collection(db, 'lixeira'));
+  await Promise.all(snap.docs.map(async (d) => {
+    const item = d.data();
+    if (item.tipo === 'lancamento' && item.origemId) {
+      await deleteDoc(doc(db, 'recibos', item.origemId)).catch(() => {});
+    }
+    await deleteDoc(d.ref);
+  }));
+}
+
+// ---------------------------------------------------------------------------
 // Pagamentos do CLIENTE ao ESCRITÓRIO (recebimentos). Registro do que o cliente
 // já pagou (reembolso + honorário), para constar e apurar o saldo em aberto.
 //   pagamentos/{id} -> obraId, valor, data(YYYY-MM-DD), forma, observacao, ownerId, criadoEm

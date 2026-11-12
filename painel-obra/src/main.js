@@ -15,6 +15,7 @@ import { renderContratos } from './views/contratos.js';
 import { renderBriefings } from './views/briefings.js';
 import { renderBriefingPublico } from './views/briefingPublico.js';
 import { renderAtualizacoes } from './views/atualizacoes.js';
+import { renderLixeira } from './views/lixeira.js';
 
 const app = document.getElementById('app');
 
@@ -155,6 +156,10 @@ function rotear() {
 
   if (path === '/briefings' || path === '/briefings/') {
     return renderBriefings(app);
+  }
+
+  if (path === '/lixeira' || path === '/lixeira/') {
+    return renderLixeira(app);
   }
 
   // Padrão (home): menu-lançador com os botões.
