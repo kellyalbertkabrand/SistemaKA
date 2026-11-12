@@ -1,24 +1,31 @@
 {
-  "generated_at": "2026-11-11T13:22:25.767633+00:00",
-  "count": 28,
+  "generated_at": "2026-11-12T14:25:57.574322+00:00",
+  "count": 30,
   "leads": [
     {
       "empresa": "Casarão Alpina",
       "setor": "Hospedagem / Turismo",
       "local": "Mucugê/BA",
-      "porte": "média",
+      "porte": "pequena",
       "gatilho": "aniversario",
       "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "Casarão Alpina moderniza com retrofit; marca tradicional de 30 anos precisa comunicar renovação sem perder identidade construída.",
-      "decisor": "Fundador(a) / Proprietário(a)",
+      "por_que_agora": "Aniversário de 30 anos com retrofit é o pretexto perfeito para renovar a marca sem perder a história; hospedagem regional precisa de posicionamento claro para atrair além do boca a boca local.",
+      "decisor": "Proprietário(a) / Gerente geral",
       "pessoa_citada": "",
-      "msg_linkedin": "Retrofit no Casarão Alpina: obra física pronta. Agora falta a marca acompanhar — e contar essa história com clareza.",
-      "email_assunto": "marca do Casarão Alpina: hora de renovar junto com o retrofit",
-      "email_corpo": "O Casarão Alpina está investindo em retrofit para elevar o padrão. Perfeito — mas aí entra a pergunta: a marca está comunicando essa mudança? Muitas vezes a gente renova o lugar e esquece de renovar como o mundo nos vê. Vale conversar sobre posicionamento: como você quer que as pessoas entendam essa nova versão do Casarão.\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 7,
-      "score": 107,
+      "msg_linkedin": "30 anos do Casarão Alpina! Retrofit é bom, mas a marca também merecia uma renovação. Quando o espaço muda, a percepção do mercado muda junto — se estiver alinhada.",
+      "email_assunto": "seu retrofit de 30 anos merecia uma marca à altura",
+      "email_corpo": "Vi que o Casarão Alpina comemora 30 anos com um retrofit bem interessante em Mucugê. Ótimo passo. Só que você reformou o espaço, mas a marca continua do tamanho que era. Pode parecer bobo, mas hospedagem regional que muda de padrão precisa que o mercado saiba disso — e rápido. A gente faz isso em 15 minutos de conversa.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 6,
+      "score": 110,
       "confirmado": true,
       "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Casarão Alpina comemora 30 anos com retrofit que eleva o padrão de hospedagem em Mucugê - csastudiowebradio.com.br",
+          "link": "https://csastudiowebradio.com.br/noticia/66775/casarao-alpina-comemora-30-anos-com-retrofit-que-eleva-o-padrao-de-hospedagem-em-mucuge",
+          "fonte": "csastudiowebradio.com.br",
+          "data": "2026-11-11"
+        },
         {
           "gatilho": "aniversario",
           "titulo": "Casarão Alpina comemora 30 anos com retrofit que eleva o padrão de hospedagem em Mucugê - Conectado News",
@@ -35,7 +42,7 @@
         }
       ],
       "primeiro_sinal": "2026-11-10",
-      "ultimo_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-11",
       "id": "eeac591c9c9b"
     },
     {
@@ -97,6 +104,35 @@
       "id": "ed0302206b9e"
     },
     {
+      "empresa": "Aracaju Parque Shopping",
+      "setor": "Varejo / Shopping Center",
+      "local": "Aracaju/SE",
+      "porte": "média",
+      "gatilho": "fusao",
+      "gatilho_nome": "Fusão ou aquisição",
+      "por_que_agora": "Leilão judicial e novos investimentos marcam uma virada na gestão; é o momento de definir claramente o posicionamento do shopping na região e junto aos novos parceiros.",
+      "decisor": "Gestor(a) / CEO do shopping",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que o Aracaju Parque Shopping está em novo ciclo de crescimento. Fusões, leilões e novos investimentos pedem clareza de marca. Chama pra conversar sobre posicionamento?",
+      "email_assunto": "posicionamento estratégico para o novo ciclo do aracaju parque shopping",
+      "email_corpo": "Vimos a notícia sobre o leilão e os novos investimentos no Aracaju Parque Shopping. É um momento raro de recomeço. Quando duas ou mais forças se unem assim, a marca fica no meio do caminho se ninguém define quem vocês são agora. A gente trabalha exatamente isso: revelar a essência que já existe e transformar em posicionamento claro. Quer uma conversa curta (15 minutos) pra explorar?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 6,
+      "score": 100,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "fusao",
+          "titulo": "Aracaju Parque Shopping avança para novo ciclo de crescimento por meio de leilão judicial e atração de novos investimentos - Click Sergipe",
+          "link": "https://www.clicksergipe.com.br/pais/18/112073/aracaju-parque-shopping-avanca-para-novo-ciclo-de-crescimento-por-meio-de-leilao-judicial-e-atracao-de-novos-investimentos.html",
+          "fonte": "Click Sergipe",
+          "data": "2026-11-11"
+        }
+      ],
+      "primeiro_sinal": "2026-11-11",
+      "ultimo_sinal": "2026-11-11",
+      "id": "8d1f1619d30c"
+    },
+    {
       "empresa": "GBarbosa",
       "setor": "Varejo / supermercados",
       "local": "Aracaju/SE",
@@ -139,7 +175,7 @@
       "email_assunto": "artefacto aos 50 anos: hora de clarear o posicionamento",
       "email_corpo": "Parabéns pelos 50 anos de Artefacto. Marca que dura assim é porque tem essência — mas aos 50, muita gente não sabe exatamente o que a torna diferente. Vocês chegaram aqui porque têm história; agora precisam contar que essa história tem propósito. A gente faz exatamente isso: revela a essência que já existe e transforma em posicionamento claro. Quer uma conversa de 15 minutos?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 8,
-      "score": 100,
+      "score": 99,
       "confirmado": true,
       "sinais": [
         {
@@ -153,35 +189,6 @@
       "primeiro_sinal": "2026-11-09",
       "ultimo_sinal": "2026-11-09",
       "id": "c05e0292ccf5"
-    },
-    {
-      "empresa": "Confraria Mineira do Queijo Artesanal",
-      "setor": "Alimentos / Queijo artesanal",
-      "local": "Minas Gerais/MG",
-      "porte": "pequena",
-      "gatilho": "sucessao",
-      "gatilho_nome": "Sucessão / nova liderança",
-      "por_que_agora": "Nova geração de produtores assume negócio familiar; marca precisa contar que é tradição com inovação, não só queijo antigo.",
-      "decisor": "Produtor(a) / Fundador(a)",
-      "pessoa_citada": "",
-      "msg_linkedin": "Vi que a Confraria está debatendo sucessão familiar. Quando a nova geração chega, a marca precisa falar sozinha — ou herda só o nome do avô. Conversa rápida sobre como posicionar?",
-      "email_assunto": "queijo artesanal + nova geração = marca clara",
-      "email_corpo": "Oi! A gente viu que a Confraria está no debate sobre sucessão e os desafios da nova geração. É exatamente o momento: quando quem assume quer inovar sem perder a tradição, a marca confunde. A gente tem método que revela a essência (o que o fundador construiu) e transforma em direção clara para quem chega. Vale uma conversa de 15 minutos? Kelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 6,
-      "score": 96,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "sucessao",
-          "titulo": "Confraria Mineira do Queijo Artesanal debate sucessão familiar e os desafios da nova geração de produtores - rolecomfish.com.br",
-          "link": "https://rolecomfish.com.br/noticia/5313/confraria-mineira-do-queijo-artesanal-debate-sucessao-familiar-e-os-desafios-da-nova-geracao-de-produtores",
-          "fonte": "rolecomfish.com.br",
-          "data": "2026-11-09"
-        }
-      ],
-      "primeiro_sinal": "2026-11-09",
-      "ultimo_sinal": "2026-11-09",
-      "id": "fc7daa5e2ebc"
     },
     {
       "empresa": "Estação Estudantes",
@@ -213,6 +220,35 @@
       "id": "ef1eeb5f2781"
     },
     {
+      "empresa": "Confraria Mineira do Queijo Artesanal",
+      "setor": "Alimentos / Queijo artesanal",
+      "local": "Minas Gerais/MG",
+      "porte": "pequena",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Nova geração de produtores assume negócio familiar; marca precisa contar que é tradição com inovação, não só queijo antigo.",
+      "decisor": "Produtor(a) / Fundador(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que a Confraria está debatendo sucessão familiar. Quando a nova geração chega, a marca precisa falar sozinha — ou herda só o nome do avô. Conversa rápida sobre como posicionar?",
+      "email_assunto": "queijo artesanal + nova geração = marca clara",
+      "email_corpo": "Oi! A gente viu que a Confraria está no debate sobre sucessão e os desafios da nova geração. É exatamente o momento: quando quem assume quer inovar sem perder a tradição, a marca confunde. A gente tem método que revela a essência (o que o fundador construiu) e transforma em direção clara para quem chega. Vale uma conversa de 15 minutos? Kelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 6,
+      "score": 95,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Confraria Mineira do Queijo Artesanal debate sucessão familiar e os desafios da nova geração de produtores - rolecomfish.com.br",
+          "link": "https://rolecomfish.com.br/noticia/5313/confraria-mineira-do-queijo-artesanal-debate-sucessao-familiar-e-os-desafios-da-nova-geracao-de-produtores",
+          "fonte": "rolecomfish.com.br",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "fc7daa5e2ebc"
+    },
+    {
       "empresa": "Arcobaleno Resort",
       "setor": "Hospitalidade / Hotelaria",
       "local": "? (não especificado)",
@@ -226,7 +262,7 @@
       "email_assunto": "30 anos de Arcobaleno: hora de renovar a percepção da marca",
       "email_corpo": "Oi! Vi que o Arcobaleno completa 30 anos — que marca! Nessa idade, a gente enfrenta um desafio: ser tradicional de verdade sem parecer coisa de época. A maioria das hospedarias tenta só trocar o logo. A gente trabalha diferente: a partir dos fundadores e da essência que já existe, a gente ajuda a marca falar claro e contemporâneo. Tá aberto pra uma conversa rápida (15 minutos) sobre como o Arcobaleno é visto hoje? Kelly Albert · KA | Inteligência para Marcas",
       "encaixe": 7,
-      "score": 95,
+      "score": 94,
       "confirmado": true,
       "sinais": [
         {
@@ -255,7 +291,7 @@
       "email_assunto": "50 anos do Eu Acho é Pouco: o momento de renovar o posicionamento",
       "email_corpo": "Parabéns pelos 50 anos! Marca com essa trajetória tem uma oportunidade rara: provar que é sólida sem soar antiga. A maioria apenas troca a identidade visual nessa hora. E depois a confusão volta. O posicionamento claro antes da campanha de aniversário garante que a renovação grude mesmo. Bora conversar em 15 minutos como você quer ser lembrado daqui pra frente?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 7,
-      "score": 95,
+      "score": 94,
       "confirmado": true,
       "sinais": [
         {
@@ -271,6 +307,35 @@
       "id": "fc23a7f66793"
     },
     {
+      "empresa": "Canal Rural",
+      "setor": "Mídia / Agronegócio",
+      "local": "",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "30 anos e redesign de plataforma é chance de o Canal Rural reposicionar sua marca além do agro tradicional e conquistar novo público.",
+      "decisor": "Diretor(a) de Conteúdo / Diretor(a) de Marketing",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que o Canal Rural completa 30 anos e lançou site novo. Momento perfeito para revisar se a marca está falando claro com quem você quer atingir. Conversa rápida?",
+      "email_assunto": "30 anos do Canal Rural: marca e posicionamento",
+      "email_corpo": "Oi,\n\n30 anos é data que merece mais que um novo site — é hora de a marca contar quem você é hoje e para onde vai. A gente revela a essência do Canal Rural e transforma isso em posicionamento claro, que funciona em toda plataforma.\n\nVocê topa uma conversa de 15 minutos para a gente entender melhor seu momento?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 6,
+      "score": 90,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Canal Rural faz 30 anos e lança site inspirado nas redes sociais para transformar acesso à informação no agro - Canal Rural",
+          "link": "https://www.canalrural.com.br/agricultura/canal-rural-faz-30-anos-e-lanca-site-inspirado-nas-redes-sociais-para-transformar-acesso-a-informacao-no-agro/",
+          "fonte": "Canal Rural",
+          "data": "2026-11-11"
+        }
+      ],
+      "primeiro_sinal": "2026-11-11",
+      "ultimo_sinal": "2026-11-11",
+      "id": "b93b8355ec33"
+    },
+    {
       "empresa": "Divishop",
       "setor": "Varejo / E-commerce",
       "local": "Divinópolis, MG",
@@ -284,7 +349,7 @@
       "email_assunto": "Divishop aos 30: marca regional pronta pra próximo patamar",
       "email_corpo": "Oi! Varejo que dura 30 anos tem DNA de verdade — a gente vê isso. Só que marca consolidada localmente pode não falar clara pra quem quer chegar além de Divinópolis. Posicionamento não é trocar logo: é deixar a essência real virar comunicação que atrai novo público. Bora conversar? Kelly Albert · KA | Inteligência para Marcas",
       "encaixe": 6,
-      "score": 90,
+      "score": 89,
       "confirmado": true,
       "sinais": [
         {
@@ -313,7 +378,7 @@
       "email_assunto": "posicionamento na próxima fase da dual",
       "email_corpo": "Parabéns pela captação de R$ 356,5 milhões. Quando dinheiro novo entra, crescimento rápido cobra clareza: sem posicionamento firme, cada comunicação custa mais caro em mídia e vendas. A gente ajuda a marca contar quem você é antes de escalar. Quer uma conversa curta (15 min) sobre como a Dual está sendo percebida?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 6,
-      "score": 90,
+      "score": 89,
       "confirmado": true,
       "sinais": [
         {
@@ -342,7 +407,7 @@
       "email_assunto": "novo CEO na Verta: o momento certo para clareza de marca",
       "email_corpo": "Nycholas, parabéns pela chegada como novo CEO da Verta. Transições de liderança são raras e valiosas: é quando a empresa consegue renovar sem perder o que já construiu. Muitos CEOs novos descobrem que a marca antiga não cabe mais na visão deles — e o mercado sente essa confusão. Se fizer sentido, podemos conversar sobre como clarear o posicionamento antes de comunicar os próximos passos.\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 6,
-      "score": 90,
+      "score": 89,
       "confirmado": true,
       "sinais": [
         {
@@ -371,7 +436,7 @@
       "email_assunto": "40 anos de Wipe: hora de a marca contar essa história",
       "email_corpo": "Vi que a Wipe completa 40 anos de trajetória no metalmecânico. Aniversário redondo é pretexto raro para renovar a marca sem perder o que o fundador construiu. Muitas empresas dessa fase confundem renovação com redesign — e o problema volta. A gente conversa em 15 minutos sobre como sua marca está sendo percebida?",
       "encaixe": 6,
-      "score": 90,
+      "score": 89,
       "confirmado": true,
       "sinais": [
         {
@@ -429,7 +494,7 @@
       "email_assunto": "momento de mostrar quem a marca realmente é",
       "email_corpo": "Vi a notícia dos 42 anos do Sicoob Crediauc. Cooperativas que duram são raras, e a sua está aí. Mas muitas vezes, marcas cooperativistas ficam escondidas atrás da história, sem deixar claro para quem quer entrar por que escolher vocês. A gente ajuda a traduzir isso. Conversa rápida?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 4,
-      "score": 88,
+      "score": 87,
       "confirmado": true,
       "sinais": [
         {
@@ -516,7 +581,7 @@
       "email_assunto": "Pequeno transporte com história grande: hora de posicionar",
       "email_corpo": "Oi! Pequena transportadora familiar tem tudo pra crescer além da região — história, confiança, operação. O que geralmente falta é a marca clara que fale sozinha fora de Tangará. A gente faz isso: pega a essência dos fundadores e transforma em posicionamento que viaja. Tá aberto pra a gente entender melhor a trajetória de vocês? Kelly Albert · KA | Inteligência para Marcas",
       "encaixe": 5,
-      "score": 81,
+      "score": 80,
       "confirmado": true,
       "sinais": [
         {
@@ -545,7 +610,7 @@
       "email_assunto": "40 anos de marca: momento de clareza, não só comemoração",
       "email_corpo": "Parabéns pelos 40 anos do Castro's Park Hotel. Marca tradicional em hospedagem é ativo valioso — mas só se o mercado enxergar a tradição como qualidade, não como coisa velha. Há um caminho entre \"sempre aqui\" e \"antenada\". Vale uma conversa curta sobre como sua marca está sendo lida agora e como poderia estar em 2027. Estou aqui.\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 5,
-      "score": 81,
+      "score": 80,
       "confirmado": true,
       "sinais": [
         {
@@ -574,7 +639,7 @@
       "email_assunto": "coletivoz se expande: posicione antes de crescer",
       "email_corpo": "Ótimo timing: Coletivoz circulando em novo território no mesmo ano em que faz 18 anos. Em lugar novo, ninguém conhece sua história de boca em boca — a marca precisa falar sozinha. Sem posicionamento claro, cada ação comunica de um jeito. A gente revela a essência de quem você é e transforma em direção estratégica que funciona em qualquer lugar. Conversa de 15 minutos?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 5,
-      "score": 81,
+      "score": 80,
       "confirmado": true,
       "sinais": [
         {
@@ -588,6 +653,42 @@
       "primeiro_sinal": "2026-11-09",
       "ultimo_sinal": "2026-11-09",
       "id": "a4c0e9634aa1"
+    },
+    {
+      "empresa": "Brasil Terrenos",
+      "setor": "Incorporação imobiliária",
+      "local": "",
+      "porte": "grande",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Entrada na Bolsa exige marca clara e posicionamento robusto para comunicar ao investidor e mercado quem a empresa é e sua estratégia.",
+      "decisor": "CEO / Diretor de Comunicação",
+      "pessoa_citada": "",
+      "msg_linkedin": "Parabéns pela aprovação na CVM! Na hora que a empresa vira pública, a marca precisa falar sozinha ao investidor. Conversamos?",
+      "email_assunto": "posicionamento de marca para a bolsa",
+      "email_corpo": "Oi! Vi que a Brasil Terrenos ganhou aprovação para ir à Bolsa — é um passo grande. Quando a empresa fica pública, o mercado financeiro quer saber exatamente quem você é, como diferencia e para onde vai. Uma marca clara custa menos em roadshow e ganha mais confiança. A gente faz justamente isso: revelar a essência da empresa e transformar em posicionamento. Bora conversar 15 minutos?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 2,
+      "score": 75,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Brasil Terrenos prepara entrada na Bolsa após aval da CVM - Plantão Brasil",
+          "link": "https://www.plantaobrasil.net/noticias/162793-brasil-terrenos-prepara-entrada-na-bolsa-apos-aval-da-cvm",
+          "fonte": "Plantão Brasil",
+          "data": "2026-11-10"
+        },
+        {
+          "gatilho": "sucessao",
+          "titulo": "Brasil Terrenos obtém registro de companhia aberta na CVM e avança em listagem na B3 - InfoMoney",
+          "link": "https://www.infomoney.com.br/mercados/brasil-terrenos-obtem-registro-de-companhia-aberta-na-cvm-e-avanca-em-listagem-na-b3/",
+          "fonte": "InfoMoney",
+          "data": "2026-11-10"
+        }
+      ],
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "8900c950394c"
     },
     {
       "empresa": "Cursinho Popular de São José de Piranhas",
@@ -619,35 +720,6 @@
       "id": "8bc4fa6dbaee"
     },
     {
-      "empresa": "Adão Negro",
-      "setor": "Música / Entretenimento",
-      "local": "Bahia",
-      "porte": "pequena",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "Banda musical em aniversário; sem evidência de crescimento de negócio, expansão ou momento de virada que demande posicionamento estratégico.",
-      "decisor": "Artista(s) / produtor",
-      "pessoa_citada": "",
-      "msg_linkedin": "",
-      "email_assunto": "",
-      "email_corpo": "",
-      "encaixe": 3,
-      "score": 71,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "aniversario",
-          "titulo": "Adão Negro comemora 30 anos de história no palco do República do Reggae - Anota Bahia",
-          "link": "https://anotabahia.com/adao-negro-comemora-30-anos-de-historia-no-palco-do-republica-do-reggae/",
-          "fonte": "Anota Bahia",
-          "data": "2026-11-09"
-        }
-      ],
-      "primeiro_sinal": "2026-11-09",
-      "ultimo_sinal": "2026-11-09",
-      "id": "d388cbbf0976"
-    },
-    {
       "empresa": "Frooty",
       "setor": "Alimentos / açaí",
       "local": "",
@@ -677,6 +749,35 @@
       "id": "03e299e10c70"
     },
     {
+      "empresa": "Adão Negro",
+      "setor": "Música / Entretenimento",
+      "local": "Bahia",
+      "porte": "pequena",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Banda musical em aniversário; sem evidência de crescimento de negócio, expansão ou momento de virada que demande posicionamento estratégico.",
+      "decisor": "Artista(s) / produtor",
+      "pessoa_citada": "",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 3,
+      "score": 70,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Adão Negro comemora 30 anos de história no palco do República do Reggae - Anota Bahia",
+          "link": "https://anotabahia.com/adao-negro-comemora-30-anos-de-historia-no-palco-do-republica-do-reggae/",
+          "fonte": "Anota Bahia",
+          "data": "2026-11-09"
+        }
+      ],
+      "primeiro_sinal": "2026-11-09",
+      "ultimo_sinal": "2026-11-09",
+      "id": "d388cbbf0976"
+    },
+    {
       "empresa": "Havan",
       "setor": "Varejo / magazine",
       "local": "Espírito Santo",
@@ -690,7 +791,7 @@
       "email_assunto": "",
       "email_corpo": "",
       "encaixe": 1,
-      "score": 69,
+      "score": 68,
       "confirmado": true,
       "sinais": [
         {
@@ -720,35 +821,6 @@
       "id": "b3f96c693fbf"
     },
     {
-      "empresa": "Brasil Terrenos",
-      "setor": "Incorporação imobiliária",
-      "local": "",
-      "porte": "grande",
-      "gatilho": "sucessao",
-      "gatilho_nome": "Sucessão / nova liderança",
-      "por_que_agora": "Listagem na B3 exige que a marca comunique clareza e confiança a investidores, mas empresas de real estate dessa escala raramente contratam posicionamento estratégico antes de abrir capital.",
-      "decisor": "Diretor(a) de Investidor Relations / CFO",
-      "pessoa_citada": "",
-      "msg_linkedin": "Brasil Terrenos abrindo capital — momento em que marca precisa falar claro para investidor. Raramente acontece, mas quando acontece, muda tudo.",
-      "email_assunto": "marca clara antes de abrir capital",
-      "email_corpo": "Conheço bem o jeito que incorporadora comunica para fora quando entra na B3. A maioria chega lá com a marca do tamanho que tinha lá atrás. Você tem a chance de fazer diferente: posicionar antes, não depois. Se quiser conversar como a gente faria isso em 15 minutos, me chama.\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 2,
-      "score": 60,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "sucessao",
-          "titulo": "Brasil Terrenos obtém registro de companhia aberta na CVM e avança em listagem na B3 - InfoMoney",
-          "link": "https://www.infomoney.com.br/mercados/brasil-terrenos-obtem-registro-de-companhia-aberta-na-cvm-e-avanca-em-listagem-na-b3/",
-          "fonte": "InfoMoney",
-          "data": "2026-11-10"
-        }
-      ],
-      "primeiro_sinal": "2026-11-10",
-      "ultimo_sinal": "2026-11-10",
-      "id": "8900c950394c"
-    },
-    {
       "empresa": "Heinz",
       "setor": "Alimentos / Condimentos",
       "local": "Brasil",
@@ -762,7 +834,7 @@
       "email_assunto": "crescimento heinz brasil: posicionamento antes de acelerar",
       "email_corpo": "Ótima notícia o investimento para dobrar o faturamento. Crescer é o momento exato para revisar se a marca está dizendo o que vocês realmente querem que o Brasil inteiro entenda sobre Heinz. A gente tem método para isso, em 4 passos. Topa uma conversa rápida de 15 minutos?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 2,
-      "score": 60,
+      "score": 59,
       "confirmado": true,
       "sinais": [
         {
@@ -791,7 +863,7 @@
       "email_assunto": "",
       "email_corpo": "",
       "encaixe": 2,
-      "score": 60,
+      "score": 59,
       "confirmado": true,
       "sinais": [
         {
