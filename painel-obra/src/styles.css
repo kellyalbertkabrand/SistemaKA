@@ -515,8 +515,14 @@ body.modal-aberto { overflow: hidden; }
 
 /* Confirmação de mudança de status via IA (lista de alvos). */
 .status-alvos { display: flex; flex-direction: column; gap: .4rem; margin: .5rem 0; }
-.status-alvo { display: flex; gap: .55rem; align-items: flex-start; padding: .55rem .65rem; border: 1px solid var(--linha); border-radius: var(--raio); background: var(--card); }
-.status-alvo input { margin-top: .25rem; }
+.status-alvo { display: flex; gap: .55rem; align-items: flex-start; padding: .55rem .65rem; border: 1px solid var(--linha); border-radius: var(--raio); background: var(--card); max-width: 100%; box-sizing: border-box; }
+/* O rádio volta ao tamanho nativo (a regra global deixa todo input 100%). */
+.status-alvo > input[type="radio"] {
+  flex: 0 0 auto; width: 18px; height: 18px; padding: 0; margin: .15rem 0 0;
+  appearance: auto; -webkit-appearance: radio; border: none; background: none;
+}
+/* O texto ocupa o resto e QUEBRA linha (min-width:0 evita estourar a largura). */
+.status-alvo > span { flex: 1 1 auto; min-width: 0; overflow-wrap: break-word; }
 
 /* ---- Dashboard / resumo geral ---- */
 .resumo-geral h2 { font-size: 1.1rem; }
