@@ -8,6 +8,14 @@ export const VERSAO = '12/11/2026';
 export const CHANGELOG = [
   {
     data: '12/11/2026',
+    titulo: 'Microfone mais estável (principalmente no iPhone)',
+    itens: [
+      'Ao apertar "Parar", o sistema processa na hora o que você falou e o botão volta para "Falar" — antes, no iPhone, o botão às vezes travava em "Parar" e o microfone ficava ligado.',
+      'O microfone agora é desligado de forma garantida ao parar.',
+    ],
+  },
+  {
+    data: '12/11/2026',
     titulo: 'Percentual de gestão padronizado em todas as obras',
     itens: [
       'O campo "Percentual do escritório — gestão (%)" agora aparece em TODAS as obras, tanto no cadastro quanto em "Editar obra" — não some mais em obra "sem gestão".',

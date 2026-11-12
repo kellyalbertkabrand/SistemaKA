@@ -71,9 +71,12 @@ export function ouvir({ onParcial, onFim, onErro } = {}) {
   return rec;
 }
 
-// Encerra de vez (marca a flag para o onend não reiniciar).
+// Encerra de vez (marca a flag para o onend não reiniciar). Usa stop() e
+// abort(): no iPhone o stop() às vezes não encerra nem libera o microfone
+// (pontinho laranja preso), então o abort() garante o desligamento.
 export function parar(rec) {
   if (!rec) return;
   rec._parar = true;
   try { rec.stop(); } catch { /* ignora */ }
+  try { rec.abort(); } catch { /* ignora */ }
 }

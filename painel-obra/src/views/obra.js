@@ -1432,6 +1432,7 @@ function configurarLancamento(container, obra, etapas, fornecedores, lancamentos
 
   // Botão de microfone — grava continuamente até clicar em "Parar".
   let rec = null;
+  let processando = false; // evita processar duas vezes (clique + onFim tardio)
 
   const resetMic = () => {
     rec = null;
@@ -1439,14 +1440,30 @@ function configurarLancamento(container, obra, etapas, fornecedores, lancamentos
     btnMic.textContent = '🎤 Falar';
   };
 
+  // Encerra a gravação e manda para a IA UMA vez só. É chamado tanto no clique
+  // em "Parar" (na hora, sem esperar o reconhecimento) quanto no onFim — o que
+  // vier primeiro. No iPhone o onFim costuma não disparar, então o clique é
+  // quem resolve; a trava `processando` impede processar em dobro.
+  const finalizar = (texto) => {
+    if (processando) return;
+    processando = true;
+    resetMic();
+    const t = (texto || '').trim();
+    if (t) interpretar(t);
+    else setStatus('Não captei nada. Tente de novo ou digite.', 'erro');
+  };
+
   btnMic.addEventListener('click', () => {
-    // Já está gravando -> encerra e manda pra IA.
+    // Já está gravando -> encerra AGORA com o texto já captado e processa.
     if (rec) {
       setStatus('Processando o que você falou…');
+      const texto = inputTexto.value;
       parar(rec);
+      finalizar(texto);
       return;
     }
     // Começa a gravar.
+    processando = false;
     setStatus('Ouvindo… fale à vontade e clique em "Parar" quando terminar.');
     btnMic.classList.add('gravando');
     btnMic.textContent = '■ Parar';
@@ -1455,21 +1472,23 @@ function configurarLancamento(container, obra, etapas, fornecedores, lancamentos
         inputTexto.value = texto; // mostra o texto aparecendo ao vivo
       },
       onErro: (err) => {
+        if (processando) return;
         resetMic();
         setStatus(err === 'not-allowed' || err === 'service-not-allowed'
           ? 'Permita o microfone no navegador para usar a voz.'
           : 'Não foi possível ouvir. Use o campo de texto.', 'erro');
       },
       onFim: (textoFinal) => {
-        resetMic();
-        const texto = (textoFinal || inputTexto.value || '').trim();
-        if (texto) interpretar(texto);
-        else setStatus('Não captei nada. Tente de novo ou digite.', 'erro');
+        finalizar(textoFinal || inputTexto.value);
       },
     });
   });
 
-  btnInterpretar.addEventListener('click', () => interpretar(inputTexto.value));
+  btnInterpretar.addEventListener('click', () => {
+    // Se estiver gravando, encerra o microfone antes de organizar.
+    if (rec) { processando = true; parar(rec); resetMic(); }
+    interpretar(inputTexto.value);
+  });
   inputTexto.addEventListener('keydown', (e) => {
     // Enter comum quebra linha (é um textarea); Ctrl/Cmd+Enter organiza com a IA.
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
