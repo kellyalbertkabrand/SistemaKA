@@ -1,6 +1,6 @@
 import {
   obterObra, listarEtapas, listarLancamentos, atualizarObra, excluirObra, definirPublicado,
-  criarEtapa, atualizarEtapa, excluirEtapa, criarLancamento, atualizarLancamento, excluirLancamento,
+  criarEtapa, atualizarEtapa, excluirEtapa, criarLancamento, atualizarLancamento, excluirLancamento, restaurarLancamento,
   moverParaLixeira, restaurarDaLixeira, sair,
   anexarRecibo, removerRecibo, obterRecibo, enviarFoto, listarFotos, excluirFoto, atualizarFoto, obterFotoBin, salvarFotoBin, excluirBin,
   listarFornecedores, listarContratosDaObra, listarBriefingsDaObra,
@@ -692,14 +692,21 @@ export async function renderObra(container, obraId, opts = {}) {
       // Guarda os dados da etapa para poder DESFAZER (recriar).
       const nomeBkp = b.getAttribute('data-nome') || '';
       const orcadoBkp = Number(b.getAttribute('data-orcado') || 0);
-      const lixId = await moverParaLixeira({
-        tipo: 'etapa', obraId: obra.id, obraNome: obra.nome,
-        dados: { obraId: obra.id, nome: nomeBkp, orcado: orcadoBkp },
-        rotulo: `Etapa "${nomeBkp}"`,
-      });
+      // Melhor esforço: tenta mover para a lixeira; se falhar (ex.: regras do
+      // Firebase ainda não publicadas), a exclusão acontece mesmo assim e o
+      // "Desfazer" recria a etapa diretamente — nunca trava a tela.
+      let lixId = null;
+      try {
+        lixId = await moverParaLixeira({
+          tipo: 'etapa', obraId: obra.id, obraNome: obra.nome,
+          dados: { obraId: obra.id, nome: nomeBkp, orcado: orcadoBkp },
+          rotulo: `Etapa "${nomeBkp}"`,
+        });
+      } catch { /* lixeira indisponível — segue com a exclusão */ }
       await excluirEtapa(id);
-      toastDesfazer(`Etapa "${nomeBkp}" movida para a lixeira.`, async () => {
-        await restaurarDaLixeira(lixId);
+      toastDesfazer(`Etapa "${nomeBkp}" ${lixId ? 'movida para a lixeira' : 'excluída'}.`, async () => {
+        if (lixId) await restaurarDaLixeira(lixId);
+        else await criarEtapa({ obraId: obra.id, nome: nomeBkp, orcado: orcadoBkp });
         recarregar();
       });
       recarregar();
@@ -824,13 +831,19 @@ export async function renderObra(container, obraId, opts = {}) {
       const bkp = lancamentos.find((l) => l.id === id);
       if (bkp) {
         const { id: _ignora, ...dados } = bkp;
-        const lixId = await moverParaLixeira({
-          tipo: 'lancamento', origemId: id, obraId: obra.id, obraNome: obra.nome, dados,
-          rotulo: `${bkp.etapa || 'Lançamento'}${bkp.descricao ? ' · ' + bkp.descricao : ''} · ${moeda(bkp.valor || 0)}`,
-        });
+        // Melhor esforço: tenta a lixeira; se falhar, exclui mesmo assim e o
+        // "Desfazer" recria o lançamento com o mesmo id (preserva a nota fiscal).
+        let lixId = null;
+        try {
+          lixId = await moverParaLixeira({
+            tipo: 'lancamento', origemId: id, obraId: obra.id, obraNome: obra.nome, dados,
+            rotulo: `${bkp.etapa || 'Lançamento'}${bkp.descricao ? ' · ' + bkp.descricao : ''} · ${moeda(bkp.valor || 0)}`,
+          });
+        } catch { /* lixeira indisponível — segue com a exclusão */ }
         await excluirLancamento(id);
-        toastDesfazer('Lançamento movido para a lixeira.', async () => {
-          await restaurarDaLixeira(lixId);
+        toastDesfazer(`Lançamento ${lixId ? 'movido para a lixeira' : 'excluído'}.`, async () => {
+          if (lixId) await restaurarDaLixeira(lixId);
+          else await restaurarLancamento(id, dados);
           recarregar();
         });
       } else {

@@ -24,6 +24,7 @@ export function navBar(ativo = '') {
       ${item('/briefings', 'Briefing', 'briefing')}
       ${item('/clientes', 'Clientes', 'clientes')}
       ${item('/fornecedores', 'Fornecedores', 'fornecedores')}
+      ${item('/lixeira', '🗑 Lixeira', 'lixeira')}
       ${item('/atualizacoes', 'Atualizações', 'atualizacoes')}
       <button class="nav-sair" id="sair">Sair</button>
     </div>
