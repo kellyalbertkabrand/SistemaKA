@@ -32,9 +32,14 @@ export function dadosAndamento(etapas, lancamentos) {
   return { linhas, totOrcado, totReal, economia: totOrcado - totReal };
 }
 
-export async function baixarPdfAndamento({ obra, etapas, lancamentos }) {
+export async function baixarPdfAndamento({ obra, etapas, lancamentos, tipo = 'acompanhamento' }) {
   const { linhas, totOrcado, totReal, economia } = dadosAndamento(etapas, lancamentos);
   const emitidoEm = dataBR(new Date().toISOString());
+  const final = tipo === 'finalizacao';
+  // Textos que mudam conforme o tipo de relatório.
+  const cfg = final
+    ? { titulo: 'Relatório Final da Obra', sub: 'Fechamento — Orçado × Realizado', rotReal: 'Realizado (final)', rotEcon: 'Economia final', resumo: 'Resultado final do orçamento', arq: 'final' }
+    : { titulo: 'Acompanhamento da Obra', sub: 'Orçado × Realizado por etapa', rotReal: 'Realizado (até agora)', rotEcon: 'Economia', resumo: 'Execução do orçamento', arq: 'acompanhamento' };
 
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
   const M = 40;
@@ -58,9 +63,9 @@ export async function baixarPdfAndamento({ obra, etapas, lancamentos }) {
     try { doc.addImage(logo, 'PNG', M, y, logo.width * escala, logo.height * escala); } catch { /* segue */ }
   }
   doc.setTextColor(...TERRA); doc.setFont('helvetica', 'bold'); doc.setFontSize(16);
-  doc.text('Andamento da Obra', W - M, y + 16, { align: 'right' });
+  doc.text(cfg.titulo, W - M, y + 16, { align: 'right' });
   doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...MUTED);
-  doc.text('Orçado × Realizado por etapa', W - M, y + 30, { align: 'right' });
+  doc.text(cfg.sub, W - M, y + 30, { align: 'right' });
 
   y += 54;
   doc.setDrawColor(...TERRA); doc.setLineWidth(2); doc.line(M, y, W - M, y);
@@ -87,9 +92,37 @@ export async function baixarPdfAndamento({ obra, etapas, lancamentos }) {
     doc.text(val, x + 12, y + 40);
   };
   caixa(0, 'Orçado (estimado)', moeda(totOrcado), ESCURO);
-  caixa(1, 'Realizado (até agora)', moeda(totReal), ESCURO);
-  caixa(2, economiaPos ? 'Economia' : 'Acima do previsto', moeda(Math.abs(economia)), economiaPos ? VERDE : TERRA);
+  caixa(1, cfg.rotReal, moeda(totReal), ESCURO);
+  caixa(2, economiaPos ? cfg.rotEcon : 'Acima do previsto', moeda(Math.abs(economia)), economiaPos ? VERDE : TERRA);
   y += boxH + 24;
+
+  // ---- Gráfico de RESUMO: divisão do orçamento (Realizado × Economia) ----
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(...ESCURO);
+  doc.text(cfg.resumo, M, y);
+  y += 10;
+  const bw = W - 2 * M, bh = 22;
+  const over = totReal > totOrcado;
+  const pctReal = totOrcado > 0 ? Math.round((totReal / totOrcado) * 100) : (totReal > 0 ? 100 : 0);
+  // Trilho = orçado; preenchido = realizado (vermelho se passou).
+  doc.setFillColor(...TRACK); doc.roundedRect(M, y, bw, bh, 3, 3, 'F');
+  const realW = totOrcado > 0 ? Math.min(1, totReal / totOrcado) * bw : (totReal > 0 ? bw : 0);
+  doc.setFillColor(...(over ? VERMELHO : TERRA)); doc.roundedRect(M, y, Math.max(2, realW), bh, 3, 3, 'F');
+  // Rótulo do % dentro da barra.
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(255, 255, 255);
+  if (realW > 60) doc.text(`${pctReal}% usado`, M + 8, y + 15);
+  y += bh + 14;
+  // Legenda.
+  const leg = (x, cor, txt) => {
+    doc.setFillColor(...cor); doc.rect(x, y - 7, 9, 9, 'F');
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(...TEXTO);
+    doc.text(txt, x + 14, y);
+    return x + 14 + doc.getTextWidth(txt) + 18;
+  };
+  let lx = M;
+  lx = leg(lx, over ? VERMELHO : TERRA, `Realizado: ${moeda(totReal)} (${pctReal}%)`);
+  if (over) leg(lx, VERMELHO, `Acima do previsto: ${moeda(totReal - totOrcado)}`);
+  else leg(lx, VERDE, `Economia: ${moeda(economia)}`);
+  y += 22;
 
   // Gráfico de barras: por etapa, Orçado (cinza) e Realizado (cor da marca).
   doc.setFont('helvetica', 'bold'); doc.setFontSize(11); doc.setTextColor(...ESCURO);
@@ -141,8 +174,10 @@ export async function baixarPdfAndamento({ obra, etapas, lancamentos }) {
   if (y > H - 90) { doc.addPage(); y = M; }
   y += 4;
   doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...MUTED);
-  const nota = 'Orçado = estimativa de cada etapa. Realizado = soma dos custos lançados até agora. '
-    + 'Economia = Orçado - Realizado. Etapas ainda em andamento podem ter o Realizado abaixo do Orçado.';
+  const nota = final
+    ? 'Relatório final da obra. Orçado = estimativa de cada etapa. Realizado = custo total lançado. Economia = Orçado - Realizado.'
+    : 'Orçado = estimativa de cada etapa. Realizado = soma dos custos lançados até agora. '
+      + 'Economia = Orçado - Realizado. Etapas ainda em andamento podem ter o Realizado abaixo do Orçado.';
   const notaLines = doc.splitTextToSize(nota, W - 2 * M);
   doc.text(notaLines, M, y);
 
@@ -153,5 +188,5 @@ export async function baixarPdfAndamento({ obra, etapas, lancamentos }) {
   doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(...MUTED);
   doc.text(MARCA.endereco || '', M, H - 30);
 
-  doc.save(`andamento-${obra?.slug || 'obra'}.pdf`);
+  doc.save(`relatorio-${cfg.arq}-${obra?.slug || 'obra'}.pdf`);
 }

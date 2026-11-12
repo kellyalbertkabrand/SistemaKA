@@ -177,10 +177,13 @@ export async function renderObra(container, obraId, opts = {}) {
       <section class="card">
         <div class="row-between">
           <div>
-            <strong>Relatório de andamento (PDF)</strong>
-            <p class="muted" style="margin:.15rem 0 0">Gráfico de Orçado × Realizado por etapa, com a economia — pronto para enviar ao cliente.</p>
+            <strong>Relatório da obra (PDF)</strong>
+            <p class="muted" style="margin:.15rem 0 0">Gráficos de Orçado × Realizado por etapa, com a economia. Escolha o tipo:</p>
           </div>
-          <button class="btn btn-mini" id="btn-andamento">📊 Gerar PDF</button>
+          <div class="row-end">
+            <button class="btn btn-mini" id="btn-rel-acomp" title="Para ir acompanhando a obra">📊 Acompanhamento</button>
+            <button class="btn btn-mini" id="btn-rel-final" title="Relatório de fechamento, com o resultado final">🏁 Finalização</button>
+          </div>
         </div>
         <p class="erro" id="andamento-erro" hidden></p>
       </section>
@@ -452,22 +455,25 @@ export async function renderObra(container, obraId, opts = {}) {
   });
 
   // ---- Relatório de reembolso (PDF por período) ----
-  // Relatório de andamento (Orçado × Realizado por etapa).
-  const btnAndamento = container.querySelector('#btn-andamento');
+  // Relatório da obra (Orçado × Realizado por etapa) — dois tipos.
   const andamentoErro = container.querySelector('#andamento-erro');
-  btnAndamento.addEventListener('click', async () => {
+  const gerarRelatorio = async (btn, tipo) => {
     andamentoErro.hidden = true;
-    const txt = btnAndamento.textContent;
-    btnAndamento.disabled = true; btnAndamento.textContent = 'Gerando…';
+    const txt = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Gerando…';
     try {
-      await baixarPdfAndamento({ obra, etapas, lancamentos });
+      await baixarPdfAndamento({ obra, etapas, lancamentos, tipo });
     } catch (err) {
       andamentoErro.textContent = 'Não foi possível gerar o PDF: ' + (err?.message || err);
       andamentoErro.hidden = false;
     } finally {
-      btnAndamento.disabled = false; btnAndamento.textContent = txt;
+      btn.disabled = false; btn.textContent = txt;
     }
-  });
+  };
+  const btnRelAcomp = container.querySelector('#btn-rel-acomp');
+  const btnRelFinal = container.querySelector('#btn-rel-final');
+  btnRelAcomp.addEventListener('click', () => gerarRelatorio(btnRelAcomp, 'acompanhamento'));
+  btnRelFinal.addEventListener('click', () => gerarRelatorio(btnRelFinal, 'finalizacao'));
 
   const abrirReembolso = container.querySelector('#abrir-reembolso');
   const formReembolso = container.querySelector('#form-reembolso');

@@ -22,7 +22,8 @@ export const CHANGELOG = [
     itens: [
       'No fim da lista de lançamentos agora aparece o total: Pago, Pendente e Total geral.',
       'A tabela de etapas ganhou uma linha de Total (orçado e realizado somados).',
-      'Novo "Relatório de andamento (PDF)": gráfico de Orçado × Realizado por etapa, com a economia — pronto para enviar ao cliente.',
+      'Novo "Relatório da obra (PDF)" com gráficos de Orçado × Realizado por etapa e a economia — pronto para enviar ao cliente. São dois tipos: "Acompanhamento" (para ir acompanhando) e "Finalização" (relatório de fechamento, com o resultado final).',
+      'Os relatórios agora trazem também um gráfico de resumo do orçamento (quanto já foi usado × economia).',
     ],
   },
   {
