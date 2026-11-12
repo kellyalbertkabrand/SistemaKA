@@ -433,7 +433,8 @@ function configurarFormNovaObra(container) {
   const linhas = container.querySelector('#etapas-linhas');
 
   // "Sem gestão de obra" (só projeto): o campo de orçamento vira "Valor do
-  // projeto" e o percentual de gestão some (não se aplica).
+  // projeto" e aparece o parcelamento. O "Percentual do escritório — gestão"
+  // fica SEMPRE disponível (padrão em toda obra), com ou sem gestão.
   const gestaoSel = container.querySelector('#o-gestao');
   const orcLabel = container.querySelector('#o-orcamento-label');
   const pctLabel = container.querySelector('#o-percentual-label');
@@ -441,7 +442,7 @@ function configurarFormNovaObra(container) {
   const sincronizarTipoServico = () => {
     const semGestao = gestaoSel.value === 'sem';
     orcLabel.childNodes[0].nodeValue = semGestao ? 'Valor do projeto (R$)' : 'Orçamento total (R$)';
-    pctLabel.hidden = semGestao;
+    pctLabel.hidden = false; // percentual sempre visível, em todas as obras
     parcLabel.hidden = !semGestao;
   };
   gestaoSel.addEventListener('change', sincronizarTipoServico);

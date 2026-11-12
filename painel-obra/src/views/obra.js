@@ -83,7 +83,9 @@ export async function renderObra(container, obraId, opts = {}) {
   // sobre toda a obra. É um indicador próprio, à parte — NÃO entra no "Pago"
   // (quem quiser o total é só somar). Só aparece nas obras com gestão.
   const { honorario: administracao, pctEsc, pctFmt } = calcularReembolso(lancamentos, obra);
-  const temGestao = obra.gestao !== false;
+  // Mostra a caixa "Administração" quando a obra tem gestão OU já tem um
+  // percentual definido (assim vale para qualquer obra que cobre honorário).
+  const mostrarAdmin = obra.gestao !== false || pctEsc > 0;
 
   const linkPublico = `${window.location.origin}/obra/${obra.slug}`;
 
@@ -141,13 +143,13 @@ export async function renderObra(container, obraId, opts = {}) {
         <p class="erro" id="ed-erro" hidden></p>
       </form>
 
-      <section class="kpis${temGestao ? ' tem-admin' : ''}">
+      <section class="kpis${mostrarAdmin ? ' tem-admin' : ''}">
         ${kpi('Orçado', moeda(obra.orcamento), 'val-orcado')}
         ${kpi('Executado', moeda(executado))}
         ${kpi('Saldo', moeda(saldo), saldo < 0 ? 'neg' : 'val-saldo')}
         ${kpi('Pago', moeda(pago))}
         ${kpi('Pendente', moeda(pendente))}
-        ${temGestao ? kpi(pctEsc > 0 ? `Administração (${pctFmt}%)` : 'Administração', moeda(administracao), 'val-admin') : ''}
+        ${mostrarAdmin ? kpi(pctEsc > 0 ? `Administração (${pctFmt}%)` : 'Administração', moeda(administracao), 'val-admin') : ''}
       </section>
 
       <section class="card link-cliente">
@@ -517,8 +519,9 @@ export async function renderObra(container, obraId, opts = {}) {
   const abrirEditar = container.querySelector('#abrir-editar');
   const formEditar = container.querySelector('#form-editar');
   const edErro = container.querySelector('#ed-erro');
-  // "Sem gestão de obra" (só projeto): orçamento vira "Valor do projeto" e o
-  // percentual de gestão some.
+  // "Sem gestão de obra" (só projeto): orçamento vira "Valor do projeto" e
+  // aparece o parcelamento. O "Percentual do escritório — gestão" fica SEMPRE
+  // disponível (padrão em toda obra), com ou sem gestão.
   const edGestaoSel = container.querySelector('#ed-gestao');
   const edOrcLabel = container.querySelector('#ed-orcamento-label');
   const edPctLabel = container.querySelector('#ed-percentual-label');
@@ -526,7 +529,7 @@ export async function renderObra(container, obraId, opts = {}) {
   const sincronizarTipoServicoEd = () => {
     const semGestao = edGestaoSel.value === 'sem';
     edOrcLabel.childNodes[0].nodeValue = semGestao ? 'Valor do projeto (R$)' : 'Orçamento total (R$)';
-    edPctLabel.hidden = semGestao;
+    edPctLabel.hidden = false; // percentual sempre visível, em todas as obras
     edParcLabel.hidden = !semGestao;
   };
   edGestaoSel.addEventListener('change', sincronizarTipoServicoEd);

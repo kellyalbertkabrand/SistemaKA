@@ -8,6 +8,14 @@ export const VERSAO = '12/11/2026';
 export const CHANGELOG = [
   {
     data: '12/11/2026',
+    titulo: 'Percentual de gestão padronizado em todas as obras',
+    itens: [
+      'O campo "Percentual do escritório — gestão (%)" agora aparece em TODAS as obras, tanto no cadastro quanto em "Editar obra" — não some mais em obra "sem gestão".',
+      'A caixa "Administração" no painel passa a aparecer sempre que a obra tiver um percentual definido.',
+    ],
+  },
+  {
+    data: '12/11/2026',
     titulo: 'Mudar o status de um lançamento por voz/IA',
     itens: [
       'Agora dá para mudar o status de um custo já lançado falando ou escrevendo — ex.: "marcar a fundação da Argamazza como paga".',
