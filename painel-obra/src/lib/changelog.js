@@ -8,10 +8,10 @@ export const VERSAO = '12/11/2026';
 export const CHANGELOG = [
   {
     data: '12/11/2026',
-    titulo: 'Desfazer ao editar ou excluir uma etapa',
+    titulo: 'Desfazer em etapas e lançamentos',
     itens: [
-      'Ao excluir uma etapa, aparece uma barra "↩ Desfazer" para recuperar a etapa (com o orçado), caso tenha sido sem querer.',
-      'Ao editar uma etapa (nome ou orçado), também é possível desfazer e voltar ao que estava antes — inclusive o nome nos lançamentos.',
+      'Ao excluir ou editar uma etapa, aparece a barra "↩ Desfazer" para voltar ao que estava (recupera a etapa com o orçado, ou reverte a edição — inclusive o nome nos lançamentos).',
+      'Nos lançamentos também: ao excluir, editar ou mudar o status (pago/pendente), dá para desfazer. A exclusão recupera o lançamento igualzinho, com a nota fiscal.',
     ],
   },
   {

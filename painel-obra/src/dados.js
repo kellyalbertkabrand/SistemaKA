@@ -221,6 +221,12 @@ export async function excluirLancamento(id) {
   await deleteDoc(doc(db, 'lancamentos', id));
 }
 
+// Recria um lançamento com o MESMO id (usado no "Desfazer" da exclusão), para
+// preservar a data original e o vínculo com a nota fiscal (recibos/{id}).
+export async function restaurarLancamento(id, dados) {
+  await setDoc(doc(db, 'lancamentos', id), dados);
+}
+
 // ---------------------------------------------------------------------------
 // Pagamentos do CLIENTE ao ESCRITÓRIO (recebimentos). Registro do que o cliente
 // já pagou (reembolso + honorário), para constar e apurar o saldo em aberto.

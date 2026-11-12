@@ -1,6 +1,6 @@
 import {
   obterObra, listarEtapas, listarLancamentos, atualizarObra, excluirObra, definirPublicado,
-  criarEtapa, atualizarEtapa, excluirEtapa, criarLancamento, atualizarLancamento, excluirLancamento, sair,
+  criarEtapa, atualizarEtapa, excluirEtapa, criarLancamento, atualizarLancamento, excluirLancamento, restaurarLancamento, sair,
   anexarRecibo, removerRecibo, obterRecibo, enviarFoto, listarFotos, excluirFoto, atualizarFoto, obterFotoBin, salvarFotoBin, excluirBin,
   listarFornecedores, listarContratosDaObra, listarBriefingsDaObra,
 } from '../dados.js';
@@ -813,7 +813,17 @@ export async function renderObra(container, obraId, opts = {}) {
     const excluir = e.target.closest('[data-excluir-lanc-modal]');
     if (excluir) {
       if (!confirm('Excluir este lançamento?')) return;
-      await excluirLancamento(excluir.getAttribute('data-excluir-lanc-modal'));
+      const id = excluir.getAttribute('data-excluir-lanc-modal');
+      // Guarda o lançamento inteiro para poder DESFAZER (recria com o mesmo id).
+      const bkp = lancamentos.find((l) => l.id === id);
+      await excluirLancamento(id);
+      if (bkp) {
+        const { id: _ignora, ...dados } = bkp;
+        toastDesfazer('Lançamento excluído.', async () => {
+          await restaurarLancamento(id, dados);
+          recarregar();
+        });
+      }
       fecharModal(); recarregar(); return;
     }
     const ver = e.target.closest('[data-ver-recibo-modal]');
@@ -836,9 +846,23 @@ export async function renderObra(container, obraId, opts = {}) {
       status: modalEl.querySelector('.m-status').value === 'pendente' ? 'pendente' : 'pago',
       pagoPor: modalEl.querySelector('.m-pagopor').value === 'cliente' ? 'cliente' : 'escritorio',
     };
+    // Valores antigos, para o DESFAZER voltar exatamente ao que estava.
+    const ant = lancamentos.find((l) => l.id === id);
+    const antes = ant ? {
+      etapa: ant.etapa || 'Geral', fornecedor: ant.fornecedor ?? null,
+      descricao: ant.descricao ?? null, valor: Number(ant.valor || 0),
+      status: ant.status === 'pendente' ? 'pendente' : 'pago',
+      pagoPor: ant.pagoPor === 'cliente' ? 'cliente' : 'escritorio',
+    } : null;
     botao.disabled = true; botao.textContent = 'Salvando…';
     try {
       await atualizarLancamento(id, dados);
+      if (antes) {
+        toastDesfazer('Lançamento atualizado.', async () => {
+          await atualizarLancamento(id, antes);
+          recarregar();
+        });
+      }
       fecharModal(); recarregar();
     } catch (err) {
       botao.disabled = false; botao.textContent = 'Salvar';
@@ -1464,6 +1488,7 @@ function configurarLancamento(container, obra, etapas, fornecedores, lancamentos
       if (!alvo) return;
       const btn = preview.querySelector('#st-confirmar');
       btn.disabled = true; btn.textContent = 'Salvando…';
+      const statusAnterior = alvo.status === 'pendente' ? 'pendente' : 'pago';
       try {
         await atualizarLancamento(alvo.id, { status });
       } catch (error) {
@@ -1471,6 +1496,10 @@ function configurarLancamento(container, obra, etapas, fornecedores, lancamentos
         setStatus(error?.message || 'Erro ao atualizar.', 'erro');
         return;
       }
+      toastDesfazer(`Status alterado para ${status}.`, async () => {
+        await atualizarLancamento(alvo.id, { status: statusAnterior });
+        recarregar();
+      });
       recarregar();
     });
   }
