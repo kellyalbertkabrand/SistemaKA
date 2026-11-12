@@ -3,9 +3,18 @@
 // sucinta e clara para o cliente — e atualize a VERSAO (data da publicação).
 // É exibido na página pública /atualizacoes, que pode ser enviada ao cliente.
 
-export const VERSAO = '06/11/2026';
+export const VERSAO = '12/11/2026';
 
 export const CHANGELOG = [
+  {
+    data: '12/11/2026',
+    titulo: 'Mudar o status de um lançamento por voz/IA',
+    itens: [
+      'Agora dá para mudar o status de um custo já lançado falando ou escrevendo — ex.: "marcar a fundação da Argamazza como paga".',
+      'A IA identifica o lançamento e mostra qual é (fornecedor e valor) para você confirmar antes de mudar — nunca altera sozinho.',
+      'Se houver mais de um parecido, o sistema deixa você escolher qual.',
+    ],
+  },
   {
     data: '06/11/2026',
     titulo: 'Indicador de Administração na obra',

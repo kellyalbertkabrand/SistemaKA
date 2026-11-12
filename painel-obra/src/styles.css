@@ -513,6 +513,11 @@ body.modal-aberto { overflow: hidden; }
 /* Administração (honorário do escritório) na cor da marca. */
 .kpi strong.val-admin { color: var(--acento); }
 
+/* Confirmação de mudança de status via IA (lista de alvos). */
+.status-alvos { display: flex; flex-direction: column; gap: .4rem; margin: .5rem 0; }
+.status-alvo { display: flex; gap: .55rem; align-items: flex-start; padding: .55rem .65rem; border: 1px solid var(--linha); border-radius: var(--raio); background: var(--card); }
+.status-alvo input { margin-top: .25rem; }
+
 /* ---- Dashboard / resumo geral ---- */
 .resumo-geral h2 { font-size: 1.1rem; }
 .alerta { margin: .8rem 0 0; padding: .6rem .8rem; background: #f7e3e1; color: var(--neg); border-radius: 10px; font-size: .88rem; }

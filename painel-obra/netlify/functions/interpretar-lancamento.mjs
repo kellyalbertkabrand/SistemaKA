@@ -20,6 +20,7 @@ function json(body, status = 200) {
   });
 }
 
+// Regras para EXTRAIR um novo lançamento (ação "lancar"). Mantidas iguais.
 const SISTEMA = `Extraia um lançamento de custo de obra de uma frase em pt-BR.
 - etapa: categoria, inicial maiúscula (Fundação, Elétrica, Hidráulica, Acabamento, Material, Mão de obra...). Havendo etapas cadastradas, reutilize o nome exato que encaixar.
 - descricao: resumo em poucas palavras.
@@ -83,23 +84,57 @@ export default async (req) => {
 
   let texto = "";
   let etapas = [];
+  let lancamentos = [];
   try {
     const body = await req.json();
     texto = (body?.texto ?? "").toString().trim();
     if (Array.isArray(body?.etapas)) etapas = body.etapas.filter(Boolean);
+    // Lançamentos existentes (para a IA poder MUDAR o status de um já lançado).
+    // O front manda uma lista enxuta e numerada; a IA devolve o(s) número(s).
+    if (Array.isArray(body?.lancamentos)) {
+      lancamentos = body.lancamentos
+        .filter((l) => l && typeof l === "object")
+        .slice(0, 60)
+        .map((l) => ({
+          etapa: (l.etapa || "").toString().slice(0, 60),
+          descricao: (l.descricao || "").toString().slice(0, 80),
+          fornecedor: (l.fornecedor || "").toString().slice(0, 60),
+          valor: Number(l.valor || 0),
+          status: l.status === "pendente" ? "pendente" : "pago",
+        }));
+    }
   } catch {
     return json({ ok: false, erro: "body_invalido", mensagem: "Pedido inválido." }, 400);
   }
   if (!texto) return json({ ok: false, erro: "texto_vazio", mensagem: "Escreva ou fale o lançamento primeiro." }, 400);
 
   const dica = etapas.length ? ` Etapas cadastradas: ${etapas.join(", ")}.` : "";
-  // Método mais compatível: pedimos o JSON direto no prompt (sem saída
-  // estruturada, que em alguns modelos exige beta/pode recusar) e lemos de
-  // forma robusta. Haiku devolve um JSON curto e limpo com esta instrução.
+
+  // Lista numerada dos lançamentos existentes, para a IA referenciar por número.
+  const listaLanc = lancamentos.length
+    ? "\n\nLançamentos já existentes (para a ação \"status\"), numerados:\n" +
+      lancamentos.map((l, i) =>
+        `${i + 1}) [${l.status}] ${l.etapa}${l.fornecedor ? " · " + l.fornecedor : ""}${l.descricao ? " · " + l.descricao : ""} · R$ ${l.valor.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
+      ).join("\n")
+    : "";
+
+  // Instrução de intenção: a IA primeiro decide se é um NOVO lançamento
+  // ("lancar") ou MUDAR O STATUS de um já existente ("status").
+  const instrucao =
+    `Primeiro decida a AÇÃO da frase:\n` +
+    `- "lancar": descreve um NOVO custo/gasto da obra.\n` +
+    `- "status": pede para MUDAR O STATUS (pago/pendente) de um lançamento que JÁ existe na lista numerada acima (ex.: "marca a fundação como paga", "o concreto da Argamazza já foi pago", "voltar os muros para pendente"). Só use "status" quando a frase se referir a algo já lançado e NÃO traga um novo gasto.\n\n` +
+    SISTEMA + `\n\n` +
+    `Responda SOMENTE com um JSON válido, sem texto antes ou depois.\n` +
+    `Se a ação for "lancar": {"acao":"lancar","etapa":"...","descricao":"...","valor":0,"status":"pago"}\n` +
+    `Se a ação for "status": {"acao":"status","novoStatus":"pago","alvos":[N]}\n` +
+    `- novoStatus: só "pago" ou "pendente", conforme a frase.\n` +
+    `- alvos: os NÚMEROS da lista acima que correspondem ao que a pessoa citou. Inclua mais de um só se estiver genuinamente ambíguo; se nada corresponder, use [].`;
+
   const corpo = {
     model: MODEL,
-    max_tokens: 300,
-    system: SISTEMA + `\n\nResponda SOMENTE com um JSON válido, sem texto antes ou depois, no formato exato: {"etapa": "...", "descricao": "...", "valor": 0, "status": "pago"}. O campo status só pode ser "pago" ou "pendente".`,
+    max_tokens: 350,
+    system: instrucao + listaLanc,
     messages: [{ role: "user", content: texto + dica }],
   };
 
@@ -128,7 +163,20 @@ export default async (req) => {
 
     const data = await resp.json().catch(() => null);
     const bloco = (data?.content || []).find((b) => b.type === "text");
-    const lancamento = normalizar(extrairJSON(bloco?.text));
+    const obj = extrairJSON(bloco?.text);
+
+    // Ação "status": mudar o status de um lançamento já existente.
+    if (obj && obj.acao === "status") {
+      const novoStatus = obj.novoStatus === "pendente" ? "pendente" : "pago";
+      const total = lancamentos.length;
+      const alvos = Array.isArray(obj.alvos)
+        ? [...new Set(obj.alvos.map((n) => Number(n)).filter((n) => Number.isInteger(n) && n >= 1 && n <= total))]
+        : [];
+      return json({ ok: true, mudancaStatus: { novoStatus, alvos } });
+    }
+
+    // Ação "lancar" (padrão): devolve o lançamento como sempre.
+    const lancamento = normalizar(obj);
     if (!lancamento) {
       return json({ ok: false, erro: "sem_resposta",
         mensagem: "A IA não entendeu a frase. Tente reformular (ex.: \"material elétrico, 300 reais, pago no pix\")." });

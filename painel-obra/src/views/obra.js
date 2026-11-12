@@ -195,7 +195,7 @@ export async function renderObra(container, obraId, opts = {}) {
 
       <section class="card lancar">
         <h2>Lançar custo</h2>
-        <p class="muted">Fale ou escreva — a IA organiza etapa, valor e status.</p>
+        <p class="muted">Fale ou escreva — a IA organiza etapa, valor e status. Você também pode mudar o status de um lançamento: ex.: <em>"marcar a fundação da Argamazza como paga"</em>.</p>
         <div class="lancar-controles">
           <textarea id="texto-livre" class="texto-livre" rows="2"
             placeholder='Ex.: "material elétrico, três mil e quinhentos, pago no Pix"'></textarea>
@@ -624,7 +624,7 @@ export async function renderObra(container, obraId, opts = {}) {
   });
 
   // ---- Lançamento por voz / texto / IA ----
-  configurarLancamento(container, obra, etapas, fornecedores, recarregar);
+  configurarLancamento(container, obra, etapas, fornecedores, lancamentos, recarregar);
 
   // ---- Etapas ----
   const addEtapaBtn = container.querySelector('#add-etapa');
@@ -1263,7 +1263,7 @@ export async function renderObra(container, obraId, opts = {}) {
 // ---------------------------------------------------------------------------
 // Lançamento (voz + IA)
 // ---------------------------------------------------------------------------
-function configurarLancamento(container, obra, etapas, fornecedores, recarregar) {
+function configurarLancamento(container, obra, etapas, fornecedores, lancamentos, recarregar) {
   const btnMic = container.querySelector('#btn-mic');
   const inputTexto = container.querySelector('#texto-livre');
   const btnInterpretar = container.querySelector('#btn-interpretar');
@@ -1290,10 +1290,16 @@ function configurarLancamento(container, obra, etapas, fornecedores, recarregar)
     btnInterpretar.disabled = true;
 
     try {
+      // Manda a lista de lançamentos (enxuta e na MESMA ordem) para a IA poder
+      // referenciar qual mudar de status, pelo número.
+      const listaLanc = lancamentos.map((l) => ({
+        etapa: l.etapa, descricao: l.descricao, fornecedor: l.fornecedor,
+        valor: l.valor, status: l.status,
+      }));
       const resp = await fetch('/.netlify/functions/interpretar-lancamento', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ texto, etapas: etapas.map((e) => e.nome) }),
+        body: JSON.stringify({ texto, etapas: etapas.map((e) => e.nome), lancamentos: listaLanc }),
       });
       const dados = await resp.json();
       btnInterpretar.disabled = false;
@@ -1303,6 +1309,12 @@ function configurarLancamento(container, obra, etapas, fornecedores, recarregar)
         return;
       }
       setStatus('');
+      // A IA pode querer MUDAR O STATUS de um lançamento já existente…
+      if (dados.mudancaStatus) {
+        mostrarConfirmacaoStatus(dados.mudancaStatus);
+        return;
+      }
+      // …ou criar um novo lançamento (fluxo de sempre).
       mostrarPreview(dados.lancamento);
     } catch {
       btnInterpretar.disabled = false;
@@ -1359,6 +1371,56 @@ function configurarLancamento(container, obra, etapas, fornecedores, recarregar)
       } catch (error) {
         btn.disabled = false; btn.textContent = 'Salvar lançamento';
         setStatus(error?.message || 'Erro ao salvar.', 'erro');
+        return;
+      }
+      recarregar();
+    });
+  }
+
+  // Confirmação de MUDANÇA DE STATUS via IA. Mostra o(s) lançamento(s) que a IA
+  // identificou e só altera DEPOIS que a arquiteta confirma (nunca sozinho).
+  function mostrarConfirmacaoStatus({ novoStatus, alvos }) {
+    const status = novoStatus === 'pendente' ? 'pendente' : 'pago';
+    const rotulo = status === 'pago' ? 'PAGO' : 'PENDENTE';
+    const itens = (alvos || []).map((n) => lancamentos[n - 1]).filter(Boolean);
+
+    if (!itens.length) {
+      setStatus('Não encontrei esse lançamento. Tente citar o fornecedor ou o valor (ex.: "fundação da Argamazza, 11.640, já pago").', 'erro');
+      return;
+    }
+
+    const varios = itens.length > 1;
+    const linhaItem = (l, i) => `
+      <label class="status-alvo">
+        ${varios ? `<input type="radio" name="status-alvo" value="${i}" ${i === 0 ? 'checked' : ''} />` : ''}
+        <span>
+          <strong>${esc(l.etapa || 'Geral')}</strong>${l.fornecedor ? ' · ' + esc(l.fornecedor) : ''}${l.descricao ? ' · ' + esc(l.descricao) : ''}
+          <br><span class="muted">R$ ${numBR(Number(l.valor || 0))} · hoje: ${pillStatus(l.status)}</span>
+        </span>
+      </label>`;
+
+    preview.innerHTML = `
+      <div class="preview-card">
+        <p class="muted">A IA entendeu: marcar como <strong>${rotulo}</strong>${varios ? ' — escolha qual:' : ':'}</p>
+        <div class="status-alvos">${itens.map((l, i) => linhaItem(l, i)).join('')}</div>
+        <div class="row-end">
+          <button class="btn btn-ghost" id="st-cancelar">Descartar</button>
+          <button class="btn btn-primary" id="st-confirmar">Confirmar (${rotulo})</button>
+        </div>
+      </div>`;
+
+    preview.querySelector('#st-cancelar').addEventListener('click', () => { preview.innerHTML = ''; });
+    preview.querySelector('#st-confirmar').addEventListener('click', async () => {
+      const idx = varios ? Number(preview.querySelector('input[name="status-alvo"]:checked')?.value ?? 0) : 0;
+      const alvo = itens[idx];
+      if (!alvo) return;
+      const btn = preview.querySelector('#st-confirmar');
+      btn.disabled = true; btn.textContent = 'Salvando…';
+      try {
+        await atualizarLancamento(alvo.id, { status });
+      } catch (error) {
+        btn.disabled = false; btn.textContent = `Confirmar (${rotulo})`;
+        setStatus(error?.message || 'Erro ao atualizar.', 'erro');
         return;
       }
       recarregar();
