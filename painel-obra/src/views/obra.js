@@ -692,11 +692,11 @@ export async function renderObra(container, obraId, opts = {}) {
       const nomeBkp = b.getAttribute('data-nome') || '';
       const orcadoBkp = Number(b.getAttribute('data-orcado') || 0);
       await excluirEtapa(id);
-      recarregar();
       toastDesfazer(`Etapa "${nomeBkp}" excluída.`, async () => {
         await criarEtapa({ obraId: obra.id, nome: nomeBkp, orcado: orcadoBkp });
         recarregar();
       });
+      recarregar();
     });
   });
   // Editar etapa (nome + orçado) inline na própria linha da tabela.
@@ -734,13 +734,13 @@ export async function renderObra(container, obraId, opts = {}) {
             const afetados = lancamentos.filter((l) => l.etapa === nomeAtual);
             for (const l of afetados) { await atualizarLancamento(l.id, { etapa: novoNome }); afetadosIds.push(l.id); }
           }
-          recarregar();
           // Desfazer: volta nome/orçado e desfaz o repasse nos lançamentos.
           toastDesfazer('Etapa atualizada.', async () => {
             await atualizarEtapa(id, { nome: nomeAtual, orcado: orcadoBkp });
             for (const lid of afetadosIds) await atualizarLancamento(lid, { etapa: nomeAtual });
             recarregar();
           });
+          recarregar();
         } catch (err) {
           salvar.disabled = false; salvar.textContent = 'Salvar';
           alert('Erro ao salvar: ' + (err?.message || err));
@@ -1825,8 +1825,9 @@ function flash(btn, msg) {
 }
 
 // Barra flutuante "Desfazer" (fica em cima de tudo, no rodapé). Chama
-// `aoDesfazer` quando clicada e some sozinha em ~8s. Fica presa ao <body>,
-// então sobrevive ao recarregar da tela.
+// `aoDesfazer` quando clicada e some sozinha em ~10s. Fica presa ao <body>,
+// então sobrevive ao recarregar da tela. É visível por padrão (a entrada é só
+// uma animação CSS opcional), para nunca ficar invisível no iPhone.
 function toastDesfazer(mensagem, aoDesfazer) {
   document.querySelector('.toast-desfazer')?.remove();
   const el = document.createElement('div');
@@ -1835,24 +1836,15 @@ function toastDesfazer(mensagem, aoDesfazer) {
   el.querySelector('.toast-msg').textContent = mensagem;
   document.body.appendChild(el);
 
-  let fechado = false;
-  const fechar = () => {
-    if (fechado) return; fechado = true;
-    clearTimeout(timer);
-    el.classList.remove('visivel');
-    setTimeout(() => el.remove(), 250);
-  };
-  const timer = setTimeout(fechar, 8000);
-
+  const timer = setTimeout(() => el.remove(), 10000);
   el.querySelector('.toast-undo').addEventListener('click', async () => {
+    clearTimeout(timer);
     const btn = el.querySelector('.toast-undo');
     btn.disabled = true; btn.textContent = 'Desfazendo…';
     try { await aoDesfazer(); }
     catch (e) { btn.disabled = false; btn.textContent = '↩ Desfazer'; alert('Não consegui desfazer: ' + (e?.message || e)); return; }
-    fechar();
+    el.remove();
   });
-
-  requestAnimationFrame(() => el.classList.add('visivel'));
 }
 
 // Mensagem do PRIMEIRO ENVIO: apresenta o link, deixa claro que ele funciona
