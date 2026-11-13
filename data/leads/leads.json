@@ -1,24 +1,31 @@
 {
-  "generated_at": "2026-11-12T14:25:57.574322+00:00",
-  "count": 30,
+  "generated_at": "2026-11-13T13:46:52.809590+00:00",
+  "count": 37,
   "leads": [
     {
       "empresa": "Casarão Alpina",
-      "setor": "Hospedagem / Turismo",
+      "setor": "Hotelaria / Hospedagem",
       "local": "Mucugê/BA",
       "porte": "pequena",
       "gatilho": "aniversario",
       "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "Aniversário de 30 anos com retrofit é o pretexto perfeito para renovar a marca sem perder a história; hospedagem regional precisa de posicionamento claro para atrair além do boca a boca local.",
-      "decisor": "Proprietário(a) / Gerente geral",
+      "por_que_agora": "Completa 30 anos e investe R$ 6 milhões em reforma — momento ideal para renovar a marca sem perder a história de três décadas.",
+      "decisor": "Fundador(a) / Proprietário(a)",
       "pessoa_citada": "",
-      "msg_linkedin": "30 anos do Casarão Alpina! Retrofit é bom, mas a marca também merecia uma renovação. Quando o espaço muda, a percepção do mercado muda junto — se estiver alinhada.",
-      "email_assunto": "seu retrofit de 30 anos merecia uma marca à altura",
-      "email_corpo": "Vi que o Casarão Alpina comemora 30 anos com um retrofit bem interessante em Mucugê. Ótimo passo. Só que você reformou o espaço, mas a marca continua do tamanho que era. Pode parecer bobo, mas hospedagem regional que muda de padrão precisa que o mercado saiba disso — e rápido. A gente faz isso em 15 minutos de conversa.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "msg_linkedin": "30 anos é data redonda que pede renovação. Reforma física sem clareza de marca custa mais caro em percepção. Que tal conversa de 15 minutos sobre posicionamento?",
+      "email_assunto": "casarão alpina: 30 anos é o momento certo para reposicionar",
+      "email_corpo": "A reforma de R$ 6 milhões que você está fazendo é ótima. Mas reforma física sem renovação de marca é deixar dinheiro na mesa. Os 30 anos que você tem são um ativo. A questão é: o mercado sabe quem você é? Vale uma conversa curta (15 minutos) para avaliar como a marca está sendo percebida lá fora.\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 6,
-      "score": 110,
+      "score": 122,
       "confirmado": true,
       "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "#Chapada: Casarão Alpina completa 30 anos com reforma de R$ 6 milhões no município de Mucugê - Jornal da Chapada",
+          "link": "https://jornaldachapada.com.br/2026/11/12/chapada-casarao-alpina-completa-30-anos-com-reforma-de-r-6-milhoes-no-municipio-de-mucuge/",
+          "fonte": "Jornal da Chapada",
+          "data": "2026-11-12"
+        },
         {
           "gatilho": "aniversario",
           "titulo": "Casarão Alpina comemora 30 anos com retrofit que eleva o padrão de hospedagem em Mucugê - csastudiowebradio.com.br",
@@ -42,8 +49,37 @@
         }
       ],
       "primeiro_sinal": "2026-11-10",
-      "ultimo_sinal": "2026-11-11",
+      "ultimo_sinal": "2026-11-12",
       "id": "eeac591c9c9b"
+    },
+    {
+      "empresa": "Fruki",
+      "setor": "Alimentos e bebidas",
+      "local": "Sobradinho/RS",
+      "porte": "média",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Empresa com novo presidente em fase de consolidação de marca; momento clássico de reposicionamento para que a sucessão não confunda a percepção do mercado.",
+      "decisor": "Presidente / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Fruki alcançou R$ 1 bilhão com liderança clara. Agora, na sucessão, é o momento certo para blindar o posicionamento e garantir que a marca fale sozinha, independente de quem lidera.",
+      "email_assunto": "sucessão consolidada: hora de blindar a marca fruki",
+      "email_corpo": "Li que a Fruki chegou a R$ 1 bilhão e o presidente fala em descentralizar o negócio — excelente movimento. Quando a liderança muda, a percepção do mercado também muda se ninguém contar a história certa. A gente ajuda empresas da escala de vocês a blindar o posicionamento justamente nesse momento. Bora conversar 15 minutos? Kelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 113,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "“O negócio não pode depender de uma pessoa”, afirma presidente sobre como a Fruki alcançou a marca de R$ 1 bilhão - Jornal O Florense",
+          "link": "https://jornaloflorense.com.br/o-negocio-nao-pode-depender-de-uma-pessoa-afirma-presidente-sobre-como-a-fruki-alcancou-a-marca-de-r-1-bilhao/",
+          "fonte": "Jornal O Florense",
+          "data": "2026-11-12"
+        }
+      ],
+      "primeiro_sinal": "2026-11-12",
+      "ultimo_sinal": "2026-11-12",
+      "id": "9a58a25532d9"
     },
     {
       "empresa": "Macromix Atacado",
@@ -59,7 +95,7 @@
       "email_assunto": "marca clara para crescer em dois irmãos",
       "email_corpo": "Parabéns pelo investimento em Dois Irmãos. Quando a empresa abre numa cidade nova, a marca precisa contar quem você é em poucos segundos, sem o boca a boca que você tem em casa. A gente revela a essência que já está na Macromix e transforma em posicionamento que funciona em qualquer lugar. Quer conhecer como?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 7,
-      "score": 103,
+      "score": 102,
       "confirmado": true,
       "sinais": [
         {
@@ -88,7 +124,7 @@
       "email_assunto": "seu aniversário de 50 anos vale uma conversa sobre posicionamento",
       "email_corpo": "Vi que a empresa completa 50 anos. Data redonda assim é o pretexto perfeito: você pode provar que é tradicional sem parecer ultrapassada. Muitas vezes, o mercado ainda vê só a serralheria de lá atrás, quando vocês já viraram muito mais. Marca moderna, raízes fortes—isso vende. Quer uma conversa rápida (15 minutos) sobre como a percepção do seu público está hoje?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 7,
-      "score": 102,
+      "score": 101,
       "confirmado": true,
       "sinais": [
         {
@@ -102,6 +138,35 @@
       "primeiro_sinal": "2026-11-07",
       "ultimo_sinal": "2026-11-07",
       "id": "ed0302206b9e"
+    },
+    {
+      "empresa": "Kepler Weber",
+      "setor": "Agronegócio / Máquinas e equipamentos",
+      "local": "Não identificado",
+      "porte": "média",
+      "gatilho": "fusao",
+      "gatilho_nome": "Fusão ou aquisição",
+      "por_que_agora": "Entrada de novo acionista relevante exige clareza sobre identidade e propósito da marca para o mercado e para potenciais parceiros.",
+      "decisor": "CEO / Diretor de Marketing",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que a Kepler Weber recebeu investimento estratégico. Momento clássico para a marca falar com clareza quem ela é — especialmente com novas vozes na empresa. Quer conversar sobre isso?",
+      "email_assunto": "marca clara em momento de mudança na Kepler Weber",
+      "email_corpo": "Vi a notícia sobre a entrada da TMSA na Kepler Weber. Mudanças no controle acionário sempre trazem ruído — tanto dentro quanto fora da empresa. Quando a marca fica confusa nesse momento, cada área comunica de um jeito diferente. Quer uma conversa rápida sobre como a Kepler está sendo percebida no mercado agora?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 6,
+      "score": 100,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "fusao",
+          "titulo": "TMSA compra 11,6% de participação na Kepler Weber, mas diz que não quer o controle - AgFeed",
+          "link": "https://agfeed.com.br/negocios/tmsa-compra-116-de-participacao-na-kepler-weber-mas-diz-que-nao-quer-o-controle/",
+          "fonte": "AgFeed",
+          "data": "2026-11-13"
+        }
+      ],
+      "primeiro_sinal": "2026-11-13",
+      "ultimo_sinal": "2026-11-13",
+      "id": "efd0f55f5d1a"
     },
     {
       "empresa": "Aracaju Parque Shopping",
@@ -146,7 +211,7 @@
       "email_assunto": "expansão do gbarbosa: e aí, a marca está pronta?",
       "email_corpo": "Oi, tudo bem? Vi que o GBarbosa RioMar acaba de abrir com novo conceito de experiência de compras. Toda expansão traz uma chance de ouro: a marca precisa falar sozinha pra quem nunca ouviu falar dela. A gente ajuda a deixar clara a essência da marca (o que o fundador construiu) e transformar isso em posicionamento que gruda na cabeça do cliente novo. Quer conversar por 15 minutos pra a gente entender se faz sentido?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 6,
-      "score": 100,
+      "score": 99,
       "confirmado": true,
       "sinais": [
         {
@@ -191,35 +256,6 @@
       "id": "c05e0292ccf5"
     },
     {
-      "empresa": "Estação Estudantes",
-      "setor": "Varejo / Moda",
-      "local": "Mogi das Cruzes/SP",
-      "porte": "média",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "50 anos é marco que exige renovação de marca; loja tradicional que precisa provar que é moderna sem perder raiz.",
-      "decisor": "Fundador(a) / CEO",
-      "pessoa_citada": "",
-      "msg_linkedin": "Estação Estudantes em 5 décadas — só quem dura assim merece comunicar o que realmente é. Bora conversar sobre posicionamento?",
-      "email_assunto": "50 anos de Estação Estudantes: marca à altura da história",
-      "email_corpo": "Parabéns pelos 50 anos. Data redonda é momento clássico: a marca precisa provar que é tradicional sem parecer ultrapassada. A gente vê muito isso — empresas que cresceram junto com São Paulo mas a marca ainda fala como lá atrás. Quer conversar 15 minutos sobre como sua marca está sendo percebida?",
-      "encaixe": 7,
-      "score": 95,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "aniversario",
-          "titulo": "Estação Estudantes completa 50 anos em Mogi das Cruzes - G1",
-          "link": "https://g1.globo.com/sp/mogi-das-cruzes-suzano/videos-diario-tv-1-edicao/video/estacao-estudantes-completa-50-anos-em-mogi-das-cruzes-15176391.ghtml",
-          "fonte": "G1",
-          "data": "2026-11-10"
-        }
-      ],
-      "primeiro_sinal": "2026-11-10",
-      "ultimo_sinal": "2026-11-10",
-      "id": "ef1eeb5f2781"
-    },
-    {
       "empresa": "Confraria Mineira do Queijo Artesanal",
       "setor": "Alimentos / Queijo artesanal",
       "local": "Minas Gerais/MG",
@@ -247,6 +283,35 @@
       "primeiro_sinal": "2026-11-09",
       "ultimo_sinal": "2026-11-09",
       "id": "fc7daa5e2ebc"
+    },
+    {
+      "empresa": "Estação Estudantes",
+      "setor": "Varejo / Moda",
+      "local": "Mogi das Cruzes/SP",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "50 anos é marco que exige renovação de marca; loja tradicional que precisa provar que é moderna sem perder raiz.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Estação Estudantes em 5 décadas — só quem dura assim merece comunicar o que realmente é. Bora conversar sobre posicionamento?",
+      "email_assunto": "50 anos de Estação Estudantes: marca à altura da história",
+      "email_corpo": "Parabéns pelos 50 anos. Data redonda é momento clássico: a marca precisa provar que é tradicional sem parecer ultrapassada. A gente vê muito isso — empresas que cresceram junto com São Paulo mas a marca ainda fala como lá atrás. Quer conversar 15 minutos sobre como sua marca está sendo percebida?",
+      "encaixe": 7,
+      "score": 94,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Estação Estudantes completa 50 anos em Mogi das Cruzes - G1",
+          "link": "https://g1.globo.com/sp/mogi-das-cruzes-suzano/videos-diario-tv-1-edicao/video/estacao-estudantes-completa-50-anos-em-mogi-das-cruzes-15176391.ghtml",
+          "fonte": "G1",
+          "data": "2026-11-10"
+        }
+      ],
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "ef1eeb5f2781"
     },
     {
       "empresa": "Arcobaleno Resort",
@@ -305,35 +370,6 @@
       "primeiro_sinal": "2026-11-09",
       "ultimo_sinal": "2026-11-09",
       "id": "fc23a7f66793"
-    },
-    {
-      "empresa": "Canal Rural",
-      "setor": "Mídia / Agronegócio",
-      "local": "",
-      "porte": "média",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "30 anos e redesign de plataforma é chance de o Canal Rural reposicionar sua marca além do agro tradicional e conquistar novo público.",
-      "decisor": "Diretor(a) de Conteúdo / Diretor(a) de Marketing",
-      "pessoa_citada": "",
-      "msg_linkedin": "Vi que o Canal Rural completa 30 anos e lançou site novo. Momento perfeito para revisar se a marca está falando claro com quem você quer atingir. Conversa rápida?",
-      "email_assunto": "30 anos do Canal Rural: marca e posicionamento",
-      "email_corpo": "Oi,\n\n30 anos é data que merece mais que um novo site — é hora de a marca contar quem você é hoje e para onde vai. A gente revela a essência do Canal Rural e transforma isso em posicionamento claro, que funciona em toda plataforma.\n\nVocê topa uma conversa de 15 minutos para a gente entender melhor seu momento?\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 6,
-      "score": 90,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "aniversario",
-          "titulo": "Canal Rural faz 30 anos e lança site inspirado nas redes sociais para transformar acesso à informação no agro - Canal Rural",
-          "link": "https://www.canalrural.com.br/agricultura/canal-rural-faz-30-anos-e-lanca-site-inspirado-nas-redes-sociais-para-transformar-acesso-a-informacao-no-agro/",
-          "fonte": "Canal Rural",
-          "data": "2026-11-11"
-        }
-      ],
-      "primeiro_sinal": "2026-11-11",
-      "ultimo_sinal": "2026-11-11",
-      "id": "b93b8355ec33"
     },
     {
       "empresa": "Divishop",
@@ -465,7 +501,7 @@
       "email_assunto": "Alumasa: a homenagem como ponto de partida para posicionar a marca",
       "email_corpo": "Vi que a Alumasa foi homenageada pelo Legislativo Catarinense — excelente reconhecimento. Esses momentos são ouro para revisitar o posicionamento: é hora de contar quem você é, de verdade, para quem ainda não conhece. A gente faz isso em conversa rápida, sem compromisso. Interessado?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 4,
-      "score": 88,
+      "score": 87,
       "confirmado": true,
       "sinais": [
         {
@@ -523,7 +559,7 @@
       "email_assunto": "novo CEO da BVIX: hora de clarear o posicionamento",
       "email_corpo": "Carlos, parabéns pela chegada como novo CEO da BVIX. Todo CEO novo enfrenta a mesma questão: a marca que herdou comunica quem você é agora? Muitas vezes não. E o mercado sente essa falta de clareza. Se fizer sentido, podemos conversar sobre como alinhar posicionamento à sua visão — em 15 minutos sabemos se é caminho.\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 5,
-      "score": 85,
+      "score": 84,
       "confirmado": true,
       "sinais": [
         {
@@ -655,40 +691,62 @@
       "id": "a4c0e9634aa1"
     },
     {
-      "empresa": "Brasil Terrenos",
-      "setor": "Incorporação imobiliária",
+      "empresa": "Rádio Pop Rock Bagé",
+      "setor": "Mídia / Radiodifusão",
+      "local": "Bagé/RS",
+      "porte": "pequena",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Rádio local completa 40 anos, mas sem sinal de mudança estratégica ou expansão — apenas celebração do aniversário.",
+      "decisor": "",
+      "pessoa_citada": "",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 3,
+      "score": 79,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Rádio Pop Rock Bagé completa 40 anos presente no cotidiano dos bageenses - Coletiva.net",
+          "link": "https://coletiva.net/pelo-rs/radio-pop-rock-bage-completa-40-anos-presente-no-cotidiano-dos-bageenses/",
+          "fonte": "Coletiva.net",
+          "data": "2026-11-12"
+        }
+      ],
+      "primeiro_sinal": "2026-11-12",
+      "ultimo_sinal": "2026-11-12",
+      "id": "484983a7f90b"
+    },
+    {
+      "empresa": "Casa Guido",
+      "setor": "Varejo / Hospedagem",
       "local": "",
-      "porte": "grande",
+      "porte": "?",
       "gatilho": "sucessao",
       "gatilho_nome": "Sucessão / nova liderança",
-      "por_que_agora": "Entrada na Bolsa exige marca clara e posicionamento robusto para comunicar ao investidor e mercado quem a empresa é e sua estratégia.",
-      "decisor": "CEO / Diretor de Comunicação",
+      "por_que_agora": "Nova diretoria é o momento natural para avaliar se a marca expressa a identidade e os valores que a nova gestão quer carregar.",
+      "decisor": "Diretor(a) / CEO",
       "pessoa_citada": "",
-      "msg_linkedin": "Parabéns pela aprovação na CVM! Na hora que a empresa vira pública, a marca precisa falar sozinha ao investidor. Conversamos?",
-      "email_assunto": "posicionamento de marca para a bolsa",
-      "email_corpo": "Oi! Vi que a Brasil Terrenos ganhou aprovação para ir à Bolsa — é um passo grande. Quando a empresa fica pública, o mercado financeiro quer saber exatamente quem você é, como diferencia e para onde vai. Uma marca clara custa menos em roadshow e ganha mais confiança. A gente faz justamente isso: revelar a essência da empresa e transformar em posicionamento. Bora conversar 15 minutos?\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 2,
+      "msg_linkedin": "Vi que Casa Guido tem nova diretoria para 2026–2029. Momento clássico: a marca que vocês herdam reflete o que vocês querem ser nos próximos três anos? Vale conversar sobre isso.",
+      "email_assunto": "nova diretoria: hora de revisar o posicionamento",
+      "email_corpo": "Parabéns à nova diretoria da Casa Guido. Triênios são ciclos perfeitos para alinhar marca, identidade e estratégia. Muitas vezes a marca fica com a cara da gestão anterior. Vale a pena revisar isso agora, enquanto você ancora a visão nova. Gostaria de uma conversa de 15–20 minutos para entender como vocês estão vendo a marca?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 3,
       "score": 75,
       "confirmado": true,
       "sinais": [
         {
           "gatilho": "sucessao",
-          "titulo": "Brasil Terrenos prepara entrada na Bolsa após aval da CVM - Plantão Brasil",
-          "link": "https://www.plantaobrasil.net/noticias/162793-brasil-terrenos-prepara-entrada-na-bolsa-apos-aval-da-cvm",
-          "fonte": "Plantão Brasil",
-          "data": "2026-11-10"
-        },
-        {
-          "gatilho": "sucessao",
-          "titulo": "Brasil Terrenos obtém registro de companhia aberta na CVM e avança em listagem na B3 - InfoMoney",
-          "link": "https://www.infomoney.com.br/mercados/brasil-terrenos-obtem-registro-de-companhia-aberta-na-cvm-e-avanca-em-listagem-na-b3/",
-          "fonte": "InfoMoney",
-          "data": "2026-11-10"
+          "titulo": "Casa Guido empossa nova diretoria para o triênio 2026–2029 - Rádio Fundação Marconi",
+          "link": "https://radiomarconi.net/casa-guido-empossa-nova-diretoria-para-o-trienio-2026-2029/",
+          "fonte": "Rádio Fundação Marconi",
+          "data": "2026-11-11"
         }
       ],
-      "primeiro_sinal": "2026-11-10",
-      "ultimo_sinal": "2026-11-10",
-      "id": "8900c950394c"
+      "primeiro_sinal": "2026-11-11",
+      "ultimo_sinal": "2026-11-11",
+      "id": "ba7adc05d6a7"
     },
     {
       "empresa": "Cursinho Popular de São José de Piranhas",
@@ -720,33 +778,98 @@
       "id": "8bc4fa6dbaee"
     },
     {
-      "empresa": "Frooty",
-      "setor": "Alimentos / açaí",
+      "empresa": "Brasil Terrenos",
+      "setor": "Incorporação imobiliária",
       "local": "",
-      "porte": "?",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "Marca é lembrada em SP, mas a notícia foca em lembrança, não em um momento de mudança ou virada que justifique investimento em posicionamento agora.",
-      "decisor": "Diretor(a) de Marketing / CEO",
+      "porte": "grande",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Entrada na Bolsa exige marca clara e posicionamento robusto para comunicar ao investidor e mercado quem a empresa é e sua estratégia.",
+      "decisor": "CEO / Diretor de Comunicação",
       "pessoa_citada": "",
-      "msg_linkedin": "",
-      "email_assunto": "",
-      "email_corpo": "",
-      "encaixe": 4,
-      "score": 70,
+      "msg_linkedin": "Parabéns pela aprovação na CVM! Na hora que a empresa vira pública, a marca precisa falar sozinha ao investidor. Conversamos?",
+      "email_assunto": "posicionamento de marca para a bolsa",
+      "email_corpo": "Oi! Vi que a Brasil Terrenos ganhou aprovação para ir à Bolsa — é um passo grande. Quando a empresa fica pública, o mercado financeiro quer saber exatamente quem você é, como diferencia e para onde vai. Uma marca clara custa menos em roadshow e ganha mais confiança. A gente faz justamente isso: revelar a essência da empresa e transformar em posicionamento. Bora conversar 15 minutos?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 2,
+      "score": 74,
       "confirmado": true,
       "sinais": [
         {
-          "gatilho": "aniversario",
-          "titulo": "Frooty é a marca de açaí mais lembrada no estado de São Paulo - ABC da Comunicação",
-          "link": "https://www.abcdacomunicacao.com.br/frooty-e-a-marca-de-acai-mais-lembrada-no-estado-de-sao-paulo/",
-          "fonte": "ABC da Comunicação",
+          "gatilho": "sucessao",
+          "titulo": "Brasil Terrenos prepara entrada na Bolsa após aval da CVM - Plantão Brasil",
+          "link": "https://www.plantaobrasil.net/noticias/162793-brasil-terrenos-prepara-entrada-na-bolsa-apos-aval-da-cvm",
+          "fonte": "Plantão Brasil",
+          "data": "2026-11-10"
+        },
+        {
+          "gatilho": "sucessao",
+          "titulo": "Brasil Terrenos obtém registro de companhia aberta na CVM e avança em listagem na B3 - InfoMoney",
+          "link": "https://www.infomoney.com.br/mercados/brasil-terrenos-obtem-registro-de-companhia-aberta-na-cvm-e-avanca-em-listagem-na-b3/",
+          "fonte": "InfoMoney",
           "data": "2026-11-10"
         }
       ],
       "primeiro_sinal": "2026-11-10",
       "ultimo_sinal": "2026-11-10",
-      "id": "03e299e10c70"
+      "id": "8900c950394c"
+    },
+    {
+      "empresa": "Cryopraxis",
+      "setor": "Saúde / Criopreservação",
+      "local": "",
+      "porte": "?",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Empresa participa de congresso, mas notícia não indica momento de transição de liderança ou virada estratégica clara.",
+      "decisor": "",
+      "pessoa_citada": "",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 2,
+      "score": 70,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Cryopraxis debate criopreservação em congresso de cirurgia - Terra",
+          "link": "https://www.terra.com.br/noticias/cryopraxis-debate-criopreservacao-em-congresso-de-cirurgia,fea0fd4513b93f0645a2be4e8e3f3da1vgc6pmkj.html",
+          "fonte": "Terra",
+          "data": "2026-11-12"
+        }
+      ],
+      "primeiro_sinal": "2026-11-12",
+      "ultimo_sinal": "2026-11-12",
+      "id": "b131aaa793b8"
+    },
+    {
+      "empresa": "SALC Group",
+      "setor": "Comunicação / Mídia",
+      "local": "",
+      "porte": "?",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Nova liderança é momento para revisar se o posicionamento do grupo reflete a direção estratégica que o novo CEO quer imprimir.",
+      "decisor": "CEO",
+      "pessoa_citada": "João Del Cura · CEO",
+      "msg_linkedin": "João, vi que você assumiu a liderança do SALC Group. Momento clássico de alinhamento: a marca reflete a direção que você quer para o grupo? Bora conversar sobre isso?",
+      "email_assunto": "momento de liderança no SALC Group",
+      "email_corpo": "João, parabéns pela posse no SALC Group. Nova liderança é momento perfeito para revisar se o posicionamento do grupo conversa com a estratégia que você quer implementar. Muitas vezes a marca fica para trás da visão do novo líder. Gostaria de uma conversa rápida (15–20 min) para entender como você está vendo a marca do grupo agora?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 2,
+      "score": 70,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "João Del Cura assume como CEO do SALC Group - ABC da Comunicação",
+          "link": "https://www.abcdacomunicacao.com.br/joao-del-cura-assume-como-ceo-do-salc-group/",
+          "fonte": "ABC da Comunicação",
+          "data": "2026-11-11"
+        }
+      ],
+      "primeiro_sinal": "2026-11-11",
+      "ultimo_sinal": "2026-11-11",
+      "id": "cc788e27e090"
     },
     {
       "empresa": "Adão Negro",
@@ -776,6 +899,35 @@
       "primeiro_sinal": "2026-11-09",
       "ultimo_sinal": "2026-11-09",
       "id": "d388cbbf0976"
+    },
+    {
+      "empresa": "Frooty",
+      "setor": "Alimentos / açaí",
+      "local": "",
+      "porte": "?",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Marca é lembrada em SP, mas a notícia foca em lembrança, não em um momento de mudança ou virada que justifique investimento em posicionamento agora.",
+      "decisor": "Diretor(a) de Marketing / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 4,
+      "score": 69,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Frooty é a marca de açaí mais lembrada no estado de São Paulo - ABC da Comunicação",
+          "link": "https://www.abcdacomunicacao.com.br/frooty-e-a-marca-de-acai-mais-lembrada-no-estado-de-sao-paulo/",
+          "fonte": "ABC da Comunicação",
+          "data": "2026-11-10"
+        }
+      ],
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "03e299e10c70"
     },
     {
       "empresa": "Havan",
@@ -819,6 +971,42 @@
       "primeiro_sinal": "2026-11-09",
       "ultimo_sinal": "2026-11-09",
       "id": "b3f96c693fbf"
+    },
+    {
+      "empresa": "Canal Rural",
+      "setor": "Mídia / Comunicação",
+      "local": "",
+      "porte": "grande",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Canal Rural completa 30 anos e lança novo site, mas é rede nacional consolidada — fora do perfil de cliente ideal da KA.",
+      "decisor": "Diretor(a) de Conteúdo / Diretor(a) de Marketing",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que o Canal Rural completa 30 anos e lançou site novo. Momento perfeito para revisar se a marca está falando claro com quem você quer atingir. Conversa rápida?",
+      "email_assunto": "30 anos do Canal Rural: marca e posicionamento",
+      "email_corpo": "Oi,\n\n30 anos é data que merece mais que um novo site — é hora de a marca contar quem você é hoje e para onde vai. A gente revela a essência do Canal Rural e transforma isso em posicionamento claro, que funciona em toda plataforma.\n\nVocê topa uma conversa de 15 minutos para a gente entender melhor seu momento?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 2,
+      "score": 62,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Canal Rural completa 30 anos com novo site e inovação digital - boca.com.br",
+          "link": "https://boca.com.br/agronegocio/canal-rural-completa-30-anos-com-novo-site",
+          "fonte": "boca.com.br",
+          "data": "2026-11-11"
+        },
+        {
+          "gatilho": "aniversario",
+          "titulo": "Canal Rural faz 30 anos e lança site inspirado nas redes sociais para transformar acesso à informação no agro - Canal Rural",
+          "link": "https://www.canalrural.com.br/agricultura/canal-rural-faz-30-anos-e-lanca-site-inspirado-nas-redes-sociais-para-transformar-acesso-a-informacao-no-agro/",
+          "fonte": "Canal Rural",
+          "data": "2026-11-11"
+        }
+      ],
+      "primeiro_sinal": "2026-11-11",
+      "ultimo_sinal": "2026-11-11",
+      "id": "b93b8355ec33"
     },
     {
       "empresa": "Heinz",
@@ -892,7 +1080,7 @@
       "email_assunto": "",
       "email_corpo": "",
       "encaixe": 2,
-      "score": 50,
+      "score": 49,
       "confirmado": true,
       "sinais": [
         {
@@ -906,6 +1094,35 @@
       "primeiro_sinal": "2026-11-10",
       "ultimo_sinal": "2026-11-10",
       "id": "7fc1e3b62bfe"
+    },
+    {
+      "empresa": "Grupo Orbenk",
+      "setor": "Varejo / Comércio",
+      "local": "",
+      "porte": "grande",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Grupo com faturamento de R$ 2,4 bilhões está muito acima do porte ideal da KA (PMEs médias, até ~R$ 100 milhões).",
+      "decisor": "",
+      "pessoa_citada": "",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 1,
+      "score": 45,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Grupo Orbenk completa 40 anos com faturamento de R$ 2,4 bilhões - Acontecendo Aqui",
+          "link": "https://acontecendoaqui.com.br/empreendedorismo/grupo-orbenk-completa-40-anos-com-faturamento-de-r-24-bilhoes/",
+          "fonte": "Acontecendo Aqui",
+          "data": "2026-11-11"
+        }
+      ],
+      "primeiro_sinal": "2026-11-11",
+      "ultimo_sinal": "2026-11-11",
+      "id": "8f2abc34b4d2"
     }
   ]
 }
