@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Busca, normalizar } from '../../components/Busca'
 import { useToast } from '../../components/Toast'
 import { useFichaUrl } from '../../hooks/useFichaUrl'
+import { useCopiar } from '../../hooks/useCopiar'
 import { useArquivoXlsx } from '../../hooks/useArquivoXlsx'
 import { confirmar } from '../../lib/confirmar'
 import { formatarData } from '../../lib/gestao'
@@ -21,6 +22,7 @@ import {
   listarLeads,
   mensagemLead,
   rotuloStatusLead,
+  textoDoLead,
   type FerramentaLead,
   type Lead,
   type StatusLead,
@@ -486,6 +488,7 @@ function FichaLead({
   const [nota, setNota] = useState(l.nota ?? '')
   const [salvando, setSalvando] = useState(false)
   const { mostrar } = useToast()
+  const copiar = useCopiar()
 
   async function salvar() {
     setSalvando(true)
@@ -629,6 +632,18 @@ function FichaLead({
         </div>
       </div>
 
+      {/* O resultado inteiro em texto: a KA lê de uma vez e copia para avaliar
+          com alguém, sem precisar juntar o que está espalhado nos cards. */}
+      <div className="card">
+        <div className="lead-ficha__topo">
+          <h3 style={{ margin: 0 }}>Resultado completo</h3>
+          <button className="btn--voltar" onClick={() => void copiar(textoDoLead(l), 'Resultado copiado')}>
+            ⧉ Copiar texto
+          </button>
+        </div>
+        <pre className="lead-texto">{textoDoLead(l)}</pre>
+      </div>
+
       {!ehForm && (l.historico ?? []).length > 0 && (
         <div className="card">
           <h3>Histórico de testes</h3>
@@ -677,7 +692,10 @@ function FichaLead({
                   <div key={r.id} className="form-resp__item">
                     <div className="form-resp__pergunta">{r.pergunta}</div>
                     <div className="form-resp__resposta">
-                      {r.resposta} <span className="lead-sub">({r.pontos} pontos)</span>
+                      {r.resposta}{' '}
+                      <span className="lead-sub">
+                        ({r.pontos} {r.pontos === 1 ? 'ponto' : 'pontos'})
+                      </span>
                     </div>
                   </div>
                 ))}

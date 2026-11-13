@@ -5261,3 +5261,27 @@ a.btn-mini {
     padding: 0.55rem 0.6rem;
   }
 }
+
+/* ============================================================
+   LEADS — RESULTADO COMPLETO EM TEXTO (nov/2026)
+   A ficha espalha o resultado em cards e blocos; este é o mesmo conteúdo
+   corrido, para ler de uma vez e copiar (vai para o WhatsApp na maioria das
+   vezes, por isso o `*negrito*` fica visível no texto).
+   ============================================================ */
+.lead-texto {
+  margin: 0.8rem 0 0;
+  padding: 0.9rem 1rem;
+  background: var(--bg-1);
+  border: 1px solid rgba(15, 25, 35, 0.1);
+  border-radius: 12px;
+  font-family: var(--body);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--t-700);
+  /* O texto já vem quebrado em linhas; `pre-wrap` mantém isso e ainda quebra
+     a linha comprida no celular, em vez de rolar de lado. */
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 30rem;
+  overflow-y: auto;
+}

@@ -1517,6 +1517,17 @@ guarda **anotações** (`nota`) e exclui (lixeira).
     (utm source/medium/campaign). Sem histórico de testes.
   - A mensagem do WhatsApp (`mensagemLead`) também muda: no formulário cita o
     negócio que a pessoa descreveu, não a nota do teste.
+- **RESULTADO COMPLETO EM TEXTO (nov/2026) — `textoDoLead(l)`:** a ficha do
+  lead ganhou o card **"Resultado completo"** (`.lead-texto`, um `<pre>` com
+  `white-space: pre-wrap`) + **"⧉ Copiar texto"** (`useCopiar`). É o mesmo
+  conteúdo que está espalhado em cards e blocos, junto e corrido, para a KA
+  ler de uma vez e **avaliar com alguém** sem ter que remontar nada: contato,
+  resultado (ou as respostas do formulário), TODAS as perguntas com os pontos,
+  os testes anteriores, de onde a pessoa veio (página + UTMs) e a anotação.
+  `*asteriscos*` = negrito do WhatsApp, que é para onde esse texto costuma ir.
+  O texto muda com a ferramenta: no **teste** vai o resultado + os dois blocos
+  de respostas + histórico; no **formulário**, as três respostas num bloco só
+  (o tipo de negócio NÃO se repete no contato, porque já é a 1ª resposta).
 - **Regra Firestore (modo produção):** `leads` = `create` público (o site
   grava), leitura/edição só a KA. Entra no backup e na lixeira.
 - **APAGAR um lead pela LISTA (nov/2026):** o botão **Excluir** passou a ficar

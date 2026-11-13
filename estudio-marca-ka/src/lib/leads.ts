@@ -220,6 +220,99 @@ export async function excluirLead(id: string, extras: string[] = []): Promise<vo
   await Promise.all([id, ...extras].map((x) => moverParaLixeira('leads', x)))
 }
 
+/** DD/MM/AAAA HH:MM a partir do ISO (vazio vira "-"). */
+function quando(iso: string | null | undefined): string {
+  if (!iso) return '-'
+  const d = new Date(iso)
+  return `${d.toLocaleDateString('pt-BR')} ${d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`
+}
+
+/**
+ * O RESULTADO INTEIRO da pessoa em texto, para a KA ler, copiar e avaliar
+ * (sozinha ou mandando para alguém). Junta o que está espalhado pela ficha:
+ * contato, resultado, TODAS as respostas com os pontos, o histórico de quem
+ * refez e de onde a pessoa veio.
+ *
+ * `*asteriscos*` são o negrito do WhatsApp — é para lá que esse texto vai na
+ * maioria das vezes; colado em qualquer outro lugar, continua legível.
+ */
+export function textoDoLead(l: Lead): string {
+  const form = ferramentaDe(l) === 'formulario'
+  const linhas: string[] = []
+
+  linhas.push(`*${l.nome}*`)
+  linhas.push(form ? 'Formulário: Posicionamento de Marca' : 'Teste: o que sua marca entrega × o que seu cliente enxerga')
+  linhas.push(`${form ? 'Enviado' : 'Feito'} em ${quando(ultimaAtividade(l))}`)
+  if (!form && (l.testes ?? 1) > 1) {
+    linhas.push(`Refez o teste ${l.testes}× · o primeiro em ${quando(l.primeiro_em || l.criado_em)}`)
+  }
+
+  const contato = [
+    l.whatsapp && `WhatsApp: ${l.whatsapp}`,
+    l.email && `E-mail: ${l.email}`,
+    (form ? tipoNegocio(l) : l.segmento) && `${form ? 'Tipo de negócio' : 'Segmento'}: ${form ? tipoNegocio(l) : l.segmento}`,
+  ].filter(Boolean) as string[]
+  if (contato.length) linhas.push('', '*CONTATO*', ...contato)
+
+  if (form) {
+    const campos = [
+      funcionarios(l) && `Funcionários: ${funcionarios(l)}`,
+      investimento(l) && `Faixa de investimento: ${investimento(l)}`,
+    ].filter(Boolean) as string[]
+    if (campos.length) linhas.push('', '*O QUE ELE RESPONDEU*', ...campos)
+  } else {
+    linhas.push('', '*RESULTADO*')
+    linhas.push(`Valor real (o que a marca entrega): ${l.valor_real ?? '-'}%`)
+    linhas.push(`Valor percebido (o que o cliente enxerga): ${l.valor_percebido ?? '-'}%`)
+    if (l.distancia != null) linhas.push(`Distância: ${l.distancia} pontos`)
+    if (l.perfil) linhas.push(`Perfil: ${l.perfil}`)
+  }
+
+  // Respostas: no teste vão em dois blocos com os pontos; no formulário é a
+  // pergunta e a resposta, sem pontuação (não existe nota ali).
+  const rs = l.respostas ?? []
+  if (rs.length) {
+    if (form) {
+      linhas.push('', '*RESPOSTAS*')
+      for (const r of rs) linhas.push(`${r.pergunta}: ${r.resposta || '-'}`)
+    } else {
+      const num = (r: RespostaLead) => Number((r.id || '').replace(/\D/g, ''))
+      const blocos: [string, RespostaLead[]][] = [
+        ['Bloco 1 · Valor real', rs.filter((r) => num(r) <= 6)],
+        ['Bloco 2 · Valor percebido', rs.filter((r) => num(r) > 6)],
+      ]
+      linhas.push('', `*RESPOSTAS*${(l.testes ?? 1) > 1 ? ' (do teste mais recente)' : ''}`)
+      for (const [titulo, itens] of blocos) {
+        if (!itens.length) continue
+        linhas.push('', titulo)
+        for (const r of itens) linhas.push(`• ${r.pergunta}`, `  ${r.resposta} (${r.pontos} pontos)`)
+      }
+    }
+  }
+
+  if (!form && (l.historico ?? []).length) {
+    linhas.push('', '*TESTES ANTERIORES*')
+    for (const h of l.historico ?? []) {
+      linhas.push(
+        `${quando(h.data)}: ${h.valor_real ?? '-'}% × ${h.valor_percebido ?? '-'}%` +
+          (h.perfil ? ` · ${h.perfil}` : ''),
+      )
+    }
+  }
+
+  const origem = [
+    l.origem && `Página: ${l.origem}`,
+    l.utm_source && `Origem: ${l.utm_source}`,
+    l.utm_medium && `Meio: ${l.utm_medium}`,
+    l.utm_campaign && `Campanha: ${l.utm_campaign}`,
+  ].filter(Boolean) as string[]
+  if (origem.length) linhas.push('', '*DE ONDE VEIO*', ...origem)
+
+  if (l.nota) linhas.push('', '*ANOTAÇÃO*', l.nota)
+
+  return linhas.join('\n')
+}
+
 // Mensagem pronta para o primeiro contato no WhatsApp. Muda conforme a
 // ferramenta: no teste ela já cita o resultado da pessoa; no formulário, o
 // negócio que ela descreveu.
