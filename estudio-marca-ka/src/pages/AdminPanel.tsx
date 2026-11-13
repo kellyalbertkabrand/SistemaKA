@@ -224,7 +224,7 @@ const CABECALHOS: Record<Aba, { titulo: string; sub: string }> = {
   atividades: { titulo: 'Atividades 🔒', sub: 'Seu painel pessoal — tarefas da KA, da VM, BIA e Pessoal.' },
   cuidadoras: { titulo: 'Cuidadoras 🔒', sub: 'Seu controle pessoal — cadastro pelo link, ficha e documentos de cada cuidadora.' },
   formularios: { titulo: 'Formulários 🔒', sub: 'Etapas do Marca com Essência© — envie o link, o cliente preenche e salva sozinho.' },
-  leads: { titulo: 'Leads 🔒', sub: 'Quem fez o teste do site: resultado, segmento e WhatsApp para chamar.' },
+  leads: { titulo: 'Leads 🔒', sub: 'Quem usou as ferramentas do site — teste e formulário de posicionamento, em abas separadas.' },
   prospeccao: { titulo: 'Prospecção 🔒', sub: 'Empresas médias para conquistar: radar diário, Google Maps, tamanho pelo CNPJ e abordagem pronta.' },
   lixeira: { titulo: 'Lixeira 🗑️', sub: 'Itens excluídos. Restaure o que apagou por engano ou esvazie de vez.' },
 }

@@ -5197,3 +5197,67 @@ a.btn-mini {
   .onde-card__links a { padding: 0.35rem 0; }
 }
 .seg--prosp { flex-wrap: wrap; border-radius: 18px; }
+
+/* ============================================================
+   LEADS — ABAS POR FERRAMENTA (nov/2026)
+   O site tem duas ferramentas (o teste e o formulário de posicionamento) e o
+   que interessa ver é diferente em cada uma. Estas abas ficam ACIMA dos chips
+   de status, maiores que eles, porque trocam a tela inteira (métricas, tabela,
+   ficha e Excel) — os chips só filtram dentro da aba.
+   ============================================================ */
+.ferr-abas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.1rem 0 0.9rem;
+}
+.ferr-aba {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--body);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--t-700);
+  background: transparent;
+  border: 1px solid rgba(216, 111, 42, 0.35);
+  border-radius: 100px;
+  padding: 0.55rem 1.1rem;
+  min-height: 40px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+.ferr-aba:hover {
+  background: rgba(216, 111, 42, 0.08);
+  border-color: #d86f2a;
+}
+.ferr-aba--on {
+  color: #fff;
+  background: #d86f2a;
+  border-color: #d86f2a;
+}
+/* A contagem é informação de apoio: legível, mas sem competir com o nome. */
+.ferr-aba__n {
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 0.1rem 0.45rem;
+  border-radius: 100px;
+  background: rgba(15, 25, 35, 0.08);
+  color: var(--t-500);
+}
+.ferr-aba--on .ferr-aba__n {
+  background: rgba(255, 255, 255, 0.24);
+  color: #fff;
+}
+@media (max-width: 640px) {
+  .ferr-abas {
+    gap: 0.4rem;
+  }
+  .ferr-aba {
+    flex: 1 1 calc(50% - 0.2rem);
+    justify-content: center;
+    font-size: 0.76rem;
+    padding: 0.55rem 0.6rem;
+  }
+}

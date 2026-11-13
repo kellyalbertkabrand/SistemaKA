@@ -6,23 +6,36 @@ import { useArquivoXlsx } from '../../hooks/useArquivoXlsx'
 import { confirmar } from '../../lib/confirmar'
 import { formatarData } from '../../lib/gestao'
 import { abrirWhatsApp } from '../../lib/whatsapp'
+import { lerPref, gravarPref } from '../../lib/ui'
 import {
+  FERRAMENTAS,
   STATUS_LEAD,
   agruparLeads,
+  ferramentaDe,
+  funcionarios,
+  investimento,
+  tipoNegocio,
   ultimaAtividade,
   atualizarLead,
   excluirLead,
   listarLeads,
   mensagemLead,
   rotuloStatusLead,
+  type FerramentaLead,
   type Lead,
   type StatusLead,
 } from '../../lib/leads'
 
 // ============================================================================
-// Aba LEADS — quem fez as ferramentas do site (Teste Valor real × Valor
-// percebido). A KA acompanha o resultado de cada pessoa, chama no WhatsApp,
-// marca o status (novo → contatado → inscrito na aula) e baixa em Excel.
+// Aba LEADS — quem usou as ferramentas do site. A KA acompanha cada pessoa,
+// chama no WhatsApp, marca o status (novo → contatado → inscrito na aula) e
+// baixa em Excel.
+//
+// São DUAS ferramentas, e a tela se divide por elas (abas no topo), porque o
+// que importa em cada uma é diferente: no TESTE, a nota e o perfil; no
+// FORMULÁRIO de posicionamento, o tipo de negócio, o tamanho da equipe e
+// quanto a pessoa pode investir. Métricas, tabela, ficha e Excel seguem a aba
+// escolhida (`aba`), que fica guardada no aparelho.
 // ============================================================================
 
 type FiltroStatus = 'todos' | StatusLead
@@ -73,6 +86,16 @@ export function GestaoLeads() {
   const [busca, setBusca] = useState('')
   const [filtro, setFiltro] = useState<FiltroStatus>('todos')
   const [perfil, setPerfil] = useState('')
+  // Qual ferramenta está sendo olhada. Começa no teste (era a única) e a
+  // escolha fica no aparelho, como nas outras telas.
+  const [aba, setAba] = useState<FerramentaLead>(() => lerPref<FerramentaLead>('ka.leads.aba', 'teste'))
+  function trocarAba(f: FerramentaLead) {
+    setAba(f)
+    gravarPref('ka.leads.aba', f)
+    setFiltro('todos')
+    setPerfil('')
+  }
+  const ehForm = aba === 'formulario'
 
   async function recarregar() {
     try {
@@ -90,48 +113,80 @@ export function GestaoLeads() {
     void recarregar()
   }, [])
 
-  const perfis = Array.from(new Set(lista.map((l) => l.perfil).filter(Boolean))) as string[]
+  // Tudo abaixo olha SÓ a ferramenta da aba — contagens, métricas, tabela e
+  // planilha. `lista` continua sendo o total, para contar nas abas.
+  const daAba = lista.filter((l) => ferramentaDe(l) === aba)
+  const quantos = (f: FerramentaLead) => lista.filter((l) => ferramentaDe(l) === f).length
 
-  const filtrada = lista.filter((l) => {
+  const perfis = Array.from(new Set(daAba.map((l) => l.perfil).filter(Boolean))) as string[]
+
+  const filtrada = daAba.filter((l) => {
     if (filtro !== 'todos' && statusDe(l) !== filtro) return false
     if (perfil && l.perfil !== perfil) return false
     const q = normalizar(busca).trim()
     if (!q) return true
     return normalizar(
-      `${l.nome} ${l.email ?? ''} ${l.whatsapp ?? ''} ${l.segmento ?? ''} ${l.perfil ?? ''}`,
+      `${l.nome} ${l.email ?? ''} ${l.whatsapp ?? ''} ${l.segmento ?? ''} ${l.perfil ?? ''} ` +
+        `${investimento(l)} ${funcionarios(l)}`,
     ).includes(q)
   })
 
   const contagem = (s: FiltroStatus) =>
-    s === 'todos' ? lista.length : lista.filter((l) => statusDe(l) === s).length
+    s === 'todos' ? daAba.length : daAba.filter((l) => statusDe(l) === s).length
 
-  // Planilha montada ANTES do clique (download confiável no iPhone).
+  // Planilha montada ANTES do clique (download confiável no iPhone) e com as
+  // colunas da ferramenta que está na tela — o formulário não tem nota nem
+  // perfil, e o teste não tem faixa de investimento.
   const { url: urlXlsx } = useArquivoXlsx(
-    [
-      'Data', 'Nome', 'E-mail', 'WhatsApp', 'Segmento', 'Valor real (%)', 'Valor percebido (%)',
-      'Distância', 'Perfil', 'Status', 'Anotação', 'Origem', 'utm_source', 'utm_campaign', 'Respostas',
-      'Testes feitos', 'Primeiro teste',
-    ],
-    filtrada.map((l) => [
-      dataHora(ultimaAtividade(l)),
-      l.nome,
-      l.email ?? '',
-      l.whatsapp ?? '',
-      l.segmento ?? '',
-      l.valor_real ?? null,
-      l.valor_percebido ?? null,
-      l.distancia ?? null,
-      l.perfil ?? '',
-      rotuloStatusLead(statusDe(l)),
-      l.nota ?? '',
-      l.origem ?? '',
-      l.utm_source ?? '',
-      l.utm_campaign ?? '',
-      (l.respostas ?? []).map((r) => `${r.id}: ${r.resposta} (${r.pontos})`).join(' | '),
-      l.testes ?? 1,
-      dataHora(l.primeiro_em || l.criado_em),
-    ]),
-    'Leads',
+    ehForm
+      ? [
+          'Data', 'Nome', 'E-mail', 'WhatsApp', 'Tipo de negócio', 'Funcionários',
+          'Faixa de investimento', 'Status', 'Anotação', 'Origem', 'utm_source', 'utm_medium',
+          'utm_campaign',
+        ]
+      : [
+          'Data', 'Nome', 'E-mail', 'WhatsApp', 'Segmento', 'Valor real (%)', 'Valor percebido (%)',
+          'Distância', 'Perfil', 'Status', 'Anotação', 'Origem', 'utm_source', 'utm_campaign',
+          'Respostas', 'Testes feitos', 'Primeiro teste',
+        ],
+    filtrada.map((l) =>
+      ehForm
+        ? [
+            dataHora(ultimaAtividade(l)),
+            l.nome,
+            l.email ?? '',
+            l.whatsapp ?? '',
+            tipoNegocio(l),
+            funcionarios(l),
+            investimento(l),
+            rotuloStatusLead(statusDe(l)),
+            l.nota ?? '',
+            l.origem ?? '',
+            l.utm_source ?? '',
+            l.utm_medium ?? '',
+            l.utm_campaign ?? '',
+          ]
+        : [
+            dataHora(ultimaAtividade(l)),
+            l.nome,
+            l.email ?? '',
+            l.whatsapp ?? '',
+            l.segmento ?? '',
+            l.valor_real ?? null,
+            l.valor_percebido ?? null,
+            l.distancia ?? null,
+            l.perfil ?? '',
+            rotuloStatusLead(statusDe(l)),
+            l.nota ?? '',
+            l.origem ?? '',
+            l.utm_source ?? '',
+            l.utm_campaign ?? '',
+            (l.respostas ?? []).map((r) => `${r.id}: ${r.resposta} (${r.pontos})`).join(' | '),
+            l.testes ?? 1,
+            dataHora(l.primeiro_em || l.criado_em),
+          ],
+    ),
+    ehForm ? 'Posicionamento' : 'Teste',
   )
 
   async function mudarStatus(l: Lead, status: StatusLead) {
@@ -190,11 +245,15 @@ export function GestaoLeads() {
   }
 
   const novos = contagem('novo')
-  const refizeram = lista.filter((l) => (l.testes ?? 1) > 1).length
-  const mVR = media(lista.map((l) => l.valor_real))
-  const mVP = media(lista.map((l) => l.valor_percebido))
-  const perfilTop = maisComum(lista.map((l) => l.perfil))
-  const segmentoTop = maisComum(lista.map((l) => l.segmento))
+  const refizeram = daAba.filter((l) => (l.testes ?? 1) > 1).length
+  const mVR = media(daAba.map((l) => l.valor_real))
+  const mVP = media(daAba.map((l) => l.valor_percebido))
+  const perfilTop = maisComum(daAba.map((l) => l.perfil))
+  const segmentoTop = maisComum(daAba.map((l) => l.segmento))
+  // Formulário: o que qualifica é o negócio, o tamanho e o bolso.
+  const negocioTop = maisComum(daAba.map((l) => tipoNegocio(l)))
+  const investimentoTop = maisComum(daAba.map((l) => investimento(l)))
+  const porteTop = maisComum(daAba.map((l) => funcionarios(l)))
 
   return (
     <>
@@ -220,41 +279,81 @@ export function GestaoLeads() {
         <div className="card">
           <h3>Nenhum lead ainda.</h3>
           <p>
-            Cada pessoa que fizer o teste em kellyalbert.com.br/valorpercebido aparece aqui na hora,
-            com o resultado, o segmento e o WhatsApp para você chamar.
+            Cada pessoa que fizer o teste em kellyalbert.com.br/valorpercebido ou preencher o
+            formulário em /projetodeposicionamento aparece aqui na hora, com o que respondeu e o
+            WhatsApp para você chamar.
           </p>
         </div>
       )}
 
+      {/* Abas por FERRAMENTA: o que a pessoa fez no site muda o que interessa
+          ver dela, então a tela inteira segue a aba escolhida. */}
       {lista.length > 0 && (
-        <div className="fin-cards">
-          <div className="fin-card">
-            <div className="fin-card__quem">Leads</div>
-            <div className="fin-card__valor">{lista.length}</div>
-            <div className="fin-card__mensal">
-              {novos} {novos === 1 ? 'novo' : 'novos'} para chamar
-              {refizeram > 0 && ` · ${refizeram} ${refizeram === 1 ? 'refez' : 'refizeram'} o teste`}
-            </div>
-          </div>
-          <div className="fin-card">
-            <div className="fin-card__quem">Média do teste</div>
-            <div className="fin-card__valor">
-              {mVR ?? '-'}% × {mVP ?? '-'}%
-            </div>
-            <div className="fin-card__mensal">valor real × valor percebido</div>
-          </div>
-          <div className="fin-card">
-            <div className="fin-card__quem">Perfil mais comum</div>
-            <div className="fin-card__valor lead-card__texto">{perfilTop ?? '-'}</div>
-          </div>
-          <div className="fin-card">
-            <div className="fin-card__quem">Segmento que mais respondeu</div>
-            <div className="fin-card__valor lead-card__texto">{segmentoTop ?? '-'}</div>
-          </div>
+        <div className="ferr-abas" role="tablist" aria-label="Ferramenta do site">
+          {FERRAMENTAS.map((f) => (
+            <button
+              key={f.valor}
+              role="tab"
+              aria-selected={aba === f.valor}
+              className={`ferr-aba ${aba === f.valor ? 'ferr-aba--on' : ''}`}
+              onClick={() => trocarAba(f.valor)}
+            >
+              {f.rotulo} <span className="ferr-aba__n">{quantos(f.valor)}</span>
+            </button>
+          ))}
         </div>
       )}
 
-      {lista.length > 0 && (
+      {daAba.length > 0 && (
+        <div className="fin-cards">
+          <div className="fin-card">
+            <div className="fin-card__quem">Leads</div>
+            <div className="fin-card__valor">{daAba.length}</div>
+            <div className="fin-card__mensal">
+              {novos} {novos === 1 ? 'novo' : 'novos'} para chamar
+              {!ehForm && refizeram > 0 &&
+                ` · ${refizeram} ${refizeram === 1 ? 'refez' : 'refizeram'} o teste`}
+            </div>
+          </div>
+          {ehForm ? (
+            <>
+              <div className="fin-card">
+                <div className="fin-card__quem">Tipo de negócio mais comum</div>
+                <div className="fin-card__valor lead-card__texto">{negocioTop ?? '-'}</div>
+              </div>
+              <div className="fin-card">
+                <div className="fin-card__quem">Faixa de investimento mais comum</div>
+                <div className="fin-card__valor lead-card__texto">{investimentoTop ?? '-'}</div>
+              </div>
+              <div className="fin-card">
+                <div className="fin-card__quem">Porte mais comum</div>
+                <div className="fin-card__valor lead-card__texto">{porteTop ?? '-'}</div>
+                <div className="fin-card__mensal">número de funcionários</div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="fin-card">
+                <div className="fin-card__quem">Média do teste</div>
+                <div className="fin-card__valor">
+                  {mVR ?? '-'}% × {mVP ?? '-'}%
+                </div>
+                <div className="fin-card__mensal">valor real × valor percebido</div>
+              </div>
+              <div className="fin-card">
+                <div className="fin-card__quem">Perfil mais comum</div>
+                <div className="fin-card__valor lead-card__texto">{perfilTop ?? '-'}</div>
+              </div>
+              <div className="fin-card">
+                <div className="fin-card__quem">Segmento que mais respondeu</div>
+                <div className="fin-card__valor lead-card__texto">{segmentoTop ?? '-'}</div>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {daAba.length > 0 && (
         <>
           <div className="chips" style={{ marginBottom: '0.6rem' }}>
             {(['todos', ...STATUS_LEAD.map((s) => s.valor)] as FiltroStatus[]).map((s) => (
@@ -269,7 +368,7 @@ export function GestaoLeads() {
           </div>
           <div className="lead-filtros">
             <Busca valor={busca} aoMudar={setBusca} placeholder="Buscar por nome, segmento, e-mail…" />
-            {perfis.length > 0 && (
+            {!ehForm && perfis.length > 0 && (
               <select className="lead-filtros__perfil" value={perfil} onChange={(e) => setPerfil(e.target.value)} aria-label="Filtrar por perfil">
                 <option value="">Todos os perfis</option>
                 {perfis.map((p) => (
@@ -282,7 +381,14 @@ export function GestaoLeads() {
           </div>
         </>
       )}
-      {lista.length > 0 && filtrada.length === 0 && <p className="ativ-vazio">Nenhum lead encontrado com esse filtro.</p>}
+      {lista.length > 0 && daAba.length === 0 && (
+        <p className="ativ-vazio">
+          Ninguém usou {ehForm ? 'o formulário de posicionamento' : 'o teste'} ainda.
+        </p>
+      )}
+      {daAba.length > 0 && filtrada.length === 0 && (
+        <p className="ativ-vazio">Nenhum lead encontrado com esse filtro.</p>
+      )}
 
       {filtrada.length > 0 && (
         <div className="tabela-wrap">
@@ -290,7 +396,7 @@ export function GestaoLeads() {
             <thead>
               <tr>
                 <th>Nome</th>
-                <th>Resultado</th>
+                <th>{ehForm ? 'Investimento' : 'Resultado'}</th>
                 <th>Data</th>
                 <th>Status</th>
                 <th className="acoes"></th>
@@ -303,16 +409,29 @@ export function GestaoLeads() {
                     <button className="cel-abrir" onClick={() => abrir(l.id)}>
                       {l.nome}
                     </button>
-                    <div className="lead-sub">{l.segmento || 'Segmento não informado'}</div>
-                    {(l.testes ?? 1) > 1 && <span className="lead-badge">↻ Fez {l.testes} testes</span>}
+                    <div className="lead-sub">
+                      {(ehForm ? tipoNegocio(l) : l.segmento) || 'Segmento não informado'}
+                    </div>
+                    {!ehForm && (l.testes ?? 1) > 1 && (
+                      <span className="lead-badge">↻ Fez {l.testes} testes</span>
+                    )}
                   </td>
-                  <td data-label="Resultado">
-                    <strong>{l.valor_real ?? '-'}%</strong> × <strong>{l.valor_percebido ?? '-'}%</strong>
-                    <div className="lead-sub">{l.perfil ?? ''}</div>
-                  </td>
+                  {ehForm ? (
+                    <td data-label="Investimento">
+                      <strong>{investimento(l) || '-'}</strong>
+                      <div className="lead-sub">{funcionarios(l) || 'Funcionários não informados'}</div>
+                    </td>
+                  ) : (
+                    <td data-label="Resultado">
+                      <strong>{l.valor_real ?? '-'}%</strong> × <strong>{l.valor_percebido ?? '-'}%</strong>
+                      <div className="lead-sub">{l.perfil ?? ''}</div>
+                    </td>
+                  )}
                   <td data-label="Data">
                     {formatarData(ultimaAtividade(l))}
-                    {(l.testes ?? 1) > 1 && <div className="lead-sub">1º em {formatarData(l.primeiro_em || l.criado_em)}</div>}
+                    {!ehForm && (l.testes ?? 1) > 1 && (
+                      <div className="lead-sub">1º em {formatarData(l.primeiro_em || l.criado_em)}</div>
+                    )}
                   </td>
                   <td data-label="Status">
                     <select
@@ -379,6 +498,7 @@ function FichaLead({
     }
   }
 
+  const ehForm = ferramentaDe(l) === 'formulario'
   const bloco1 = (l.respostas ?? []).filter((r) => Number(r.id.replace(/\D/g, '')) <= 6)
   const bloco2 = (l.respostas ?? []).filter((r) => Number(r.id.replace(/\D/g, '')) > 6)
 
@@ -395,10 +515,11 @@ function FichaLead({
           <div>
             <h3 style={{ margin: 0 }}>{l.nome}</h3>
             <p className="lead-sub">
-              {l.segmento || 'Segmento não informado'} · {dataHora(ultimaAtividade(l))}
+              {(ehForm ? tipoNegocio(l) : l.segmento) || 'Segmento não informado'} ·{' '}
+              {dataHora(ultimaAtividade(l))}
               {l.ferramenta ? ` · ${l.ferramenta}` : ''}
             </p>
-            {(l.testes ?? 1) > 1 && (
+            {!ehForm && (l.testes ?? 1) > 1 && (
               <p className="lead-badge" style={{ marginTop: '.4rem' }}>
                 ↻ Fez {l.testes} testes · o primeiro em {formatarData(l.primeiro_em || l.criado_em)}
               </p>
@@ -419,21 +540,42 @@ function FichaLead({
         </div>
 
         <div className="fin-cards" style={{ marginTop: '1rem' }}>
-          <div className="fin-card">
-            <div className="fin-card__quem">Valor real</div>
-            <div className="fin-card__valor">{l.valor_real ?? '-'}%</div>
-            <div className="fin-card__mensal">o que a marca entrega</div>
-          </div>
-          <div className="fin-card">
-            <div className="fin-card__quem">Valor percebido</div>
-            <div className="fin-card__valor">{l.valor_percebido ?? '-'}%</div>
-            <div className="fin-card__mensal">o que o cliente enxerga</div>
-          </div>
-          <div className="fin-card">
-            <div className="fin-card__quem">Perfil</div>
-            <div className="fin-card__valor lead-card__texto">{l.perfil ?? '-'}</div>
-            {l.distancia != null && <div className="fin-card__mensal">distância de {l.distancia} pontos</div>}
-          </div>
+          {ehForm ? (
+            <>
+              <div className="fin-card">
+                <div className="fin-card__quem">Tipo de negócio</div>
+                <div className="fin-card__valor lead-card__texto">{tipoNegocio(l) || '-'}</div>
+              </div>
+              <div className="fin-card">
+                <div className="fin-card__quem">Funcionários</div>
+                <div className="fin-card__valor lead-card__texto">{funcionarios(l) || '-'}</div>
+              </div>
+              <div className="fin-card">
+                <div className="fin-card__quem">Faixa de investimento</div>
+                <div className="fin-card__valor lead-card__texto">{investimento(l) || '-'}</div>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="fin-card">
+                <div className="fin-card__quem">Valor real</div>
+                <div className="fin-card__valor">{l.valor_real ?? '-'}%</div>
+                <div className="fin-card__mensal">o que a marca entrega</div>
+              </div>
+              <div className="fin-card">
+                <div className="fin-card__quem">Valor percebido</div>
+                <div className="fin-card__valor">{l.valor_percebido ?? '-'}%</div>
+                <div className="fin-card__mensal">o que o cliente enxerga</div>
+              </div>
+              <div className="fin-card">
+                <div className="fin-card__quem">Perfil</div>
+                <div className="fin-card__valor lead-card__texto">{l.perfil ?? '-'}</div>
+                {l.distancia != null && (
+                  <div className="fin-card__mensal">distância de {l.distancia} pontos</div>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         <div className="lead-contato">
@@ -447,6 +589,18 @@ function FichaLead({
           {(l.origem || l.utm_source) && (
             <div>
               <span className="lead-rot">Origem</span> {[l.origem, l.utm_source, l.utm_campaign].filter(Boolean).join(' · ')}
+            </div>
+          )}
+          {ehForm && (l.utm_source || l.utm_medium || l.utm_campaign) && (
+            <div>
+              <span className="lead-rot">Campanha</span>{' '}
+              {[
+                l.utm_source && `source: ${l.utm_source}`,
+                l.utm_medium && `medium: ${l.utm_medium}`,
+                l.utm_campaign && `campaign: ${l.utm_campaign}`,
+              ]
+                .filter(Boolean)
+                .join(' · ')}
             </div>
           )}
         </div>
@@ -475,7 +629,7 @@ function FichaLead({
         </div>
       </div>
 
-      {(l.historico ?? []).length > 0 && (
+      {!ehForm && (l.historico ?? []).length > 0 && (
         <div className="card">
           <h3>Histórico de testes</h3>
           <ul className="lead-hist">
@@ -497,7 +651,19 @@ function FichaLead({
         </div>
       )}
 
-      {(l.respostas ?? []).length > 0 && (
+      {ehForm && (l.respostas ?? []).length > 0 && (
+        <div className="card">
+          <h3>Respostas do formulário</h3>
+          {(l.respostas ?? []).map((r) => (
+            <div key={r.id} className="form-resp__item">
+              <div className="form-resp__pergunta">{r.pergunta}</div>
+              <div className="form-resp__resposta">{r.resposta || '-'}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!ehForm && (l.respostas ?? []).length > 0 && (
         <div className="card">
           <h3>Respostas do teste{(l.testes ?? 1) > 1 ? ' (mais recente)' : ''}</h3>
           {[

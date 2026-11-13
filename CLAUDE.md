@@ -1493,6 +1493,30 @@ guarda **anotações** (`nota`) e exclui (lixeira).
   (`useArquivoXlsx`). A ficha mostra as notas, contato, origem/UTM, as 11
   respostas por bloco e **Chamar no WhatsApp** (`mensagemLead` já escreve o
   resultado da pessoa); chamar um lead "Novo" marca "Contatado".
+- **DUAS FERRAMENTAS, DUAS ABAS (nov/2026):** o site passou a ter também o
+  **Formulário Posicionamento de Marca** (`/projetodeposicionamento`), além do
+  Teste. A tela se divide por **abas no topo** (`.ferr-abas`/`.ferr-aba`,
+  caramelo `#D86F2A`, com a contagem de cada uma) e a aba escolhida manda em
+  TUDO: métricas, chips de status, busca, tabela, ficha e Excel. A escolha fica
+  no aparelho (`ka.leads.aba`); a primeira visita abre no Teste.
+  - `ferramentaDe(l)` classifica por **duas pistas** — o campo `ferramenta` ou
+    a `origem` contendo "posicionamento" —, porque quem escreve é o site e um
+    ajuste de texto lá não pode sumir com o lead. Tudo que não é formulário cai
+    no Teste, inclusive os leads **antigos sem o campo** (o teste era a única
+    ferramenta na época).
+  - ⚠️ **`agruparLeads` junta SEPARADAMENTE por ferramenta.** Quem fez o teste
+    E preencheu o formulário são dois registros da mesma pessoa (mesmo e-mail/
+    WhatsApp), um de cada aba — juntá-los fazia o lead do formulário sumir
+    atrás do do teste. Dentro da mesma ferramenta o agrupamento continua igual.
+  - **Formulário:** `tipoNegocio` (= `segmento` ou Q1), `funcionarios` (Q2) e
+    `investimento` (Q3), lidos por `respostaDe(l, id, termoPergunta)` — tenta o
+    id e cai no texto da pergunta se a numeração mudar. Métricas: tipo de
+    negócio, faixa de investimento e porte mais comuns. A coluna "Resultado" da
+    tabela vira **"Investimento"**, o filtro de perfil some (não existe ali) e
+    a ficha troca os 3 cards, mostra as 3 respostas e a linha **Campanha**
+    (utm source/medium/campaign). Sem histórico de testes.
+  - A mensagem do WhatsApp (`mensagemLead`) também muda: no formulário cita o
+    negócio que a pessoa descreveu, não a nota do teste.
 - **Regra Firestore (modo produção):** `leads` = `create` público (o site
   grava), leitura/edição só a KA. Entra no backup e na lixeira.
 - **APAGAR um lead pela LISTA (nov/2026):** o botão **Excluir** passou a ficar
