@@ -21,6 +21,8 @@ import {
   excluirLead,
   listarLeads,
   mensagemLead,
+  importarMailerLite,
+  lerCsvMailerLite,
   rotuloStatusLead,
   textoDoLead,
   type FerramentaLead,
@@ -98,6 +100,38 @@ export function GestaoLeads() {
     setPerfil('')
   }
   const ehForm = aba === 'formulario'
+  const ehNews = aba === 'newsletter'
+
+  // Importação do CSV do MailerLite (só na aba Newsletter).
+  const [importando, setImportando] = useState(false)
+
+  async function importarCsv(arquivo: File) {
+    setImportando(true)
+    try {
+      const linhas = lerCsvMailerLite(await arquivo.text())
+      if (!linhas.length) {
+        mostrar('Não achei assinantes nesse arquivo. É o CSV exportado do MailerLite?', 'erro')
+        return
+      }
+      const r = await importarMailerLite(linhas)
+      await recarregar()
+      const partes = [
+        r.incluidos > 0 && `${r.incluidos} ${r.incluidos === 1 ? 'assinante novo' : 'assinantes novos'}`,
+        r.atualizados > 0 && `${r.atualizados} ${r.atualizados === 1 ? 'atualizado' : 'atualizados'}`,
+      ].filter(Boolean)
+      mostrar(partes.length ? partes.join(' · ') : 'Nada a mudar: a lista já estava em dia.', 'ok')
+      if (r.jaEramLeads.length) {
+        mostrar(
+          `${r.jaEramLeads.length} ${r.jaEramLeads.length === 1 ? 'assinante já tinha' : 'assinantes já tinham'} usado as ferramentas do site — veja nas outras abas.`,
+          'info',
+        )
+      }
+    } catch (e) {
+      mostrar(e instanceof Error ? e.message : String(e), 'erro')
+    } finally {
+      setImportando(false)
+    }
+  }
 
   async function recarregar() {
     try {
@@ -140,7 +174,9 @@ export function GestaoLeads() {
   // colunas da ferramenta que está na tela — o formulário não tem nota nem
   // perfil, e o teste não tem faixa de investimento.
   const { url: urlXlsx } = useArquivoXlsx(
-    ehForm
+    ehNews
+      ? ['Inscreveu-se', 'E-mail', 'Enviados', 'Aberturas', 'Cliques', 'Local', 'Status', 'Anotação']
+      : ehForm
       ? [
           'Data', 'Nome', 'E-mail', 'WhatsApp', 'Tipo de negócio', 'Funcionários',
           'Faixa de investimento', 'Status', 'Anotação', 'Origem', 'utm_source', 'utm_medium',
@@ -152,7 +188,18 @@ export function GestaoLeads() {
           'Respostas', 'Testes feitos', 'Primeiro teste',
         ],
     filtrada.map((l) =>
-      ehForm
+      ehNews
+        ? [
+            dataHora(ultimaAtividade(l)),
+            l.email ?? '',
+            l.ml_enviados ?? null,
+            l.ml_aberturas ?? null,
+            l.ml_cliques ?? null,
+            l.ml_local ?? '',
+            rotuloStatusLead(statusDe(l)),
+            l.nota ?? '',
+          ]
+        : ehForm
         ? [
             dataHora(ultimaAtividade(l)),
             l.nome,
@@ -188,7 +235,7 @@ export function GestaoLeads() {
             dataHora(l.primeiro_em || l.criado_em),
           ],
     ),
-    ehForm ? 'Posicionamento' : 'Teste',
+    ehNews ? 'Newsletter' : ehForm ? 'Posicionamento' : 'Teste',
   )
 
   async function mudarStatus(l: Lead, status: StatusLead) {
@@ -253,6 +300,10 @@ export function GestaoLeads() {
   const perfilTop = maisComum(daAba.map((l) => l.perfil))
   const segmentoTop = maisComum(daAba.map((l) => l.segmento))
   // Formulário: o que qualifica é o negócio, o tamanho e o bolso.
+  // Newsletter: o que importa é quem ABRE e quem CLICA — o resto é lista morta.
+  const abriram = daAba.filter((l) => (l.ml_aberturas ?? 0) > 0).length
+  const clicaram = daAba.filter((l) => (l.ml_cliques ?? 0) > 0).length
+  const localTop = maisComum(daAba.map((l) => l.ml_local))
   const negocioTop = maisComum(daAba.map((l) => tipoNegocio(l)))
   const investimentoTop = maisComum(daAba.map((l) => investimento(l)))
   const porteTop = maisComum(daAba.map((l) => funcionarios(l)))
@@ -306,6 +357,34 @@ export function GestaoLeads() {
         </div>
       )}
 
+      {/* A lista de e-mails não chega sozinha como as ferramentas do site: a KA
+          exporta no MailerLite e sobe o arquivo aqui. Reimportar atualiza. */}
+      {ehNews && (
+        <div className="ml-importar">
+          <div>
+            <strong>Trazer a lista do MailerLite</strong>
+            <p className="lead-sub">
+              No MailerLite: Subscribers → Export → CSV. Suba o arquivo aqui. Pode subir de novo
+              quando quiser: quem já está na lista é atualizado, não duplica.
+            </p>
+          </div>
+          <label className={`btn--voltar ${importando ? 'btn--esperando' : ''}`}>
+            {importando ? 'Importando…' : '⤒ Subir CSV do MailerLite'}
+            <input
+              type="file"
+              accept=".csv,text/csv"
+              disabled={importando}
+              style={{ display: 'none' }}
+              onChange={(e) => {
+                const f = e.target.files?.[0]
+                e.target.value = '' // deixa subir o MESMO arquivo de novo
+                if (f) void importarCsv(f)
+              }}
+            />
+          </label>
+        </div>
+      )}
+
       {daAba.length > 0 && (
         <div className="fin-cards">
           <div className="fin-card">
@@ -313,11 +392,30 @@ export function GestaoLeads() {
             <div className="fin-card__valor">{daAba.length}</div>
             <div className="fin-card__mensal">
               {novos} {novos === 1 ? 'novo' : 'novos'} para chamar
-              {!ehForm && refizeram > 0 &&
+              {!ehForm && !ehNews && refizeram > 0 &&
                 ` · ${refizeram} ${refizeram === 1 ? 'refez' : 'refizeram'} o teste`}
             </div>
           </div>
-          {ehForm ? (
+          {ehNews ? (
+            <>
+              <div className="fin-card">
+                <div className="fin-card__quem">Abrem os e-mails</div>
+                <div className="fin-card__valor">{abriram}</div>
+                <div className="fin-card__mensal">
+                  de {daAba.length} {daAba.length === 1 ? 'assinante' : 'assinantes'}
+                </div>
+              </div>
+              <div className="fin-card">
+                <div className="fin-card__quem">Já clicaram</div>
+                <div className="fin-card__valor">{clicaram}</div>
+                <div className="fin-card__mensal">os mais quentes para chamar</div>
+              </div>
+              <div className="fin-card">
+                <div className="fin-card__quem">Local mais comum</div>
+                <div className="fin-card__valor lead-card__texto">{localTop ?? '-'}</div>
+              </div>
+            </>
+          ) : ehForm ? (
             <>
               <div className="fin-card">
                 <div className="fin-card__quem">Tipo de negócio mais comum</div>
@@ -385,7 +483,9 @@ export function GestaoLeads() {
       )}
       {lista.length > 0 && daAba.length === 0 && (
         <p className="ativ-vazio">
-          Ninguém usou {ehForm ? 'o formulário de posicionamento' : 'o teste'} ainda.
+          {ehNews
+            ? 'Nenhum assinante importado ainda — suba o CSV do MailerLite aqui em cima.'
+            : `Ninguém usou ${ehForm ? 'o formulário de posicionamento' : 'o teste'} ainda.`}
         </p>
       )}
       {daAba.length > 0 && filtrada.length === 0 && (
@@ -398,8 +498,8 @@ export function GestaoLeads() {
             <thead>
               <tr>
                 <th>Nome</th>
-                <th>{ehForm ? 'Investimento' : 'Resultado'}</th>
-                <th>Data</th>
+                <th>{ehNews ? 'Engajamento' : ehForm ? 'Investimento' : 'Resultado'}</th>
+                <th>{ehNews ? 'Inscreveu-se' : 'Data'}</th>
                 <th>Status</th>
                 <th className="acoes"></th>
               </tr>
@@ -411,14 +511,27 @@ export function GestaoLeads() {
                     <button className="cel-abrir" onClick={() => abrir(l.id)}>
                       {l.nome}
                     </button>
-                    <div className="lead-sub">
-                      {(ehForm ? tipoNegocio(l) : l.segmento) || 'Segmento não informado'}
-                    </div>
-                    {!ehForm && (l.testes ?? 1) > 1 && (
+                    {!ehNews && (
+                      <div className="lead-sub">
+                        {(ehForm ? tipoNegocio(l) : l.segmento) || 'Segmento não informado'}
+                      </div>
+                    )}
+                    {ehNews && l.ml_local && <div className="lead-sub">{l.ml_local}</div>}
+                    {!ehForm && !ehNews && (l.testes ?? 1) > 1 && (
                       <span className="lead-badge">↻ Fez {l.testes} testes</span>
                     )}
                   </td>
-                  {ehForm ? (
+                  {ehNews ? (
+                    <td data-label="Engajamento">
+                      <strong>
+                        {l.ml_aberturas ?? 0} {(l.ml_aberturas ?? 0) === 1 ? 'abertura' : 'aberturas'}
+                      </strong>
+                      <div className="lead-sub">
+                        {l.ml_cliques ?? 0} {(l.ml_cliques ?? 0) === 1 ? 'clique' : 'cliques'} ·{' '}
+                        {l.ml_enviados ?? 0} enviados
+                      </div>
+                    </td>
+                  ) : ehForm ? (
                     <td data-label="Investimento">
                       <strong>{investimento(l) || '-'}</strong>
                       <div className="lead-sub">{funcionarios(l) || 'Funcionários não informados'}</div>
@@ -429,9 +542,9 @@ export function GestaoLeads() {
                       <div className="lead-sub">{l.perfil ?? ''}</div>
                     </td>
                   )}
-                  <td data-label="Data">
+                  <td data-label={ehNews ? 'Inscreveu-se' : 'Data'}>
                     {formatarData(ultimaAtividade(l))}
-                    {!ehForm && (l.testes ?? 1) > 1 && (
+                    {!ehForm && !ehNews && (l.testes ?? 1) > 1 && (
                       <div className="lead-sub">1º em {formatarData(l.primeiro_em || l.criado_em)}</div>
                     )}
                   </td>
@@ -450,9 +563,15 @@ export function GestaoLeads() {
                     </select>
                   </td>
                   <td className="acoes" data-label="">
-                    <button className="btn-mini btn-mini--whats" onClick={() => chamar(l)}>
-                      WhatsApp
-                    </button>
+                    {ehNews && !l.whatsapp ? (
+                      <a className="btn-mini" href={`mailto:${l.email ?? ''}`}>
+                        E-mail
+                      </a>
+                    ) : (
+                      <button className="btn-mini btn-mini--whats" onClick={() => chamar(l)}>
+                        WhatsApp
+                      </button>
+                    )}
                     <button className="btn-mini" onClick={() => abrir(l.id)}>
                       Ver
                     </button>
@@ -502,6 +621,7 @@ function FichaLead({
   }
 
   const ehForm = ferramentaDe(l) === 'formulario'
+  const ehNews = ferramentaDe(l) === 'newsletter'
   const bloco1 = (l.respostas ?? []).filter((r) => Number(r.id.replace(/\D/g, '')) <= 6)
   const bloco2 = (l.respostas ?? []).filter((r) => Number(r.id.replace(/\D/g, '')) > 6)
 
@@ -518,11 +638,12 @@ function FichaLead({
           <div>
             <h3 style={{ margin: 0 }}>{l.nome}</h3>
             <p className="lead-sub">
-              {(ehForm ? tipoNegocio(l) : l.segmento) || 'Segmento não informado'} ·{' '}
-              {dataHora(ultimaAtividade(l))}
+              {ehNews
+                ? `Assinante desde ${dataHora(ultimaAtividade(l))}`
+                : `${(ehForm ? tipoNegocio(l) : l.segmento) || 'Segmento não informado'} · ${dataHora(ultimaAtividade(l))}`}
               {l.ferramenta ? ` · ${l.ferramenta}` : ''}
             </p>
-            {!ehForm && (l.testes ?? 1) > 1 && (
+            {!ehForm && !ehNews && (l.testes ?? 1) > 1 && (
               <p className="lead-badge" style={{ marginTop: '.4rem' }}>
                 ↻ Fez {l.testes} testes · o primeiro em {formatarData(l.primeiro_em || l.criado_em)}
               </p>
@@ -543,7 +664,24 @@ function FichaLead({
         </div>
 
         <div className="fin-cards" style={{ marginTop: '1rem' }}>
-          {ehForm ? (
+          {ehNews ? (
+            <>
+              <div className="fin-card">
+                <div className="fin-card__quem">Aberturas</div>
+                <div className="fin-card__valor">{l.ml_aberturas ?? 0}</div>
+                <div className="fin-card__mensal">de {l.ml_enviados ?? 0} e-mails enviados</div>
+              </div>
+              <div className="fin-card">
+                <div className="fin-card__quem">Cliques</div>
+                <div className="fin-card__valor">{l.ml_cliques ?? 0}</div>
+                <div className="fin-card__mensal">clicou em algum link</div>
+              </div>
+              <div className="fin-card">
+                <div className="fin-card__quem">Local</div>
+                <div className="fin-card__valor lead-card__texto">{l.ml_local || '-'}</div>
+              </div>
+            </>
+          ) : ehForm ? (
             <>
               <div className="fin-card">
                 <div className="fin-card__quem">Tipo de negócio</div>
@@ -666,7 +804,7 @@ function FichaLead({
         </div>
       )}
 
-      {ehForm && (l.respostas ?? []).length > 0 && (
+      {!ehNews && ehForm && (l.respostas ?? []).length > 0 && (
         <div className="card">
           <h3>Respostas do formulário</h3>
           {(l.respostas ?? []).map((r) => (

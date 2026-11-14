@@ -1528,6 +1528,30 @@ guarda **anotações** (`nota`) e exclui (lixeira).
   O texto muda com a ferramenta: no **teste** vai o resultado + os dois blocos
   de respostas + histórico; no **formulário**, as três respostas num bloco só
   (o tipo de negócio NÃO se repete no contato, porque já é a 1ª resposta).
+- **3ª ABA: NEWSLETTER · MAILERLITE (nov/2026).** Os assinantes da lista de
+  e-mails da KA entram no painel por uma **importação de CSV**, não pelo site:
+  no MailerLite é Subscribers → Export → CSV, e a aba Newsletter tem a barra
+  **"⤒ Subir CSV do MailerLite"** (`.ml-importar`, um `<label>` sobre um
+  `<input type=file>` escondido — abre o app Arquivos no iPhone).
+  - **São gente de outra natureza:** têm e-mail e engajamento (enviados,
+    aberturas, cliques, local), mas **não têm nome, WhatsApp nem resultado**.
+    Por isso aba própria: nas outras eles sujariam as métricas e apareceriam
+    como linhas vazias. `nome` = o próprio e-mail (não inventa nome), e a ação
+    da linha vira **E-mail** (mailto) no lugar do WhatsApp.
+  - `lerCsvMailerLite(texto)` acha as colunas pelo **cabeçalho**, não pela
+    posição (o MailerLite pode mudar a ordem), entende campo entre aspas e
+    ignora e-mail repetido. Campos no doc: `ml_enviados`, `ml_aberturas`,
+    `ml_cliques`, `ml_local`; `criado_em` = a data em que a pessoa se inscreveu.
+  - ⚠️ **`importarMailerLite` é IDEMPOTENTE:** o id do doc vem do e-mail
+    (`ml-<email>`), então subir o mesmo arquivo de novo — ou a exportação do
+    mês que vem — **atualiza o engajamento em vez de duplicar**. Ao atualizar
+    NÃO mexe em `status` nem em `nota` (o andamento que a KA deu continua).
+    Testado com o CSV real, importado duas vezes: 9 → 9.
+  - A importação também avisa quantos daqueles assinantes **já tinham usado as
+    ferramentas do site** (mesmo e-mail noutra aba) — é gente mais quente.
+  - Métricas da aba: quantos **abrem**, quantos **clicam**, local mais comum.
+    Coluna "Resultado" vira **"Engajamento"**; o Excel sai com as colunas da
+    lista; o texto completo ganha o bloco **ENGAJAMENTO NA LISTA**.
 - **Regra Firestore (modo produção):** `leads` = `create` público (o site
   grava), leitura/edição só a KA. Entra no backup e na lixeira.
 - **APAGAR um lead pela LISTA (nov/2026):** o botão **Excluir** passou a ficar

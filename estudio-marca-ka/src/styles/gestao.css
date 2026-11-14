@@ -5285,3 +5285,33 @@ a.btn-mini {
   max-height: 30rem;
   overflow-y: auto;
 }
+
+/* ============================================================
+   LEADS — IMPORTAR A LISTA DO MAILERLITE (nov/2026)
+   Os assinantes não chegam sozinhos como as ferramentas do site: a KA exporta
+   o CSV e sobe aqui. A barra fica no topo da aba Newsletter, com a instrução
+   junto do botão — é um caminho que ela faz de vez em quando e não precisa
+   lembrar de cor.
+   ============================================================ */
+.ml-importar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--bg-1);
+  border: 1px dashed rgba(216, 111, 42, 0.45);
+  border-radius: 14px;
+}
+.ml-importar p {
+  margin: 0.25rem 0 0;
+  max-width: 48ch;
+}
+/* O botão é um <label> por cima do <input type=file> escondido — no iPhone
+   isso abre o app Arquivos normalmente. */
+.ml-importar label {
+  cursor: pointer;
+  white-space: nowrap;
+}
