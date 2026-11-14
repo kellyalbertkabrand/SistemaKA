@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-13T13:46:52.809590+00:00",
-  "count": 37,
+  "generated_at": "2026-11-14T12:51:31.852614+00:00",
+  "count": 42,
   "leads": [
     {
       "empresa": "Casarão Alpina",
@@ -111,6 +111,35 @@
       "id": "0334235fd315"
     },
     {
+      "empresa": "Empório Quatro Estrelas",
+      "setor": "Alimentos e distribuição",
+      "local": "",
+      "porte": "pequena",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Sucessão familiar + expansão digital: marca precisa comunicar quem é para a nova geração e para clientes online, antes de crescer confuso.",
+      "decisor": "Fundador(a) / novo líder da geração",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que o Empório está caminhando para a próxima geração e ampliando no digital — momento exato para a marca falar quem ela é, antes de crescer. 15 min pra conversar?",
+      "email_assunto": "sucessão + vendas online: hora de clarear a marca",
+      "email_corpo": "Vi a notícia do Empório Quatro Estrelas combinando sucessão familiar com vendas digitais — é exatamente o momento em que uma marca precisa estar clara. Quando a nova geração assume e o negócio muda de canal, o mercado fica confuso sobre quem você realmente é. A gente faz isso: revela a essência que já existe na marca (desde os fundadores) e transforma em posicionamento que funciona tanto presencialmente quanto online. 15 minutos para conversar?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 101,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Empório Quatro Estrelas combina sucessão familiar e vendas digitais para ampliar atuação em alimentos - CompreRural",
+          "link": "https://www.comprerural.com/emporio-quatro-estrelas-sucessao/",
+          "fonte": "CompreRural",
+          "data": "2026-11-13"
+        }
+      ],
+      "primeiro_sinal": "2026-11-13",
+      "ultimo_sinal": "2026-11-13",
+      "id": "35a176c901ec"
+    },
+    {
       "empresa": "Empresa familiar (nome não identificado)",
       "setor": "Serralheria e empreendimentos",
       "local": "Porto Alegre, RS",
@@ -182,7 +211,7 @@
       "email_assunto": "posicionamento estratégico para o novo ciclo do aracaju parque shopping",
       "email_corpo": "Vimos a notícia sobre o leilão e os novos investimentos no Aracaju Parque Shopping. É um momento raro de recomeço. Quando duas ou mais forças se unem assim, a marca fica no meio do caminho se ninguém define quem vocês são agora. A gente trabalha exatamente isso: revelar a essência que já existe e transformar em posicionamento claro. Quer uma conversa curta (15 minutos) pra explorar?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 6,
-      "score": 100,
+      "score": 99,
       "confirmado": true,
       "sinais": [
         {
@@ -372,6 +401,35 @@
       "id": "fc23a7f66793"
     },
     {
+      "empresa": "Alpestre",
+      "setor": "Turismo / Hospedagem",
+      "local": "?",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "40 anos é marco de tradição; com 20% de hóspedes recorrentes consolidados, é hora de comunicar essa força e atrair nova geração sem perder identidade.",
+      "decisor": "Fundador(a) / CEO / Diretor(a) de Marketing",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que Alpestre completa 40 anos com foco real em famílias. Aniversário redondo é pretexto perfeito pra provar que é tradicional sem parecer do passado. Posicionar marca nesse momento pode dobrar o alcance.",
+      "email_assunto": "Alpestre em 40 anos: hora de a marca contar sua força",
+      "email_corpo": "Vimos que você chega aos 40 anos com 20% de hóspedes recorrentes — isso é prova de marca que funciona. Aniversário redondo costuma ser o momento certo pra renovar a narrativa: manter a confiança que o fundador construiu, mas falar para quem está chegando agora. A gente faz exatamente isso. Conversa rápida (15 minutos) pra a gente mapear como Alpestre está sendo percebida e onde crescer?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 6,
+      "score": 90,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Alpestre completa 40 anos com foco em famílias e registra 20% de hóspedes recorrentes - Brasilturis",
+          "link": "https://brasilturis.com.br/2026/11/13/hotel-alpestre-40-anos-turismo-familiar-gramado/",
+          "fonte": "Brasilturis",
+          "data": "2026-11-13"
+        }
+      ],
+      "primeiro_sinal": "2026-11-13",
+      "ultimo_sinal": "2026-11-13",
+      "id": "a1cc8e2303b9"
+    },
+    {
       "empresa": "Divishop",
       "setor": "Varejo / E-commerce",
       "local": "Divinópolis, MG",
@@ -546,6 +604,64 @@
       "id": "a96508f95c1b"
     },
     {
+      "empresa": "Clube de Engenharia, Arquitetura",
+      "setor": "",
+      "local": "",
+      "porte": "?",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "A nova geração assume e quer deixar a sua marca, sem perder o que o fundador construiu. É o momento clássico de reposicionamento.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Oi! Vi a notícia sobre Clube de Engenharia, Arquitetura (sucessão / nova liderança). Parabéns! Eu trabalho com posicionamento de marca e adoraria trocar uma ideia com você sobre esse momento da empresa.",
+      "email_assunto": "Clube de Engenharia, Arquitetura: o momento novo e a marca",
+      "email_corpo": "Olá! Vi a notícia \"Clube de Engenharia, Arquitetura e Agronomia de Brusque (CEAB) elege nova diretoria - Noticenter\". Parabéns pelo momento.\n\nA nova geração assume e quer deixar a sua marca, sem perder o que o fundador construiu. É o momento clássico de reposicionamento.\n\nEu sou a Kelly Albert, estrategista de posicionamento de marca. Topa uma conversa de 20 minutos? Eu te mostro, sem compromisso, como a marca está sendo percebida hoje.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 5,
+      "score": 84,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Clube de Engenharia, Arquitetura e Agronomia de Brusque (CEAB) elege nova diretoria - Noticenter",
+          "link": "https://www.noticenter.com.br/noticia/42418/clube-de-engenharia-arquitetura-e-agronomia-de-brusque-ceab-elege-nova-diretoria",
+          "fonte": "Noticenter",
+          "data": "2026-11-11"
+        }
+      ],
+      "primeiro_sinal": "2026-11-11",
+      "ultimo_sinal": "2026-11-11",
+      "id": "696ae8eacc5a"
+    },
+    {
+      "empresa": "Erica Migales",
+      "setor": "",
+      "local": "",
+      "porte": "?",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "A nova geração assume e quer deixar a sua marca, sem perder o que o fundador construiu. É o momento clássico de reposicionamento.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Oi! Vi a notícia sobre Erica Migales (sucessão / nova liderança). Parabéns! Eu trabalho com posicionamento de marca e adoraria trocar uma ideia com você sobre esse momento da empresa.",
+      "email_assunto": "Erica Migales: o momento novo e a marca",
+      "email_corpo": "Olá! Vi a notícia \"Erica Migales é a nova diretora de marketing de Amstel - Meio e Mensagem\". Parabéns pelo momento.\n\nA nova geração assume e quer deixar a sua marca, sem perder o que o fundador construiu. É o momento clássico de reposicionamento.\n\nEu sou a Kelly Albert, estrategista de posicionamento de marca. Topa uma conversa de 20 minutos? Eu te mostro, sem compromisso, como a marca está sendo percebida hoje.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 5,
+      "score": 84,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Erica Migales é a nova diretora de marketing de Amstel - Meio e Mensagem",
+          "link": "https://www.meioemensagem.com.br/gente/erica-migales-e-a-nova-diretora-de-marketing-de-amstel",
+          "fonte": "Meio e Mensagem",
+          "data": "2026-11-11"
+        }
+      ],
+      "primeiro_sinal": "2026-11-11",
+      "ultimo_sinal": "2026-11-11",
+      "id": "51efa623fbc7"
+    },
+    {
       "empresa": "BVIX",
       "setor": "Serviços Financeiros / Seguros",
       "local": "",
@@ -588,7 +704,7 @@
       "email_assunto": "marca que virou referência merece pensar no amanhã",
       "email_corpo": "Vi que o Parque do Pedroso está celebrando 50 anos. Marca que dura cinco décadas tem algo especial — mas muitas vezes não consegue comunicar o que realmente é, além de \"aquele lugar antigo\". É exatamente nesse momento que um posicionamento claro ajuda a renovar a percepção sem apagar a história. A gente faz isso. Se quiser conversar 15 minutos, topo.\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 5,
-      "score": 84,
+      "score": 83,
       "confirmado": true,
       "sinais": [
         {
@@ -733,7 +849,7 @@
       "email_assunto": "nova diretoria: hora de revisar o posicionamento",
       "email_corpo": "Parabéns à nova diretoria da Casa Guido. Triênios são ciclos perfeitos para alinhar marca, identidade e estratégia. Muitas vezes a marca fica com a cara da gestão anterior. Vale a pena revisar isso agora, enquanto você ancora a visão nova. Gostaria de uma conversa de 15–20 minutos para entender como vocês estão vendo a marca?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 3,
-      "score": 75,
+      "score": 74,
       "confirmado": true,
       "sinais": [
         {
@@ -747,35 +863,6 @@
       "primeiro_sinal": "2026-11-11",
       "ultimo_sinal": "2026-11-11",
       "id": "ba7adc05d6a7"
-    },
-    {
-      "empresa": "Cursinho Popular de São José de Piranhas",
-      "setor": "Educação",
-      "local": "São José de Piranhas, PB",
-      "porte": "pequena",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "Cursinho completa 13 anos e projeta crescimento (recorde de aprovação), mas modelo de negócio local/sem fins lucrativos limita potencial de projeto de posicionamento comercial.",
-      "decisor": "Diretor(a) / coordenador(a)",
-      "pessoa_citada": "",
-      "msg_linkedin": "",
-      "email_assunto": "",
-      "email_corpo": "",
-      "encaixe": 4,
-      "score": 75,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "aniversario",
-          "titulo": "Cursinho Popular de São José de Piranhas celebra 13 anos de história e projeta recorde de aprovação no Enem 2026 - Radar Sertanejo",
-          "link": "https://www.radarsertanejo.com/2026/11/08/cursinho-popular-de-sao-jose-de-piranhas-celebra-13-anos-de-historia-e-projeta-recorde-de-aprovacao-no-enem-2026/",
-          "fonte": "Radar Sertanejo",
-          "data": "2026-11-08"
-        }
-      ],
-      "primeiro_sinal": "2026-11-08",
-      "ultimo_sinal": "2026-11-08",
-      "id": "8bc4fa6dbaee"
     },
     {
       "empresa": "Brasil Terrenos",
@@ -814,6 +901,64 @@
       "id": "8900c950394c"
     },
     {
+      "empresa": "Cursinho Popular de São José de Piranhas",
+      "setor": "Educação",
+      "local": "São José de Piranhas, PB",
+      "porte": "pequena",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Cursinho completa 13 anos e projeta crescimento (recorde de aprovação), mas modelo de negócio local/sem fins lucrativos limita potencial de projeto de posicionamento comercial.",
+      "decisor": "Diretor(a) / coordenador(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 4,
+      "score": 74,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Cursinho Popular de São José de Piranhas celebra 13 anos de história e projeta recorde de aprovação no Enem 2026 - Radar Sertanejo",
+          "link": "https://www.radarsertanejo.com/2026/11/08/cursinho-popular-de-sao-jose-de-piranhas-celebra-13-anos-de-historia-e-projeta-recorde-de-aprovacao-no-enem-2026/",
+          "fonte": "Radar Sertanejo",
+          "data": "2026-11-08"
+        }
+      ],
+      "primeiro_sinal": "2026-11-08",
+      "ultimo_sinal": "2026-11-08",
+      "id": "8bc4fa6dbaee"
+    },
+    {
+      "empresa": "Resolv",
+      "setor": "Segurança / Tecnologia",
+      "local": "",
+      "porte": "?",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Empresa que triplicou segurança em seis anos e aposta em tecnologia — crescimento forte, mas a marca precisa refletir essa evolução para não ficar presa ao passado.",
+      "decisor": "CEO / Fundador(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que a Resolv triplicou segurança em seis anos. Crescimento desse tamanho merece uma marca que fale isso ao mercado. Bora conversar sobre posicionamento?",
+      "email_assunto": "30 anos é o momento certo para a marca crescer junto",
+      "email_corpo": "A Resolv triplicou segurança em seis anos — é crescimento de verdade. Mas marca que cresce rápido costuma ficar do tamanho que tinha lá atrás. Se você quer que o mercado veja a empresa que você virou (não a que era), vale a pena uma conversa curta sobre como sua marca está sendo percebida. Aproveita o aniversário para renovar.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 4,
+      "score": 70,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Resolv triplica segurança em seis anos e aposta em tecnologia e inteligência - G1",
+          "link": "https://g1.globo.com/sp/ribeirao-preto-franca/especial-publicitario/resolv-resolv-30-anos/noticia/2026/11/13/resolv-triplica-seguranca-em-seis-anos-e-aposta-em-tecnologia-e-inteligencia.ghtml",
+          "fonte": "G1",
+          "data": "2026-11-13"
+        }
+      ],
+      "primeiro_sinal": "2026-11-13",
+      "ultimo_sinal": "2026-11-13",
+      "id": "452195ae6563"
+    },
+    {
       "empresa": "Cryopraxis",
       "setor": "Saúde / Criopreservação",
       "local": "",
@@ -843,35 +988,6 @@
       "id": "b131aaa793b8"
     },
     {
-      "empresa": "SALC Group",
-      "setor": "Comunicação / Mídia",
-      "local": "",
-      "porte": "?",
-      "gatilho": "sucessao",
-      "gatilho_nome": "Sucessão / nova liderança",
-      "por_que_agora": "Nova liderança é momento para revisar se o posicionamento do grupo reflete a direção estratégica que o novo CEO quer imprimir.",
-      "decisor": "CEO",
-      "pessoa_citada": "João Del Cura · CEO",
-      "msg_linkedin": "João, vi que você assumiu a liderança do SALC Group. Momento clássico de alinhamento: a marca reflete a direção que você quer para o grupo? Bora conversar sobre isso?",
-      "email_assunto": "momento de liderança no SALC Group",
-      "email_corpo": "João, parabéns pela posse no SALC Group. Nova liderança é momento perfeito para revisar se o posicionamento do grupo conversa com a estratégia que você quer implementar. Muitas vezes a marca fica para trás da visão do novo líder. Gostaria de uma conversa rápida (15–20 min) para entender como você está vendo a marca do grupo agora?\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 2,
-      "score": 70,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "sucessao",
-          "titulo": "João Del Cura assume como CEO do SALC Group - ABC da Comunicação",
-          "link": "https://www.abcdacomunicacao.com.br/joao-del-cura-assume-como-ceo-do-salc-group/",
-          "fonte": "ABC da Comunicação",
-          "data": "2026-11-11"
-        }
-      ],
-      "primeiro_sinal": "2026-11-11",
-      "ultimo_sinal": "2026-11-11",
-      "id": "cc788e27e090"
-    },
-    {
       "empresa": "Adão Negro",
       "setor": "Música / Entretenimento",
       "local": "Bahia",
@@ -899,6 +1015,35 @@
       "primeiro_sinal": "2026-11-09",
       "ultimo_sinal": "2026-11-09",
       "id": "d388cbbf0976"
+    },
+    {
+      "empresa": "SALC Group",
+      "setor": "Comunicação / Mídia",
+      "local": "",
+      "porte": "?",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Nova liderança é momento para revisar se o posicionamento do grupo reflete a direção estratégica que o novo CEO quer imprimir.",
+      "decisor": "CEO",
+      "pessoa_citada": "João Del Cura · CEO",
+      "msg_linkedin": "João, vi que você assumiu a liderança do SALC Group. Momento clássico de alinhamento: a marca reflete a direção que você quer para o grupo? Bora conversar sobre isso?",
+      "email_assunto": "momento de liderança no SALC Group",
+      "email_corpo": "João, parabéns pela posse no SALC Group. Nova liderança é momento perfeito para revisar se o posicionamento do grupo conversa com a estratégia que você quer implementar. Muitas vezes a marca fica para trás da visão do novo líder. Gostaria de uma conversa rápida (15–20 min) para entender como você está vendo a marca do grupo agora?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 2,
+      "score": 69,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "João Del Cura assume como CEO do SALC Group - ABC da Comunicação",
+          "link": "https://www.abcdacomunicacao.com.br/joao-del-cura-assume-como-ceo-do-salc-group/",
+          "fonte": "ABC da Comunicação",
+          "data": "2026-11-11"
+        }
+      ],
+      "primeiro_sinal": "2026-11-11",
+      "ultimo_sinal": "2026-11-11",
+      "id": "cc788e27e090"
     },
     {
       "empresa": "Frooty",
@@ -986,7 +1131,7 @@
       "email_assunto": "30 anos do Canal Rural: marca e posicionamento",
       "email_corpo": "Oi,\n\n30 anos é data que merece mais que um novo site — é hora de a marca contar quem você é hoje e para onde vai. A gente revela a essência do Canal Rural e transforma isso em posicionamento claro, que funciona em toda plataforma.\n\nVocê topa uma conversa de 15 minutos para a gente entender melhor seu momento?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 2,
-      "score": 62,
+      "score": 61,
       "confirmado": true,
       "sinais": [
         {
@@ -1109,7 +1254,7 @@
       "email_assunto": "",
       "email_corpo": "",
       "encaixe": 1,
-      "score": 45,
+      "score": 44,
       "confirmado": true,
       "sinais": [
         {
