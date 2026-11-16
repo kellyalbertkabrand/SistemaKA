@@ -1,7 +1,7 @@
 {
   "date": "2026-11-14",
-  "generated_at": "2026-11-15T13:15:31.410614+00:00",
-  "count": 22,
+  "generated_at": "2026-11-16T14:24:23.372133+00:00",
+  "count": 23,
   "items": [
     {
       "title": "Rebranding do Cubo Itaú conquista prêmio de design experimental no Latin American Design Awards 2026 - Brasil Inovador",
@@ -56,14 +56,14 @@
       "published": "2026-11-14",
       "raw_summary": "A ascensão da inteligência artificial generativa nas etapas preliminares de contratação corporativa e consumo nacional tem imposto uma reconfiguração profunda",
       "title_pt": "",
-      "summary_pt": "IA generativa reconfigura estratégias de branding e jornadas de compra corporativa.",
+      "summary_pt": "IA generativa reconfigura como marcas se posicionam e comunicam em jornadas corporativas.",
       "angle_pt": "",
-      "pme_pt": "Empresas com marca já estruturada precisam revisar continuamente a estratégia de branding à luz da IA — direção contínua mantém a bússola alinada com mudanças do mercado.",
+      "pme_pt": "Revela que branding B2B agora exige integração de IA na estratégia — crítico para empresas que vendem para outras empresas não perderem relevância.",
       "roteiro_pt": "",
-      "link_kelly": "Direção",
+      "link_kelly": "Projeto",
       "authors": "",
       "score": 18,
-      "fetched_at": "2026-11-15T13:11:43.042435+00:00",
+      "fetched_at": "2026-11-16T14:20:38.545873+00:00",
       "id": "cc6ec31f6b313cfb"
     },
     {
@@ -77,14 +77,14 @@
       "published": "2026-11-14",
       "raw_summary": "A Casa da Mulher Paulista de Santa Fé do Sul receberá, no dia 19 de novembro, a oficina gratuita “Construa sua Marca Pessoal”, iniciativa voltada ao fortalecimento do empreendedorismo feminino e à...",
       "title_pt": "",
-      "summary_pt": "Oficina gratuita de marca pessoal voltada ao empreendedorismo feminino.",
+      "summary_pt": "Iniciativa para fortalecer marca pessoal de empreendedores, especialmente mulheres.",
       "angle_pt": "",
-      "pme_pt": "Empreendedores (especialmente mulheres) com poucos recursos podem começar marca pessoal sozinhos — o livro oferece método prático, acessível e no próprio ritmo.",
+      "pme_pt": "Reafirma que marca pessoal é ferramenta de sobrevivência para pequenos empreendedores — base para crescer com autonomia.",
       "roteiro_pt": "",
       "link_kelly": "Livro",
       "authors": "",
       "score": 18,
-      "fetched_at": "2026-11-15T13:12:02.413257+00:00",
+      "fetched_at": "2026-11-16T14:20:57.102918+00:00",
       "id": "662b21e2bcb6930d"
     },
     {
@@ -287,14 +287,14 @@
       "published": "2026-11-14",
       "raw_summary": "\"Nosso objetivo é consolidar o posicionamento da Arvo como referência e liderança intelectual no setor de saúde suplementar, construindo a fundação que irá sustentar esse crescimento e fortalecer o relacionamento com operadoras e parceiros”, conta Tatiana",
       "title_pt": "",
-      "summary_pt": "Empresa de suplementos usa inteligência para consolidar posicionamento e liderança no setor.",
+      "summary_pt": "Marca de suplemento usa inteligência artificial e clareza de posicionamento para consolidar liderança intelectual no setor.",
       "angle_pt": "",
-      "pme_pt": "Exemplifica como pequenas e médias marcas de saúde usam inteligência estratégica para fortalecer posicionamento e relacionamento com parceiros, sustentando crescimento.",
+      "pme_pt": "Exemplifica como uma empresa de médio porte estrutura posicionamento de liderança intelectual com IA — modelo de caso completo sob medida.",
       "roteiro_pt": "",
-      "link_kelly": "Direção — case de marca que já tem estrutura e busca consolidar posicionamento contínuo como referência e líder intelectual.",
+      "link_kelly": "Projeto (feito sob medida pra você)",
       "authors": "",
       "score": 8,
-      "fetched_at": "2026-11-15T13:11:43.542608+00:00",
+      "fetched_at": "2026-11-16T14:20:42.970389+00:00",
       "id": "8e8a5aa43e1b5b71"
     },
     {
@@ -464,6 +464,27 @@
       "score": 5,
       "fetched_at": "2026-11-15T13:13:35.486522+00:00",
       "id": "734d99f38b619950"
+    },
+    {
+      "title": "Dave Portnoy demands Salim Sirur suspension after Internet Invitational controversy - Golfmagic",
+      "link": "https://www.golfmagic.com/news-0/dave-portnoy-demands-salim-sirur-suspension-after-internet-invitational-controversy",
+      "source": "Golfmagic",
+      "lang": "en",
+      "region": "world",
+      "category": "influencer",
+      "kind": "noticia",
+      "published": "2026-11-14",
+      "raw_summary": "The Barstool Sports founder wants Salim 'The Dream' Sirur handed a lengthy ban after his behaviour at the 2026 finale, while the influencer is already pleading for another chance in 2027.",
+      "title_pt": "Dave Portnoy demands Salim Sirur suspension after Internet Invitational controversy - Golfmagic",
+      "summary_pt": "Influenciador de golfe enfrenta demanda de suspensão após polêmica em competição internacional.",
+      "angle_pt": "",
+      "pme_pt": "",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 4,
+      "fetched_at": "2026-11-16T14:22:15.930952+00:00",
+      "id": "59d549f543a055ef"
     }
   ]
 }
