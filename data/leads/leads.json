@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-16T14:26:36.668542+00:00",
-  "count": 51,
+  "generated_at": "2026-11-17T15:19:45.606648+00:00",
+  "count": 56,
   "leads": [
     {
       "empresa": "Casarão Alpina",
@@ -58,6 +58,42 @@
       "primeiro_sinal": "2026-11-10",
       "ultimo_sinal": "2026-11-15",
       "id": "eeac591c9c9b"
+    },
+    {
+      "empresa": "Kepler Weber",
+      "setor": "Agronegócio / máquinas agrícolas",
+      "local": "Sapucaia do Sul/RS",
+      "porte": "média",
+      "gatilho": "fusao",
+      "gatilho_nome": "Fusão ou aquisição",
+      "por_que_agora": "Entrada de sócio minoritário em empresa familiar exige clareza sobre identidade e posicionamento para não confundir mercado e investidores sobre quem manda a marca.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Kepler Weber com novo sócio na porta: momento clássico para blindar a marca e deixar claro quem você é antes que o mercado especule. 15 min pra conversar?",
+      "email_assunto": "kepler weber: posicionamento antes de mais sócios chegarem",
+      "email_corpo": "Vi que a Kepler Weber recebeu um investidor de peso. Quando uma empresa familiar abre a porta assim, a marca fica exposta a interpretações. Duas lógicas, dois interesses: quem quer que fale primeiro é o posicionamento claro. Podemos fazer uma conversa rápida sobre como você quer que a marca seja percebida agora? Ou deixo um diagnóstico gratuito de como você está sendo visto hoje.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 128,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "fusao",
+          "titulo": "Gigante do agronegócio compra 11,6% da Kepler Weber, mas diz que não quer o controle - bra1.com.br",
+          "link": "https://www.bra1.com.br/agronegocio/id-727049/gigante_do_agronegocio_compra_11_6__da_kepler_weber__mas_diz_que_nao_quer_o_controle",
+          "fonte": "bra1.com.br",
+          "data": "2026-11-16"
+        },
+        {
+          "gatilho": "fusao",
+          "titulo": "TMSA compra 11,6% de participação na Kepler Weber, mas diz que não quer o controle - AgFeed",
+          "link": "https://agfeed.com.br/negocios/tmsa-compra-116-de-participacao-na-kepler-weber-mas-diz-que-nao-quer-o-controle/",
+          "fonte": "AgFeed",
+          "data": "2026-11-13"
+        }
+      ],
+      "primeiro_sinal": "2026-11-13",
+      "ultimo_sinal": "2026-11-16",
+      "id": "efd0f55f5d1a"
     },
     {
       "empresa": "Fruki",
@@ -145,6 +181,35 @@
       "primeiro_sinal": "2026-11-10",
       "ultimo_sinal": "2026-11-10",
       "id": "0334235fd315"
+    },
+    {
+      "empresa": "Zaxo",
+      "setor": "Tecnologia",
+      "local": "",
+      "porte": "?",
+      "gatilho": "fusao",
+      "gatilho_nome": "Fusão ou aquisição",
+      "por_que_agora": "Fusão de duas empresas de tecnologia que almejam mercado internacional: identidades precisam convergir numa marca única clara, senão cada país vai entender diferente.",
+      "decisor": "CEO / Sócio-fundador(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "Zaxo + VoxPak: fusão bacana. Agora vem a parte difícil — duas marcas, duas culturas, um mercado internacional. Vale blindar isso antes de comunicar?",
+      "email_assunto": "zaxo e voxpak: posicionar a nova marca antes de sair comunicando",
+      "email_corpo": "Parabéns pela fusão. Momento clássico: duas empresas viram uma, mas se a marca não falar com uma voz só, o mercado (pior ainda lá fora) inventa histórias. Posicionar antes de acelerar a comunicação economiza muito em mídia e em confusão. Podemos conversar sobre como construir essa clareza? Ou vale eu dar uma leitura de como vocês estão sendo percebidos hoje.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 8,
+      "score": 100,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "fusao",
+          "titulo": "Zaxo e VoxPak se fundem de olho em negócios de tecnologia e compradores internacionais - Exame",
+          "link": "https://exame.com/insight/ma-do-ma-zaxo-e-voxpak-se-fundem-de-olho-em-negocios-de-tecnologia-e-compradores-internacionais/p",
+          "fonte": "Exame",
+          "data": "2026-11-16"
+        }
+      ],
+      "primeiro_sinal": "2026-11-16",
+      "ultimo_sinal": "2026-11-16",
+      "id": "c94cbfc09af4"
     },
     {
       "empresa": "Tapetes São Carlos",
@@ -247,7 +312,7 @@
       "email_assunto": "marca com 15 anos de história merece clareza",
       "email_corpo": "Celebrar 15 anos é mais do que data redonda — é o momento de provar que você é sólido sem parecer ultrapassado. Vi que a Schaf Bier está fazendo festa. Legal. Agora, enquanto o mercado local te conhece, como você quer que quem está fora de Francisco Beltrão te veja? Posicionamento claro é o que faz a marca viajar. Quer 20 minutos pra conversar sobre isso?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 7,
-      "score": 99,
+      "score": 98,
       "confirmado": true,
       "sinais": [
         {
@@ -263,35 +328,6 @@
       "id": "0284692ab73e"
     },
     {
-      "empresa": "Kepler Weber",
-      "setor": "Agronegócio / Máquinas e equipamentos",
-      "local": "Não identificado",
-      "porte": "média",
-      "gatilho": "fusao",
-      "gatilho_nome": "Fusão ou aquisição",
-      "por_que_agora": "Entrada de novo acionista relevante exige clareza sobre identidade e propósito da marca para o mercado e para potenciais parceiros.",
-      "decisor": "CEO / Diretor de Marketing",
-      "pessoa_citada": "",
-      "msg_linkedin": "Vi que a Kepler Weber recebeu investimento estratégico. Momento clássico para a marca falar com clareza quem ela é — especialmente com novas vozes na empresa. Quer conversar sobre isso?",
-      "email_assunto": "marca clara em momento de mudança na Kepler Weber",
-      "email_corpo": "Vi a notícia sobre a entrada da TMSA na Kepler Weber. Mudanças no controle acionário sempre trazem ruído — tanto dentro quanto fora da empresa. Quando a marca fica confusa nesse momento, cada área comunica de um jeito diferente. Quer uma conversa rápida sobre como a Kepler está sendo percebida no mercado agora?\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 6,
-      "score": 99,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "fusao",
-          "titulo": "TMSA compra 11,6% de participação na Kepler Weber, mas diz que não quer o controle - AgFeed",
-          "link": "https://agfeed.com.br/negocios/tmsa-compra-116-de-participacao-na-kepler-weber-mas-diz-que-nao-quer-o-controle/",
-          "fonte": "AgFeed",
-          "data": "2026-11-13"
-        }
-      ],
-      "primeiro_sinal": "2026-11-13",
-      "ultimo_sinal": "2026-11-13",
-      "id": "efd0f55f5d1a"
-    },
-    {
       "empresa": "Aracaju Parque Shopping",
       "setor": "Varejo / Shopping Center",
       "local": "Aracaju/SE",
@@ -305,7 +341,7 @@
       "email_assunto": "posicionamento estratégico para o novo ciclo do aracaju parque shopping",
       "email_corpo": "Vimos a notícia sobre o leilão e os novos investimentos no Aracaju Parque Shopping. É um momento raro de recomeço. Quando duas ou mais forças se unem assim, a marca fica no meio do caminho se ninguém define quem vocês são agora. A gente trabalha exatamente isso: revelar a essência que já existe e transformar em posicionamento claro. Quer uma conversa curta (15 minutos) pra explorar?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 6,
-      "score": 99,
+      "score": 98,
       "confirmado": true,
       "sinais": [
         {
@@ -379,6 +415,93 @@
       "id": "c05e0292ccf5"
     },
     {
+      "empresa": "Racco",
+      "setor": "Não identificado",
+      "local": "",
+      "porte": "?",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Racco inicia segunda geração, momento clássico de reposicionamento: novos líderes precisam honrar o legado sem repetir.",
+      "decisor": "Fundador(a) / Nova liderança / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Racco inaugura uma nova fase. Quando a segunda geração entra, a marca precisa falar a linguagem de quem manda agora — sem perder quem construiu. Vale uma conversa.",
+      "email_assunto": "marca em transição: racco e a segunda geração",
+      "email_corpo": "Vi que Racco está iniciando uma nova fase com a segunda geração. É exatamente o momento em que a marca fica invisível entre o legado e o futuro. A gente ajuda empresas familiares a revelarem quem elas são agora — mantendo o respeito por quem começou. Quer uma conversa rápida sobre como a Racco está sendo percebida no mercado?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 95,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Sucessão familiar: Racco inicia nova fase com segunda geração - Gazeta do Povo",
+          "link": "https://www.gazetadopovo.com.br/vozes/parana-sa/sucessao-familiar-racco/",
+          "fonte": "Gazeta do Povo",
+          "data": "2026-11-16"
+        }
+      ],
+      "primeiro_sinal": "2026-11-16",
+      "ultimo_sinal": "2026-11-16",
+      "id": "3ce3d7f551f1"
+    },
+    {
+      "empresa": "Romena",
+      "setor": "Alimentos / Produtos de mesa",
+      "local": "",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Marca que completa 40 anos enfrenta o clássico desafio: renovar sem perder tradição — momento perfeito para revisar se o posicionamento acompanha o crescimento.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "40 anos de Romena é motivo para comemorar — e também para perguntar: a marca que vocês construíram está falando claro para quem decide hoje? Vamos conversar.",
+      "email_assunto": "40 anos: hora de a Romena se renovar sem perder raízes",
+      "email_corpo": "Vi que a Romena completa 40 anos em 2026 — marca que cresceu trazendo tradição à mesa dos brasileiros. É exatamente nessa hora que muita empresa percebe: a identidade dela não acompanhou o crescimento. A gente ajuda a revisar o posicionamento e deixar claro (de verdade) quem você é hoje. Podemos conversar 15 minutos? Kelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 95,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Antes de chegar à mesa: os bastidores dos 40 anos da Romena - Rede Atlântida",
+          "link": "https://atl.clicrbs.com.br/papo-serio/vida-adulta/conteudo-de-marca/2026/11/antes-de-chegar-a-mesa-os-bastidores-dos-40-anos-da-romena-cmwfd5h5301w8014s12drcind.html",
+          "fonte": "Rede Atlântida",
+          "data": "2026-11-16"
+        }
+      ],
+      "primeiro_sinal": "2026-11-16",
+      "ultimo_sinal": "2026-11-16",
+      "id": "19bfcc0f4362"
+    },
+    {
+      "empresa": "Grupo Raymundo da Fonte",
+      "setor": "Alimentos / Comércio",
+      "local": "Pernambuco/PE",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "80 anos de história é o momento clássico para renovar a marca sem perder a tradição; grupo pernambucano consolidado tem perfil de cliente ideal.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "80 anos é tradição. Mas tradição parada vira obsoleta. É hora de provar que vocês continuam inovadores. A marca acompanha essa história?",
+      "email_assunto": "marca tradicional que cresce para o futuro",
+      "email_corpo": "Vi que o Grupo Raymundo da Fonte está celebrando 80 anos — que trajetória! Nesse momento, muitas marcas centenárias enfrentam o mesmo dilema: como parecer tradicional sem parecer ultrapassada. A data redonda é o pretexto perfeito para alinhar a marca à inovação que vocês já praticam. Quer conversar sobre como transformar essência em posicionamento claro para os próximos 80 anos?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 95,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "✨ Orgulho Pernambucano: Grupo Raymundo da Fonte celebra 80 anos de história e inovação - Taís Paranhos",
+          "link": "https://www.taisparanhos.com.br/2026/11/orgulho-pernambucano-grupo-raymundo-da.html",
+          "fonte": "Taís Paranhos",
+          "data": "2026-11-16"
+        }
+      ],
+      "primeiro_sinal": "2026-11-16",
+      "ultimo_sinal": "2026-11-16",
+      "id": "b4828f01e0af"
+    },
+    {
       "empresa": "Grupo Estrela",
       "setor": "Varejo",
       "local": "Teresina/PI",
@@ -408,6 +531,35 @@
       "id": "23e489c0b16f"
     },
     {
+      "empresa": "Oftalmoclin",
+      "setor": "Saúde / Oftalmologia",
+      "local": "Bahia",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Clínica de saúde em marco de 50 anos precisa renovar a marca sem perder credibilidade de quem a construiu; é o momento clássico para reposicionar.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Oftalmoclin: 50 anos, 600 mil atendimentos. Essa história merecia estar no DNA da marca — cada comunicação, cada contato. Vamos conversar sobre como transformar tradição em crescimento?",
+      "email_assunto": "50 anos de Oftalmoclin: renovar sem perder força",
+      "email_corpo": "Oi! Vi que a Oftalmoclin completou 50 anos na Bahia com mais de 600 mil atendimentos — um número que fala por si. Marcas tradicionais neste momento costumam sentir a pressão de provar que são modernas, mas correm o risco de parecer que viraram outro lugar. A gente trabalha exatamente isso: tornar a história que você construiu o combustível da marca que você quer ser. Que tal uma conversa curta para a gente entender como a Oftalmoclin é percebida hoje? Kelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 95,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Oftalmoclin completa 50 anos com mais de 600 mil atendimentos realizados na Bahia - Cenapop",
+          "link": "https://cenapop.uol.com.br/noticias/zoom-pop/oftalmoclin-completa-50-anos-com-mais-de-600-mil-atendimentos-realizados-na-bahia.html",
+          "fonte": "Cenapop",
+          "data": "2026-11-15"
+        }
+      ],
+      "primeiro_sinal": "2026-11-15",
+      "ultimo_sinal": "2026-11-15",
+      "id": "abdc25915fd8"
+    },
+    {
       "empresa": "Lutepel",
       "setor": "Indústria / Economia local",
       "local": "",
@@ -421,7 +573,7 @@
       "email_assunto": "renovar a marca da Lutepel nos seus 30 anos",
       "email_corpo": "Oi, tudo bem?\n\nVi a notícia dos 30 anos da Lutepel — parabéns pelo caminho.\n\nMarcas que chegam em marco assim enfrentam uma pergunta: como ser tradicional sem parecer ultrapassada? A gente ajuda empresas como a sua a redesenhar o posicionamento mantendo a força que o tempo construiu.\n\nSeria interessante bater um papo de 15 minutos sobre como a Lutepel está sendo percebida no mercado?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 7,
-      "score": 95,
+      "score": 94,
       "confirmado": true,
       "sinais": [
         {
@@ -553,35 +705,6 @@
       "id": "fc23a7f66793"
     },
     {
-      "empresa": "Brick de Desapegos",
-      "setor": "Varejo / Moda e sustentabilidade",
-      "local": "Porto Alegre/RS",
-      "porte": "pequena",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "15 anos consolidando modelo de moda circular: momento de transformar história em posicionamento que atraia mais visibilidade e expansão.",
-      "decisor": "Fundador(a) / Proprietário(a)",
-      "pessoa_citada": "",
-      "msg_linkedin": "Brick de Desapegos celebra 15 anos potencializando moda circular em Porto Alegre. Momento de deixar claro para o mercado maior por que essa marca importa.",
-      "email_assunto": "15 anos do Brick: posicionar a moda circular",
-      "email_corpo": "15 anos é tempo de consolidar uma marca. O Brick já provou o modelo; agora precisa provar a essência — por que você existe, por que importa, por que o cliente escolhe você e não outro brechó ou loja. Uma leitura de como você é percebido hoje pode abrir caminhos para crescer com propósito. Vamos conversar?\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 5,
-      "score": 89,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "aniversario",
-          "titulo": "Brick de Desapegos celebra 15 anos com grande festival de moda circular, desfiles, música e baile no Clube do Comércio, em Porto Alegre - Super Transado",
-          "link": "https://www.supertransado.com.br/site/artigos/noticia/brick-de-desapegos-celebra-15-anos-com-grande-festival-de-moda-circular-desfiles-musica-e-baile-no-clube-do-comercio-em-porto-alegre",
-          "fonte": "Super Transado",
-          "data": "2026-11-14"
-        }
-      ],
-      "primeiro_sinal": "2026-11-14",
-      "ultimo_sinal": "2026-11-14",
-      "id": "7ae66747dd73"
-    },
-    {
       "empresa": "Alpestre",
       "setor": "Turismo / Hospedagem",
       "local": "?",
@@ -609,6 +732,35 @@
       "primeiro_sinal": "2026-11-13",
       "ultimo_sinal": "2026-11-13",
       "id": "a1cc8e2303b9"
+    },
+    {
+      "empresa": "Brick de Desapegos",
+      "setor": "Varejo / Moda e sustentabilidade",
+      "local": "Porto Alegre/RS",
+      "porte": "pequena",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "15 anos consolidando modelo de moda circular: momento de transformar história em posicionamento que atraia mais visibilidade e expansão.",
+      "decisor": "Fundador(a) / Proprietário(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "Brick de Desapegos celebra 15 anos potencializando moda circular em Porto Alegre. Momento de deixar claro para o mercado maior por que essa marca importa.",
+      "email_assunto": "15 anos do Brick: posicionar a moda circular",
+      "email_corpo": "15 anos é tempo de consolidar uma marca. O Brick já provou o modelo; agora precisa provar a essência — por que você existe, por que importa, por que o cliente escolhe você e não outro brechó ou loja. Uma leitura de como você é percebido hoje pode abrir caminhos para crescer com propósito. Vamos conversar?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 5,
+      "score": 88,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Brick de Desapegos celebra 15 anos com grande festival de moda circular, desfiles, música e baile no Clube do Comércio, em Porto Alegre - Super Transado",
+          "link": "https://www.supertransado.com.br/site/artigos/noticia/brick-de-desapegos-celebra-15-anos-com-grande-festival-de-moda-circular-desfiles-musica-e-baile-no-clube-do-comercio-em-porto-alegre",
+          "fonte": "Super Transado",
+          "data": "2026-11-14"
+        }
+      ],
+      "primeiro_sinal": "2026-11-14",
+      "ultimo_sinal": "2026-11-14",
+      "id": "7ae66747dd73"
     },
     {
       "empresa": "Divishop",
@@ -827,7 +979,7 @@
       "email_assunto": "Clube de Engenharia, Arquitetura: o momento novo e a marca",
       "email_corpo": "Olá! Vi a notícia \"Clube de Engenharia, Arquitetura e Agronomia de Brusque (CEAB) elege nova diretoria - Noticenter\". Parabéns pelo momento.\n\nA nova geração assume e quer deixar a sua marca, sem perder o que o fundador construiu. É o momento clássico de reposicionamento.\n\nEu sou a Kelly Albert, estrategista de posicionamento de marca. Topa uma conversa de 20 minutos? Eu te mostro, sem compromisso, como a marca está sendo percebida hoje.\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 5,
-      "score": 84,
+      "score": 83,
       "confirmado": true,
       "sinais": [
         {
@@ -856,7 +1008,7 @@
       "email_assunto": "Erica Migales: o momento novo e a marca",
       "email_corpo": "Olá! Vi a notícia \"Erica Migales é a nova diretora de marketing de Amstel - Meio e Mensagem\". Parabéns pelo momento.\n\nA nova geração assume e quer deixar a sua marca, sem perder o que o fundador construiu. É o momento clássico de reposicionamento.\n\nEu sou a Kelly Albert, estrategista de posicionamento de marca. Topa uma conversa de 20 minutos? Eu te mostro, sem compromisso, como a marca está sendo percebida hoje.\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 5,
-      "score": 84,
+      "score": 83,
       "confirmado": true,
       "sinais": [
         {
@@ -914,7 +1066,7 @@
       "email_assunto": "marca que virou referência merece pensar no amanhã",
       "email_corpo": "Vi que o Parque do Pedroso está celebrando 50 anos. Marca que dura cinco décadas tem algo especial — mas muitas vezes não consegue comunicar o que realmente é, além de \"aquele lugar antigo\". É exatamente nesse momento que um posicionamento claro ajuda a renovar a percepção sem apagar a história. A gente faz isso. Se quiser conversar 15 minutos, topo.\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 5,
-      "score": 83,
+      "score": 82,
       "confirmado": true,
       "sinais": [
         {
@@ -1059,7 +1211,7 @@
       "email_assunto": "nova diretoria: hora de revisar o posicionamento",
       "email_corpo": "Parabéns à nova diretoria da Casa Guido. Triênios são ciclos perfeitos para alinhar marca, identidade e estratégia. Muitas vezes a marca fica com a cara da gestão anterior. Vale a pena revisar isso agora, enquanto você ancora a visão nova. Gostaria de uma conversa de 15–20 minutos para entender como vocês estão vendo a marca?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 3,
-      "score": 74,
+      "score": 73,
       "confirmado": true,
       "sinais": [
         {
@@ -1073,35 +1225,6 @@
       "primeiro_sinal": "2026-11-11",
       "ultimo_sinal": "2026-11-11",
       "id": "ba7adc05d6a7"
-    },
-    {
-      "empresa": "Cursinho Popular de São José de Piranhas",
-      "setor": "Educação",
-      "local": "São José de Piranhas, PB",
-      "porte": "pequena",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "Cursinho completa 13 anos e projeta crescimento (recorde de aprovação), mas modelo de negócio local/sem fins lucrativos limita potencial de projeto de posicionamento comercial.",
-      "decisor": "Diretor(a) / coordenador(a)",
-      "pessoa_citada": "",
-      "msg_linkedin": "",
-      "email_assunto": "",
-      "email_corpo": "",
-      "encaixe": 4,
-      "score": 74,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "aniversario",
-          "titulo": "Cursinho Popular de São José de Piranhas celebra 13 anos de história e projeta recorde de aprovação no Enem 2026 - Radar Sertanejo",
-          "link": "https://www.radarsertanejo.com/2026/11/08/cursinho-popular-de-sao-jose-de-piranhas-celebra-13-anos-de-historia-e-projeta-recorde-de-aprovacao-no-enem-2026/",
-          "fonte": "Radar Sertanejo",
-          "data": "2026-11-08"
-        }
-      ],
-      "primeiro_sinal": "2026-11-08",
-      "ultimo_sinal": "2026-11-08",
-      "id": "8bc4fa6dbaee"
     },
     {
       "empresa": "Brasil Terrenos",
@@ -1138,6 +1261,35 @@
       "primeiro_sinal": "2026-11-10",
       "ultimo_sinal": "2026-11-10",
       "id": "8900c950394c"
+    },
+    {
+      "empresa": "Cursinho Popular de São José de Piranhas",
+      "setor": "Educação",
+      "local": "São José de Piranhas, PB",
+      "porte": "pequena",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Cursinho completa 13 anos e projeta crescimento (recorde de aprovação), mas modelo de negócio local/sem fins lucrativos limita potencial de projeto de posicionamento comercial.",
+      "decisor": "Diretor(a) / coordenador(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 4,
+      "score": 73,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Cursinho Popular de São José de Piranhas celebra 13 anos de história e projeta recorde de aprovação no Enem 2026 - Radar Sertanejo",
+          "link": "https://www.radarsertanejo.com/2026/11/08/cursinho-popular-de-sao-jose-de-piranhas-celebra-13-anos-de-historia-e-projeta-recorde-de-aprovacao-no-enem-2026/",
+          "fonte": "Radar Sertanejo",
+          "data": "2026-11-08"
+        }
+      ],
+      "primeiro_sinal": "2026-11-08",
+      "ultimo_sinal": "2026-11-08",
+      "id": "8bc4fa6dbaee"
     },
     {
       "empresa": "Casa Dez",
@@ -1227,35 +1379,6 @@
       "id": "b131aaa793b8"
     },
     {
-      "empresa": "SALC Group",
-      "setor": "Comunicação / Mídia",
-      "local": "",
-      "porte": "?",
-      "gatilho": "sucessao",
-      "gatilho_nome": "Sucessão / nova liderança",
-      "por_que_agora": "Nova liderança é momento para revisar se o posicionamento do grupo reflete a direção estratégica que o novo CEO quer imprimir.",
-      "decisor": "CEO",
-      "pessoa_citada": "João Del Cura · CEO",
-      "msg_linkedin": "João, vi que você assumiu a liderança do SALC Group. Momento clássico de alinhamento: a marca reflete a direção que você quer para o grupo? Bora conversar sobre isso?",
-      "email_assunto": "momento de liderança no SALC Group",
-      "email_corpo": "João, parabéns pela posse no SALC Group. Nova liderança é momento perfeito para revisar se o posicionamento do grupo conversa com a estratégia que você quer implementar. Muitas vezes a marca fica para trás da visão do novo líder. Gostaria de uma conversa rápida (15–20 min) para entender como você está vendo a marca do grupo agora?\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 2,
-      "score": 69,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "sucessao",
-          "titulo": "João Del Cura assume como CEO do SALC Group - ABC da Comunicação",
-          "link": "https://www.abcdacomunicacao.com.br/joao-del-cura-assume-como-ceo-do-salc-group/",
-          "fonte": "ABC da Comunicação",
-          "data": "2026-11-11"
-        }
-      ],
-      "primeiro_sinal": "2026-11-11",
-      "ultimo_sinal": "2026-11-11",
-      "id": "cc788e27e090"
-    },
-    {
       "empresa": "Adão Negro",
       "setor": "Música / Entretenimento",
       "local": "Bahia",
@@ -1283,6 +1406,35 @@
       "primeiro_sinal": "2026-11-09",
       "ultimo_sinal": "2026-11-09",
       "id": "d388cbbf0976"
+    },
+    {
+      "empresa": "SALC Group",
+      "setor": "Comunicação / Mídia",
+      "local": "",
+      "porte": "?",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Nova liderança é momento para revisar se o posicionamento do grupo reflete a direção estratégica que o novo CEO quer imprimir.",
+      "decisor": "CEO",
+      "pessoa_citada": "João Del Cura · CEO",
+      "msg_linkedin": "João, vi que você assumiu a liderança do SALC Group. Momento clássico de alinhamento: a marca reflete a direção que você quer para o grupo? Bora conversar sobre isso?",
+      "email_assunto": "momento de liderança no SALC Group",
+      "email_corpo": "João, parabéns pela posse no SALC Group. Nova liderança é momento perfeito para revisar se o posicionamento do grupo conversa com a estratégia que você quer implementar. Muitas vezes a marca fica para trás da visão do novo líder. Gostaria de uma conversa rápida (15–20 min) para entender como você está vendo a marca do grupo agora?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 2,
+      "score": 68,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "João Del Cura assume como CEO do SALC Group - ABC da Comunicação",
+          "link": "https://www.abcdacomunicacao.com.br/joao-del-cura-assume-como-ceo-do-salc-group/",
+          "fonte": "ABC da Comunicação",
+          "data": "2026-11-11"
+        }
+      ],
+      "primeiro_sinal": "2026-11-11",
+      "ultimo_sinal": "2026-11-11",
+      "id": "cc788e27e090"
     },
     {
       "empresa": "Frooty",
@@ -1399,7 +1551,7 @@
       "email_assunto": "30 anos do Canal Rural: marca e posicionamento",
       "email_corpo": "Oi,\n\n30 anos é data que merece mais que um novo site — é hora de a marca contar quem você é hoje e para onde vai. A gente revela a essência do Canal Rural e transforma isso em posicionamento claro, que funciona em toda plataforma.\n\nVocê topa uma conversa de 15 minutos para a gente entender melhor seu momento?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 2,
-      "score": 61,
+      "score": 60,
       "confirmado": true,
       "sinais": [
         {
@@ -1522,7 +1674,7 @@
       "email_assunto": "",
       "email_corpo": "",
       "encaixe": 1,
-      "score": 44,
+      "score": 43,
       "confirmado": true,
       "sinais": [
         {
