@@ -362,6 +362,18 @@ export async function renderContratos(container, opts = {}) {
         if (i > 0) el.textContent = t.slice(0, i) + ' ' + t.slice(i + 1);
       });
 
+      // Marcadores invisíveis (linha magenta de 2px) ENTRE os blocos. Depois,
+      // no canvas, cortamos a página exatamente nesses marcadores — o corte
+      // nunca cai no meio de um parágrafo, qualquer que seja o navegador.
+      const _docEl = holder.querySelector('.contrato-doc');
+      const _filhos = Array.from(_docEl.children);
+      _filhos.forEach((el, i) => {
+        if (i === _filhos.length - 1) return;
+        const m = document.createElement('div');
+        m.style.cssText = 'height:2px;margin:0;padding:0;line-height:0;font-size:0;background:rgb(255,0,255);';
+        el.after(m);
+      });
+
       const canvas = await html2canvas(holder, {
         scale: 1.6, backgroundColor: '#ffffff', useCORS: true, logging: false,
         width: LARGURA_PX, windowWidth: LARGURA_PX,
@@ -374,46 +386,65 @@ export async function renderContratos(container, opts = {}) {
       const contentWpt = pageW - mX * 2;
       const usableHpt = pageH - mTop - mBot;
 
-      const ptPerCss = contentWpt / LARGURA_PX;   // pt por px de CSS
-      const cssToCanvas = canvas.width / LARGURA_PX; // px de canvas por px de CSS
-      const usableCssH = usableHpt / ptPerCss;    // altura útil por página, em px de CSS
+      const cw = canvas.width;
+      const ch = canvas.height;
+      const pxPerPt = cw / contentWpt;
+      const sliceIdeal = Math.floor(usableHpt * pxPerPt);
 
-      // Mede cada bloco (título, parágrafos, cláusulas, fecho) para quebrar a
-      // página SEM cortar um bloco no meio — assim não sobra palavra/linha
-      // solta na página seguinte; o bloco inteiro desce.
-      const docEl = holder.querySelector('.contrato-doc');
-      const baseTop = docEl.getBoundingClientRect().top;
-      const blocos = Array.from(docEl.children).map((el) => {
-        const r = el.getBoundingClientRect();
-        return { top: r.top - baseTop, bottom: r.bottom - baseTop };
-      });
-      const totalCss = docEl.getBoundingClientRect().height;
-
-      const paginas = [];
-      let ini = 0, fim = 0;
-      for (const bl of blocos) {
-        if (bl.bottom - ini <= usableCssH) { fim = bl.bottom; continue; }
-        if (bl.top - ini > 1) { paginas.push([ini, bl.top]); ini = bl.top; }
-        // Bloco maior que uma página inteira: aí sim divide por altura.
-        while (bl.bottom - ini > usableCssH) { paginas.push([ini, ini + usableCssH]); ini += usableCssH; }
-        fim = bl.bottom;
+      // Detecta as faixas dos marcadores (magenta) no canvas.
+      const cctx = canvas.getContext('2d');
+      const px = cctx.getImageData(0, 0, cw, ch).data;
+      const amostras = [Math.floor(cw * 0.2), Math.floor(cw * 0.5), Math.floor(cw * 0.8)];
+      const ehMarcador = (y) => {
+        const base = y * cw * 4;
+        for (const x of amostras) {
+          const p = base + x * 4;
+          if (!(px[p] > 220 && px[p + 1] < 70 && px[p + 2] > 220)) return false;
+        }
+        return true;
+      };
+      const marcadores = [];
+      for (let y = 0; y < ch;) {
+        if (ehMarcador(y)) { const top = y; while (y < ch && ehMarcador(y)) y++; marcadores.push({ top, bottom: y }); }
+        else y++;
       }
-      paginas.push([ini, Math.max(fim, totalCss)]);
+      // Apaga os marcadores (pinta de branco, com folga p/ cobrir a borda
+      // suavizada) para não aparecerem no PDF.
+      cctx.fillStyle = '#ffffff';
+      marcadores.forEach((mk) => cctx.fillRect(0, mk.top - 3, cw, (mk.bottom - mk.top) + 6));
+
+      // Corta cada página no marcador anterior ao limite ideal (bloco inteiro
+      // desce; nunca corta no meio do texto).
+      const paginas = [];
+      let y0 = 0;
+      while (y0 < ch) {
+        const ideal = y0 + sliceIdeal;
+        if (ideal >= ch) { paginas.push([y0, ch]); break; }
+        let corte = null;
+        for (const mk of marcadores) {
+          if (mk.top > y0 + 8 && mk.top <= ideal) corte = mk;
+          else if (mk.top > ideal) break;
+        }
+        if (corte) { paginas.push([y0, corte.top]); y0 = corte.bottom; }
+        else { paginas.push([y0, ideal]); y0 = ideal; } // bloco maior que a página
+      }
       const total = paginas.length;
 
       const alturaLogo = 42;
       const larguraLogo = logoInfo ? Math.min(contentWpt * 0.55, alturaLogo * (logoInfo.w / logoInfo.h)) : 0;
 
-      paginas.forEach(([s, e], idx) => {
+      paginas.forEach(([a, b], idx) => {
         if (idx > 0) doc.addPage();
-        const a = Math.max(0, Math.round(s * cssToCanvas));
-        const b = Math.min(canvas.height, Math.round(e * cssToCanvas));
         const hpx = Math.max(1, b - a);
         const fatia = document.createElement('canvas');
-        fatia.width = canvas.width; fatia.height = hpx;
-        fatia.getContext('2d').drawImage(canvas, 0, a, canvas.width, hpx, 0, 0, canvas.width, hpx);
+        fatia.width = cw; fatia.height = hpx;
+        const fctx = fatia.getContext('2d');
+        fctx.drawImage(canvas, 0, a, cw, hpx, 0, 0, cw, hpx);
+        // Apaga qualquer marcador que caia dentro desta fatia.
+        fctx.fillStyle = '#ffffff';
+        marcadores.forEach((mk) => { if (mk.bottom > a && mk.top < b) fctx.fillRect(0, (mk.top - a) - 3, cw, (mk.bottom - mk.top) + 6); });
         const imgData = fatia.toDataURL('image/jpeg', 0.82);
-        const imgHpt = (hpx / cssToCanvas) * ptPerCss;
+        const imgHpt = hpx / pxPerPt;
         doc.addImage(imgData, 'JPEG', mX, mTop, contentWpt, imgHpt);
         // Cabeçalho (logo centralizado).
         if (logoInfo) {
