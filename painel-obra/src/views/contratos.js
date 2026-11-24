@@ -2,6 +2,8 @@ import {
   listarClientes, listarObras, listarContratos, obterContrato,
   criarContrato, atualizarContrato, excluirContrato, sair,
 } from '../dados.js';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 import { esc, dataBR } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
 import { MODELOS, modeloPorId } from '../lib/contratos.js';
@@ -164,7 +166,7 @@ export async function renderContratos(container, opts = {}) {
           <button class="btn btn-mini" id="ct-editar">✏️ Editar contrato</button>
           <button class="btn btn-mini" id="ct-salvar">💾 Salvar</button>
           <button class="btn btn-mini" id="ct-salvar-pdf">💾 Salvar e PDF</button>
-          <button class="btn btn-mini" id="ct-imprimir">🖨 Imprimir / PDF</button>
+          <button class="btn btn-mini" id="ct-imprimir">📄 Baixar PDF</button>
           <button class="btn btn-mini btn-primary" id="ct-word">⬇ Baixar Word</button>
         </span>
       </div>
@@ -246,15 +248,9 @@ export async function renderContratos(container, opts = {}) {
     const btnSalvar = container.querySelector('#ct-salvar');
     if (btnSalvar) btnSalvar.addEventListener('click', () => salvar(btnSalvar));
     const btnSalvarPdf = container.querySelector('#ct-salvar-pdf');
-    if (btnSalvarPdf) btnSalvarPdf.addEventListener('click', () => {
-      // Abre a janela JÁ no clique (senão o navegador bloqueia o pop-up depois
-      // do "await" do salvamento). Depois de salvar, preenchemos a janela.
-      const w = window.open('', '_blank');
-      if (w) { try { w.document.write('<!doctype html><meta charset="utf-8"><title>Gerando…</title><body style="font-family:system-ui,sans-serif;padding:28px;color:#555">Gerando o contrato…</body>'); } catch { /* segue */ } }
-      salvar(btnSalvarPdf, () => imprimir(w || undefined), () => { if (w) { try { w.close(); } catch { /* ok */ } } });
-    });
+    if (btnSalvarPdf) btnSalvarPdf.addEventListener('click', () => salvar(btnSalvarPdf, () => baixarPdfContrato(btnSalvarPdf)));
     const btnImp = container.querySelector('#ct-imprimir');
-    if (btnImp) btnImp.addEventListener('click', imprimir);
+    if (btnImp) btnImp.addEventListener('click', () => baixarPdfContrato(btnImp));
     const btnWord = container.querySelector('#ct-word');
     if (btnWord) btnWord.addEventListener('click', baixarWord);
   }
@@ -302,41 +298,70 @@ export async function renderContratos(container, opts = {}) {
     return tituloContrato().replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, ' ').trim().slice(0, 120);
   }
 
-  function imprimir(winPre) {
-    const w = winPre || window.open('', '_blank');
-    if (!w) { alert('Permita pop-ups para imprimir/salvar em PDF, ou use "Baixar Word".'); return; }
-    const logo = LOGO_DATAURL || new URL(logoMarca, window.location.href).href;
-    const rodapeEsc = RODAPE_CONTRATO.replace(/"/g, '\\"');
-    w.document.write(`<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><title>Contrato</title>
-      <style>
-        @page {
-          margin: 2.2cm 2cm 2.3cm;
-          @bottom-left { content: "${rodapeEsc}"; font: 8.5pt Georgia, serif; color: #555; }
-          @bottom-right { content: counter(page) "/" counter(pages); font: 8.5pt Georgia, serif; color: #555; }
+  // Carrega uma imagem e devolve {dataUrl, w, h} (para proporção do logo).
+  function medirImagem(src) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve({ src, w: img.naturalWidth || 1, h: img.naturalHeight || 1 });
+      img.onerror = () => resolve(null);
+      img.src = src;
+    });
+  }
+
+  // Gera e BAIXA um PDF de verdade (jsPDF + html2canvas): logo no topo e
+  // rodapé (endereço + página X/Y) em TODAS as páginas. Não depende da
+  // impressão do navegador — funciona no computador e no celular.
+  async function baixarPdfContrato(botao) {
+    const rot = botao ? botao.textContent : '';
+    if (botao) { botao.disabled = true; botao.textContent = 'Gerando PDF…'; }
+    let holder = null;
+    try {
+      const logo = LOGO_DATAURL || await carregarLogoDataURL();
+      const logoInfo = logo ? await medirImagem(logo) : null;
+
+      // Container fora da tela com o conteúdo do contrato (estilo aplicado).
+      const LARGURA_PX = 760; // largura de renderização do conteúdo
+      holder = document.createElement('div');
+      holder.style.cssText = `position:fixed;left:-10000px;top:0;width:${LARGURA_PX}px;background:#fff;`;
+      holder.innerHTML = `<style>${ESTILO_CONTRATO}</style><div class="contrato-doc">${conteudoAtual()}</div>`;
+      document.body.appendChild(holder);
+
+      const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const mX = 42, mTop = 92, mBot = 58;
+      const contentWpt = pageW - mX * 2;
+
+      await doc.html(holder.querySelector('.contrato-doc'), {
+        x: mX, y: mTop,
+        width: contentWpt,
+        windowWidth: LARGURA_PX,
+        margin: [mTop, mX, mBot, mX],
+        autoPaging: 'text',
+        html2canvas: { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false },
+      });
+
+      // Cabeçalho (logo centralizado) + rodapé (endereço + página X/Y) em cada página.
+      const total = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= total; i++) {
+        doc.setPage(i);
+        if (logoInfo) {
+          const alturaLogo = 44;
+          const larguraLogo = Math.min(contentWpt * 0.6, alturaLogo * (logoInfo.w / logoInfo.h));
+          try { doc.addImage(logo, 'PNG', (pageW - larguraLogo) / 2, 26, larguraLogo, alturaLogo); } catch { /* segue sem logo */ }
         }
-        body { margin: 0; }
-        .ct-topbar { position: sticky; top: 0; display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 10px 14px; background: #f5f2ec; border-bottom: 1px solid #ddd6c8; font-family: Inter, -apple-system, system-ui, sans-serif; }
-        .ct-topbar button { font: inherit; font-size: 15px; padding: 9px 14px; border: 1px solid #cfc7ba; background: #fff; border-radius: 8px; cursor: pointer; }
-        .ct-topbar .ct-voltar { border-color: ${COR_ACENTO}; color: ${COR_ACENTO}; font-weight: 600; }
-        .ct-corpo { padding: 0 14px; }
-        /* Logo centralizado no topo do contrato. */
-        .ct-logo-topo { text-align: center; margin: 0 0 18px; }
-        .ct-logo-topo img { max-height: 1.9cm; max-width: 60%; }
-        @media print { .no-print { display: none !important; } .ct-corpo { padding: 0; } }
-        ${ESTILO_CONTRATO}
-      </style></head>
-      <body>
-        <div class="ct-topbar no-print">
-          <button class="ct-voltar" onclick="window.close()">← Voltar ao sistema</button>
-          <button onclick="window.print()">🖨 Imprimir / Salvar PDF</button>
-        </div>
-        <div class="ct-corpo">
-          ${logo ? `<div class="ct-logo-topo"><img src="${logo}" alt="${esc(MARCA.nome)}" /></div>` : ''}
-          ${conteudoAtual()}
-        </div>
-      </body></html>`);
-    w.document.close(); w.focus();
-    setTimeout(() => { try { w.print(); } catch (e) { /* imprime manual pelo botão */ } }, 500);
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(110, 110, 110);
+        if (RODAPE_CONTRATO) doc.text(RODAPE_CONTRATO, mX, pageH - 30);
+        doc.text(`${i}/${total}`, pageW - mX, pageH - 30, { align: 'right' });
+      }
+
+      doc.save(nomeArquivo() + '.pdf');
+    } catch (err) {
+      alert('Não foi possível gerar o PDF: ' + (err?.message || err) + '\n\nVocê pode usar "Baixar Word" como alternativa.');
+    } finally {
+      if (holder && holder.parentNode) holder.parentNode.removeChild(holder);
+      if (botao) { botao.disabled = false; botao.textContent = rot; }
+    }
   }
 
   function baixarWord() {
