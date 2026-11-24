@@ -298,6 +298,28 @@ export async function renderContratos(container, opts = {}) {
     return tituloContrato().replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, ' ').trim().slice(0, 120);
   }
 
+  // Entrega o PDF: no celular usa o compartilhamento nativo com o ARQUIVO
+  // (folha de compartilhar do iPhone/Android — manda o PDF, não um link blob);
+  // no computador (ou se não houver suporte) baixa o arquivo normalmente.
+  async function entregarPdf(doc, filename) {
+    const blob = doc.output('blob');
+    try {
+      const file = new File([blob], filename, { type: 'application/pdf' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: filename });
+        return;
+      }
+    } catch (e) {
+      if (e && e.name === 'AbortError') return; // usuário fechou o compartilhamento
+      // qualquer outro erro: cai para o download abaixo
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+
   // Carrega uma imagem e devolve {dataUrl, w, h} (para proporção do logo).
   function medirImagem(src) {
     return new Promise((resolve) => {
@@ -392,7 +414,7 @@ export async function renderContratos(container, opts = {}) {
         doc.text(`${idx + 1}/${total}`, pageW - mX, pageH - 32, { align: 'right' });
       });
 
-      doc.save(nomeArquivo() + '.pdf');
+      await entregarPdf(doc, nomeArquivo() + '.pdf');
     } catch (err) {
       alert('Não foi possível gerar o PDF: ' + (err?.message || err) + '\n\nVocê pode usar "Baixar Word" como alternativa.');
     } finally {
