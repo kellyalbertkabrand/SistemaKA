@@ -5,7 +5,28 @@ import {
 import { esc, dataBR } from '../lib/format.js';
 import { navBar } from '../lib/nav.js';
 import { MODELOS, modeloPorId } from '../lib/contratos.js';
-import { MARCA, COR_ACENTO } from '../lib/marca.js';
+import { MARCA, COR_ACENTO, logoMarca } from '../lib/marca.js';
+
+// Endereço/telefone do rodapé do contrato (vem da config da marca).
+const RODAPE_CONTRATO = (MARCA.contratos && MARCA.contratos.rodape) || MARCA.endereco || '';
+
+// Logo convertido em data URL (base64) — necessário para a janela de
+// impressão e para o Word, que não resolvem o caminho do asset do app.
+let LOGO_DATAURL = '';
+async function carregarLogoDataURL() {
+  if (LOGO_DATAURL) return LOGO_DATAURL;
+  try {
+    const resp = await fetch(new URL(logoMarca, window.location.href).href);
+    const blob = await resp.blob();
+    LOGO_DATAURL = await new Promise((res) => {
+      const r = new FileReader();
+      r.onloadend = () => res(r.result || '');
+      r.onerror = () => res('');
+      r.readAsDataURL(blob);
+    });
+  } catch { LOGO_DATAURL = ''; }
+  return LOGO_DATAURL;
+}
 
 // Estilo do contrato — usado na tela, na impressão (PDF) e no Word baixado.
 const ESTILO_CONTRATO = `
@@ -26,6 +47,8 @@ const documentoCompleto = (innerHTML) => `<div class="contrato-doc">${innerHTML}
 
 export async function renderContratos(container, opts = {}) {
   container.innerHTML = `<div class="app"><p class="muted center">Carregando…</p></div>`;
+
+  carregarLogoDataURL(); // pré-carrega o logo (base64) para impressão/Word
 
   let clientes = [], obras = [], contratos = [];
   try {
@@ -146,7 +169,9 @@ export async function renderContratos(container, opts = {}) {
         </span>
       </div>
       <div class="card contrato-folha">
+        <div class="contrato-cabecalho" style="text-align:center;margin:0 0 14px"><img src="${logoMarca}" alt="${esc(MARCA.nome)}" style="max-height:70px;max-width:60%" /></div>
         <div id="ct-editavel" class="contrato-editavel" contenteditable="false">${html}</div>
+        ${RODAPE_CONTRATO ? `<div class="contrato-rodape-nota" style="text-align:center;margin:18px 0 0;padding-top:10px;border-top:1px solid #e9e3d8;font-size:.78rem;color:#8a8276">${esc(RODAPE_CONTRATO)}<br><span style="opacity:.7">(o número da página aparece ao imprimir / salvar em PDF e no Word)</span></div>` : ''}
       </div>
       <style>${ESTILO_CONTRATO}</style>`);
     liga();
@@ -273,15 +298,28 @@ export async function renderContratos(container, opts = {}) {
   function imprimir() {
     const w = window.open('', '_blank');
     if (!w) { alert('Permita pop-ups para imprimir, ou use "Baixar Word".'); return; }
+    const logo = LOGO_DATAURL || new URL(logoMarca, window.location.href).href;
+    const rodapeEsc = RODAPE_CONTRATO.replace(/"/g, '\\"');
     w.document.write(`<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><title>Contrato</title>
       <style>
-        @page { margin: 2.2cm 2cm; @bottom-right { content: "Página " counter(page) " de " counter(pages); font: 9pt Georgia, serif; color: #555; } }
+        @page {
+          margin: 3cm 2cm 2.4cm;
+          @bottom-left { content: "${rodapeEsc}"; font: 8.5pt Georgia, serif; color: #555; }
+          @bottom-right { content: counter(page) "/" counter(pages); font: 8.5pt Georgia, serif; color: #555; }
+        }
         body { margin: 0; }
         .ct-topbar { position: sticky; top: 0; display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 10px 14px; background: #f5f2ec; border-bottom: 1px solid #ddd6c8; font-family: Inter, -apple-system, system-ui, sans-serif; }
         .ct-topbar button { font: inherit; font-size: 15px; padding: 9px 14px; border: 1px solid #cfc7ba; background: #fff; border-radius: 8px; cursor: pointer; }
         .ct-topbar .ct-voltar { border-color: ${COR_ACENTO}; color: ${COR_ACENTO}; font-weight: 600; }
         .ct-corpo { padding: 0 14px; }
-        @media print { .no-print { display: none !important; } .ct-corpo { padding: 0; } }
+        /* Cabeçalho com o logo centralizado em todas as páginas (impressão). */
+        .ct-cab-print { display: none; }
+        @media print {
+          .no-print { display: none !important; }
+          .ct-corpo { padding: 0; }
+          .ct-cab-print { display: block; position: fixed; top: -2.3cm; left: 0; right: 0; text-align: center; }
+          .ct-cab-print img { max-height: 1.7cm; max-width: 60%; }
+        }
         ${ESTILO_CONTRATO}
       </style></head>
       <body>
@@ -289,22 +327,27 @@ export async function renderContratos(container, opts = {}) {
           <button class="ct-voltar" onclick="window.close()">← Voltar ao sistema</button>
           <button onclick="window.print()">🖨 Imprimir / Salvar PDF</button>
         </div>
+        <div class="ct-cab-print">${logo ? `<img src="${logo}" alt="${esc(MARCA.nome)}" />` : ''}</div>
         <div class="ct-corpo">${conteudoAtual()}</div>
       </body></html>`);
     w.document.close(); w.focus();
-    setTimeout(() => { try { w.print(); } catch (e) { /* imprime manual pelo botão */ } }, 400);
+    setTimeout(() => { try { w.print(); } catch (e) { /* imprime manual pelo botão */ } }, 500);
   }
 
   function baixarWord() {
-    const rodape = `<div style='mso-element:footer' id='rodape1'><p class=MsoFooter style='text-align:right;font-size:9.0pt;color:#555'>Página <span style='mso-field-code:" PAGE "'></span> de <span style='mso-field-code:" NUMPAGES "'></span></p></div>`;
+    const logo = LOGO_DATAURL || new URL(logoMarca, window.location.href).href;
+    const cabecalho = `<div style='mso-element:header' id='cabecalho1'><p class=MsoHeader style='text-align:center'>${logo ? `<img src='${logo}' style='height:48px' />` : ''}</p></div>`;
+    const rodape = `<div style='mso-element:footer' id='rodape1'>`
+      + (RODAPE_CONTRATO ? `<p class=MsoFooter style='text-align:center;font-size:8.5pt;color:#555'>${esc(RODAPE_CONTRATO)}</p>` : '')
+      + `<p class=MsoFooter style='text-align:center;font-size:8.5pt;color:#555'><span style='mso-field-code:" PAGE "'></span>/<span style='mso-field-code:" NUMPAGES "'></span></p></div>`;
     const html = `<!doctype html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8">
       <style>
-        @page Section1 { size: 21.0cm 29.7cm; margin: 2.2cm 2.0cm; mso-footer: rodape1; }
+        @page Section1 { size: 21.0cm 29.7cm; margin: 2.6cm 2.0cm 2.2cm; mso-header-margin: 1.2cm; mso-footer-margin: 1.0cm; mso-header: cabecalho1; mso-footer: rodape1; }
         div.Section1 { page: Section1; }
         ${ESTILO_CONTRATO}
         body { font-family: Georgia, serif; }
       </style></head>
-      <body><div class="Section1">${conteudoAtual()}${rodape}</div></body></html>`;
+      <body><div class="Section1">${cabecalho}${conteudoAtual()}${rodape}</div></body></html>`;
     const blob = new Blob(['﻿', html], { type: 'application/msword' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

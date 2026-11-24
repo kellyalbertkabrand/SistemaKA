@@ -47,6 +47,8 @@ export default {
   contratos: {
     // Nome no título salvo e no arquivo: "Contrato entre X e <nomeTitulo>".
     nomeTitulo: 'Schramm Engenharia e Projetos',
+    // Endereço/telefone no rodapé de todas as páginas do contrato (impressão/PDF e Word).
+    rodape: 'Rua Dr. Luis Bastos do Prado, 2093/504 - Centro – Gravataí/RS | 51 3488-4899',
     // Qualificação corrida (modelos Projeto e Projeto e Execução).
     intro: 'SCHRAMM ENGENHARIA E PROJETOS LTDA, CNPJ 08.940.235/0001-75, sito à Rua Dr. Luiz Bastos do Prado, 2093, sala 504, centro em Gravataí/RS, representada por Luiza Barbosa Schramm, brasileira, casada, CPF 002.634.640-08, simplesmente doravante denominado CONTRATADO, convencionam e ajustam o que segue:',
     // Qualificação em bloco (modelo Administração de Obra).

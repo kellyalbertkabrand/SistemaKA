@@ -10,6 +10,7 @@ export const CHANGELOG = [
     data: '24/11/2026',
     titulo: 'Ajustes nos contratos',
     itens: [
+      'Todos os contratos passam a ter o logo do escritório centralizado no cabeçalho e, no rodapé, o número da página (ex.: 1/5) e o endereço do escritório.',
       'Modelo "Projeto": o item 4.3 (impostos trabalhistas sobre a mão de obra) passou a ser responsabilidade do CONTRATANTE.',
       'Cláusula de autorização de uso de imagem (fotos e vídeos para portfólio, redes sociais e divulgação) presente nos três modelos de contrato.',
     ],
