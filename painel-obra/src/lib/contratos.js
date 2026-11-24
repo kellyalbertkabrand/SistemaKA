@@ -192,7 +192,7 @@ function docProjeto(d) {
   ${h('4 – CLÁUSULA QUARTA: DOS HONORÁRIOS')}
   ${p(`4.1.1 Pela elaboração dos serviços discriminados do 2.1.1 até 2.1.6 ora contratados, o CONTRATANTE pagará ao CONTRATADO a quantia de ${valExt(d.valorProjeto)} que será quitada da seguinte forma:</p><p class="contrato-banco">${nl(d.formaProjeto)}`)}
   ${p(`4.2 Os pagamentos serão feitos mediante TRANSFERÊNCIA BANCÁRIA ou PIX EM CONTA, nos prazos estabelecidos acima, conforme dados abaixo:</p><p class="contrato-banco">${nl(d.dadosBancarios)}`)}
-  ${p('4.3 É de responsabilidade exclusiva do CONTRATADO, o recolhimento de todos os impostos trabalhistas, taxas e contribuições, que incidirem sobre a remuneração dos funcionários da obra estipulado no presente contrato.')}
+  ${p('4.3 É de responsabilidade exclusiva do CONTRATANTE, o recolhimento de todos os impostos trabalhistas, taxas e contribuições, que incidirem sobre a remuneração dos funcionários da obra estipulado no presente contrato.')}
   ${p('4.4 As despesas efetuadas pelo CONTRATADO, ligadas direta ou indiretamente com o objeto do contrato, ficarão a cargo do CONTRATANTE.')}
   ${p('4.5 As taxas relativas ao Registro de Responsabilidade Técnica (RRT), cujo registro e recolhimento é de responsabilidade do CONTRATADO, deverão ser reembolsadas pelo CONTRATANTE.')}
   ${p('4.6 Todas as despesas pagas pelo CONTRATADO e que não tiverem sido adiantadas pelo CONTRATANTE, deverão ser reembolsadas, mediante apresentação dos comprovantes quitados, ou recibo, devidamente preparado e assinado pelo CONTRATADO.')}
