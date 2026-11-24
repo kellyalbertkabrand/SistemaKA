@@ -370,7 +370,7 @@ export async function renderContratos(container, opts = {}) {
       const doc = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();
-      const mX = 42, mTop = 116, mBot = 58;      // mTop maior: folga entre logo e texto
+      const mX = 42, mTop = 116, mBot = 84;      // mTop: folga logo→texto; mBot: folga texto→rodapé
       const contentWpt = pageW - mX * 2;
       const usableHpt = pageH - mTop - mBot;
 
@@ -423,6 +423,7 @@ export async function renderContratos(container, opts = {}) {
         doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(105, 105, 105);
         if (RODAPE_CONTRATO) doc.text(RODAPE_CONTRATO, pageW / 2, pageH - 30, { align: 'center' });
         doc.text(`${idx + 1}/${total}`, pageW - mX, pageH - 30, { align: 'right' });
+        // (folga entre o texto e o rodapé garantida pela margem inferior mBot)
       });
 
       await entregarPdf(doc, nomeArquivo() + '.pdf');
