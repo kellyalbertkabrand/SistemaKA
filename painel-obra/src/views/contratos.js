@@ -246,7 +246,13 @@ export async function renderContratos(container, opts = {}) {
     const btnSalvar = container.querySelector('#ct-salvar');
     if (btnSalvar) btnSalvar.addEventListener('click', () => salvar(btnSalvar));
     const btnSalvarPdf = container.querySelector('#ct-salvar-pdf');
-    if (btnSalvarPdf) btnSalvarPdf.addEventListener('click', () => salvar(btnSalvarPdf, imprimir));
+    if (btnSalvarPdf) btnSalvarPdf.addEventListener('click', () => {
+      // Abre a janela JÁ no clique (senão o navegador bloqueia o pop-up depois
+      // do "await" do salvamento). Depois de salvar, preenchemos a janela.
+      const w = window.open('', '_blank');
+      if (w) { try { w.document.write('<!doctype html><meta charset="utf-8"><title>Gerando…</title><body style="font-family:system-ui,sans-serif;padding:28px;color:#555">Gerando o contrato…</body>'); } catch { /* segue */ } }
+      salvar(btnSalvarPdf, () => imprimir(w || undefined), () => { if (w) { try { w.close(); } catch { /* ok */ } } });
+    });
     const btnImp = container.querySelector('#ct-imprimir');
     if (btnImp) btnImp.addEventListener('click', imprimir);
     const btnWord = container.querySelector('#ct-word');
@@ -263,7 +269,7 @@ export async function renderContratos(container, opts = {}) {
     telaContrato();
   }
 
-  async function salvar(botao, depois) {
+  async function salvar(botao, depois, aoFalhar) {
     const corpoHtml = conteudoAtual();
     const titulo = tituloContrato();
     const registro = { modeloId, titulo, dados, corpoHtml, clienteId, clienteNome, obraId, obraNome };
@@ -277,6 +283,7 @@ export async function renderContratos(container, opts = {}) {
       setTimeout(() => { botao.disabled = false; botao.textContent = rot; }, 1500);
     } catch (err) {
       botao.disabled = false; botao.textContent = rot;
+      if (typeof aoFalhar === 'function') aoFalhar();
       alert('Não foi possível salvar: ' + (err?.message || err) + '\n\n(Se aparecer erro de permissão, publique as Regras do Firestore com a coleção "contratos".)');
     }
   }
@@ -295,9 +302,9 @@ export async function renderContratos(container, opts = {}) {
     return tituloContrato().replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, ' ').trim().slice(0, 120);
   }
 
-  function imprimir() {
-    const w = window.open('', '_blank');
-    if (!w) { alert('Permita pop-ups para imprimir, ou use "Baixar Word".'); return; }
+  function imprimir(winPre) {
+    const w = winPre || window.open('', '_blank');
+    if (!w) { alert('Permita pop-ups para imprimir/salvar em PDF, ou use "Baixar Word".'); return; }
     const logo = LOGO_DATAURL || new URL(logoMarca, window.location.href).href;
     const rodapeEsc = RODAPE_CONTRATO.replace(/"/g, '\\"');
     w.document.write(`<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><title>Contrato</title>
