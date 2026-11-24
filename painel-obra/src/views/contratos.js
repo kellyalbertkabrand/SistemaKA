@@ -303,15 +303,21 @@ export async function renderContratos(container, opts = {}) {
   // no computador (ou se não houver suporte) baixa o arquivo normalmente.
   async function entregarPdf(doc, filename) {
     const blob = doc.output('blob');
-    try {
-      const file = new File([blob], filename, { type: 'application/pdf' });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: filename });
-        return;
+    // Só usa a folha de compartilhar em aparelhos de TOQUE (celular/tablet) —
+    // no computador (PC/Mac), baixa o arquivo direto.
+    const ehToque = (window.matchMedia && window.matchMedia('(pointer: coarse)').matches)
+      || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+    if (ehToque) {
+      try {
+        const file = new File([blob], filename, { type: 'application/pdf' });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: filename });
+          return;
+        }
+      } catch (e) {
+        if (e && e.name === 'AbortError') return; // usuário fechou o compartilhamento
+        // qualquer outro erro: cai para o download abaixo
       }
-    } catch (e) {
-      if (e && e.name === 'AbortError') return; // usuário fechou o compartilhamento
-      // qualquer outro erro: cai para o download abaixo
     }
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
