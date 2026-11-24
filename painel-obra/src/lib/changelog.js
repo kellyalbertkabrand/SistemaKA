@@ -3,9 +3,18 @@
 // sucinta e clara para o cliente — e atualize a VERSAO (data da publicação).
 // É exibido na página pública /atualizacoes, que pode ser enviada ao cliente.
 
-export const VERSAO = '12/11/2026';
+export const VERSAO = '24/11/2026';
 
 export const CHANGELOG = [
+  {
+    data: '24/11/2026',
+    titulo: 'Cadastro do cliente mais completo',
+    itens: [
+      'O cadastro do cliente agora inclui RG / Inscrição Estadual, estado civil, profissão e o endereço da obra.',
+      'No link que o cliente preenche, esses campos já aparecem — assim os dados para o contrato chegam prontos, sem precisar completar depois.',
+      'O endereço residencial e o endereço da obra ficam separados e aparecem na ficha, no PDF e no envio por WhatsApp do cliente.',
+    ],
+  },
   {
     data: '12/11/2026',
     titulo: 'Lixeira: recupere o que foi excluído',

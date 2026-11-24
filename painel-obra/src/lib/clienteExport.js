@@ -9,7 +9,8 @@ const CONTATO = [
   ['telefone', 'Telefone / WhatsApp'],
   ['documento', 'CPF / CNPJ'],
   ['cidade', 'Cidade'],
-  ['endereco', 'Endereço'],
+  ['endereco', 'Endereço residencial'],
+  ['endereco_obra', 'Endereço da obra'],
   ['observacoes', 'Observações'],
 ];
 const CONTRATO = [

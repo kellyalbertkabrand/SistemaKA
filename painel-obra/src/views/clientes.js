@@ -61,7 +61,8 @@ export async function renderClientes(container, opts = {}) {
           <label>Telefone / WhatsApp<input id="e-telefone" /></label>
           <label>CPF / CNPJ<input id="e-documento" /></label>
           <label>Cidade<input id="e-cidade" /></label>
-          <label class="full">Endereço<input id="e-endereco" /></label>
+          <label class="full">Endereço residencial<input id="e-endereco" /></label>
+          <label class="full">Endereço da obra<input id="e-endereco-obra" placeholder="Onde será / está a obra" /></label>
           <label class="full">Observações<input id="e-observacoes" /></label>
 
           <div class="full row-between" style="margin-top:.4rem">
@@ -107,6 +108,7 @@ export async function renderClientes(container, opts = {}) {
   const CAMPOS_CLI = {
     '#e-nome': 'nome', '#e-email': 'email', '#e-telefone': 'telefone',
     '#e-documento': 'documento', '#e-cidade': 'cidade', '#e-endereco': 'endereco',
+    '#e-endereco-obra': 'endereco_obra',
     '#e-observacoes': 'observacoes', '#c-nome': 'contrato_nome',
     '#c-doc': 'contrato_documento', '#c-rg': 'contrato_rg',
     '#c-nacionalidade': 'contrato_nacionalidade', '#c-estadocivil': 'contrato_estadocivil',
@@ -176,6 +178,7 @@ export async function renderClientes(container, opts = {}) {
       documento: val('#e-documento'),
       cidade: val('#e-cidade'),
       endereco: val('#e-endereco'),
+      endereco_obra: val('#e-endereco-obra'),
       observacoes: val('#e-observacoes'),
       contrato_nome: val('#c-nome'),
       contrato_documento: val('#c-doc'),
@@ -277,7 +280,8 @@ function listaClientes(clientes) {
         ${c.documento ? `· ${esc(c.documento)} ` : ''}
         ${c.cidade ? `· ${esc(c.cidade)}` : ''}
       </div>
-      ${c.endereco ? `<div class="muted cliente-dados">${esc(c.endereco)}</div>` : ''}
+      ${c.endereco ? `<div class="muted cliente-dados">🏠 ${esc(c.endereco)}</div>` : ''}
+      ${c.endereco_obra ? `<div class="muted cliente-dados">🏗️ Obra: ${esc(c.endereco_obra)}</div>` : ''}
       ${dadosContrato(c)}
       ${c.observacoes ? `<div class="muted cliente-dados">${esc(c.observacoes)}</div>` : ''}
       <div class="cliente-data muted">Cadastrado em ${dataBR(c.criadoEm ? new Date(c.criadoEm).toISOString() : '')}</div>

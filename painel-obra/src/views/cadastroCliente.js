@@ -46,11 +46,23 @@ export async function renderCadastroCliente(container, token) {
           <label>CPF / CNPJ
             <input id="f-documento" />
           </label>
+          <label>RG / Inscrição Estadual
+            <input id="f-rg" />
+          </label>
+          <label>Estado civil
+            <input id="f-estadocivil" />
+          </label>
+          <label>Profissão
+            <input id="f-profissao" />
+          </label>
           <label>Cidade
             <input id="f-cidade" />
           </label>
-          <label class="full">Endereço
+          <label class="full">Endereço residencial
             <input id="f-endereco" />
+          </label>
+          <label class="full">Endereço da obra
+            <input id="f-endereco-obra" placeholder="Onde será / está a obra" />
           </label>
           <label class="full">Observações
             <input id="f-observacoes" placeholder="Algo que o escritório deva saber" />
@@ -91,8 +103,12 @@ export async function renderCadastroCliente(container, token) {
       email: container.querySelector('#f-email').value.trim() || null,
       telefone: container.querySelector('#f-telefone').value.trim() || null,
       documento: container.querySelector('#f-documento').value.trim() || null,
+      contrato_rg: container.querySelector('#f-rg').value.trim() || null,
+      contrato_estadocivil: container.querySelector('#f-estadocivil').value.trim() || null,
+      contrato_profissao: container.querySelector('#f-profissao').value.trim() || null,
       cidade: container.querySelector('#f-cidade').value.trim() || null,
       endereco: container.querySelector('#f-endereco').value.trim() || null,
+      endereco_obra: container.querySelector('#f-endereco-obra').value.trim() || null,
       observacoes: container.querySelector('#f-observacoes').value.trim() || null,
     };
 
