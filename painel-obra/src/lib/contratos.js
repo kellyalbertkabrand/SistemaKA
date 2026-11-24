@@ -317,7 +317,7 @@ export const MODELOS = [
     documento: docProjetoExecucao,
     campos: [
       ...CAMPOS_CONTRATANTE,
-      { id: 'obraEndereco', rotulo: 'Endereço da obra', full: true, placeholder: 'Rua ..., lotes ..., bairro, cidade/UF' },
+      { id: 'obraEndereco', rotulo: 'Endereço da obra', full: true, auto: ['endereco_obra'], placeholder: 'Rua ..., lotes ..., bairro, cidade/UF' },
       { id: 'metragem', rotulo: 'Metragem (m²)', placeholder: 'ex.: 300,00' },
       { id: 'valorProjeto', rotulo: 'Honorário do projeto (R$)', tipo: 'number' },
       { id: 'formaProjeto', rotulo: 'Forma de pagamento do projeto', full: true, valor: '100% pago à vista na assinatura do contrato' },
@@ -336,7 +336,7 @@ export const MODELOS = [
     documento: docProjeto,
     campos: [
       ...CAMPOS_CONTRATANTE,
-      { id: 'obraEndereco', rotulo: 'Endereço da obra', full: true, placeholder: 'Alameda ..., lote ..., condomínio, cidade/UF' },
+      { id: 'obraEndereco', rotulo: 'Endereço da obra', full: true, auto: ['endereco_obra'], placeholder: 'Alameda ..., lote ..., condomínio, cidade/UF' },
       { id: 'metragem', rotulo: 'Metragem (m²)', placeholder: 'ex.: 240,00' },
       { id: 'valorProjeto', rotulo: 'Honorário do projeto (R$)', tipo: 'number' },
       { id: 'formaProjeto', rotulo: 'Forma de pagamento (parcelas)', tipo: 'textarea', full: true, valor: '20% na assinatura do contrato\n30% 30 dias após assinatura do contrato\n30% 60 dias após assinatura do contrato\n20% 90 dias após assinatura do contrato' },
@@ -352,7 +352,7 @@ export const MODELOS = [
     documento: docAdministracao,
     campos: [
       ...CAMPOS_CONTRATANTE,
-      { id: 'obraEndereco', rotulo: 'Endereço da obra', full: true },
+      { id: 'obraEndereco', rotulo: 'Endereço da obra', full: true, auto: ['endereco_obra'] },
       { id: 'metragem', rotulo: 'Área total (m²)', placeholder: 'ex.: 343,31' },
       { id: 'projetoNumero', rotulo: 'Nº do projeto técnico', placeholder: 'opcional' },
       { id: 'percentual', rotulo: 'Honorário (%)', tipo: 'number', valor: 15 },

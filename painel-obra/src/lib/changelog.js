@@ -13,6 +13,7 @@ export const CHANGELOG = [
       'O cadastro do cliente agora inclui RG / Inscrição Estadual, estado civil, profissão e o endereço da obra.',
       'No link que o cliente preenche, esses campos já aparecem — assim os dados para o contrato chegam prontos, sem precisar completar depois.',
       'O endereço residencial e o endereço da obra ficam separados e aparecem na ficha, no PDF e no envio por WhatsApp do cliente.',
+      'Nos contratos (Projeto e Execução, Projeto e Administração), ao escolher o cliente já entram sozinhos RG, estado civil, profissão, CPF, endereço e também o endereço da obra.',
     ],
   },
   {
