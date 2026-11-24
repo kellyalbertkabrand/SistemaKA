@@ -32,16 +32,16 @@ async function carregarLogoDataURL() {
 
 // Estilo do contrato — usado na tela, na impressão (PDF) e no Word baixado.
 const ESTILO_CONTRATO = `
-  .contrato-doc { font-family: Georgia, 'Times New Roman', serif; color:#1c1c1c; font-size:11pt; line-height:1.5; text-align:justify; }
-  .contrato-doc .contrato-titulo { text-align:center; font-size:13pt; font-weight:bold; margin:0 0 18px; }
-  .contrato-doc .contrato-clausula { font-size:11pt; font-weight:bold; margin:16px 0 6px; text-align:left; }
-  .contrato-doc p { margin:0 0 9px; }
-  .contrato-doc .contrato-banco { white-space:pre-line; font-family:inherit; margin:4px 0 9px; }
-  .contrato-doc .contrato-assinaturas { display:flex; gap:32px; justify-content:space-between; margin-top:48px; text-align:center; }
-  .contrato-doc .contrato-assinaturas > div { flex:1; }
+  .contrato-doc { font-family: Georgia, 'Times New Roman', serif; color:#1c1c1c; font-size:11pt; line-height:1.55; text-align:justify; }
+  .contrato-doc .contrato-titulo { text-align:center; font-size:13pt; font-weight:bold; margin:0 0 20px; line-height:1.3; text-wrap:balance; }
+  .contrato-doc .contrato-clausula { font-size:11pt; font-weight:bold; margin:24px 0 10px; text-align:left; line-height:1.3; text-wrap:balance; }
+  .contrato-doc p { margin:0 0 11px; text-wrap:pretty; }
+  .contrato-doc .contrato-banco { white-space:pre-line; font-family:inherit; margin:4px 0 11px; }
+  .contrato-doc .contrato-assinaturas { display:flex; flex-direction:column; gap:46px; margin-top:64px; text-align:left; }
+  .contrato-doc .contrato-assinaturas > div { width:62%; }
   .contrato-doc .linha-assinatura { border-top:1px solid #000; margin:0 0 4px; }
   .contrato-doc .contrato-assinaturas p { margin:0; }
-  .contrato-doc .contrato-testemunhas { margin-top:28px; }
+  .contrato-doc .contrato-testemunhas { margin-top:40px; }
   .contrato-doc .contrato-fim { break-inside:avoid; page-break-inside:avoid; }
 `;
 
@@ -348,6 +348,14 @@ export async function renderContratos(container, opts = {}) {
       holder.innerHTML = `<style>${ESTILO_CONTRATO}</style><div class="contrato-doc">${conteudoAtual()}</div>`;
       document.body.appendChild(holder);
 
+      // Evita "palavra solta"/"e" sozinho na 2ª linha de títulos e cláusulas:
+      // gruda as duas últimas palavras com espaço inseparável.
+      holder.querySelectorAll('.contrato-titulo, .contrato-clausula').forEach((el) => {
+        const t = (el.textContent || '').replace(/\s+/g, ' ').trim();
+        const i = t.lastIndexOf(' ');
+        if (i > 0) el.textContent = t.slice(0, i) + ' ' + t.slice(i + 1);
+      });
+
       const canvas = await html2canvas(holder, {
         scale: 1.6, backgroundColor: '#ffffff', useCORS: true, logging: false,
         width: LARGURA_PX, windowWidth: LARGURA_PX,
@@ -356,62 +364,59 @@ export async function renderContratos(container, opts = {}) {
       const doc = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
       const pageW = doc.internal.pageSize.getWidth();
       const pageH = doc.internal.pageSize.getHeight();
-      const mX = 42, mTop = 92, mBot = 62;
+      const mX = 42, mTop = 116, mBot = 58;      // mTop maior: folga entre logo e texto
       const contentWpt = pageW - mX * 2;
       const usableHpt = pageH - mTop - mBot;
 
-      const cw = canvas.width;              // px
-      const pxPerPt = cw / contentWpt;      // px por pt
-      const sliceIdealPx = Math.floor(usableHpt * pxPerPt);
-      const cctx = canvas.getContext('2d');
+      const ptPerCss = contentWpt / LARGURA_PX;   // pt por px de CSS
+      const cssToCanvas = canvas.width / LARGURA_PX; // px de canvas por px de CSS
+      const usableCssH = usableHpt / ptPerCss;    // altura útil por página, em px de CSS
 
-      // Procura uma linha "em branco" perto do corte ideal, subindo até 90px,
-      // para não cortar no meio de uma linha de texto.
-      const acharCorte = (ini) => {
-        const limite = Math.max(ini - 90, 1);
-        for (let y = ini; y > limite; y--) {
-          const d = cctx.getImageData(0, y, cw, 1).data;
-          let branco = true;
-          for (let i = 0; i < d.length; i += 4) {
-            if (d[i] < 248 || d[i + 1] < 248 || d[i + 2] < 248) { branco = false; break; }
-          }
-          if (branco) return y;
-        }
-        return ini;
-      };
+      // Mede cada bloco (título, parágrafos, cláusulas, fecho) para quebrar a
+      // página SEM cortar um bloco no meio — assim não sobra palavra/linha
+      // solta na página seguinte; o bloco inteiro desce.
+      const docEl = holder.querySelector('.contrato-doc');
+      const baseTop = docEl.getBoundingClientRect().top;
+      const blocos = Array.from(docEl.children).map((el) => {
+        const r = el.getBoundingClientRect();
+        return { top: r.top - baseTop, bottom: r.bottom - baseTop };
+      });
+      const totalCss = docEl.getBoundingClientRect().height;
 
-      // Monta as fatias (páginas).
-      const fatias = [];
-      let y0 = 0;
-      while (y0 < canvas.height) {
-        let y1 = Math.min(y0 + sliceIdealPx, canvas.height);
-        if (y1 < canvas.height) y1 = acharCorte(y1);
-        if (y1 <= y0) y1 = Math.min(y0 + sliceIdealPx, canvas.height); // segurança
-        fatias.push([y0, y1]);
-        y0 = y1;
+      const paginas = [];
+      let ini = 0, fim = 0;
+      for (const bl of blocos) {
+        if (bl.bottom - ini <= usableCssH) { fim = bl.bottom; continue; }
+        if (bl.top - ini > 1) { paginas.push([ini, bl.top]); ini = bl.top; }
+        // Bloco maior que uma página inteira: aí sim divide por altura.
+        while (bl.bottom - ini > usableCssH) { paginas.push([ini, ini + usableCssH]); ini += usableCssH; }
+        fim = bl.bottom;
       }
-      const total = fatias.length;
+      paginas.push([ini, Math.max(fim, totalCss)]);
+      const total = paginas.length;
 
       const alturaLogo = 42;
       const larguraLogo = logoInfo ? Math.min(contentWpt * 0.55, alturaLogo * (logoInfo.w / logoInfo.h)) : 0;
 
-      fatias.forEach(([a, b], idx) => {
+      paginas.forEach(([s, e], idx) => {
         if (idx > 0) doc.addPage();
-        const hpx = b - a;
+        const a = Math.max(0, Math.round(s * cssToCanvas));
+        const b = Math.min(canvas.height, Math.round(e * cssToCanvas));
+        const hpx = Math.max(1, b - a);
         const fatia = document.createElement('canvas');
-        fatia.width = cw; fatia.height = hpx;
-        fatia.getContext('2d').drawImage(canvas, 0, a, cw, hpx, 0, 0, cw, hpx);
+        fatia.width = canvas.width; fatia.height = hpx;
+        fatia.getContext('2d').drawImage(canvas, 0, a, canvas.width, hpx, 0, 0, canvas.width, hpx);
         const imgData = fatia.toDataURL('image/jpeg', 0.82);
-        const imgHpt = hpx / pxPerPt;
+        const imgHpt = (hpx / cssToCanvas) * ptPerCss;
         doc.addImage(imgData, 'JPEG', mX, mTop, contentWpt, imgHpt);
         // Cabeçalho (logo centralizado).
         if (logoInfo) {
-          try { doc.addImage(logo, 'PNG', (pageW - larguraLogo) / 2, 26, larguraLogo, alturaLogo); } catch { /* segue */ }
+          try { doc.addImage(logo, 'PNG', (pageW - larguraLogo) / 2, 30, larguraLogo, alturaLogo); } catch { /* segue */ }
         }
-        // Rodapé (endereço + página X/Y).
-        doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(110, 110, 110);
-        if (RODAPE_CONTRATO) doc.text(RODAPE_CONTRATO, mX, pageH - 32);
-        doc.text(`${idx + 1}/${total}`, pageW - mX, pageH - 32, { align: 'right' });
+        // Rodapé: endereço centralizado + página X/Y à direita (fonte maior).
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(105, 105, 105);
+        if (RODAPE_CONTRATO) doc.text(RODAPE_CONTRATO, pageW / 2, pageH - 30, { align: 'center' });
+        doc.text(`${idx + 1}/${total}`, pageW - mX, pageH - 30, { align: 'right' });
       });
 
       await entregarPdf(doc, nomeArquivo() + '.pdf');
