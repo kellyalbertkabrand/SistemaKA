@@ -32,7 +32,7 @@ async function carregarLogoDataURL() {
 
 // Estilo do contrato — usado na tela, na impressão (PDF) e no Word baixado.
 const ESTILO_CONTRATO = `
-  .contrato-doc { font-family: Georgia, 'Times New Roman', serif; color:#1c1c1c; font-size:11pt; line-height:1.55; text-align:justify; }
+  .contrato-doc { font-family: Georgia, 'Times New Roman', serif; color:#1c1c1c; font-size:11pt; line-height:1.55; text-align:justify; -webkit-text-size-adjust:100%; text-size-adjust:100%; }
   .contrato-doc .contrato-titulo { text-align:center; font-size:13pt; font-weight:bold; margin:0 0 20px; line-height:1.3; text-wrap:balance; }
   .contrato-doc .contrato-clausula { font-size:11pt; font-weight:bold; margin:24px 0 10px; text-align:left; line-height:1.3; text-wrap:balance; }
   .contrato-doc p { margin:0 0 11px; text-wrap:pretty; }
@@ -350,7 +350,9 @@ export async function renderContratos(container, opts = {}) {
       // Container fora da tela com o conteúdo do contrato (estilo aplicado).
       const LARGURA_PX = 720; // largura de renderização do conteúdo
       holder = document.createElement('div');
-      holder.style.cssText = `position:fixed;left:-10000px;top:0;width:${LARGURA_PX}px;background:#fff;padding:0;`;
+      // text-size-adjust:100% impede o iOS/Safari de "inflar" a fonte (que
+      // mudava a quebra de linha e aumentava o nº de páginas).
+      holder.style.cssText = `position:fixed;left:-10000px;top:0;width:${LARGURA_PX}px;background:#fff;padding:0;-webkit-text-size-adjust:100%;text-size-adjust:100%;`;
       holder.innerHTML = `<style>${ESTILO_CONTRATO}</style><div class="contrato-doc">${conteudoAtual()}</div>`;
       document.body.appendChild(holder);
 
