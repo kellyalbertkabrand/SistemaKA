@@ -8,6 +8,14 @@ export const VERSAO = '24/11/2026';
 export const CHANGELOG = [
   {
     data: '24/11/2026',
+    titulo: 'Ajustes nos contratos',
+    itens: [
+      'Modelo "Projeto": o item 4.3 (impostos trabalhistas sobre a mão de obra) passou a ser responsabilidade do CONTRATANTE.',
+      'Cláusula de autorização de uso de imagem (fotos e vídeos para portfólio, redes sociais e divulgação) presente nos três modelos de contrato.',
+    ],
+  },
+  {
+    data: '24/11/2026',
     titulo: 'Cadastro do cliente mais completo',
     itens: [
       'O cadastro do cliente agora inclui RG / Inscrição Estadual, estado civil, profissão e o endereço da obra.',
