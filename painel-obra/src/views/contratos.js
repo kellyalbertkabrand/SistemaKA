@@ -310,7 +310,7 @@ export async function renderContratos(container, opts = {}) {
     w.document.write(`<!doctype html><html lang="pt-br"><head><meta charset="utf-8"><title>Contrato</title>
       <style>
         @page {
-          margin: 3cm 2cm 2.4cm;
+          margin: 2.2cm 2cm 2.3cm;
           @bottom-left { content: "${rodapeEsc}"; font: 8.5pt Georgia, serif; color: #555; }
           @bottom-right { content: counter(page) "/" counter(pages); font: 8.5pt Georgia, serif; color: #555; }
         }
@@ -319,14 +319,10 @@ export async function renderContratos(container, opts = {}) {
         .ct-topbar button { font: inherit; font-size: 15px; padding: 9px 14px; border: 1px solid #cfc7ba; background: #fff; border-radius: 8px; cursor: pointer; }
         .ct-topbar .ct-voltar { border-color: ${COR_ACENTO}; color: ${COR_ACENTO}; font-weight: 600; }
         .ct-corpo { padding: 0 14px; }
-        /* Cabeçalho com o logo centralizado em todas as páginas (impressão). */
-        .ct-cab-print { display: none; }
-        @media print {
-          .no-print { display: none !important; }
-          .ct-corpo { padding: 0; }
-          .ct-cab-print { display: block; position: fixed; top: -2.3cm; left: 0; right: 0; text-align: center; }
-          .ct-cab-print img { max-height: 1.7cm; max-width: 60%; }
-        }
+        /* Logo centralizado no topo do contrato. */
+        .ct-logo-topo { text-align: center; margin: 0 0 18px; }
+        .ct-logo-topo img { max-height: 1.9cm; max-width: 60%; }
+        @media print { .no-print { display: none !important; } .ct-corpo { padding: 0; } }
         ${ESTILO_CONTRATO}
       </style></head>
       <body>
@@ -334,8 +330,10 @@ export async function renderContratos(container, opts = {}) {
           <button class="ct-voltar" onclick="window.close()">← Voltar ao sistema</button>
           <button onclick="window.print()">🖨 Imprimir / Salvar PDF</button>
         </div>
-        <div class="ct-cab-print">${logo ? `<img src="${logo}" alt="${esc(MARCA.nome)}" />` : ''}</div>
-        <div class="ct-corpo">${conteudoAtual()}</div>
+        <div class="ct-corpo">
+          ${logo ? `<div class="ct-logo-topo"><img src="${logo}" alt="${esc(MARCA.nome)}" /></div>` : ''}
+          ${conteudoAtual()}
+        </div>
       </body></html>`);
     w.document.close(); w.focus();
     setTimeout(() => { try { w.print(); } catch (e) { /* imprime manual pelo botão */ } }, 500);
