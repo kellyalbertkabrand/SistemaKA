@@ -372,7 +372,7 @@ export async function renderContratos(container, opts = {}) {
       _filhos.forEach((el, i) => {
         if (i === _filhos.length - 1) return;
         const m = document.createElement('div');
-        m.style.cssText = 'height:2px;margin:0;padding:0;line-height:0;font-size:0;background:rgb(255,0,255);';
+        m.style.cssText = 'height:6px;margin:0;padding:0;line-height:0;font-size:0;background:rgb(255,0,255);';
         el.after(m);
       });
 
@@ -393,15 +393,15 @@ export async function renderContratos(container, opts = {}) {
       const pxPerPt = cw / contentWpt;
       const sliceIdeal = Math.floor(usableHpt * pxPerPt);
 
-      // Detecta as faixas dos marcadores (magenta) no canvas.
+      // (1) Detecta as faixas dos marcadores (magenta) — pontos de corte.
       const cctx = canvas.getContext('2d');
-      const px = cctx.getImageData(0, 0, cw, ch).data;
-      const amostras = [Math.floor(cw * 0.2), Math.floor(cw * 0.5), Math.floor(cw * 0.8)];
+      let px = cctx.getImageData(0, 0, cw, ch).data;
+      const amostras = [Math.floor(cw * 0.15), Math.floor(cw * 0.35), Math.floor(cw * 0.5), Math.floor(cw * 0.65), Math.floor(cw * 0.85)];
       const ehMarcador = (y) => {
         const base = y * cw * 4;
         for (const x of amostras) {
           const p = base + x * 4;
-          if (!(px[p] > 220 && px[p + 1] < 70 && px[p + 2] > 220)) return false;
+          if (!(px[p] > 170 && px[p + 1] < 150 && px[p + 2] > 170)) return false;
         }
         return true;
       };
@@ -410,13 +410,28 @@ export async function renderContratos(container, opts = {}) {
         if (ehMarcador(y)) { const top = y; while (y < ch && ehMarcador(y)) y++; marcadores.push({ top, bottom: y }); }
         else y++;
       }
-      // Apaga os marcadores (pinta de branco, com folga p/ cobrir a borda
-      // suavizada) para não aparecerem no PDF.
-      cctx.fillStyle = '#ffffff';
-      marcadores.forEach((mk) => cctx.fillRect(0, mk.top - 3, cw, (mk.bottom - mk.top) + 6));
+
+      // Rede de segurança: linha "em branco" (checa a largura toda) para cortar
+      // num vão quando, por algum motivo, faltar um marcador.
+      const linhaBranca = (y) => {
+        const base = y * cw * 4;
+        for (let x = 0; x < cw; x += 16) {
+          const p = base + x * 4;
+          if (px[p] < 245 || px[p + 1] < 245 || px[p + 2] < 245) return false;
+        }
+        return true;
+      };
+      const corteBranco = (ideal, minimo) => {
+        let run = 0;
+        for (let y = ideal; y > minimo; y--) {
+          if (linhaBranca(y)) { run++; if (run >= 5) return y + 2; } else run = 0;
+        }
+        return ideal;
+      };
 
       // Corta cada página no marcador anterior ao limite ideal (bloco inteiro
-      // desce; nunca corta no meio do texto).
+      // desce; nunca corta no meio do texto). Sem marcador no intervalo, cai
+      // na faixa branca mais próxima.
       const paginas = [];
       let y0 = 0;
       while (y0 < ch) {
@@ -428,7 +443,10 @@ export async function renderContratos(container, opts = {}) {
           else if (mk.top > ideal) break;
         }
         if (corte) { paginas.push([y0, corte.top]); y0 = corte.bottom; }
-        else { paginas.push([y0, ideal]); y0 = ideal; } // bloco maior que a página
+        else {
+          const wy = corteBranco(ideal, y0 + Math.floor(sliceIdeal * 0.4));
+          paginas.push([y0, wy]); y0 = wy;
+        }
       }
       const total = paginas.length;
 
@@ -442,9 +460,10 @@ export async function renderContratos(container, opts = {}) {
         fatia.width = cw; fatia.height = hpx;
         const fctx = fatia.getContext('2d');
         fctx.drawImage(canvas, 0, a, cw, hpx, 0, 0, cw, hpx);
-        // Apaga qualquer marcador que caia dentro desta fatia.
+        // Apaga os marcadores desta fatia (fatia é gravável; pintar o canvas
+        // original não tem efeito). Folga p/ cobrir a borda suavizada.
         fctx.fillStyle = '#ffffff';
-        marcadores.forEach((mk) => { if (mk.bottom > a && mk.top < b) fctx.fillRect(0, (mk.top - a) - 3, cw, (mk.bottom - mk.top) + 6); });
+        marcadores.forEach((mk) => { if (mk.bottom > a && mk.top < b) fctx.fillRect(0, (mk.top - a) - 5, cw, (mk.bottom - mk.top) + 10); });
         const imgData = fatia.toDataURL('image/jpeg', 0.82);
         const imgHpt = hpx / pxPerPt;
         doc.addImage(imgData, 'JPEG', mX, mTop, contentWpt, imgHpt);
