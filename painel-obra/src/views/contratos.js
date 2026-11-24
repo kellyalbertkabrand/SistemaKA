@@ -320,40 +320,77 @@ export async function renderContratos(container, opts = {}) {
       const logoInfo = logo ? await medirImagem(logo) : null;
 
       // Container fora da tela com o conteúdo do contrato (estilo aplicado).
-      const LARGURA_PX = 760; // largura de renderização do conteúdo
+      const LARGURA_PX = 720; // largura de renderização do conteúdo
       holder = document.createElement('div');
-      holder.style.cssText = `position:fixed;left:-10000px;top:0;width:${LARGURA_PX}px;background:#fff;`;
+      holder.style.cssText = `position:fixed;left:-10000px;top:0;width:${LARGURA_PX}px;background:#fff;padding:0;`;
       holder.innerHTML = `<style>${ESTILO_CONTRATO}</style><div class="contrato-doc">${conteudoAtual()}</div>`;
       document.body.appendChild(holder);
 
-      const doc = new jsPDF({ unit: 'pt', format: 'a4' });
-      const pageW = doc.internal.pageSize.getWidth();
-      const pageH = doc.internal.pageSize.getHeight();
-      const mX = 42, mTop = 92, mBot = 58;
-      const contentWpt = pageW - mX * 2;
-
-      await doc.html(holder.querySelector('.contrato-doc'), {
-        x: mX, y: mTop,
-        width: contentWpt,
-        windowWidth: LARGURA_PX,
-        margin: [mTop, mX, mBot, mX],
-        autoPaging: 'text',
-        html2canvas: { scale: 2, backgroundColor: '#ffffff', useCORS: true, logging: false },
+      const canvas = await html2canvas(holder, {
+        scale: 1.6, backgroundColor: '#ffffff', useCORS: true, logging: false,
+        width: LARGURA_PX, windowWidth: LARGURA_PX,
       });
 
-      // Cabeçalho (logo centralizado) + rodapé (endereço + página X/Y) em cada página.
-      const total = doc.internal.getNumberOfPages();
-      for (let i = 1; i <= total; i++) {
-        doc.setPage(i);
-        if (logoInfo) {
-          const alturaLogo = 44;
-          const larguraLogo = Math.min(contentWpt * 0.6, alturaLogo * (logoInfo.w / logoInfo.h));
-          try { doc.addImage(logo, 'PNG', (pageW - larguraLogo) / 2, 26, larguraLogo, alturaLogo); } catch { /* segue sem logo */ }
+      const doc = new jsPDF({ unit: 'pt', format: 'a4', compress: true });
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const mX = 42, mTop = 92, mBot = 62;
+      const contentWpt = pageW - mX * 2;
+      const usableHpt = pageH - mTop - mBot;
+
+      const cw = canvas.width;              // px
+      const pxPerPt = cw / contentWpt;      // px por pt
+      const sliceIdealPx = Math.floor(usableHpt * pxPerPt);
+      const cctx = canvas.getContext('2d');
+
+      // Procura uma linha "em branco" perto do corte ideal, subindo até 90px,
+      // para não cortar no meio de uma linha de texto.
+      const acharCorte = (ini) => {
+        const limite = Math.max(ini - 90, 1);
+        for (let y = ini; y > limite; y--) {
+          const d = cctx.getImageData(0, y, cw, 1).data;
+          let branco = true;
+          for (let i = 0; i < d.length; i += 4) {
+            if (d[i] < 248 || d[i + 1] < 248 || d[i + 2] < 248) { branco = false; break; }
+          }
+          if (branco) return y;
         }
-        doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(110, 110, 110);
-        if (RODAPE_CONTRATO) doc.text(RODAPE_CONTRATO, mX, pageH - 30);
-        doc.text(`${i}/${total}`, pageW - mX, pageH - 30, { align: 'right' });
+        return ini;
+      };
+
+      // Monta as fatias (páginas).
+      const fatias = [];
+      let y0 = 0;
+      while (y0 < canvas.height) {
+        let y1 = Math.min(y0 + sliceIdealPx, canvas.height);
+        if (y1 < canvas.height) y1 = acharCorte(y1);
+        if (y1 <= y0) y1 = Math.min(y0 + sliceIdealPx, canvas.height); // segurança
+        fatias.push([y0, y1]);
+        y0 = y1;
       }
+      const total = fatias.length;
+
+      const alturaLogo = 42;
+      const larguraLogo = logoInfo ? Math.min(contentWpt * 0.55, alturaLogo * (logoInfo.w / logoInfo.h)) : 0;
+
+      fatias.forEach(([a, b], idx) => {
+        if (idx > 0) doc.addPage();
+        const hpx = b - a;
+        const fatia = document.createElement('canvas');
+        fatia.width = cw; fatia.height = hpx;
+        fatia.getContext('2d').drawImage(canvas, 0, a, cw, hpx, 0, 0, cw, hpx);
+        const imgData = fatia.toDataURL('image/jpeg', 0.82);
+        const imgHpt = hpx / pxPerPt;
+        doc.addImage(imgData, 'JPEG', mX, mTop, contentWpt, imgHpt);
+        // Cabeçalho (logo centralizado).
+        if (logoInfo) {
+          try { doc.addImage(logo, 'PNG', (pageW - larguraLogo) / 2, 26, larguraLogo, alturaLogo); } catch { /* segue */ }
+        }
+        // Rodapé (endereço + página X/Y).
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(110, 110, 110);
+        if (RODAPE_CONTRATO) doc.text(RODAPE_CONTRATO, mX, pageH - 32);
+        doc.text(`${idx + 1}/${total}`, pageW - mX, pageH - 32, { align: 'right' });
+      });
 
       doc.save(nomeArquivo() + '.pdf');
     } catch (err) {
