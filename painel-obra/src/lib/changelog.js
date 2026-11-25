@@ -3,9 +3,18 @@
 // sucinta e clara para o cliente — e atualize a VERSAO (data da publicação).
 // É exibido na página pública /atualizacoes, que pode ser enviada ao cliente.
 
-export const VERSAO = '24/11/2026';
+export const VERSAO = '25/11/2026';
 
 export const CHANGELOG = [
+  {
+    data: '25/11/2026',
+    titulo: 'Contrato salva sozinho',
+    itens: [
+      'Assim que o contrato é gerado, ele já fica salvo — e qualquer alteração que você fizer no texto é gravada automaticamente, sem precisar clicar em "Salvar".',
+      'Um aviso mostra o estado: "Editando…", "Salvando…" e "Salvo automaticamente ✓".',
+      'O PDF gerado agora não corta mais o texto no meio (nem no computador nem no celular) e baixa certinho em cada aparelho.',
+    ],
+  },
   {
     data: '24/11/2026',
     titulo: 'Ajustes nos contratos',

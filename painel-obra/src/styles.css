@@ -929,3 +929,8 @@ body.modal-aberto { overflow: hidden; }
 .brf-selo { font-size: .72rem; font-weight: 700; padding: .12rem .5rem; border-radius: 999px; margin-left: .5rem; }
 .brf-selo.concluido { background: #e6f2ea; color: var(--ok); }
 .brf-selo.andamento { background: var(--acento-tint); color: var(--acento); }
+
+/* Indicador de salvamento automático do contrato. */
+.ct-autosave { font-size: .82rem; color: var(--muted); }
+.ct-autosave.ok { color: var(--ok); font-weight: 600; }
+.ct-autosave.erro { color: var(--neg); font-weight: 600; }

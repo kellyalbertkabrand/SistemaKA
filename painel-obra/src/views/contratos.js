@@ -161,10 +161,12 @@ export async function renderContratos(container, opts = {}) {
     const html = corpoCarregado || documentoCompleto(m.documento(dados));
     container.innerHTML = chrome(`
       <div class="contrato-toolbar">
-        <button class="btn btn-mini btn-ghost" id="ct-voltar-dados">← Editar dados</button>
+        <span style="display:flex;align-items:center;gap:.6rem;flex-wrap:wrap">
+          <button class="btn btn-mini btn-ghost" id="ct-voltar-dados">← Editar dados</button>
+          <span id="ct-autosave" class="ct-autosave"></span>
+        </span>
         <span class="row-end">
           <button class="btn btn-mini" id="ct-editar">✏️ Editar contrato</button>
-          <button class="btn btn-mini" id="ct-salvar">💾 Salvar</button>
           <button class="btn btn-mini" id="ct-salvar-pdf">💾 Salvar e PDF</button>
           <button class="btn btn-mini" id="ct-imprimir">📄 Baixar PDF</button>
           <button class="btn btn-mini btn-primary" id="ct-word">⬇ Baixar Word</button>
@@ -243,10 +245,17 @@ export async function renderContratos(container, opts = {}) {
       btnEditar.classList.toggle('btn-primary', ligando);
       btnEditar.textContent = ligando ? '✓ Concluir edição' : '✏️ Editar contrato';
       if (ligando) editavel.focus();
+      else { clearTimeout(autoTimer); autoSalvar(); } // ao concluir edição, grava na hora
     });
 
-    const btnSalvar = container.querySelector('#ct-salvar');
-    if (btnSalvar) btnSalvar.addEventListener('click', () => salvar(btnSalvar));
+    // Salvamento automático: grava sozinho ao gerar e a cada edição do texto.
+    if (editavel) {
+      editavel.addEventListener('input', agendarAutoSalvar);
+      editavel.addEventListener('blur', () => { clearTimeout(autoTimer); autoSalvar(); });
+      if (!contratoId) autoSalvar();                 // contrato novo: já salva ao gerar
+      else statusAuto('Salvo automaticamente ✓', 'ok');
+    }
+
     const btnSalvarPdf = container.querySelector('#ct-salvar-pdf');
     if (btnSalvarPdf) btnSalvarPdf.addEventListener('click', () => salvar(btnSalvarPdf, () => baixarPdfContrato(btnSalvarPdf)));
     const btnImp = container.querySelector('#ct-imprimir');
@@ -263,6 +272,40 @@ export async function renderContratos(container, opts = {}) {
     clienteId = c.clienteId || null; clienteNome = c.clienteNome || null;
     obraId = c.obraId || null; obraNome = c.obraNome || null;
     telaContrato();
+  }
+
+  // ---- Salvamento automático (gera já salvo; cada edição é gravada sozinha) ----
+  let autoTimer = null, salvandoAuto = false, autoPendente = false;
+  function montarRegistro() {
+    return { modeloId, titulo: tituloContrato(), dados, corpoHtml: conteudoAtual(), clienteId, clienteNome, obraId, obraNome };
+  }
+  function statusAuto(txt, cls) {
+    const el = container.querySelector('#ct-autosave');
+    if (!el) return;
+    el.textContent = txt;
+    el.className = 'ct-autosave' + (cls ? ' ' + cls : '');
+  }
+  async function autoSalvar() {
+    if (salvandoAuto) { autoPendente = true; return; }
+    salvandoAuto = true;
+    statusAuto('Salvando…');
+    try {
+      const registro = montarRegistro();
+      if (contratoId) await atualizarContrato(contratoId, registro);
+      else contratoId = await criarContrato(registro);
+      contratos = await listarContratos().catch(() => contratos);
+      statusAuto('Salvo automaticamente ✓', 'ok');
+    } catch (e) {
+      statusAuto('Não foi possível salvar (publique as Regras do Firestore)', 'erro');
+    } finally {
+      salvandoAuto = false;
+      if (autoPendente) { autoPendente = false; autoSalvar(); }
+    }
+  }
+  function agendarAutoSalvar() {
+    clearTimeout(autoTimer);
+    statusAuto('Editando…');
+    autoTimer = setTimeout(autoSalvar, 1200);
   }
 
   async function salvar(botao, depois, aoFalhar) {
