@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-24T16:52:31.402889+00:00",
-  "count": 115,
+  "generated_at": "2026-11-25T16:36:05.583251+00:00",
+  "count": 123,
   "leads": [
     {
       "empresa": "Limber",
@@ -160,42 +160,6 @@
       "id": "eeac591c9c9b"
     },
     {
-      "empresa": "Kepler Weber",
-      "setor": "Agronegócio / máquinas agrícolas",
-      "local": "Sapucaia do Sul/RS",
-      "porte": "média",
-      "gatilho": "fusao",
-      "gatilho_nome": "Fusão ou aquisição",
-      "por_que_agora": "Entrada de sócio minoritário em empresa familiar exige clareza sobre identidade e posicionamento para não confundir mercado e investidores sobre quem manda a marca.",
-      "decisor": "Fundador(a) / CEO",
-      "pessoa_citada": "",
-      "msg_linkedin": "Kepler Weber com novo sócio na porta: momento clássico para blindar a marca e deixar claro quem você é antes que o mercado especule. 15 min pra conversar?",
-      "email_assunto": "kepler weber: posicionamento antes de mais sócios chegarem",
-      "email_corpo": "Vi que a Kepler Weber recebeu um investidor de peso. Quando uma empresa familiar abre a porta assim, a marca fica exposta a interpretações. Duas lógicas, dois interesses: quem quer que fale primeiro é o posicionamento claro. Podemos fazer uma conversa rápida sobre como você quer que a marca seja percebida agora? Ou deixo um diagnóstico gratuito de como você está sendo visto hoje.\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 7,
-      "score": 126,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "fusao",
-          "titulo": "Gigante do agronegócio compra 11,6% da Kepler Weber, mas diz que não quer o controle - bra1.com.br",
-          "link": "https://www.bra1.com.br/agronegocio/id-727049/gigante_do_agronegocio_compra_11_6__da_kepler_weber__mas_diz_que_nao_quer_o_controle",
-          "fonte": "bra1.com.br",
-          "data": "2026-11-16"
-        },
-        {
-          "gatilho": "fusao",
-          "titulo": "TMSA compra 11,6% de participação na Kepler Weber, mas diz que não quer o controle - AgFeed",
-          "link": "https://agfeed.com.br/negocios/tmsa-compra-116-de-participacao-na-kepler-weber-mas-diz-que-nao-quer-o-controle/",
-          "fonte": "AgFeed",
-          "data": "2026-11-13"
-        }
-      ],
-      "primeiro_sinal": "2026-11-13",
-      "ultimo_sinal": "2026-11-16",
-      "id": "efd0f55f5d1a"
-    },
-    {
       "empresa": "Rahra",
       "setor": "Semijoias / Moda",
       "local": "Pouso Alegre/MG",
@@ -232,40 +196,40 @@
       "id": "84c45956b02a"
     },
     {
-      "empresa": "Grupo Dimas",
-      "setor": "Holding / Ecossistema de negócios",
-      "local": "Florianópolis/SC",
+      "empresa": "Kepler Weber",
+      "setor": "Agronegócio / máquinas agrícolas",
+      "local": "Sapucaia do Sul/RS",
       "porte": "média",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "50 anos consolidando atuação como ecossistema integrado: se o posicionamento da marca-mãe não estiver claro, cada negócio do grupo comunica sozinho e perde força.",
-      "decisor": "Fundador(a) / CEO / Diretor(a) de Marketing",
+      "gatilho": "fusao",
+      "gatilho_nome": "Fusão ou aquisição",
+      "por_que_agora": "Entrada de sócio minoritário em empresa familiar exige clareza sobre identidade e posicionamento para não confundir mercado e investidores sobre quem manda a marca.",
+      "decisor": "Fundador(a) / CEO",
       "pessoa_citada": "",
-      "msg_linkedin": "Grupo Dimas nos 50 anos como ecossistema integrado: parabéns. Agora vem o desafio: se cada negócio fala de um jeito, o grupo inteiro fica confuso. Vale pensar na essência que une tudo?",
-      "email_assunto": "posicionamento do Grupo Dimas como ecossistema",
-      "email_corpo": "Parabéns aos 50 anos do Grupo Dimas como ecossistema integrado. Essa é exatamente a hora de o posicionamento ficar claro: um grupo com vários negócios precisa de uma essência que una tudo, senão cada empresa fala sozinha. Vale a gente conversar 15 minutos sobre isso?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "msg_linkedin": "Kepler Weber com novo sócio na porta: momento clássico para blindar a marca e deixar claro quem você é antes que o mercado especule. 15 min pra conversar?",
+      "email_assunto": "kepler weber: posicionamento antes de mais sócios chegarem",
+      "email_corpo": "Vi que a Kepler Weber recebeu um investidor de peso. Quando uma empresa familiar abre a porta assim, a marca fica exposta a interpretações. Duas lógicas, dois interesses: quem quer que fale primeiro é o posicionamento claro. Podemos fazer uma conversa rápida sobre como você quer que a marca seja percebida agora? Ou deixo um diagnóstico gratuito de como você está sendo visto hoje.\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 7,
-      "score": 114,
+      "score": 125,
       "confirmado": true,
       "sinais": [
         {
-          "gatilho": "aniversario",
-          "titulo": "Grupo Dimas completa 50 anos e consolida atuação como ecossistema integrado de negócios - Noticenter",
-          "link": "https://www.noticenter.com.br/noticia/42443/grupo-dimas-completa-50-anos-e-consolida-atuacao-como-ecossistema-integrado-de-negocios",
-          "fonte": "Noticenter",
-          "data": "2026-11-19"
+          "gatilho": "fusao",
+          "titulo": "Gigante do agronegócio compra 11,6% da Kepler Weber, mas diz que não quer o controle - bra1.com.br",
+          "link": "https://www.bra1.com.br/agronegocio/id-727049/gigante_do_agronegocio_compra_11_6__da_kepler_weber__mas_diz_que_nao_quer_o_controle",
+          "fonte": "bra1.com.br",
+          "data": "2026-11-16"
         },
         {
-          "gatilho": "aniversario",
-          "titulo": "De uma garagem em Florianópolis a 600 colaboradores: Grupo Dimas completa 50 anos - Economia SC",
-          "link": "https://economiasc.com/2026/11/17/de-uma-garagem-em-florianopolis-a-600-colaboradores-grupo-dimas-completa-50-anos/",
-          "fonte": "Economia SC",
-          "data": "2026-11-17"
+          "gatilho": "fusao",
+          "titulo": "TMSA compra 11,6% de participação na Kepler Weber, mas diz que não quer o controle - AgFeed",
+          "link": "https://agfeed.com.br/negocios/tmsa-compra-116-de-participacao-na-kepler-weber-mas-diz-que-nao-quer-o-controle/",
+          "fonte": "AgFeed",
+          "data": "2026-11-13"
         }
       ],
-      "primeiro_sinal": "2026-11-17",
-      "ultimo_sinal": "2026-11-19",
-      "id": "b11d0a950e8a"
+      "primeiro_sinal": "2026-11-13",
+      "ultimo_sinal": "2026-11-16",
+      "id": "efd0f55f5d1a"
     },
     {
       "empresa": "Laser Som",
@@ -295,6 +259,42 @@
       "primeiro_sinal": "2026-11-23",
       "ultimo_sinal": "2026-11-23",
       "id": "93ccf3d60869"
+    },
+    {
+      "empresa": "Grupo Dimas",
+      "setor": "Holding / Ecossistema de negócios",
+      "local": "Florianópolis/SC",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "50 anos consolidando atuação como ecossistema integrado: se o posicionamento da marca-mãe não estiver claro, cada negócio do grupo comunica sozinho e perde força.",
+      "decisor": "Fundador(a) / CEO / Diretor(a) de Marketing",
+      "pessoa_citada": "",
+      "msg_linkedin": "Grupo Dimas nos 50 anos como ecossistema integrado: parabéns. Agora vem o desafio: se cada negócio fala de um jeito, o grupo inteiro fica confuso. Vale pensar na essência que une tudo?",
+      "email_assunto": "posicionamento do Grupo Dimas como ecossistema",
+      "email_corpo": "Parabéns aos 50 anos do Grupo Dimas como ecossistema integrado. Essa é exatamente a hora de o posicionamento ficar claro: um grupo com vários negócios precisa de uma essência que una tudo, senão cada empresa fala sozinha. Vale a gente conversar 15 minutos sobre isso?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 113,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Grupo Dimas completa 50 anos e consolida atuação como ecossistema integrado de negócios - Noticenter",
+          "link": "https://www.noticenter.com.br/noticia/42443/grupo-dimas-completa-50-anos-e-consolida-atuacao-como-ecossistema-integrado-de-negocios",
+          "fonte": "Noticenter",
+          "data": "2026-11-19"
+        },
+        {
+          "gatilho": "aniversario",
+          "titulo": "De uma garagem em Florianópolis a 600 colaboradores: Grupo Dimas completa 50 anos - Economia SC",
+          "link": "https://economiasc.com/2026/11/17/de-uma-garagem-em-florianopolis-a-600-colaboradores-grupo-dimas-completa-50-anos/",
+          "fonte": "Economia SC",
+          "data": "2026-11-17"
+        }
+      ],
+      "primeiro_sinal": "2026-11-17",
+      "ultimo_sinal": "2026-11-19",
+      "id": "b11d0a950e8a"
     },
     {
       "empresa": "Rahra Semijoias",
@@ -416,19 +416,26 @@
       "empresa": "Vicky Foods",
       "setor": "Alimentos",
       "local": "",
-      "porte": "média",
+      "porte": "?",
       "gatilho": "sucessao",
       "gatilho_nome": "Sucessão / nova liderança",
-      "por_que_agora": "Nova liderança na cúpula consolidando renovação geracional — momento clássico para alinhar a marca com a visão do novo CEO e garantir que a transição reforce (não dilua) o posicionamento.",
-      "decisor": "Fundador(a) / CEO / Conselho",
-      "pessoa_citada": "Carlos Juan",
-      "msg_linkedin": "Parabéns pela renovação geracional na Vicky Foods, Carlos. Nesse tipo de transição, a clareza da marca é o que segura a confiança dos clientes. Podemos conversar sobre como posicionar essa virada?",
-      "email_assunto": "marca na sucessão: vicky foods",
-      "email_corpo": "Carlos, vi a notícia da sua posse na Vicky Foods. Sucessão planejada é a hora mais estratégica para renovar sem perder o que já foi construído. Muitas vezes a nova liderança quer mudar tudo — incluindo a marca — quando na verdade precisava só clarificar o que já existia. Podemos conversar em 20 minutos? Sem compromisso.\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 7,
+      "por_que_agora": "Nova liderança (Carlos Juan como CEO) é o momento clássico para alinhar a marca com a visão da geração que assume, sem perder a história construída.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "Carlos Juan, novo CEO",
+      "msg_linkedin": "Vi que a Vicky Foods acabou de nomear o Carlos Juan como CEO. Sucessão é o melhor momento para revisar se a marca está falando o que você realmente é — de dentro para fora. Marcar uma conversa?",
+      "email_assunto": "marca e sucessão na vicky foods",
+      "email_corpo": "Oi! Vi que a Vicky Foods nomeou o Carlos Juan como novo CEO. Sucessão é sempre um ponto de virada: a nova liderança quer deixar sua marca, mas sem perder o que foi construído. É exatamente quando faz sentido revisar o posicionamento — para a empresa falar clara e forte com o mercado. A gente pode conversar rapidinho sobre como a marca está sendo percebida agora?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 6,
       "score": 105,
       "confirmado": true,
       "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "VICKY FOODS nomeia Carlos Juan como novo CEO e consolida a renovação geracional à frente da empresa - SAPO",
+          "link": "https://sapo.pt/artigo/vicky-foods-nomeia-carlos-juan-como-novo-ceo-e-consolida-a-renovacao-geracional-a-frente-da-empresa-6b069eb5ed7962199df80beb",
+          "fonte": "SAPO",
+          "data": "2026-11-24"
+        },
         {
           "gatilho": "sucessao",
           "titulo": "Vicky Foods designa Carlos Juan como novo CEO e “consolida a renovação geracional” na cúpula do grupo - Demócrata",
@@ -505,6 +512,35 @@
       "primeiro_sinal": "2026-11-14",
       "ultimo_sinal": "2026-11-18",
       "id": "5b7b32647081"
+    },
+    {
+      "empresa": "Pioner Joalheria e Ótica",
+      "setor": "Varejo/joalheria e ótica",
+      "local": "Caxias/RS",
+      "porte": "pequena",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "60 anos de marca local: aniversário redondo é pretexto perfeito para renovar a percepção sem apagar tradição.",
+      "decisor": "Fundador(a) / sócio(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "Pioner marca 60 anos — é raro uma marca chegar aí. E é raro também que ela chegue com o posicionamento tão claro quanto sua história. Vale a pena conversar sobre como transformar seis décadas em vantagem de verdade.",
+      "email_assunto": "pioner: 60 anos é hora de renovar sem apagar nada",
+      "email_corpo": "Que legal a homenagem à Pioner pelos 60 anos em Caxias. Marca que chega lá é porque fez algo certo — mas geralmente precisa provar que é tradição sem ser ultrapassada. É exatamente o que a gente faz: revelar a essência que a sustenta há 60 anos e transformá-la em algo claro e presente. Quer conversar sobre isso?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 6,
+      "score": 104,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Pioner Joalheria e Ótica recebe homenagem pelos 60 anos na Câmara de Caxias - Rádio Solaris",
+          "link": "https://radiosolaris.com.br/pioner-joalheria-e-otica-recebe-homenagem-pelos-60-anos-na-camara-de-caxias/",
+          "fonte": "Rádio Solaris",
+          "data": "2026-11-24"
+        }
+      ],
+      "primeiro_sinal": "2026-11-24",
+      "ultimo_sinal": "2026-11-24",
+      "id": "35d5f4d774cd"
     },
     {
       "empresa": "Capelinha",
@@ -594,40 +630,33 @@
       "id": "d58f52c8cfea"
     },
     {
-      "empresa": "Brick de Desapegos",
-      "setor": "Varejo / Móveis e Desapegos",
-      "local": "Porto Alegre/RS",
-      "porte": "pequena",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "15 anos é um marco que permite renovar a percepção de marca sem perder a história; momento clássico para clareza estratégica antes de novo ciclo.",
-      "decisor": "Fundador(a) / Proprietário(a)",
+      "empresa": "Panrico",
+      "setor": "Alimentos / Pães e bolos",
+      "local": "Gaia/PT",
+      "porte": "média",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Novo CEO na fábrica de Gaia: momento de revisar se a marca Panrico está posicionada de forma clara e consistente enquanto muda a liderança local.",
+      "decisor": "CEO / Diretor(a) de Marketing",
       "pessoa_citada": "",
-      "msg_linkedin": "Brick de Desapegos completa 15 anos — um bom sinal de que a marca está consolidada. E se agora ela falasse mais claro sobre quem ela é, sem perder a história que construiu?",
-      "email_assunto": "marca consolidada, pronta para o próximo passo",
-      "email_corpo": "Oi! Vi que o Brick de Desapegos celebra 15 anos — isso é sinal de que você construiu algo real. Nesse ponto, muitas empresas percebem que a marca ficou para trás do crescimento: ainda fala como loja de desapegos, quando já é muito mais. Que tal a gente conversar em 15 minutos sobre como você está sendo percebido hoje e o que poderia mudar? Gratuito, sem compromisso.\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 5,
+      "msg_linkedin": "Panrico com novo CEO na fábrica de Gaia. Transição de liderança é o gancho perfeito para garantir que a marca fala clara — tanto internamente quanto pro mercado. Podemos conversar?",
+      "email_assunto": "panrico: novo ceo e posicionamento",
+      "email_corpo": "Oi! Soube que a Panrico tem novo CEO na operação de Gaia. Sucessão é sempre um ponto de inflexão para revisar o posicionamento. Com liderança nova, surge a oportunidade de alinhar a marca com a visão que está chegando — mantendo o que já funciona. Dá pra gente conversar rapidinho sobre isso?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 6,
       "score": 100,
       "confirmado": true,
       "sinais": [
         {
-          "gatilho": "aniversario",
-          "titulo": "Brick de Desapegos celebra 15 anos com evento no Clube do Comércio - Jornal do Comércio",
-          "link": "https://www.jornaldocomercio.com/ge2/noticias/2026/11/1271152-brick-de-desapegos-celebra-15-anos-com-evento-no-clube-do-comercio.html",
-          "fonte": "Jornal do Comércio",
-          "data": "2026-11-19"
-        },
-        {
-          "gatilho": "aniversario",
-          "titulo": "Brick de Desapegos celebra 15 anos com grande festival de moda circular, desfiles, música e baile no Clube do Comércio, em Porto Alegre - Super Transado",
-          "link": "https://www.supertransado.com.br/site/artigos/noticia/brick-de-desapegos-celebra-15-anos-com-grande-festival-de-moda-circular-desfiles-musica-e-baile-no-clube-do-comercio-em-porto-alegre",
-          "fonte": "Super Transado",
-          "data": "2026-11-14"
+          "gatilho": "sucessao",
+          "titulo": "Dono da fábrica da Panrico em Gaia com 109 trabalhadores tem novo CEO - Jornal de Negócios",
+          "link": "https://www.jornaldenegocios.pt/empresas/industria/detalhe/dono-da-fabrica-da-panrico-em-gaia-com-109-trabalhadores-tem-novo-ceo",
+          "fonte": "Jornal de Negócios",
+          "data": "2026-11-24"
         }
       ],
-      "primeiro_sinal": "2026-11-14",
-      "ultimo_sinal": "2026-11-19",
-      "id": "7ae66747dd73"
+      "primeiro_sinal": "2026-11-24",
+      "ultimo_sinal": "2026-11-24",
+      "id": "b4610eab9269"
     },
     {
       "empresa": "CASACOR",
@@ -695,6 +724,42 @@
       "id": "9211d20fb5dc"
     },
     {
+      "empresa": "Brick de Desapegos",
+      "setor": "Varejo / Móveis e Desapegos",
+      "local": "Porto Alegre/RS",
+      "porte": "pequena",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "15 anos é um marco que permite renovar a percepção de marca sem perder a história; momento clássico para clareza estratégica antes de novo ciclo.",
+      "decisor": "Fundador(a) / Proprietário(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "Brick de Desapegos completa 15 anos — um bom sinal de que a marca está consolidada. E se agora ela falasse mais claro sobre quem ela é, sem perder a história que construiu?",
+      "email_assunto": "marca consolidada, pronta para o próximo passo",
+      "email_corpo": "Oi! Vi que o Brick de Desapegos celebra 15 anos — isso é sinal de que você construiu algo real. Nesse ponto, muitas empresas percebem que a marca ficou para trás do crescimento: ainda fala como loja de desapegos, quando já é muito mais. Que tal a gente conversar em 15 minutos sobre como você está sendo percebido hoje e o que poderia mudar? Gratuito, sem compromisso.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 5,
+      "score": 99,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Brick de Desapegos celebra 15 anos com evento no Clube do Comércio - Jornal do Comércio",
+          "link": "https://www.jornaldocomercio.com/ge2/noticias/2026/11/1271152-brick-de-desapegos-celebra-15-anos-com-evento-no-clube-do-comercio.html",
+          "fonte": "Jornal do Comércio",
+          "data": "2026-11-19"
+        },
+        {
+          "gatilho": "aniversario",
+          "titulo": "Brick de Desapegos celebra 15 anos com grande festival de moda circular, desfiles, música e baile no Clube do Comércio, em Porto Alegre - Super Transado",
+          "link": "https://www.supertransado.com.br/site/artigos/noticia/brick-de-desapegos-celebra-15-anos-com-grande-festival-de-moda-circular-desfiles-musica-e-baile-no-clube-do-comercio-em-porto-alegre",
+          "fonte": "Super Transado",
+          "data": "2026-11-14"
+        }
+      ],
+      "primeiro_sinal": "2026-11-14",
+      "ultimo_sinal": "2026-11-19",
+      "id": "7ae66747dd73"
+    },
+    {
       "empresa": "Macromix Atacado",
       "setor": "Varejo / Atacado",
       "local": "Dois Irmãos, RS",
@@ -708,7 +773,7 @@
       "email_assunto": "marca clara para crescer em dois irmãos",
       "email_corpo": "Parabéns pelo investimento em Dois Irmãos. Quando a empresa abre numa cidade nova, a marca precisa contar quem você é em poucos segundos, sem o boca a boca que você tem em casa. A gente revela a essência que já está na Macromix e transforma em posicionamento que funciona em qualquer lugar. Quer conhecer como?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 7,
-      "score": 99,
+      "score": 98,
       "confirmado": true,
       "sinais": [
         {
@@ -737,7 +802,7 @@
       "email_assunto": "zaxo e voxpak: posicionar a nova marca antes de sair comunicando",
       "email_corpo": "Parabéns pela fusão. Momento clássico: duas empresas viram uma, mas se a marca não falar com uma voz só, o mercado (pior ainda lá fora) inventa histórias. Posicionar antes de acelerar a comunicação economiza muito em mídia e em confusão. Podemos conversar sobre como construir essa clareza? Ou vale eu dar uma leitura de como vocês estão sendo percebidos hoje.\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 8,
-      "score": 98,
+      "score": 97,
       "confirmado": true,
       "sinais": [
         {
@@ -751,64 +816,6 @@
       "primeiro_sinal": "2026-11-16",
       "ultimo_sinal": "2026-11-16",
       "id": "c94cbfc09af4"
-    },
-    {
-      "empresa": "Empório Quatro Estrelas",
-      "setor": "Alimentos e distribuição",
-      "local": "",
-      "porte": "pequena",
-      "gatilho": "sucessao",
-      "gatilho_nome": "Sucessão / nova liderança",
-      "por_que_agora": "Sucessão familiar + expansão digital: marca precisa comunicar quem é para a nova geração e para clientes online, antes de crescer confuso.",
-      "decisor": "Fundador(a) / novo líder da geração",
-      "pessoa_citada": "",
-      "msg_linkedin": "Vi que o Empório está caminhando para a próxima geração e ampliando no digital — momento exato para a marca falar quem ela é, antes de crescer. 15 min pra conversar?",
-      "email_assunto": "sucessão + vendas online: hora de clarear a marca",
-      "email_corpo": "Vi a notícia do Empório Quatro Estrelas combinando sucessão familiar com vendas digitais — é exatamente o momento em que uma marca precisa estar clara. Quando a nova geração assume e o negócio muda de canal, o mercado fica confuso sobre quem você realmente é. A gente faz isso: revela a essência que já existe na marca (desde os fundadores) e transforma em posicionamento que funciona tanto presencialmente quanto online. 15 minutos para conversar?\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 7,
-      "score": 98,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "sucessao",
-          "titulo": "Empório Quatro Estrelas combina sucessão familiar e vendas digitais para ampliar atuação em alimentos - CompreRural",
-          "link": "https://www.comprerural.com/emporio-quatro-estrelas-sucessao/",
-          "fonte": "CompreRural",
-          "data": "2026-11-13"
-        }
-      ],
-      "primeiro_sinal": "2026-11-13",
-      "ultimo_sinal": "2026-11-13",
-      "id": "35a176c901ec"
-    },
-    {
-      "empresa": "Empresa familiar (nome não identificado)",
-      "setor": "Serralheria e empreendimentos",
-      "local": "Porto Alegre, RS",
-      "porte": "média",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "50 anos é data redonda perfeita para renovar a percepção sem perder tradição; empresa familiar na hora de contar sua história de jeito novo.",
-      "decisor": "Fundador(a) / Sócio(a)",
-      "pessoa_citada": "",
-      "msg_linkedin": "50 anos é mais que história—é o momento certo para a marca contar quem você virou. Quer transformar tradição em posicionamento que conversa com hoje?",
-      "email_assunto": "seu aniversário de 50 anos vale uma conversa sobre posicionamento",
-      "email_corpo": "Vi que a empresa completa 50 anos. Data redonda assim é o pretexto perfeito: você pode provar que é tradicional sem parecer ultrapassada. Muitas vezes, o mercado ainda vê só a serralheria de lá atrás, quando vocês já viraram muito mais. Marca moderna, raízes fortes—isso vende. Quer uma conversa rápida (15 minutos) sobre como a percepção do seu público está hoje?\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 7,
-      "score": 98,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "aniversario",
-          "titulo": "Da pequena serralheria a grandes empreendimentos: empresa familiar celebra 50 anos de história em Porto Alegre - Jornal O Sul",
-          "link": "https://www.osul.com.br/da-pequena-serralheria-a-grandes-empreendimentos-empresa-familiar-celebra-50-anos-de-historia-em-porto-alegre/amp/",
-          "fonte": "Jornal O Sul",
-          "data": "2026-11-07"
-        }
-      ],
-      "primeiro_sinal": "2026-11-07",
-      "ultimo_sinal": "2026-11-07",
-      "id": "ed0302206b9e"
     },
     {
       "empresa": "Tapetes São Carlos",
@@ -838,6 +845,64 @@
       "primeiro_sinal": "2026-11-15",
       "ultimo_sinal": "2026-11-15",
       "id": "761549cf6ec3"
+    },
+    {
+      "empresa": "Empório Quatro Estrelas",
+      "setor": "Alimentos e distribuição",
+      "local": "",
+      "porte": "pequena",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Sucessão familiar + expansão digital: marca precisa comunicar quem é para a nova geração e para clientes online, antes de crescer confuso.",
+      "decisor": "Fundador(a) / novo líder da geração",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que o Empório está caminhando para a próxima geração e ampliando no digital — momento exato para a marca falar quem ela é, antes de crescer. 15 min pra conversar?",
+      "email_assunto": "sucessão + vendas online: hora de clarear a marca",
+      "email_corpo": "Vi a notícia do Empório Quatro Estrelas combinando sucessão familiar com vendas digitais — é exatamente o momento em que uma marca precisa estar clara. Quando a nova geração assume e o negócio muda de canal, o mercado fica confuso sobre quem você realmente é. A gente faz isso: revela a essência que já existe na marca (desde os fundadores) e transforma em posicionamento que funciona tanto presencialmente quanto online. 15 minutos para conversar?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 97,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Empório Quatro Estrelas combina sucessão familiar e vendas digitais para ampliar atuação em alimentos - CompreRural",
+          "link": "https://www.comprerural.com/emporio-quatro-estrelas-sucessao/",
+          "fonte": "CompreRural",
+          "data": "2026-11-13"
+        }
+      ],
+      "primeiro_sinal": "2026-11-13",
+      "ultimo_sinal": "2026-11-13",
+      "id": "35a176c901ec"
+    },
+    {
+      "empresa": "Empresa familiar (nome não identificado)",
+      "setor": "Serralheria e empreendimentos",
+      "local": "Porto Alegre, RS",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "50 anos é data redonda perfeita para renovar a percepção sem perder tradição; empresa familiar na hora de contar sua história de jeito novo.",
+      "decisor": "Fundador(a) / Sócio(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "50 anos é mais que história—é o momento certo para a marca contar quem você virou. Quer transformar tradição em posicionamento que conversa com hoje?",
+      "email_assunto": "seu aniversário de 50 anos vale uma conversa sobre posicionamento",
+      "email_corpo": "Vi que a empresa completa 50 anos. Data redonda assim é o pretexto perfeito: você pode provar que é tradicional sem parecer ultrapassada. Muitas vezes, o mercado ainda vê só a serralheria de lá atrás, quando vocês já viraram muito mais. Marca moderna, raízes fortes—isso vende. Quer uma conversa rápida (15 minutos) sobre como a percepção do seu público está hoje?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 97,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Da pequena serralheria a grandes empreendimentos: empresa familiar celebra 50 anos de história em Porto Alegre - Jornal O Sul",
+          "link": "https://www.osul.com.br/da-pequena-serralheria-a-grandes-empreendimentos-empresa-familiar-celebra-50-anos-de-historia-em-porto-alegre/amp/",
+          "fonte": "Jornal O Sul",
+          "data": "2026-11-07"
+        }
+      ],
+      "primeiro_sinal": "2026-11-07",
+      "ultimo_sinal": "2026-11-07",
+      "id": "ed0302206b9e"
     },
     {
       "empresa": "Usina Sonora",
@@ -927,33 +992,62 @@
       "id": "8d1f1619d30c"
     },
     {
-      "empresa": "GBarbosa",
-      "setor": "Varejo / supermercados",
-      "local": "Aracaju/SE",
+      "empresa": "Kappel Imóveis",
+      "setor": "Imobiliário",
+      "local": "",
       "porte": "média",
-      "gatilho": "fusao",
-      "gatilho_nome": "Fusão ou aquisição",
-      "por_que_agora": "Expansão com novo conceito de experiência de compras: momento de a marca se comunicar clara e coerente na nova unidade e reforçar quem ela é pra quem nunca ouviu falar.",
-      "decisor": "Fundador(a) / CEO ou Diretor(a) de Marketing",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Marca que completa 50 anos está num momento clássico de provar que é sólida sem parecer ultrapassada — e de redefinir como quer ser vista nas próximas décadas.",
+      "decisor": "Fundador(a) / CEO / Sócio(a)",
       "pessoa_citada": "",
-      "msg_linkedin": "Vi que o GBarbosa RioMar acaba de inaugurar com um novo conceito de experiência. Legal demais. Momento perfeito pra marca contar quem ela é de verdade pro mercado.",
-      "email_assunto": "expansão do gbarbosa: e aí, a marca está pronta?",
-      "email_corpo": "Oi, tudo bem? Vi que o GBarbosa RioMar acaba de abrir com novo conceito de experiência de compras. Toda expansão traz uma chance de ouro: a marca precisa falar sozinha pra quem nunca ouviu falar dela. A gente ajuda a deixar clara a essência da marca (o que o fundador construiu) e transformar isso em posicionamento que gruda na cabeça do cliente novo. Quer conversar por 15 minutos pra a gente entender se faz sentido?\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 6,
-      "score": 96,
+      "msg_linkedin": "Kappel Imóveis completa 50 anos! É o momento perfeito para transformar trajetória em posicionamento claro — e abrir o caminho para o próximo capítulo com marca renovada.",
+      "email_assunto": "50 anos de Kappel: hora de o mercado saber exatamente quem você é",
+      "email_corpo": "Oi! Vi que a Kappel Imóveis completou 50 anos — parabéns pelo trajeto. Marca centenária é credibilidade pura, mas só se o mercado entender isso. A gente vê muito imobiliária boa perder força porque a marca envelhece junto com o fundador. Dá para converter esses 50 anos em posicionamento que fale com a nova geração — sem perder o que você já conquistou. Vamos bater um papo de 15 minutos? Kelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 95,
       "confirmado": true,
       "sinais": [
         {
-          "gatilho": "fusao",
-          "titulo": "GBarbosa RioMar inaugura expansão com novo conceito de experiência de compras - Click Sergipe",
-          "link": "https://www.clicksergipe.com.br/pais/18/111995/gbarbosa-riomar-inaugura-expansao-com-novo-conceito-de-experiencia-de-compras.html",
-          "fonte": "Click Sergipe",
-          "data": "2026-11-10"
+          "gatilho": "aniversario",
+          "titulo": "Kappel Imóveis completa 50 anos e projeta os próximos capítulos de sua história - Grupo A Hora",
+          "link": "https://grupoahora.net.br/conteudos/2026/11/25/kappel-imoveis-completa-50-anos-e-projeta-os-proximos-capitulos-de-sua-historia/",
+          "fonte": "Grupo A Hora",
+          "data": "2026-11-25"
         }
       ],
-      "primeiro_sinal": "2026-11-10",
-      "ultimo_sinal": "2026-11-10",
-      "id": "3b4e614c6991"
+      "primeiro_sinal": "2026-11-25",
+      "ultimo_sinal": "2026-11-25",
+      "id": "aa096cb8edf5"
+    },
+    {
+      "empresa": "Vilarejo",
+      "setor": "Varejo/comércio",
+      "local": "",
+      "porte": "?",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Sucessão geracional em marca de 30 anos: momento crítico para renovar sem perder a tradição que a sustenta.",
+      "decisor": "Fundador(a) / novo líder da geração",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vilarejo está em um momento clássico: 30 anos de história, nova geração no comando. É exatamente quando a marca precisa falar quem ela é hoje — sem apagar o que construiu. Papo?",
+      "email_assunto": "sucessão na vilarejo: hora de deixar clara a próxima página",
+      "email_corpo": "Acompanhamos a notícia sobre os 30 anos da Vilarejo e a preparação para o futuro. Sucessão é sempre um momento de verdade para a marca: a nova geração quer deixar sua marca, mas não pode perder o que o fundador plantou. A gente trabalha exatamente nisso — revelar a essência que já existe e transformá-la em posicionamento claro. Quer uma conversa rápida sobre como a Vilarejo está sendo percebida agora?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 95,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Três décadas de tradição e os desafios de preparar a Vilarejo para o futuro - Portal Cidade24h",
+          "link": "https://cidade24h.com/noticia/6613/tres-decadas-de-tradicao-e-os-desafios-de-preparar-a-vilarejo-para-o-futuro",
+          "fonte": "Portal Cidade24h",
+          "data": "2026-11-24"
+        }
+      ],
+      "primeiro_sinal": "2026-11-24",
+      "ultimo_sinal": "2026-11-24",
+      "id": "586670760e37"
     },
     {
       "empresa": "ISH Tecnologia",
@@ -1012,6 +1106,35 @@
       "primeiro_sinal": "2026-11-23",
       "ultimo_sinal": "2026-11-23",
       "id": "f71e2fc9dfb0"
+    },
+    {
+      "empresa": "GBarbosa",
+      "setor": "Varejo / supermercados",
+      "local": "Aracaju/SE",
+      "porte": "média",
+      "gatilho": "fusao",
+      "gatilho_nome": "Fusão ou aquisição",
+      "por_que_agora": "Expansão com novo conceito de experiência de compras: momento de a marca se comunicar clara e coerente na nova unidade e reforçar quem ela é pra quem nunca ouviu falar.",
+      "decisor": "Fundador(a) / CEO ou Diretor(a) de Marketing",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que o GBarbosa RioMar acaba de inaugurar com um novo conceito de experiência. Legal demais. Momento perfeito pra marca contar quem ela é de verdade pro mercado.",
+      "email_assunto": "expansão do gbarbosa: e aí, a marca está pronta?",
+      "email_corpo": "Oi, tudo bem? Vi que o GBarbosa RioMar acaba de abrir com novo conceito de experiência de compras. Toda expansão traz uma chance de ouro: a marca precisa falar sozinha pra quem nunca ouviu falar dela. A gente ajuda a deixar clara a essência da marca (o que o fundador construiu) e transformar isso em posicionamento que gruda na cabeça do cliente novo. Quer conversar por 15 minutos pra a gente entender se faz sentido?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 6,
+      "score": 95,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "fusao",
+          "titulo": "GBarbosa RioMar inaugura expansão com novo conceito de experiência de compras - Click Sergipe",
+          "link": "https://www.clicksergipe.com.br/pais/18/111995/gbarbosa-riomar-inaugura-expansao-com-novo-conceito-de-experiencia-de-compras.html",
+          "fonte": "Click Sergipe",
+          "data": "2026-11-10"
+        }
+      ],
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "3b4e614c6991"
     },
     {
       "empresa": "Artefacto",
@@ -1101,35 +1224,6 @@
       "id": "796415f0344e"
     },
     {
-      "empresa": "Mercatto CP",
-      "setor": "Alimentos e varejo",
-      "local": "São Paulo/SP",
-      "porte": "média",
-      "gatilho": "expansao",
-      "gatilho_nome": "Expansão (nova unidade, fábrica, estado)",
-      "por_que_agora": "Mudança de modelo (de buffet para empório) + expansão geográfica: a marca precisa falar clara e diferente em um mercado novo onde ninguém conhece o histórico.",
-      "decisor": "Fundador(a) / CEO ou Diretor(a) de Marketing",
-      "pessoa_citada": "",
-      "msg_linkedin": "Vi que o Mercatto CP está fazendo uma virada estratégica: sai do buffet, entra no empório e chega em SP. Momento perfeito para a marca conversar sozinha com quem não conhece a história. Podemos conversar?",
-      "email_assunto": "o mercatto cp em são paulo: marca que quer falar clara",
-      "email_corpo": "Vi a notícia do Mercatto CP em São Paulo — virada interessante, de buffet para empório. Lá fora ninguém conhece quem você é: a marca precisa contar sozinha, em segundos. Muitas vezes essa transição custa caro em comunicação confusa. A gente consegue ajudar a deixar o posicionamento claro antes de você acelerar por lá. Vale uma conversa de 15 minutos?\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 7,
-      "score": 94,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "expansao",
-          "titulo": "De buffet a empório: Mercatto CP chega a São Paulo com comida pronta para finalizar em casa - Globo",
-          "link": "https://revistaquem.globo.com/comida/noticia/2026/11/de-buffet-a-emporio-mercatto-cp-chega-a-sao-paulo-com-comida-pronta-para-finalizar-em-casa.ghtml",
-          "fonte": "Globo",
-          "data": "2026-11-19"
-        }
-      ],
-      "primeiro_sinal": "2026-11-19",
-      "ultimo_sinal": "2026-11-19",
-      "id": "485173463a43"
-    },
-    {
       "empresa": "Leonardo Corrêa",
       "setor": "Criação e genética equina",
       "local": "",
@@ -1157,6 +1251,35 @@
       "primeiro_sinal": "2026-11-17",
       "ultimo_sinal": "2026-11-17",
       "id": "ad242a4c4a28"
+    },
+    {
+      "empresa": "Mercatto CP",
+      "setor": "Alimentos e varejo",
+      "local": "São Paulo/SP",
+      "porte": "média",
+      "gatilho": "expansao",
+      "gatilho_nome": "Expansão (nova unidade, fábrica, estado)",
+      "por_que_agora": "Mudança de modelo (de buffet para empório) + expansão geográfica: a marca precisa falar clara e diferente em um mercado novo onde ninguém conhece o histórico.",
+      "decisor": "Fundador(a) / CEO ou Diretor(a) de Marketing",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que o Mercatto CP está fazendo uma virada estratégica: sai do buffet, entra no empório e chega em SP. Momento perfeito para a marca conversar sozinha com quem não conhece a história. Podemos conversar?",
+      "email_assunto": "o mercatto cp em são paulo: marca que quer falar clara",
+      "email_corpo": "Vi a notícia do Mercatto CP em São Paulo — virada interessante, de buffet para empório. Lá fora ninguém conhece quem você é: a marca precisa contar sozinha, em segundos. Muitas vezes essa transição custa caro em comunicação confusa. A gente consegue ajudar a deixar o posicionamento claro antes de você acelerar por lá. Vale uma conversa de 15 minutos?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 7,
+      "score": 93,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "expansao",
+          "titulo": "De buffet a empório: Mercatto CP chega a São Paulo com comida pronta para finalizar em casa - Globo",
+          "link": "https://revistaquem.globo.com/comida/noticia/2026/11/de-buffet-a-emporio-mercatto-cp-chega-a-sao-paulo-com-comida-pronta-para-finalizar-em-casa.ghtml",
+          "fonte": "Globo",
+          "data": "2026-11-19"
+        }
+      ],
+      "primeiro_sinal": "2026-11-19",
+      "ultimo_sinal": "2026-11-19",
+      "id": "485173463a43"
     },
     {
       "empresa": "RedeMix",
@@ -1201,7 +1324,7 @@
       "email_assunto": "marca em transição: racco e a segunda geração",
       "email_corpo": "Vi que Racco está iniciando uma nova fase com a segunda geração. É exatamente o momento em que a marca fica invisível entre o legado e o futuro. A gente ajuda empresas familiares a revelarem quem elas são agora — mantendo o respeito por quem começou. Quer uma conversa rápida sobre como a Racco está sendo percebida no mercado?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 7,
-      "score": 93,
+      "score": 92,
       "confirmado": true,
       "sinais": [
         {
@@ -1230,7 +1353,7 @@
       "email_assunto": "40 anos: hora de a Romena se renovar sem perder raízes",
       "email_corpo": "Vi que a Romena completa 40 anos em 2026 — marca que cresceu trazendo tradição à mesa dos brasileiros. É exatamente nessa hora que muita empresa percebe: a identidade dela não acompanhou o crescimento. A gente ajuda a revisar o posicionamento e deixar claro (de verdade) quem você é hoje. Podemos conversar 15 minutos? Kelly Albert · KA | Inteligência para Marcas",
       "encaixe": 7,
-      "score": 93,
+      "score": 92,
       "confirmado": true,
       "sinais": [
         {
@@ -1259,7 +1382,7 @@
       "email_assunto": "marca tradicional que cresce para o futuro",
       "email_corpo": "Vi que o Grupo Raymundo da Fonte está celebrando 80 anos — que trajetória! Nesse momento, muitas marcas centenárias enfrentam o mesmo dilema: como parecer tradicional sem parecer ultrapassada. A data redonda é o pretexto perfeito para alinhar a marca à inovação que vocês já praticam. Quer conversar sobre como transformar essência em posicionamento claro para os próximos 80 anos?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 7,
-      "score": 93,
+      "score": 92,
       "confirmado": true,
       "sinais": [
         {
@@ -1333,35 +1456,6 @@
       "id": "abdc25915fd8"
     },
     {
-      "empresa": "Estação Estudantes",
-      "setor": "Varejo / Moda",
-      "local": "Mogi das Cruzes/SP",
-      "porte": "média",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "50 anos é marco que exige renovação de marca; loja tradicional que precisa provar que é moderna sem perder raiz.",
-      "decisor": "Fundador(a) / CEO",
-      "pessoa_citada": "",
-      "msg_linkedin": "Estação Estudantes em 5 décadas — só quem dura assim merece comunicar o que realmente é. Bora conversar sobre posicionamento?",
-      "email_assunto": "50 anos de Estação Estudantes: marca à altura da história",
-      "email_corpo": "Parabéns pelos 50 anos. Data redonda é momento clássico: a marca precisa provar que é tradicional sem parecer ultrapassada. A gente vê muito isso — empresas que cresceram junto com São Paulo mas a marca ainda fala como lá atrás. Quer conversar 15 minutos sobre como sua marca está sendo percebida?",
-      "encaixe": 7,
-      "score": 91,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "aniversario",
-          "titulo": "Estação Estudantes completa 50 anos em Mogi das Cruzes - G1",
-          "link": "https://g1.globo.com/sp/mogi-das-cruzes-suzano/videos-diario-tv-1-edicao/video/estacao-estudantes-completa-50-anos-em-mogi-das-cruzes-15176391.ghtml",
-          "fonte": "G1",
-          "data": "2026-11-10"
-        }
-      ],
-      "primeiro_sinal": "2026-11-10",
-      "ultimo_sinal": "2026-11-10",
-      "id": "ef1eeb5f2781"
-    },
-    {
       "empresa": "Confraria Mineira do Queijo Artesanal",
       "setor": "Alimentos / Queijo artesanal",
       "local": "Minas Gerais/MG",
@@ -1418,6 +1512,35 @@
       "primeiro_sinal": "2026-11-21",
       "ultimo_sinal": "2026-11-21",
       "id": "3775818075a1"
+    },
+    {
+      "empresa": "Estação Estudantes",
+      "setor": "Varejo / Moda",
+      "local": "Mogi das Cruzes/SP",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "50 anos é marco que exige renovação de marca; loja tradicional que precisa provar que é moderna sem perder raiz.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Estação Estudantes em 5 décadas — só quem dura assim merece comunicar o que realmente é. Bora conversar sobre posicionamento?",
+      "email_assunto": "50 anos de Estação Estudantes: marca à altura da história",
+      "email_corpo": "Parabéns pelos 50 anos. Data redonda é momento clássico: a marca precisa provar que é tradicional sem parecer ultrapassada. A gente vê muito isso — empresas que cresceram junto com São Paulo mas a marca ainda fala como lá atrás. Quer conversar 15 minutos sobre como sua marca está sendo percebida?",
+      "encaixe": 7,
+      "score": 90,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Estação Estudantes completa 50 anos em Mogi das Cruzes - G1",
+          "link": "https://g1.globo.com/sp/mogi-das-cruzes-suzano/videos-diario-tv-1-edicao/video/estacao-estudantes-completa-50-anos-em-mogi-das-cruzes-15176391.ghtml",
+          "fonte": "G1",
+          "data": "2026-11-10"
+        }
+      ],
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "ef1eeb5f2781"
     },
     {
       "empresa": "Arcobaleno Resort",
@@ -1478,35 +1601,6 @@
       "id": "fc23a7f66793"
     },
     {
-      "empresa": "Farmácia de Santa Catarina",
-      "setor": "Farmácia / Varejo",
-      "local": "Santa Catarina/SC",
-      "porte": "pequena",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "Farmácia independente com 50 anos tem tradição, mas provavelmente porte pequeno; aniversário redondo é chance para revisar se a marca comunica experiência sem parecer ultrapassada.",
-      "decisor": "Proprietário(a) / Gestor(a)",
-      "pessoa_citada": "",
-      "msg_linkedin": "Vi que a Farmácia de Santa Catarina completa 50 anos servindo a comunidade. Que marca interessante! 50 anos é credibilidade. Mas será que o mercado sabe disso?",
-      "email_assunto": "50 anos de farmácia: hora de a marca contar essa história",
-      "email_corpo": "Oi! Parabéns pelos 50 anos de Farmácia de Santa Catarina. Meio século servindo a mesma região é força pura. Só que muitas vezes essa história fica guardada na cabeça do dono. A marca não comunica. Resultado: o cliente novo não sabe por que escolher você em vez do concorrente. Gostaria de uma conversa sobre como transformar esses 50 anos em diferencial real? Posso trazer uma leitura gratuita.\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 5,
-      "score": 88,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "aniversario",
-          "titulo": "Farmácia de Santa Catarina completa 50 anos a servir a freguesia - Gazeta das Caldas",
-          "link": "https://gazetadascaldas.pt/economia/farmacia-de-santa-catarina-completa-50-anos-a-servir-a-freguesia/",
-          "fonte": "Gazeta das Caldas",
-          "data": "2026-11-19"
-        }
-      ],
-      "primeiro_sinal": "2026-11-19",
-      "ultimo_sinal": "2026-11-19",
-      "id": "14b056060aa2"
-    },
-    {
       "empresa": "Biosul",
       "setor": "Agronegócio / cooperativa",
       "local": "Rio Grande do Sul",
@@ -1536,6 +1630,35 @@
       "id": "f4778c8272f3"
     },
     {
+      "empresa": "Farmácia de Santa Catarina",
+      "setor": "Farmácia / Varejo",
+      "local": "Santa Catarina/SC",
+      "porte": "pequena",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Farmácia independente com 50 anos tem tradição, mas provavelmente porte pequeno; aniversário redondo é chance para revisar se a marca comunica experiência sem parecer ultrapassada.",
+      "decisor": "Proprietário(a) / Gestor(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que a Farmácia de Santa Catarina completa 50 anos servindo a comunidade. Que marca interessante! 50 anos é credibilidade. Mas será que o mercado sabe disso?",
+      "email_assunto": "50 anos de farmácia: hora de a marca contar essa história",
+      "email_corpo": "Oi! Parabéns pelos 50 anos de Farmácia de Santa Catarina. Meio século servindo a mesma região é força pura. Só que muitas vezes essa história fica guardada na cabeça do dono. A marca não comunica. Resultado: o cliente novo não sabe por que escolher você em vez do concorrente. Gostaria de uma conversa sobre como transformar esses 50 anos em diferencial real? Posso trazer uma leitura gratuita.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 5,
+      "score": 87,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Farmácia de Santa Catarina completa 50 anos a servir a freguesia - Gazeta das Caldas",
+          "link": "https://gazetadascaldas.pt/economia/farmacia-de-santa-catarina-completa-50-anos-a-servir-a-freguesia/",
+          "fonte": "Gazeta das Caldas",
+          "data": "2026-11-19"
+        }
+      ],
+      "primeiro_sinal": "2026-11-19",
+      "ultimo_sinal": "2026-11-19",
+      "id": "14b056060aa2"
+    },
+    {
       "empresa": "Alpestre",
       "setor": "Turismo / Hospedagem",
       "local": "?",
@@ -1549,7 +1672,7 @@
       "email_assunto": "Alpestre em 40 anos: hora de a marca contar sua força",
       "email_corpo": "Vimos que você chega aos 40 anos com 20% de hóspedes recorrentes — isso é prova de marca que funciona. Aniversário redondo costuma ser o momento certo pra renovar a narrativa: manter a confiança que o fundador construiu, mas falar para quem está chegando agora. A gente faz exatamente isso. Conversa rápida (15 minutos) pra a gente mapear como Alpestre está sendo percebida e onde crescer?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 6,
-      "score": 87,
+      "score": 86,
       "confirmado": true,
       "sinais": [
         {
@@ -1563,6 +1686,35 @@
       "primeiro_sinal": "2026-11-13",
       "ultimo_sinal": "2026-11-13",
       "id": "a1cc8e2303b9"
+    },
+    {
+      "empresa": "JBDI Holdings",
+      "setor": "Gestão / Holding",
+      "local": "",
+      "porte": "?",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Nomeação de novo CEO e CFO indica transição de liderança; momento propício para revisar se o posicionamento da holding reflete a nova visão executiva.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "JBDI Holdings com mudança na liderança (novo CEO e CFO). Transição executiva é o momento certo para a marca acompanhar. Vamos conversar?",
+      "email_assunto": "nova liderança na jbdi holdings",
+      "email_corpo": "Oi! Vi que a JBDI Holdings nomeou novo CEO e CFO. Mudança de liderança significa visão nova — e a marca precisa refletir isso. Quando a posição fica clara, o mercado inteiro entende melhor quem você é e como você pensa. Dá pra gente marcar uma conversa de 15 minutos para explorar?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 5,
+      "score": 85,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "JBDI Holdings nomeia novo CEO e CFO com efeito imediato - Investing.com Brasil - Finanças, Câmbio e Investimentos",
+          "link": "https://br.investing.com/news/company-news/jbdi-holdings-nomeia-novo-ceo-e-cfo-com-efeito-imediato-93CH-2136544",
+          "fonte": "Investing.com Brasil - Finanças, Câmbio e Investimentos",
+          "data": "2026-11-24"
+        }
+      ],
+      "primeiro_sinal": "2026-11-24",
+      "ultimo_sinal": "2026-11-24",
+      "id": "d67b6d38acd5"
     },
     {
       "empresa": "Divishop",
@@ -1723,7 +1875,7 @@
       "email_assunto": "Sandra Navarro: o momento novo e a marca",
       "email_corpo": "Olá! Vi a notícia \"Sandra Navarro é a nova diretora de marketing da Beko Europe em Portugal - Imagens de Marca\". Parabéns pelo momento.\n\nA nova geração assume e quer deixar a sua marca, sem perder o que o fundador construiu. É o momento clássico de reposicionamento.\n\nEu sou a Kelly Albert, estrategista de posicionamento de marca. Topa uma conversa de 20 minutos? Eu te mostro, sem compromisso, como a marca está sendo percebida hoje.\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 5,
-      "score": 84,
+      "score": 83,
       "confirmado": true,
       "sinais": [
         {
@@ -1752,7 +1904,7 @@
       "email_assunto": "marca consolidada precisa de clareza estratégica",
       "email_corpo": "Vi que Rumatari está celebrando trajetória sólida no setor moveleiro. Empresas que chegam a esse patamar costumam ter a marca do tamanho que tiveram anos atrás — e o mercado não consegue ver tudo que vocês evoluíram. Uma conversa rápida sobre como sua essência está sendo percebida pode fazer diferença. Quer bater um papo?\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 5,
-      "score": 84,
+      "score": 83,
       "confirmado": true,
       "sinais": [
         {
@@ -1766,64 +1918,6 @@
       "primeiro_sinal": "2026-11-19",
       "ultimo_sinal": "2026-11-19",
       "id": "1f27c53d4757"
-    },
-    {
-      "empresa": "XCEARÁ",
-      "setor": "Turismo e esportes de aventura",
-      "local": "Quixadá/CE",
-      "porte": "pequena",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "30 anos é o momento de transformar história local em posicionamento que atrai turismo de experiência e competições internacionais.",
-      "decisor": "Fundador(a) / Proprietário(a)",
-      "pessoa_citada": "",
-      "msg_linkedin": "XCEARÁ completa 30 anos consolidando Quixadá como referência mundial em voo livre. Parabéns pela trajetória. Um posicionamento claro pode potencializar esse legado em novos mercados.",
-      "email_assunto": "30 anos da XCEARÁ: transformar história em posicionamento",
-      "email_corpo": "A XCEARÁ chegou aos 30 anos com protagonismo reconhecido. Esse é o momento ideal para transformar a história que você construiu em um posicionamento claro que fale sozinho — seja para atrair turistas, investidores ou novas competições internacionais. Uma conversa de 15 minutos para entender como a marca é percebida pode abrir portas. Toparia conhecer o método?\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 6,
-      "score": 84,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "aniversario",
-          "titulo": "XCEARÁ celebra 30 anos de história e protagonismo de Quixadá no voo livre mundial - Monólitos Post",
-          "link": "https://www.monolitospost.com/2026/11/16/xceara-celebra-30-anos-de-historia-e-protagonismo-de-quixada-no-voo-livre-mundial/",
-          "fonte": "Monólitos Post",
-          "data": "2026-11-16"
-        }
-      ],
-      "primeiro_sinal": "2026-11-16",
-      "ultimo_sinal": "2026-11-16",
-      "id": "9e29abe9aedd"
-    },
-    {
-      "empresa": "Alumasa",
-      "setor": "Indústria de alumínio / Manufatura",
-      "local": "Urussanga/SC",
-      "porte": "média",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "Alumasa recebe homenagem do Legislativo Catarinense; momento de visibilidade que pode servir como pretexto para revisar posicionamento e história da marca.",
-      "decisor": "Fundador(a) / CEO",
-      "pessoa_citada": "",
-      "msg_linkedin": "Parabéns à Alumasa pela Comenda do Legislativo! Reconhecimento assim é chance de a marca contar melhor quem você é — para o mercado inteiro.",
-      "email_assunto": "Alumasa: a homenagem como ponto de partida para posicionar a marca",
-      "email_corpo": "Vi que a Alumasa foi homenageada pelo Legislativo Catarinense — excelente reconhecimento. Esses momentos são ouro para revisitar o posicionamento: é hora de contar quem você é, de verdade, para quem ainda não conhece. A gente faz isso em conversa rápida, sem compromisso. Interessado?\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 4,
-      "score": 84,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "aniversario",
-          "titulo": "Alumasa, de Urussanga, é homenageada com a Comenda do Legislativo Catarinense 2026 - Reporter Sul",
-          "link": "https://www.reportersul.com.br/alumasa-de-urussanga-e-homenageada-com-a-comenda-do-legislativo-catarinense-2026/",
-          "fonte": "Reporter Sul",
-          "data": "2026-11-10"
-        }
-      ],
-      "primeiro_sinal": "2026-11-10",
-      "ultimo_sinal": "2026-11-10",
-      "id": "6b091bc6f86a"
     },
     {
       "empresa": "Grupo Integrado",
@@ -1913,33 +2007,62 @@
       "id": "97682cdc3901"
     },
     {
-      "empresa": "Kraft Heinz",
-      "setor": "",
-      "local": "",
-      "porte": "?",
-      "gatilho": "sucessao",
-      "gatilho_nome": "Sucessão / nova liderança",
-      "por_que_agora": "A nova geração assume e quer deixar a sua marca, sem perder o que o fundador construiu. É o momento clássico de reposicionamento.",
-      "decisor": "Fundador(a) / CEO",
+      "empresa": "XCEARÁ",
+      "setor": "Turismo e esportes de aventura",
+      "local": "Quixadá/CE",
+      "porte": "pequena",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "30 anos é o momento de transformar história local em posicionamento que atrai turismo de experiência e competições internacionais.",
+      "decisor": "Fundador(a) / Proprietário(a)",
       "pessoa_citada": "",
-      "msg_linkedin": "Oi! Vi a notícia sobre Kraft Heinz (sucessão / nova liderança). Parabéns! Eu trabalho com posicionamento de marca e adoraria trocar uma ideia com você sobre esse momento da empresa.",
-      "email_assunto": "Kraft Heinz: o momento novo e a marca",
-      "email_corpo": "Olá! Vi a notícia \"Kraft Heinz anuncia Raphael Hanoh como General Manager - SuperVarejo\". Parabéns pelo momento.\n\nA nova geração assume e quer deixar a sua marca, sem perder o que o fundador construiu. É o momento clássico de reposicionamento.\n\nEu sou a Kelly Albert, estrategista de posicionamento de marca. Topa uma conversa de 20 minutos? Eu te mostro, sem compromisso, como a marca está sendo percebida hoje.\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 5,
+      "msg_linkedin": "XCEARÁ completa 30 anos consolidando Quixadá como referência mundial em voo livre. Parabéns pela trajetória. Um posicionamento claro pode potencializar esse legado em novos mercados.",
+      "email_assunto": "30 anos da XCEARÁ: transformar história em posicionamento",
+      "email_corpo": "A XCEARÁ chegou aos 30 anos com protagonismo reconhecido. Esse é o momento ideal para transformar a história que você construiu em um posicionamento claro que fale sozinho — seja para atrair turistas, investidores ou novas competições internacionais. Uma conversa de 15 minutos para entender como a marca é percebida pode abrir portas. Toparia conhecer o método?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 6,
       "score": 83,
       "confirmado": true,
       "sinais": [
         {
-          "gatilho": "sucessao",
-          "titulo": "Kraft Heinz anuncia Raphael Hanoh como General Manager - SuperVarejo",
-          "link": "https://www.supervarejo.com.br/gestao/kraft-heinz-anuncia-raphael-hanoh-como-general-manager",
-          "fonte": "SuperVarejo",
+          "gatilho": "aniversario",
+          "titulo": "XCEARÁ celebra 30 anos de história e protagonismo de Quixadá no voo livre mundial - Monólitos Post",
+          "link": "https://www.monolitospost.com/2026/11/16/xceara-celebra-30-anos-de-historia-e-protagonismo-de-quixada-no-voo-livre-mundial/",
+          "fonte": "Monólitos Post",
           "data": "2026-11-16"
         }
       ],
       "primeiro_sinal": "2026-11-16",
       "ultimo_sinal": "2026-11-16",
-      "id": "ac37cd079108"
+      "id": "9e29abe9aedd"
+    },
+    {
+      "empresa": "Alumasa",
+      "setor": "Indústria de alumínio / Manufatura",
+      "local": "Urussanga/SC",
+      "porte": "média",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Alumasa recebe homenagem do Legislativo Catarinense; momento de visibilidade que pode servir como pretexto para revisar posicionamento e história da marca.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Parabéns à Alumasa pela Comenda do Legislativo! Reconhecimento assim é chance de a marca contar melhor quem você é — para o mercado inteiro.",
+      "email_assunto": "Alumasa: a homenagem como ponto de partida para posicionar a marca",
+      "email_corpo": "Vi que a Alumasa foi homenageada pelo Legislativo Catarinense — excelente reconhecimento. Esses momentos são ouro para revisitar o posicionamento: é hora de contar quem você é, de verdade, para quem ainda não conhece. A gente faz isso em conversa rápida, sem compromisso. Interessado?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 4,
+      "score": 83,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Alumasa, de Urussanga, é homenageada com a Comenda do Legislativo Catarinense 2026 - Reporter Sul",
+          "link": "https://www.reportersul.com.br/alumasa-de-urussanga-e-homenageada-com-a-comenda-do-legislativo-catarinense-2026/",
+          "fonte": "Reporter Sul",
+          "data": "2026-11-10"
+        }
+      ],
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "6b091bc6f86a"
     },
     {
       "empresa": "Sicoob Crediauc",
@@ -1969,6 +2092,35 @@
       "primeiro_sinal": "2026-11-09",
       "ultimo_sinal": "2026-11-09",
       "id": "a96508f95c1b"
+    },
+    {
+      "empresa": "Kraft Heinz",
+      "setor": "",
+      "local": "",
+      "porte": "?",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "A nova geração assume e quer deixar a sua marca, sem perder o que o fundador construiu. É o momento clássico de reposicionamento.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Oi! Vi a notícia sobre Kraft Heinz (sucessão / nova liderança). Parabéns! Eu trabalho com posicionamento de marca e adoraria trocar uma ideia com você sobre esse momento da empresa.",
+      "email_assunto": "Kraft Heinz: o momento novo e a marca",
+      "email_corpo": "Olá! Vi a notícia \"Kraft Heinz anuncia Raphael Hanoh como General Manager - SuperVarejo\". Parabéns pelo momento.\n\nA nova geração assume e quer deixar a sua marca, sem perder o que o fundador construiu. É o momento clássico de reposicionamento.\n\nEu sou a Kelly Albert, estrategista de posicionamento de marca. Topa uma conversa de 20 minutos? Eu te mostro, sem compromisso, como a marca está sendo percebida hoje.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 5,
+      "score": 82,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Kraft Heinz anuncia Raphael Hanoh como General Manager - SuperVarejo",
+          "link": "https://www.supervarejo.com.br/gestao/kraft-heinz-anuncia-raphael-hanoh-como-general-manager",
+          "fonte": "SuperVarejo",
+          "data": "2026-11-16"
+        }
+      ],
+      "primeiro_sinal": "2026-11-16",
+      "ultimo_sinal": "2026-11-16",
+      "id": "ac37cd079108"
     },
     {
       "empresa": "Iskinão",
@@ -2071,7 +2223,7 @@
       "email_assunto": "novo CEO da BVIX: hora de clarear o posicionamento",
       "email_corpo": "Carlos, parabéns pela chegada como novo CEO da BVIX. Todo CEO novo enfrenta a mesma questão: a marca que herdou comunica quem você é agora? Muitas vezes não. E o mercado sente essa falta de clareza. Se fizer sentido, podemos conversar sobre como alinhar posicionamento à sua visão — em 15 minutos sabemos se é caminho.\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 5,
-      "score": 81,
+      "score": 80,
       "confirmado": true,
       "sinais": [
         {
@@ -2129,7 +2281,7 @@
       "email_assunto": "marca que cresce junto com a aquicultura",
       "email_corpo": "Oi! Vi a Biochem em destaque na Fenacam com probióticos e minerais orgânicos para aquicultura. Momento de aniversário é oportunidade rara: revisar se a marca de hoje comunica a evolução que você já viveu. Muitas vezes a empresa cresce, os produtos melhoram, mas a percepção fica para trás. Gostaria de uma conversa rápida sobre como a Biochem é vista no mercado de aquicultura? Posso trazer um diagnóstico gratuito.\n\nKelly Albert · KA | Inteligência para Marcas",
       "encaixe": 6,
-      "score": 79,
+      "score": 78,
       "confirmado": true,
       "sinais": [
         {
@@ -2158,7 +2310,7 @@
       "email_assunto": "",
       "email_corpo": "",
       "encaixe": 2,
-      "score": 77,
+      "score": 76,
       "confirmado": true,
       "sinais": [
         {
@@ -2266,6 +2418,35 @@
       "primeiro_sinal": "2026-11-09",
       "ultimo_sinal": "2026-11-09",
       "id": "a4c0e9634aa1"
+    },
+    {
+      "empresa": "IBBX",
+      "setor": "Tecnologia / Investimentos",
+      "local": "",
+      "porte": "?",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Nova estrutura e R$ 100 milhões em investimentos exigem que a empresa comunique clara e consistentemente quem ela é agora para o mercado.",
+      "decisor": "CEO / Presidente",
+      "pessoa_citada": "",
+      "msg_linkedin": "IBBX com investimento novo e nova estrutura: momento clássico para alinhar o posicionamento com a realidade que você está construindo. Vale a conversa.",
+      "email_assunto": "posicionamento para crescimento, IBBX",
+      "email_corpo": "Vi a notícia sobre os R$ 100 milhões em investimentos e a nova estrutura liderada por investidores brasileiros. Momento importante: quando o dinheiro chega e a empresa se reconstrói, a marca precisa estar clara para suportar o crescimento. Muitas vezes a comunicação fica confusa exatamente nessa virada. Podemos conversar 15 minutos sobre como a IBBX está sendo percebida agora?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 3,
+      "score": 75,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "IBBX anuncia R 100 milhões em investimentos e nova estrutura liderada por investidores brasileiros - bra1.com.br",
+          "link": "https://www.bra1.com.br/economia/id-732664/ibbx_anuncia_r__100_milhoes_em_investimentos_e_nova_estrutura_liderada_por_investidores_brasileiros",
+          "fonte": "bra1.com.br",
+          "data": "2026-11-25"
+        }
+      ],
+      "primeiro_sinal": "2026-11-25",
+      "ultimo_sinal": "2026-11-25",
+      "id": "da77b6abe2df"
     },
     {
       "empresa": "Grupo Integrado Campo Mourão",
@@ -2413,42 +2594,6 @@
       "id": "ba7adc05d6a7"
     },
     {
-      "empresa": "Brasil Terrenos",
-      "setor": "Incorporação imobiliária",
-      "local": "",
-      "porte": "grande",
-      "gatilho": "sucessao",
-      "gatilho_nome": "Sucessão / nova liderança",
-      "por_que_agora": "Entrada na Bolsa exige marca clara e posicionamento robusto para comunicar ao investidor e mercado quem a empresa é e sua estratégia.",
-      "decisor": "CEO / Diretor de Comunicação",
-      "pessoa_citada": "",
-      "msg_linkedin": "Parabéns pela aprovação na CVM! Na hora que a empresa vira pública, a marca precisa falar sozinha ao investidor. Conversamos?",
-      "email_assunto": "posicionamento de marca para a bolsa",
-      "email_corpo": "Oi! Vi que a Brasil Terrenos ganhou aprovação para ir à Bolsa — é um passo grande. Quando a empresa fica pública, o mercado financeiro quer saber exatamente quem você é, como diferencia e para onde vai. Uma marca clara custa menos em roadshow e ganha mais confiança. A gente faz justamente isso: revelar a essência da empresa e transformar em posicionamento. Bora conversar 15 minutos?\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 2,
-      "score": 71,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "sucessao",
-          "titulo": "Brasil Terrenos prepara entrada na Bolsa após aval da CVM - Plantão Brasil",
-          "link": "https://www.plantaobrasil.net/noticias/162793-brasil-terrenos-prepara-entrada-na-bolsa-apos-aval-da-cvm",
-          "fonte": "Plantão Brasil",
-          "data": "2026-11-10"
-        },
-        {
-          "gatilho": "sucessao",
-          "titulo": "Brasil Terrenos obtém registro de companhia aberta na CVM e avança em listagem na B3 - InfoMoney",
-          "link": "https://www.infomoney.com.br/mercados/brasil-terrenos-obtem-registro-de-companhia-aberta-na-cvm-e-avanca-em-listagem-na-b3/",
-          "fonte": "InfoMoney",
-          "data": "2026-11-10"
-        }
-      ],
-      "primeiro_sinal": "2026-11-10",
-      "ultimo_sinal": "2026-11-10",
-      "id": "8900c950394c"
-    },
-    {
       "empresa": "Cursinho Popular de São José de Piranhas",
       "setor": "Educação",
       "local": "São José de Piranhas, PB",
@@ -2476,6 +2621,35 @@
       "primeiro_sinal": "2026-11-08",
       "ultimo_sinal": "2026-11-08",
       "id": "8bc4fa6dbaee"
+    },
+    {
+      "empresa": "GPX Investimentos",
+      "setor": "Investimentos / Gestão de patrimônio",
+      "local": "Belém/PA",
+      "porte": "?",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Empresa completa 10 anos e marca o momento com evento público; é oportunidade para renovar posicionamento e deixar claro quem vocês são no mercado.",
+      "decisor": "Fundador(a) / Sócio(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que a GPX Investimentos fez 10 anos com tudo — evento no Theatro da Paz nada menos. Momento perfeito para garantir que a marca cresceu junto com o negócio.",
+      "email_assunto": "10 anos da GPX: posicione a marca que cresceu",
+      "email_corpo": "Uma década é o ponto de virada de marca. Começaram pequenos, cresceram, e agora a percepção do mercado pode estar atrás do que vocês realmente valem.\n\nA gente trabalha com empresas que chegaram nesse lugar — precisam que a marca conte quem elas são, sem perder de onde vieram. Oferecemos uma análise breve de como a GPX está sendo vista hoje.\n\nTerça uma conversa de 15 minutos para explorar?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 4,
+      "score": 70,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "GPX Investimentos celebra 10 anos de história com evento no Theatro da Paz - Cidade 091",
+          "link": "https://cidade091.com.br/noticias/gpx-investimentos-celebra-10-anos-de-historia-com-evento-no-theatro-da-paz",
+          "fonte": "Cidade 091",
+          "data": "2026-11-24"
+        }
+      ],
+      "primeiro_sinal": "2026-11-24",
+      "ultimo_sinal": "2026-11-24",
+      "id": "6224293a9802"
     },
     {
       "empresa": "Banda Garden",
@@ -2514,33 +2688,40 @@
       "id": "62eb9430e0f5"
     },
     {
-      "empresa": "Resolv",
-      "setor": "Segurança / Tecnologia",
+      "empresa": "Brasil Terrenos",
+      "setor": "Incorporação imobiliária",
       "local": "",
-      "porte": "?",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "Empresa que triplicou segurança em seis anos e aposta em tecnologia — crescimento forte, mas a marca precisa refletir essa evolução para não ficar presa ao passado.",
-      "decisor": "CEO / Fundador(a)",
+      "porte": "grande",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Entrada na Bolsa exige marca clara e posicionamento robusto para comunicar ao investidor e mercado quem a empresa é e sua estratégia.",
+      "decisor": "CEO / Diretor de Comunicação",
       "pessoa_citada": "",
-      "msg_linkedin": "Vi que a Resolv triplicou segurança em seis anos. Crescimento desse tamanho merece uma marca que fale isso ao mercado. Bora conversar sobre posicionamento?",
-      "email_assunto": "30 anos é o momento certo para a marca crescer junto",
-      "email_corpo": "A Resolv triplicou segurança em seis anos — é crescimento de verdade. Mas marca que cresce rápido costuma ficar do tamanho que tinha lá atrás. Se você quer que o mercado veja a empresa que você virou (não a que era), vale a pena uma conversa curta sobre como sua marca está sendo percebida. Aproveita o aniversário para renovar.\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 4,
-      "score": 67,
+      "msg_linkedin": "Parabéns pela aprovação na CVM! Na hora que a empresa vira pública, a marca precisa falar sozinha ao investidor. Conversamos?",
+      "email_assunto": "posicionamento de marca para a bolsa",
+      "email_corpo": "Oi! Vi que a Brasil Terrenos ganhou aprovação para ir à Bolsa — é um passo grande. Quando a empresa fica pública, o mercado financeiro quer saber exatamente quem você é, como diferencia e para onde vai. Uma marca clara custa menos em roadshow e ganha mais confiança. A gente faz justamente isso: revelar a essência da empresa e transformar em posicionamento. Bora conversar 15 minutos?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 2,
+      "score": 70,
       "confirmado": true,
       "sinais": [
         {
-          "gatilho": "aniversario",
-          "titulo": "Resolv triplica segurança em seis anos e aposta em tecnologia e inteligência - G1",
-          "link": "https://g1.globo.com/sp/ribeirao-preto-franca/especial-publicitario/resolv-resolv-30-anos/noticia/2026/11/13/resolv-triplica-seguranca-em-seis-anos-e-aposta-em-tecnologia-e-inteligencia.ghtml",
-          "fonte": "G1",
-          "data": "2026-11-13"
+          "gatilho": "sucessao",
+          "titulo": "Brasil Terrenos prepara entrada na Bolsa após aval da CVM - Plantão Brasil",
+          "link": "https://www.plantaobrasil.net/noticias/162793-brasil-terrenos-prepara-entrada-na-bolsa-apos-aval-da-cvm",
+          "fonte": "Plantão Brasil",
+          "data": "2026-11-10"
+        },
+        {
+          "gatilho": "sucessao",
+          "titulo": "Brasil Terrenos obtém registro de companhia aberta na CVM e avança em listagem na B3 - InfoMoney",
+          "link": "https://www.infomoney.com.br/mercados/brasil-terrenos-obtem-registro-de-companhia-aberta-na-cvm-e-avanca-em-listagem-na-b3/",
+          "fonte": "InfoMoney",
+          "data": "2026-11-10"
         }
       ],
-      "primeiro_sinal": "2026-11-13",
-      "ultimo_sinal": "2026-11-13",
-      "id": "452195ae6563"
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "8900c950394c"
     },
     {
       "empresa": "Casa Dez",
@@ -2608,6 +2789,35 @@
       "id": "65e336e20c50"
     },
     {
+      "empresa": "Resolv",
+      "setor": "Segurança / Tecnologia",
+      "local": "",
+      "porte": "?",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Empresa que triplicou segurança em seis anos e aposta em tecnologia — crescimento forte, mas a marca precisa refletir essa evolução para não ficar presa ao passado.",
+      "decisor": "CEO / Fundador(a)",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que a Resolv triplicou segurança em seis anos. Crescimento desse tamanho merece uma marca que fale isso ao mercado. Bora conversar sobre posicionamento?",
+      "email_assunto": "30 anos é o momento certo para a marca crescer junto",
+      "email_corpo": "A Resolv triplicou segurança em seis anos — é crescimento de verdade. Mas marca que cresce rápido costuma ficar do tamanho que tinha lá atrás. Se você quer que o mercado veja a empresa que você virou (não a que era), vale a pena uma conversa curta sobre como sua marca está sendo percebida. Aproveita o aniversário para renovar.\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 4,
+      "score": 66,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Resolv triplica segurança em seis anos e aposta em tecnologia e inteligência - G1",
+          "link": "https://g1.globo.com/sp/ribeirao-preto-franca/especial-publicitario/resolv-resolv-30-anos/noticia/2026/11/13/resolv-triplica-seguranca-em-seis-anos-e-aposta-em-tecnologia-e-inteligencia.ghtml",
+          "fonte": "G1",
+          "data": "2026-11-13"
+        }
+      ],
+      "primeiro_sinal": "2026-11-13",
+      "ultimo_sinal": "2026-11-13",
+      "id": "452195ae6563"
+    },
+    {
       "empresa": "Cryopraxis",
       "setor": "Saúde / Criopreservação",
       "local": "",
@@ -2666,35 +2876,6 @@
       "id": "cc788e27e090"
     },
     {
-      "empresa": "Frooty",
-      "setor": "Alimentos / açaí",
-      "local": "",
-      "porte": "?",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "Marca é lembrada em SP, mas a notícia foca em lembrança, não em um momento de mudança ou virada que justifique investimento em posicionamento agora.",
-      "decisor": "Diretor(a) de Marketing / CEO",
-      "pessoa_citada": "",
-      "msg_linkedin": "",
-      "email_assunto": "",
-      "email_corpo": "",
-      "encaixe": 4,
-      "score": 66,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "aniversario",
-          "titulo": "Frooty é a marca de açaí mais lembrada no estado de São Paulo - ABC da Comunicação",
-          "link": "https://www.abcdacomunicacao.com.br/frooty-e-a-marca-de-acai-mais-lembrada-no-estado-de-sao-paulo/",
-          "fonte": "ABC da Comunicação",
-          "data": "2026-11-10"
-        }
-      ],
-      "primeiro_sinal": "2026-11-10",
-      "ultimo_sinal": "2026-11-10",
-      "id": "03e299e10c70"
-    },
-    {
       "empresa": "Adão Negro",
       "setor": "Música / Entretenimento",
       "local": "Bahia",
@@ -2724,62 +2905,62 @@
       "id": "d388cbbf0976"
     },
     {
-      "empresa": "Vida Luz",
-      "setor": "Saúde / Acolhimento familiar",
-      "local": "Irati/PR",
-      "porte": "pequena",
+      "empresa": "Grupo Juba",
+      "setor": "Não identificado",
+      "local": "",
+      "porte": "?",
       "gatilho": "aniversario",
       "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "35 anos é marca de consolidação, mas sem sinais de expansão, nova liderança ou crescimento acelerado que justifique posicionamento.",
-      "decisor": "",
+      "por_que_agora": "Marca que completa 50 anos precisa provar tradição sem parecer ultrapassada; renovação estratégica é a oportunidade para preparar a próxima geração.",
+      "decisor": "Fundador(a) / CEO / Líder da transição geracional",
       "pessoa_citada": "",
-      "msg_linkedin": "",
-      "email_assunto": "",
-      "email_corpo": "",
-      "encaixe": 2,
+      "msg_linkedin": "Vi que o Grupo Juba completa 50 anos e pensa nas oportunidades futuras. Essa é a hora perfeita para clarear quem vocês são além da história — e passar isso para frente com força.",
+      "email_assunto": "50 anos do Grupo Juba: renovação estratégica sem perder raízes",
+      "email_corpo": "Parabéns pelos 50 anos. Marca que atravessa metade de um século tem um ativo raro: a confiança. O risco? Parecer história só — e não futuro.\n\nSe vocês estão pensando em oportunidades para as gerações que vêm, começa por deixar claro quem o Grupo Juba é agora. A gente oferece uma leitura rápida de como a marca está sendo percebida. Marca com Essência© funciona de dentro para fora: da essência de quem criou até o mercado que vai herdar.\n\nToparia uma conversa de 15 minutos?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 3,
       "score": 65,
       "confirmado": true,
       "sinais": [
         {
           "gatilho": "aniversario",
-          "titulo": "Vida Luz celebra 35 anos de história, pioneirismo e acolhimento às famílias de Irati - Folha de Irati",
-          "link": "https://folhadeirati.com.br/vida-luz-celebra-35-anos-de-historia-pioneirismo-e-acolhimento-as-familias-de-irati/",
-          "fonte": "Folha de Irati",
-          "data": "2026-11-19"
+          "titulo": "Grupo Juba celebra 50 anos de história com foco em novas oportunidades para as futuras gerações - Expressão Notícias",
+          "link": "https://www.expressaonoticias.com.br/grupo-juba-celebra-50-anos-de-historia-com-foco-em-novas-oportunidades-para-as-futuras-geracoes/",
+          "fonte": "Expressão Notícias",
+          "data": "2026-11-25"
         }
       ],
-      "primeiro_sinal": "2026-11-19",
-      "ultimo_sinal": "2026-11-19",
-      "id": "9be899160740"
+      "primeiro_sinal": "2026-11-25",
+      "ultimo_sinal": "2026-11-25",
+      "id": "af8a1b8a6e81"
     },
     {
-      "empresa": "Jornal Exclusivo",
-      "setor": "Mídia / Jornalismo especializado",
+      "empresa": "Frooty",
+      "setor": "Alimentos / açaí",
       "local": "",
-      "porte": "pequena",
+      "porte": "?",
       "gatilho": "aniversario",
       "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "Jornal é mídia (concorrente em comunicação); 57 anos é marca consolidada, mas setor não é clientela prioritária da KA e publicação já tem posicionamento claro no mercado coureiro-calçadista.",
-      "decisor": "",
+      "por_que_agora": "Marca é lembrada em SP, mas a notícia foca em lembrança, não em um momento de mudança ou virada que justifique investimento em posicionamento agora.",
+      "decisor": "Diretor(a) de Marketing / CEO",
       "pessoa_citada": "",
       "msg_linkedin": "",
       "email_assunto": "",
       "email_corpo": "",
-      "encaixe": 2,
+      "encaixe": 4,
       "score": 65,
       "confirmado": true,
       "sinais": [
         {
           "gatilho": "aniversario",
-          "titulo": "Jornal Exclusivo celebra 57 anos de história como vitrine do setor coureiro-calçadista - Jornal Exclusivo",
-          "link": "https://exclusivo.com.br/negocios/jornal-exclusivo-celebra-57-anos-de-historia-como-vitrine-do-setor-coureiro-calcadista/",
-          "fonte": "Jornal Exclusivo",
-          "data": "2026-11-19"
+          "titulo": "Frooty é a marca de açaí mais lembrada no estado de São Paulo - ABC da Comunicação",
+          "link": "https://www.abcdacomunicacao.com.br/frooty-e-a-marca-de-acai-mais-lembrada-no-estado-de-sao-paulo/",
+          "fonte": "ABC da Comunicação",
+          "data": "2026-11-10"
         }
       ],
-      "primeiro_sinal": "2026-11-19",
-      "ultimo_sinal": "2026-11-19",
-      "id": "f4fcb04130c3"
+      "primeiro_sinal": "2026-11-10",
+      "ultimo_sinal": "2026-11-10",
+      "id": "03e299e10c70"
     },
     {
       "empresa": "Orange",
@@ -2811,33 +2992,62 @@
       "id": "ef0ebbb77298"
     },
     {
-      "empresa": "Avionics Services",
-      "setor": "Engenharia aeronáutica e defesa",
-      "local": "",
-      "porte": "?",
+      "empresa": "Vida Luz",
+      "setor": "Saúde / Acolhimento familiar",
+      "local": "Irati/PR",
+      "porte": "pequena",
       "gatilho": "aniversario",
       "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "Empresa em expansão de visibilidade (aniversário + mostra setorial) precisa de posicionamento claro para diferenciar-se no mercado B2B de defesa e aeronáutica.",
-      "decisor": "Fundador(a) / CEO",
+      "por_que_agora": "35 anos é marca de consolidação, mas sem sinais de expansão, nova liderança ou crescimento acelerado que justifique posicionamento.",
+      "decisor": "",
       "pessoa_citada": "",
-      "msg_linkedin": "Vi que a Avionics Services está em pauta na 9ª Mostra BID Brasil. Momento perfeito para revisar se a marca está falando claro sobre quem você é e por que importa. Conversa rápida?",
-      "email_assunto": "marca na mostra bid — hora de ela falar sozinha",
-      "email_corpo": "Oi! Vi que você apresentou soluções na Mostra BID Brasil — grande vitrine. Lá fora, sem o boca a boca de quem já conhece, a marca precisa contar quem você é em poucos segundos. Vale a gente mapear como o mercado de defesa e aeronáutica te percebe hoje?\n\nKelly Albert · KA | Inteligência para Marcas",
-      "encaixe": 3,
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 2,
       "score": 64,
       "confirmado": true,
       "sinais": [
         {
           "gatilho": "aniversario",
-          "titulo": "Avionics Services apresenta soluções de engenharia aeronáutica e defesa na 9ª Mostra BID Brasil - Defesa Aérea & Naval",
-          "link": "https://www.defesaaereanaval.com.br/defesa/avionics-services-apresenta-solucoes-de-engenharia-aeronautica-e-defesa-na-9a-mostra-bid-brasil/amp",
-          "fonte": "Defesa Aérea & Naval",
+          "titulo": "Vida Luz celebra 35 anos de história, pioneirismo e acolhimento às famílias de Irati - Folha de Irati",
+          "link": "https://folhadeirati.com.br/vida-luz-celebra-35-anos-de-historia-pioneirismo-e-acolhimento-as-familias-de-irati/",
+          "fonte": "Folha de Irati",
           "data": "2026-11-19"
         }
       ],
       "primeiro_sinal": "2026-11-19",
       "ultimo_sinal": "2026-11-19",
-      "id": "686bc4902251"
+      "id": "9be899160740"
+    },
+    {
+      "empresa": "Jornal Exclusivo",
+      "setor": "Mídia / Jornalismo especializado",
+      "local": "",
+      "porte": "pequena",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Jornal é mídia (concorrente em comunicação); 57 anos é marca consolidada, mas setor não é clientela prioritária da KA e publicação já tem posicionamento claro no mercado coureiro-calçadista.",
+      "decisor": "",
+      "pessoa_citada": "",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 2,
+      "score": 64,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Jornal Exclusivo celebra 57 anos de história como vitrine do setor coureiro-calçadista - Jornal Exclusivo",
+          "link": "https://exclusivo.com.br/negocios/jornal-exclusivo-celebra-57-anos-de-historia-como-vitrine-do-setor-coureiro-calcadista/",
+          "fonte": "Jornal Exclusivo",
+          "data": "2026-11-19"
+        }
+      ],
+      "primeiro_sinal": "2026-11-19",
+      "ultimo_sinal": "2026-11-19",
+      "id": "f4fcb04130c3"
     },
     {
       "empresa": "Havan",
@@ -2881,6 +3091,35 @@
       "primeiro_sinal": "2026-11-09",
       "ultimo_sinal": "2026-11-09",
       "id": "b3f96c693fbf"
+    },
+    {
+      "empresa": "Avionics Services",
+      "setor": "Engenharia aeronáutica e defesa",
+      "local": "",
+      "porte": "?",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Empresa em expansão de visibilidade (aniversário + mostra setorial) precisa de posicionamento claro para diferenciar-se no mercado B2B de defesa e aeronáutica.",
+      "decisor": "Fundador(a) / CEO",
+      "pessoa_citada": "",
+      "msg_linkedin": "Vi que a Avionics Services está em pauta na 9ª Mostra BID Brasil. Momento perfeito para revisar se a marca está falando claro sobre quem você é e por que importa. Conversa rápida?",
+      "email_assunto": "marca na mostra bid — hora de ela falar sozinha",
+      "email_corpo": "Oi! Vi que você apresentou soluções na Mostra BID Brasil — grande vitrine. Lá fora, sem o boca a boca de quem já conhece, a marca precisa contar quem você é em poucos segundos. Vale a gente mapear como o mercado de defesa e aeronáutica te percebe hoje?\n\nKelly Albert · KA | Inteligência para Marcas",
+      "encaixe": 3,
+      "score": 63,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Avionics Services apresenta soluções de engenharia aeronáutica e defesa na 9ª Mostra BID Brasil - Defesa Aérea & Naval",
+          "link": "https://www.defesaaereanaval.com.br/defesa/avionics-services-apresenta-solucoes-de-engenharia-aeronautica-e-defesa-na-9a-mostra-bid-brasil/amp",
+          "fonte": "Defesa Aérea & Naval",
+          "data": "2026-11-19"
+        }
+      ],
+      "primeiro_sinal": "2026-11-19",
+      "ultimo_sinal": "2026-11-19",
+      "id": "686bc4902251"
     },
     {
       "empresa": "Index",
@@ -2948,35 +3187,6 @@
       "id": "2788fc047a2e"
     },
     {
-      "empresa": "MS Todo Dia",
-      "setor": "Mídia e comunicação",
-      "local": "Mato Grosso do Sul",
-      "porte": "pequena",
-      "gatilho": "aniversario",
-      "gatilho_nome": "Aniversário de marca",
-      "por_que_agora": "Veículo de comunicação/mídia é concorrente indireto, não cliente ideal — além disso, 16 anos não configura aniversário redondo que desperte necessidade estratégica de reposicionamento.",
-      "decisor": "Diretor ou fundador",
-      "pessoa_citada": "",
-      "msg_linkedin": "",
-      "email_assunto": "",
-      "email_corpo": "",
-      "encaixe": 1,
-      "score": 60,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "aniversario",
-          "titulo": "Dos pequenos eventos às grandes notícias: MS Todo Dia recebe hoje mais um Troféu Ipê e celebra 16 anos de história - MS Todo dia",
-          "link": "https://mstododia.com.br/noticias/37020-dos-pequenos-eventos-as-grandes-noticias-ms-todo-dia-recebe-hoje-mais-um-trofeu-ipe-e-celebra-16-anos-de-historia",
-          "fonte": "MS Todo dia",
-          "data": "2026-11-19"
-        }
-      ],
-      "primeiro_sinal": "2026-11-19",
-      "ultimo_sinal": "2026-11-19",
-      "id": "d994b2fdc977"
-    },
-    {
       "empresa": "Secullum",
       "setor": "Software / Recursos Humanos",
       "local": "",
@@ -3004,6 +3214,35 @@
       "primeiro_sinal": "2026-11-20",
       "ultimo_sinal": "2026-11-20",
       "id": "e271d3d136db"
+    },
+    {
+      "empresa": "MS Todo Dia",
+      "setor": "Mídia e comunicação",
+      "local": "Mato Grosso do Sul",
+      "porte": "pequena",
+      "gatilho": "aniversario",
+      "gatilho_nome": "Aniversário de marca",
+      "por_que_agora": "Veículo de comunicação/mídia é concorrente indireto, não cliente ideal — além disso, 16 anos não configura aniversário redondo que desperte necessidade estratégica de reposicionamento.",
+      "decisor": "Diretor ou fundador",
+      "pessoa_citada": "",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 1,
+      "score": 59,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "aniversario",
+          "titulo": "Dos pequenos eventos às grandes notícias: MS Todo Dia recebe hoje mais um Troféu Ipê e celebra 16 anos de história - MS Todo dia",
+          "link": "https://mstododia.com.br/noticias/37020-dos-pequenos-eventos-as-grandes-noticias-ms-todo-dia-recebe-hoje-mais-um-trofeu-ipe-e-celebra-16-anos-de-historia",
+          "fonte": "MS Todo dia",
+          "data": "2026-11-19"
+        }
+      ],
+      "primeiro_sinal": "2026-11-19",
+      "ultimo_sinal": "2026-11-19",
+      "id": "d994b2fdc977"
     },
     {
       "empresa": "Canal Rural",
@@ -3040,64 +3279,6 @@
       "primeiro_sinal": "2026-11-11",
       "ultimo_sinal": "2026-11-11",
       "id": "b93b8355ec33"
-    },
-    {
-      "empresa": "Super Bock Group",
-      "setor": "Bebidas / Cervejaria",
-      "local": "Portugal",
-      "porte": "grande",
-      "gatilho": "sucessao",
-      "gatilho_nome": "Sucessão / nova liderança",
-      "por_que_agora": "Multinacional europeia com novo CEO: escala e estrutura não condizem com o perfil de cliente ideal da KA (PMEs médias brasileiras).",
-      "decisor": "",
-      "pessoa_citada": "",
-      "msg_linkedin": "",
-      "email_assunto": "",
-      "email_corpo": "",
-      "encaixe": 1,
-      "score": 55,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "sucessao",
-          "titulo": "Super Bock Group nomeia novo CEO - The Portugal News",
-          "link": "https://www.theportugalnews.com/br/noticias/2026-11-22/super-bock-group-nomeia-novo-ceo/1111634",
-          "fonte": "The Portugal News",
-          "data": "2026-11-22"
-        }
-      ],
-      "primeiro_sinal": "2026-11-22",
-      "ultimo_sinal": "2026-11-22",
-      "id": "327ad3330417"
-    },
-    {
-      "empresa": "THACO AGRI",
-      "setor": "Agronegócio",
-      "local": "Vietnã",
-      "porte": "grande",
-      "gatilho": "sucessao",
-      "gatilho_nome": "Sucessão / nova liderança",
-      "por_que_agora": "Magnata vietnamita assume presidência e levanta capital maciço, mas é multinacional/mercado externo fora do foco da KA.",
-      "decisor": "",
-      "pessoa_citada": "Khoa Khan",
-      "msg_linkedin": "",
-      "email_assunto": "",
-      "email_corpo": "",
-      "encaixe": 1,
-      "score": 55,
-      "confirmado": true,
-      "sinais": [
-        {
-          "gatilho": "sucessao",
-          "titulo": "A THACO AGRI levanta um capital maciço antes de o magnata Khoa Khan assumir a presidência. - Vietnam.vn",
-          "link": "https://www.vietnam.vn/pt/thaco-agri-tang-von-khung-truoc-khi-dai-gia-khoa-khan-lam-chu-tich",
-          "fonte": "Vietnam.vn",
-          "data": "2026-11-22"
-        }
-      ],
-      "primeiro_sinal": "2026-11-22",
-      "ultimo_sinal": "2026-11-22",
-      "id": "071cffb31f79"
     },
     {
       "empresa": "Heinz",
@@ -3158,6 +3339,64 @@
       "id": "668668c17864"
     },
     {
+      "empresa": "Super Bock Group",
+      "setor": "Bebidas / Cervejaria",
+      "local": "Portugal",
+      "porte": "grande",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Multinacional europeia com novo CEO: escala e estrutura não condizem com o perfil de cliente ideal da KA (PMEs médias brasileiras).",
+      "decisor": "",
+      "pessoa_citada": "",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 1,
+      "score": 54,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "Super Bock Group nomeia novo CEO - The Portugal News",
+          "link": "https://www.theportugalnews.com/br/noticias/2026-11-22/super-bock-group-nomeia-novo-ceo/1111634",
+          "fonte": "The Portugal News",
+          "data": "2026-11-22"
+        }
+      ],
+      "primeiro_sinal": "2026-11-22",
+      "ultimo_sinal": "2026-11-22",
+      "id": "327ad3330417"
+    },
+    {
+      "empresa": "THACO AGRI",
+      "setor": "Agronegócio",
+      "local": "Vietnã",
+      "porte": "grande",
+      "gatilho": "sucessao",
+      "gatilho_nome": "Sucessão / nova liderança",
+      "por_que_agora": "Magnata vietnamita assume presidência e levanta capital maciço, mas é multinacional/mercado externo fora do foco da KA.",
+      "decisor": "",
+      "pessoa_citada": "Khoa Khan",
+      "msg_linkedin": "",
+      "email_assunto": "",
+      "email_corpo": "",
+      "encaixe": 1,
+      "score": 54,
+      "confirmado": true,
+      "sinais": [
+        {
+          "gatilho": "sucessao",
+          "titulo": "A THACO AGRI levanta um capital maciço antes de o magnata Khoa Khan assumir a presidência. - Vietnam.vn",
+          "link": "https://www.vietnam.vn/pt/thaco-agri-tang-von-khung-truoc-khi-dai-gia-khoa-khan-lam-chu-tich",
+          "fonte": "Vietnam.vn",
+          "data": "2026-11-22"
+        }
+      ],
+      "primeiro_sinal": "2026-11-22",
+      "ultimo_sinal": "2026-11-22",
+      "id": "071cffb31f79"
+    },
+    {
       "empresa": "SYM",
       "setor": "Indústria de motos / scooters",
       "local": "",
@@ -3200,7 +3439,7 @@
       "email_assunto": "",
       "email_corpo": "",
       "encaixe": 1,
-      "score": 54,
+      "score": 53,
       "confirmado": true,
       "sinais": [
         {
@@ -3258,7 +3497,7 @@
       "email_assunto": "",
       "email_corpo": "",
       "encaixe": 0,
-      "score": 49,
+      "score": 48,
       "confirmado": true,
       "sinais": [
         {
@@ -3287,7 +3526,7 @@
       "email_assunto": "",
       "email_corpo": "",
       "encaixe": 0,
-      "score": 49,
+      "score": 48,
       "confirmado": true,
       "sinais": [
         {
@@ -3316,7 +3555,7 @@
       "email_assunto": "",
       "email_corpo": "",
       "encaixe": 2,
-      "score": 49,
+      "score": 48,
       "confirmado": true,
       "sinais": [
         {
@@ -3374,7 +3613,7 @@
       "email_assunto": "marca castrolanda na expansão para o tocantins",
       "email_corpo": "Parabenizamos a expansão de R$ 100 milhões. Quando a Castrolanda chega a um estado novo, o mercado lá não tem a história que tem aqui — a marca precisa contar quem você é rápido e claro. A gente especializou um método para empresas grandes que crescem para fora. Vale uma conversa curta?",
       "encaixe": 2,
-      "score": 48,
+      "score": 47,
       "confirmado": true,
       "sinais": [
         {
@@ -3403,7 +3642,7 @@
       "email_assunto": "",
       "email_corpo": "",
       "encaixe": 2,
-      "score": 46,
+      "score": 45,
       "confirmado": true,
       "sinais": [
         {
