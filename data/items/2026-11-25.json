@@ -1,6 +1,6 @@
 {
   "date": "2026-11-25",
-  "generated_at": "2026-11-26T16:08:45.296552+00:00",
+  "generated_at": "2026-11-27T15:56:49.023204+00:00",
   "count": 40,
   "items": [
     {
@@ -14,14 +14,14 @@
       "published": "2026-11-25",
       "raw_summary": "O rebranding nasce da necessidade de traduzir, de forma ainda mais atual, os pilares que sempre fizeram parte da essência da marca: acolhimento, nutrição,",
       "title_pt": "",
-      "summary_pt": "Marca reposiciona seus pilares de acolhimento e nutrição em identidade mais atual.",
+      "summary_pt": "Marca tradicional traduz sua essência (acolhimento, nutrição) em rebranding contemporâneo.",
       "angle_pt": "",
-      "pme_pt": "Mostra como traduzir a essência já existente em uma marca em um reposicionamento claro e coerente com lançamentos e expansão.",
+      "pme_pt": "Mostra na prática como revelar e atualizar a essência de uma marca consolidada sem perder sua identidade original — útil para empresas que cresceram e precisam se comunicar de forma mais atual.",
       "roteiro_pt": "",
       "link_kelly": "Projeto",
       "authors": "",
       "score": 28,
-      "fetched_at": "2026-11-26T16:03:24.360468+00:00",
+      "fetched_at": "2026-11-27T15:52:06.035682+00:00",
       "id": "a24e75d4658f78ca"
     },
     {
@@ -100,12 +100,12 @@
       "title_pt": "",
       "summary_pt": "RH deve integrar posicionamento de líderes à estratégia de marca empregadora.",
       "angle_pt": "",
-      "pme_pt": "Ajuda profissionais liberais e especialistas a entender que sua marca pessoal é ativo estratégico que reforça ou enfraquece a marca coletiva.",
+      "pme_pt": "Mostra como alinhar marca pessoal dos líderes com a marca empresarial — crítico para pequenos negócios onde o fundador É a marca e precisa de direção contínua nesse alinhamento.",
       "roteiro_pt": "",
-      "link_kelly": "Mentoria",
+      "link_kelly": "Direção",
       "authors": "",
       "score": 18,
-      "fetched_at": "2026-11-26T16:04:21.738861+00:00",
+      "fetched_at": "2026-11-27T15:52:37.273720+00:00",
       "id": "b86e44d2272d280b"
     },
     {
@@ -550,6 +550,27 @@
       "id": "af335c2d878fea8f"
     },
     {
+      "title": "Wang Yu Wen vira alvo de boicote por parceria com marca de peles - diariodamidia.com.br",
+      "link": "https://diariodamidia.com.br/wang-yu-wen-vira-alvo-de-boicote-por-parceria-com-marca-de-peles",
+      "source": "diariodamidia.com.br",
+      "lang": "pt",
+      "region": "BR",
+      "category": "polemica",
+      "kind": "noticia",
+      "published": "2026-11-25",
+      "raw_summary": "Wang Yu Wen vira alvo de boicote por parceria com marca de peles diariodamidia.com.br",
+      "title_pt": "",
+      "summary_pt": "Influenciadora enfrenta boicote por desalinhamento entre valores percebidos e parceria comercial.",
+      "angle_pt": "",
+      "pme_pt": "",
+      "roteiro_pt": "",
+      "link_kelly": "",
+      "authors": "",
+      "score": 11,
+      "fetched_at": "2026-11-27T15:52:52.582738+00:00",
+      "id": "37b61bc1018185de"
+    },
+    {
       "title": "Ketchup Heinz Tabasco é lançado com humor, OOH e influenciadores - Live MKT News",
       "link": "https://livemarketing.com.br/ketchup-heinz-tabasco-e-lancado-com-humor-ooh-e-influenciadores",
       "source": "Live MKT News",
@@ -821,27 +842,6 @@
       "score": 10,
       "fetched_at": "2026-11-26T16:06:49.727743+00:00",
       "id": "a91316d99efbbd3d"
-    },
-    {
-      "title": "Campari reúne seis personalidades em campanha criada pela DPZ",
-      "link": "https://propmark.com.br/anunciantes/campari-reune-seis-personalidades-em-campanha-criada-pela-dpz/",
-      "source": "Propmark",
-      "lang": "pt",
-      "region": "BR",
-      "category": "campanha",
-      "kind": "noticia",
-      "published": "2026-11-25",
-      "raw_summary": "Com conceito “Reimagine o Amargo”, ação reúne Ana Paula Renault, Cleo Pires, Zezé Di Camargo, Rafa Chalub, Danilo Gentili e Craque Neto",
-      "title_pt": "",
-      "summary_pt": "Campari lança campanha 'Reimagine o Amargo' com seis celebridades.",
-      "angle_pt": "",
-      "pme_pt": "",
-      "roteiro_pt": "",
-      "link_kelly": "",
-      "authors": "",
-      "score": 10,
-      "fetched_at": "2026-11-26T16:06:51.249338+00:00",
-      "id": "31460d1ea94634d3"
     }
   ]
 }
